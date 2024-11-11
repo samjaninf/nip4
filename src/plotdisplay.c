@@ -29,79 +29,303 @@
 
 #include "nip4.h"
 
+#include <goffice/goffice.h>
+
+#include <goffice/app/go-plugin.h>
+#include <goffice/app/go-plugin-loader-module.h>
+
+#include <goffice/data/go-data-simple.h>
+
+#include <goffice/graph/gog-data-set.h>
+#include <goffice/graph/gog-label.h>
+#include <goffice/graph/gog-object.h>
+#include <goffice/graph/gog-plot.h>
+#include <goffice/graph/gog-series.h>
+#include <goffice/graph/gog-grid.h>
+#include <goffice/graph/gog-grid-line.h>
+#include <goffice/graph/gog-legend.h>
+#include <goffice/graph/gog-chart-map.h>
+
+#include <goffice/utils/go-color.h>
+#include <goffice/utils/go-marker.h>
+
 /*
  */
 #define DEBUG_VERBOSE
 #define DEBUG
 
-// these must be typedefs for autoptr
-typedef struct kdata Kdata;
-typedef struct kplot Kplot;
-typedef struct kplotcfg Kplotcfg;
-typedef struct kplotccfg Kplotccfg;
-typedef struct kplotline Kplotline;
-typedef struct kplotpoint Kplotpoint;
-typedef struct kdatacfg Kdatacfg;
+#define GOG_UNREF(X) \
+    G_STMT_START { \
+		if(X) { \
+			gog_object_clear_parent(GOG_OBJECT(X)); \
+			g_object_unref(G_OBJECT(X)); \
+			(X) = NULL; \
+		} \
+    } G_STMT_END
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(Kdata, kdata_destroy)
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(Kplot, kplot_free)
-
-/* Our series colours ... RGB for the first three, a bit random after that.
+/* Choose line colours with this. RGB first, then mostly random. We can't use
+ * goffice's default colours because we really want the first three to be: red,
+ * green, blue.
  */
-static const char *plotdisplay_series_rgba[] = {
-	"red",
-	"green",
-	"blue",
-	"cyan",
-	"magenta",
-	"yellow",
-	"orange",
-	"purple",
-	"lime",
-	"white",
+
+static GOColor default_colour[] = {
+	GO_COLOR_FROM_RGB(255, 0, 0),
+	GO_COLOR_FROM_RGB(0, 255, 0),
+	GO_COLOR_FROM_RGB(0, 0, 255),
+	GO_COLOR_FROM_RGB(100, 0, 102),
+	GO_COLOR_FROM_RGB(17, 0, 102),
+	GO_COLOR_FROM_RGB(0, 0, 180),
+	GO_COLOR_FROM_RGB(0, 53, 255),
+	GO_COLOR_FROM_RGB(0, 104, 234),
+	GO_COLOR_FROM_RGB(0, 150, 188),
+	GO_COLOR_FROM_RGB(0, 205, 170),
+	GO_COLOR_FROM_RGB(0, 255, 139),
+	GO_COLOR_FROM_RGB(0, 255, 55),
+	GO_COLOR_FROM_RGB(40, 255, 40),
+	GO_COLOR_FROM_RGB(106, 255, 74),
+	GO_COLOR_FROM_RGB(155, 255, 48),
+	GO_COLOR_FROM_RGB(209, 255, 21),
+	GO_COLOR_FROM_RGB(239, 255, 7),
+	GO_COLOR_FROM_RGB(255, 176, 0),
+	GO_COLOR_FROM_RGB(255, 110, 0),
+	GO_COLOR_FROM_RGB(255, 50, 0),
+	GO_COLOR_FROM_RGB(196, 0, 0)
 };
 
-// colours as an array of Kplotccfg
-static Kplotccfg *plotdisplay_series_ccfg = NULL;
+/* Build a GogPlot from a Plot.
+ */
+static GogPlot *
+plot_new_gplot(Plot *plot)
+{
+	GogPlot *gplot;
 
-// line styles
-static Kdatacfg plotdisplay_series_datacfg_thumbnail = {
-	.line = {
-		.sz = 0.5,
-		.dashesz = 0,
-		.join = CAIRO_LINE_JOIN_ROUND,
-		.clr = {
-			.type = KPLOTCTYPE_DEFAULT,
-		},
-	},
-	.point = {
-		.sz = 0.5,
-		.radius = 1,
-		.dashesz = 0,
-		.clr = {
-			.type = KPLOTCTYPE_DEFAULT,
-		},
-	},
-};
+	if (plot->style == PLOT_STYLE_BAR)
+		gplot = gog_plot_new_by_name("GogHistogramPlot");
+	else
+		gplot = gog_plot_new_by_name("GogXYPlot");
 
-static Kdatacfg plotdisplay_series_datacfg_window = (Kdatacfg) {
-	.line = {
-		.sz = 3,
-		.dashesz = 0,
-		.join = CAIRO_LINE_JOIN_ROUND,
-		.clr = {
-			.type = KPLOTCTYPE_DEFAULT,
-		},
-	},
-	.point = {
-		.sz = 3,
-		.radius = 5,
-		.dashesz = 0,
-		.clr = {
-			.type = KPLOTCTYPE_DEFAULT,
-		},
-	},
-};
+	switch (plot->style) {
+	case PLOT_STYLE_POINT:
+		g_object_set(gplot, "default-style-has-lines", FALSE, NULL);
+		break;
+
+	case PLOT_STYLE_LINE:
+		g_object_set(gplot, "default-style-has-markers", FALSE, NULL);
+		break;
+
+	case PLOT_STYLE_SPLINE:
+		g_object_set(gplot, "default-style-has-markers", FALSE, NULL);
+		g_object_set(gplot, "use-splines", TRUE, NULL);
+		break;
+
+	case PLOT_STYLE_BAR:
+		break;
+
+	default:
+		g_assert(FALSE);
+	}
+
+	for (int i = 0; i < plot->columns; i++) {
+		GogSeries *series;
+		GOData *data;
+		GError *error;
+		char *caption;
+
+		series = gog_plot_new_series(gplot);
+		data = go_data_vector_val_new(plot->xcolumn[i], plot->rows, NULL);
+		gog_series_set_dim(series, 0, data, &error);
+		data = go_data_vector_val_new(plot->ycolumn[i], plot->rows, NULL);
+		gog_series_set_dim(series, 1, data, &error);
+
+		if ((caption = (char *) g_slist_nth_data(plot->series_captions, i)))
+			caption = g_strdup(caption);
+		else
+			caption = g_strdup_printf("Band %d", i);
+		data = go_data_scalar_str_new(caption, TRUE);
+		gog_series_set_name(series, (GODataScalar *) data, &error);
+
+		if (i < VIPS_NUMBER(default_colour)) {
+			GOStyle *style;
+
+			style = go_styled_object_get_style(GO_STYLED_OBJECT(series));
+
+			style->line.color = default_colour[i];
+			style->line.auto_color = FALSE;
+
+			go_marker_set_fill_color(style->marker.mark,
+				default_colour[i]);
+			style->marker.auto_fill_color = FALSE;
+
+			/* Could match fill, but black everywhere looks nicer.
+			 */
+			go_marker_set_outline_color(style->marker.mark,
+				GO_COLOR_FROM_RGB(0, 0, 0));
+			style->marker.auto_outline_color = FALSE;
+
+			gog_object_request_update(GOG_OBJECT(series));
+		}
+	}
+
+	return gplot;
+}
+
+static void
+plot_grid_add(GogAxis *axis)
+{
+	GogGridLine *ggl;
+
+	if (!gog_object_get_child_by_name(GOG_OBJECT(axis), "MajorGrid")) {
+		ggl = g_object_new(GOG_TYPE_GRID_LINE, "is-minor", FALSE, NULL);
+		gog_object_add_by_name(GOG_OBJECT(axis), "MajorGrid", GOG_OBJECT(ggl));
+	}
+
+	if (!gog_object_get_child_by_name(GOG_OBJECT(axis), "MinorGrid")) {
+		ggl = g_object_new(GOG_TYPE_GRID_LINE, "is-minor", TRUE, NULL);
+		gog_object_add_by_name(GOG_OBJECT(axis), "MinorGrid", GOG_OBJECT(ggl));
+	}
+
+	g_object_set(axis, "pos", GOG_AXIS_CROSS, NULL);
+}
+
+static void
+plot_set_title(GogObject *thing, const char *role, const char *text)
+{
+	GogObject *title;
+
+	title = gog_object_get_child_by_name(thing, role);
+	if (text && !title) {
+		title = g_object_new(GOG_TYPE_LABEL, NULL);
+		gog_object_add_by_name(thing, role, title);
+	}
+	else if (!text && title) {
+		gog_object_clear_parent(title);
+		VIPS_UNREF(title);
+	}
+
+	if (text && title) {
+		GOData *data;
+
+		data = go_data_scalar_str_new(text, FALSE);
+		gog_dataset_set_dim(GOG_DATASET(title), 0, data, NULL);
+	}
+}
+
+static void
+plot_style_window(Plot *plot, GogChart *gchart)
+{
+	GSList *axes;
+	GogAxis *axis;
+	GogObject *legend;
+
+	axes = gog_chart_get_axes(gchart, GOG_AXIS_X);
+	axis = GOG_AXIS(axes->data);
+	g_slist_free(axes);
+
+	gog_axis_set_bounds(axis, plot->xmin, plot->xmax);
+	plot_set_title(GOG_OBJECT(axis), "Label", plot->xcaption);
+	plot_grid_add(axis);
+
+	axes = gog_chart_get_axes(gchart, GOG_AXIS_Y);
+	axis = GOG_AXIS(axes->data);
+	g_slist_free(axes);
+
+	gog_axis_set_bounds(axis, plot->ymin, plot->ymax);
+	plot_set_title(GOG_OBJECT(axis), "Label", plot->ycaption);
+	plot_grid_add(axis);
+
+	legend = gog_object_get_child_by_name(GOG_OBJECT(gchart), "Legend");
+	if (plot->columns > 1 &&
+		!legend) {
+		legend = g_object_new(GOG_TYPE_LEGEND, NULL);
+		gog_object_add_by_name(GOG_OBJECT(gchart),
+			"Legend", GOG_OBJECT(legend));
+	}
+	else if (plot->columns == 1 &&
+		legend) {
+		gog_object_clear_parent(legend);
+		VIPS_UNREF(legend);
+	}
+
+	plot_set_title(GOG_OBJECT(gchart), "Title", plot->caption);
+}
+
+static void
+plot_style_thumbnail(Plot *plot, GogChart *gchart)
+{
+	GSList *axes;
+	GogAxis *axis;
+
+	axes = gog_chart_get_axes(gchart, GOG_AXIS_X);
+	axis = GOG_AXIS(axes->data);
+	g_slist_free(axes);
+
+	g_object_set(axis,
+		"major-tick-labeled", FALSE,
+		"major-tick-size-pts", 0,
+		"pos", GOG_AXIS_CROSS,
+		NULL);
+	gog_axis_set_bounds(axis, plot->xmin, plot->xmax);
+
+	axes = gog_chart_get_axes(gchart, GOG_AXIS_Y);
+	axis = GOG_AXIS(axes->data);
+	g_slist_free(axes);
+
+	g_object_set(axis,
+		"major-tick-labeled", FALSE,
+		"major-tick-size-pts", 0,
+		"pos", GOG_AXIS_CROSS,
+		NULL);
+	gog_axis_set_bounds(axis, plot->ymin, plot->ymax);
+}
+
+/*
+Imageinfo *
+plot_to_image(Plot *plot, Reduce *rc, double dpi)
+{
+	GogGraph *ggraph;
+	GogChart *gchart;
+	GogPlot *gplot;
+	GogRenderer *renderer;
+	GdkPixbuf *pixbuf;
+	double width_in_pts, height_in_pts;
+	Imageinfo *ii;
+
+	ggraph = g_object_new(GOG_TYPE_GRAPH, NULL);
+
+	gchart = g_object_new(GOG_TYPE_CHART, NULL);
+	gog_object_add_by_name(GOG_OBJECT(ggraph),
+		"Chart", GOG_OBJECT(gchart));
+
+	gplot = plot_new_gplot(plot);
+	gog_object_add_by_name(GOG_OBJECT(gchart), "Plot", GOG_OBJECT(gplot));
+
+	plot_style_main(plot, gchart);
+
+	renderer = gog_renderer_new(ggraph);
+
+	gog_graph_force_update(ggraph);
+
+	gog_graph_get_size(ggraph, &width_in_pts, &height_in_pts);
+
+	gog_renderer_update(renderer,
+		width_in_pts * dpi / 72.0, height_in_pts * dpi / 72.0);
+
+	pixbuf = gog_renderer_get_pixbuf(renderer);
+
+	if (!(ii = imageinfo_new_from_pixbuf(main_imageinfogroup, rc->heap,
+			  pixbuf))) {
+		VIPS_UNREF(renderer);
+		VIPS_UNREF(ggraph);
+
+		return NULL;
+	}
+
+	VIPS_UNREF(renderer);
+	VIPS_UNREF(ggraph);
+
+	return ii;
+}
+ */
 
 struct _Plotdisplay {
 	GtkDrawingArea parent_instance;
@@ -114,11 +338,9 @@ struct _Plotdisplay {
 	 */
 	gboolean thumbnail;
 
-	// the kplot ready to draw
-	Kplot *kplot;
-	Kplotcfg kcfg_thumbnail;
-	Kplotcfg kcfg_window;
-	Kplotccfg *kccfg;
+	GogGraph *ggraph;
+	GogChart *gchart;
+	GogPlot *gplot;
 };
 
 G_DEFINE_TYPE(Plotdisplay, plotdisplay, GTK_TYPE_DRAWING_AREA);
@@ -144,57 +366,9 @@ plotdisplay_dispose(GObject *object)
 #endif /*DEBUG*/
 
 	VIPS_UNREF(plotdisplay->plot);
-	VIPS_FREE(plotdisplay->kccfg);
+	GOG_UNREF(plotdisplay->gplot);
 
 	G_OBJECT_CLASS(plotdisplay_parent_class)->dispose(object);
-}
-
-static gboolean
-plotdisplay_build_kplot(Plotdisplay *plotdisplay)
-{
-	Plot *plot = plotdisplay->plot;
-
-	Kplotcfg *kcfg = plotdisplay->thumbnail ?
-		&plotdisplay->kcfg_thumbnail :
-		&plotdisplay->kcfg_window;
-
-	Kdatacfg *kdatacfg = plotdisplay->thumbnail ?
-		&plotdisplay_series_datacfg_thumbnail :
-		&plotdisplay_series_datacfg_window;
-
-	printf("plotdisplay_build_kplot:\n");
-
-	// use our scaling ... this is in config, unfortunately
-	kcfg->extrema = EXTREMA_XMIN | EXTREMA_XMAX | EXTREMA_YMIN | EXTREMA_YMAX;
-	kcfg->extrema_xmin = plot->xmin;
-	kcfg->extrema_xmax = plot->xmax;
-	kcfg->extrema_ymin = plot->ymin;
-	kcfg->extrema_ymax = plot->ymax;
-	kcfg->xaxislabel = plotdisplay->thumbnail && plot->xcaption ?
-		NULL : plot->xcaption;
-	kcfg->yaxislabel = plotdisplay->thumbnail && plot->ycaption ?
-		NULL : plot->ycaption;
-
-	g_autoptr(Kplot) kplot = kplot_alloc(kcfg);
-
-	for (int i = 0; i < plot->columns; i++) {
-		g_autoptr(Kdata) kdata = NULL;
-
-		if (!(kdata = kdata_array_alloc(NULL, plot->rows)))
-			return FALSE;
-
-		for (int j = 0; j < plot->rows; j++)
-			kdata_set(kdata, j, plot->xcolumn[i][j], plot->ycolumn[i][j]);
-
-		kplot_attach_data(kplot, kdata,
-			plot->style == PLOT_STYLE_POINT ? KPLOT_POINTS : KPLOT_LINES,
-			kdatacfg);
-	}
-
-	VIPS_FREEF(kplot_free, plotdisplay->kplot);
-	plotdisplay->kplot = g_steal_pointer(&kplot);
-
-	return TRUE;
 }
 
 static void
@@ -204,10 +378,20 @@ plotdisplay_plot_changed(Plot *plot, Plotdisplay *plotdisplay)
 	printf("plotdisplay_tilecache_changed:\n");
 #endif /*DEBUG*/
 
-	if (plotdisplay->plot)
-		plotdisplay_build_kplot(plotdisplay);
+	if (plotdisplay->plot) {
+		GOG_UNREF(plotdisplay->gplot);
 
-	gtk_widget_queue_draw(GTK_WIDGET(plotdisplay));
+		plotdisplay->gplot = plot_new_gplot(plot);
+		gog_object_add_by_name(GOG_OBJECT(plotdisplay->gchart),
+			"Plot", GOG_OBJECT(plotdisplay->gplot));
+
+		if (plotdisplay->thumbnail)
+			plot_style_thumbnail(plot, plotdisplay->gchart);
+		else
+			plot_style_window(plot, plotdisplay->gchart);
+
+		gtk_widget_queue_draw(GTK_WIDGET(plotdisplay));
+	}
 }
 
 static void
@@ -310,17 +494,20 @@ plotdisplay_draw_function(GtkDrawingArea *area,
 	printf("plotdisplay_draw_function:\n");
 #endif /*DEBUG_VERBOSE*/
 
-	if (plotdisplay->kplot) {
-		// white background
-		GdkRGBA white;
-		gdk_rgba_parse(&white, "white");
-		gdk_cairo_set_source_rgba(cr, &white);
-		cairo_rectangle(cr, 0.0, 0.0, width, height);
-		cairo_fill(cr);
+    if (plotdisplay->plot) {
+		GogRenderer *renderer = gog_renderer_new(plotdisplay->ggraph);
+		// do we need this?
+		//gog_graph_force_update(plotdisplay->ggraph);
+		gog_renderer_update(renderer, width, height);
 
-		// and plot
-		kplot_draw(plotdisplay->kplot, width, height, cr);
-	}
+		cairo_surface_t *surface = gog_renderer_get_cairo_surface (renderer);
+        cairo_rectangle(cr, 0, 0, width, height);
+        cairo_clip(cr);
+        cairo_set_source_surface(cr, surface, 0, 0);
+        cairo_paint(cr);
+
+		VIPS_UNREF(renderer);
+    }
 }
 
 static void
@@ -330,22 +517,14 @@ plotdisplay_init(Plotdisplay *plotdisplay)
 	printf("plotdisplay_init:\n");
 #endif /*DEBUG*/
 
-	// minimal config for thumbnail draw
-	kplotcfg_defaults(&plotdisplay->kcfg_thumbnail);
-	plotdisplay->kcfg_thumbnail.ticlabel = 0;
-	plotdisplay->kcfg_thumbnail.marginsz = 3;
-	plotdisplay->kcfg_thumbnail.ticline.len = 0;
-	plotdisplay->kcfg_thumbnail.grid = 0;
-	plotdisplay->kcfg_thumbnail.clrsz = VIPS_NUMBER(plotdisplay_series_rgba);
-	plotdisplay->kcfg_thumbnail.clrs = plotdisplay_series_ccfg;
-
-	// bigger for window
-	kplotcfg_defaults(&plotdisplay->kcfg_window);
-	plotdisplay->kcfg_window.clrsz = VIPS_NUMBER(plotdisplay_series_rgba);
-	plotdisplay->kcfg_window.clrs = plotdisplay_series_ccfg;
-
 	gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA(plotdisplay),
 		plotdisplay_draw_function, plotdisplay, NULL);
+
+	// a graph holding a plot ... our chart goes into the plot
+	plotdisplay->ggraph = g_object_new(GOG_TYPE_GRAPH, NULL);
+	plotdisplay->gchart = g_object_new(GOG_TYPE_CHART, NULL);
+	gog_object_add_by_name(GOG_OBJECT(plotdisplay->ggraph),
+		"Chart", GOG_OBJECT(plotdisplay->gchart));
 }
 
 static void
@@ -375,19 +554,8 @@ plotdisplay_class_init(PlotdisplayClass *class)
 			FALSE,
 			G_PARAM_READWRITE));
 
-	int n_ccfg = VIPS_NUMBER(plotdisplay_series_rgba);
-	plotdisplay_series_ccfg = VIPS_ARRAY(NULL, n_ccfg, Kplotccfg);
-	for (int i = 0; i < n_ccfg; i++) {
-		plotdisplay_series_ccfg[i].type = KPLOTCTYPE_RGBA;
-
-		GdkRGBA rgba;
-		gdk_rgba_parse(&rgba, plotdisplay_series_rgba[i]);
-		plotdisplay_series_ccfg[i].rgba[0] = rgba.red;
-		plotdisplay_series_ccfg[i].rgba[1] = rgba.green;
-		plotdisplay_series_ccfg[i].rgba[2] = rgba.blue;
-		plotdisplay_series_ccfg[i].rgba[3] = rgba.alpha;
-	}
-
+    libgoffice_init();
+    go_plugins_init(NULL, NULL, NULL, NULL, TRUE, GO_TYPE_PLUGIN_LOADER_MODULE);
 }
 
 Plotdisplay *
@@ -405,4 +573,3 @@ plotdisplay_new(Plot *plot)
 
 	return plotdisplay;
 }
-

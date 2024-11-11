@@ -45,7 +45,6 @@ typedef struct _Plotview {
 	GtkWidget *top;
 	GtkWidget *label;
 	GtkWidget *plotdisplay;
-
 } Plotview;
 
 typedef struct _PlotviewClass {

@@ -1,6 +1,3 @@
-# build this first
-subdir('kplot')
-
 marshal = gnome.genmarshal(
   'nip4marshal',
   prefix: 'nip4',
@@ -171,7 +168,6 @@ executable('nip4', [
     sources,
   ],
   dependencies: nip4_deps,
-  link_with: kplot_lib,
   win_subsystem: 'windows',
   install: true,
 )
