@@ -2698,6 +2698,9 @@ shell_pelement(Reduce *rc, PElement *base)
 		g_assert(FALSE);
 	}
 
+	// print output as we go
+	fflush(stdout);
+
 	return TRUE;
 }
 
