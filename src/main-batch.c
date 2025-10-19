@@ -63,38 +63,15 @@ static GOptionEntry main_batch_options[] = {
     { NULL }
 };
 
-/* Accumulate startup errors here.
- */
-static char main_start_error_txt[MAX_STRSIZE];
-static VipsBuf main_start_error = VIPS_BUF_STATIC(main_start_error_txt);
-
-static void
-main_log_add(const char *fmt, ...)
-{
-    va_list ap;
-
-	va_start(ap, fmt);
-    vips_buf_vappendf(&main_start_error, fmt, ap);
-	va_end(ap);
-}
-
-static const char *
-main_log_get(void)
-{
-    return vips_buf_all(&main_start_error);
-}
-
-static gboolean
-main_log_is_empty(void)
-{
-    return vips_buf_is_empty(&main_start_error);
-}
-
 /* Print all errors and quit.
  */
 static void
 main_error_exit(const char *fmt, ...)
 {
+	/* We may have some half-written text .. flush before any error message.
+	 */
+	fflush(stdout);
+
 	if (fmt) {
 		va_list args;
 
@@ -111,17 +88,7 @@ main_error_exit(const char *fmt, ...)
 		fprintf(stderr, "\n");
     }
 
-    if (main_option_verbose) {
-        char txt[MAX_STRSIZE];
-        VipsBuf buf = VIPS_BUF_STATIC(txt);
-
-        slist_map(expr_error_all, (SListMapFn) expr_error_print, &buf);
-        fprintf(stderr, "%s", vips_buf_all(&buf));
-
-		if (!main_log_is_empty())
-			fprintf(stderr, "%s", main_log_get());
-    }
-
+    main_shutdown();
     exit(1);
 }
 
@@ -215,7 +182,8 @@ main_print_main(Symbol *sym)
             main_error_exit(_( "error saving \"%s\""), symbol_name_scope(sym));
     }
 	else
-		if (!graph_value(root))
+		if (!symbol_recalculate_check(sym) ||
+			!graph_value(root))
             main_error_exit(NULL);
 }
 
@@ -336,7 +304,7 @@ main_build_argv(int argc, char **argv)
 
 	attach_input_string(vips_buf_all(&buf));
 	if (!parse_onedef(kit, -1))
-		main_log_add("%s\n", error_get_sub());
+		main_error_exit(NULL);
 
 	filemodel_set_modified(FILEMODEL(kit), FALSE);
 }
@@ -465,7 +433,7 @@ main(int argc, char **argv)
                 printf("main_set: %s\n", main_option_set[i]);
 
             if (!main_set(main_option_set[i]))
-                main_log_add("%s\n%s", error_get_top(), error_get_sub());
+                main_error_exit(NULL);
         }
 
     if (main_option_test) {

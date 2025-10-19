@@ -2617,7 +2617,7 @@ shell_node(Reduce *rc, HeapNode *hn)
 		for (;;) {
 			PEPOINTLEFT(hn, &p1);
 			if (!reduce_pelement(rc, reduce_spine, &p1) ||
-				shell_pelement(rc, &p1))
+				!shell_pelement(rc, &p1))
 				return FALSE;
 
 			PEPOINTRIGHT(hn, &p2);
@@ -2672,7 +2672,8 @@ shell_pelement(Reduce *rc, PElement *base)
 		break;
 
 	case ELEMENT_NODE:
-		shell_node(rc, PEGETVAL(base));
+		if (!shell_node(rc, PEGETVAL(base)))
+			return FALSE;
 		break;
 
 	case ELEMENT_CHAR:

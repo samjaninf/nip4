@@ -8,6 +8,7 @@
 - improve search and display of builtins
 - add `vips_image_guess_interpretation` builtin
 - improve display of computed multipage images
+- batch mode output is lazy
 
 ## 9.0.13 2025/09/20
 
