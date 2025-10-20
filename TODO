@@ -3,10 +3,39 @@
 	print
 	++
 
-  both seemt to be strict, so eg. "join_sep ", " (map print primes)" never
-  returns, "print primes" never returns
+  try:
 
-- finish new test_snip.def
+	join_sep ", " [1..]
+	print primes
+
+  neither ever prints anything, even in the GUI
+
+- ++ implementation
+
+	LHS is MANAGEDSTRING
+
+		build a list of the right length, set last node to be RHS
+		(not [])
+
+	eval LHS to find (a:x) node
+
+		set out to be (a:(x ++ RHS))
+
+	otherwise, error
+
+  code now:
+
+	action_proc_join() calls action_proc_join_sub() for (list ++ list)
+
+	in turn, calls heap_list_cat()
+
+	that uses reduce_clone_list() to clonce the LHS, then replaces elist
+	with RHS
+
+	clone_list uses reduce_map_list(), which does eg. expanding
+	MANAGEDSTRING
+
+- makeing print lazy would probably be hard
 
 - add multiple definitions, finish function argument destructuring
 

@@ -812,6 +812,31 @@ static void *
 action_proc_join_sub(Reduce *rc, PElement *pe,
 	PElement *a, PElement *b, PElement *out)
 {
+	if (PEISMANAGEDSTRING(a)) {
+		PElement tail;
+
+		// expand the static string into a list
+		reduce_clone_list(rc, a, pe);
+		PEPUTPE(&tail, b);
+	}
+	else if (PEISELIST(a)) {
+	}
+	else if (PEISNODE(a) && PEGETVAL(a)->type == TAG_CONS) {
+		HeapNode *cons = PEGETVAL(a);
+		PElement hd;
+		PEPOINTLEFT(hn, &hd);
+		PElement tl;
+		PEPOINTRIGHT(hn, &tl);
+
+		PElement t;
+		if (!heap_list_add(rc->heap, &tl, &t))
+			reduce_throw(rc);
+		PEPUTP(&t,
+	}
+	else
+		g_assert(FALSE);
+
+
 	if (!heap_list_cat(rc, a, b, pe))
 		return a;
 
