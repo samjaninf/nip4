@@ -34,8 +34,8 @@
  */
 
 /* trace each reduction
- */
 #define DEBUG_TRACE
+ */
 
 /* trace copies of code from compile heap to main heap.
 #define DEBUG_COPY
@@ -46,12 +46,12 @@
  */
 
 /* Turn on WHNF tests.
- */
 #define WHNF_DEBUG
+ */
 
 /* regular tests that we stay in weak head normal form
- */
 #define WHNF_DEBUG
+ */
 
 /* State of the reduction engine.
  */

@@ -862,74 +862,6 @@ action_proc_exp(Reduce *rc, Compile *compile,
 		action_boperror(rc, compile, NULL, op, name, a, b);
 }
 
-static void *
-action_proc_join_sub(Reduce *rc, PElement *pe,
-	PElement *a, PElement *b, PElement *out)
-{
-	if (PEISELIST(a))
-		PEPUTPE(pe, b);
-	else if (PEISMANAGEDSTRING(a)) {
-		PElement new_list = *pe;
-
-		// expand the static string into a list
-		reduce_clone_list(rc, a, &new_list);
-		// and overwrite the terminating [] with b
-		PEPUTPE(&new_list, b);
-	}
-	else if (PEISNODE(a) && PEGETVAL(a)->type == TAG_CONS) {
-		/*
-		HeapNode *cons = PEGETVAL(a);
-		PElement hd;
-		PEPOINTLEFT(hn, &hd);
-		PElement tl;
-		PEPOINTRIGHT(hn, &tl);
-
-		PElement t;
-		if (!heap_list_add(rc->heap, &tl, &t))
-			reduce_throw(rc);
-
-		PEPUTP(&t,
-
-		// we were using this
-		if (!heap_list_cat(rc, a, b, pe))
-			return a;
-
-		*/
-	}
-	else
-		g_assert(FALSE);
-
-	PEPUTPE(out, pe);
-
-	return NULL;
-}
-
-static void
-action_proc_join(Reduce *rc, Compile *compile, int op, const char *name,
-	PElement *a, PElement *b, PElement *out)
-{
-	if (PEISIMAGE(a) && PEISIMAGE(b)) {
-		g_autoptr(VipsArrayImage) c =
-			vips_array_image_newv(2, PEGETIMAGE(a), PEGETIMAGE(b));
-
-		vo_callva(rc, out, "bandjoin", c);
-	}
-	else if (PEISLIST(a) && PEISLIST(b)) {
-		if (reduce_safe_pointer(rc,
-				(reduce_safe_pointer_fn) action_proc_join_sub,
-				a, b, out, NULL))
-			action_boperror(rc, compile, error_get_sub(), op, name, a, b);
-	}
-	else if (PEISIMAGE(a) && PEISELIST(b)) {
-		PEPUTPE(out, a);
-	}
-	else if (PEISIMAGE(b) && PEISELIST(a)) {
-		PEPUTPE(out, b);
-	}
-	else
-		action_boperror(rc, compile, NULL, op, name, a, b);
-}
-
 /* Left shift.
  */
 static void
@@ -1306,10 +1238,6 @@ action_proc_bop_strict(Reduce *rc, Compile *compile,
 
 	case BI_POW:
 		action_proc_exp(rc, compile, op, name, a, b, out);
-		break;
-
-	case BI_JOIN:
-		action_proc_join(rc, compile, op, name, a, b, out);
 		break;
 
 	case BI_LSHIFT:
@@ -1924,6 +1852,89 @@ action_if(Reduce *rc, Compile *compile,
 	}
 }
 
+static void *
+action_join_sub(Reduce *rc, PElement *pe,
+	PElement *a, PElement *b, PElement *out, Compile *compile)
+{
+	if (PEISELIST(a))
+		PEPUTPE(pe, b);
+	else if (PEISMANAGEDSTRING(a)) {
+		PElement list = *pe;
+
+		// expand the static string into a list, new_list will point at the []
+		reduce_clone_list(rc, a, &list);
+		// and overwrite the [] with b
+		PEPUTPE(&list, b);
+	}
+	else if (PEISNODE(a) && PEGETVAL(a)->type == TAG_CONS) {
+		HeapNode *cons = PEGETVAL(a);
+		PElement hd;
+		PEPOINTLEFT(cons, &hd);
+		PElement tl;
+		PEPOINTRIGHT(cons, &tl);
+
+		// build the new (++ tl b)
+		PElement data;
+		PEPUTP(pe, ELEMENT_BINOP, BI_JOIN);
+		if (!heap_appl_add(rc->heap, pe, &data))
+			reduce_throw(rc);
+		PEPUTP(&data, ELEMENT_COMPILEREF, compile);
+
+		if (!heap_appl_add(rc->heap, pe, &data))
+			reduce_throw(rc);
+		PEPUTPE(&data, &tl);
+
+		if (!heap_appl_add(rc->heap, pe, &data))
+			reduce_throw(rc);
+		PEPUTPE(&data, b);
+
+		// make the (: hd)
+		if (!heap_list_add(rc->heap, pe, &data))
+			reduce_throw(rc);
+		PEPUTPE(&data, &hd);
+	}
+	else
+		g_assert(FALSE);
+
+	PEPUTPE(out, pe);
+
+	return NULL;
+}
+
+static void
+action_join(Reduce *rc, Compile *compile, int op, const char *name,
+	PElement *a, PElement *b, PElement *out)
+{
+	reduce_spine(rc, a);
+
+	if (PEISCOMB(a) && PEGETCOMB(a) == COMB_I)
+		/* The reduce_spine() did us recursively ... bounce back.
+		 */
+		return;
+
+	if (PEISCLASS(a))
+		action_proc_class_binary(rc, compile, op, name, a, b, out);
+	else if (PEISIMAGE(a)) {
+		reduce_spine(rc, b);
+
+		if (!PEISIMAGE(a) ||
+			!PEISIMAGE(b))
+			action_boperror(rc, compile, NULL, op, name, a, b);
+
+		g_autoptr(VipsArrayImage) c =
+			vips_array_image_newv(2, PEGETIMAGE(a), PEGETIMAGE(b));
+		vo_callva(rc, out, "bandjoin", c);
+	}
+	else if (PEISLIST(a)) {
+		if (reduce_safe_pointer(rc,
+				(reduce_safe_pointer_fn) action_join_sub,
+				a, b, out, compile))
+			action_boperror(rc, compile, error_get_sub(), op, name, a, b);
+	}
+	else
+		action_boperror(rc, compile, NULL, op, name, a, b);
+}
+
 /* Do a binary operator. Result in arg[0].
  */
 void
@@ -1943,9 +1954,6 @@ action_proc_bop(Reduce *rc, Compile *compile, BinOp bop, HeapNode **arg)
 
 		action_landlor(rc, compile, bop, OPERATOR_NAME(bop), &a, &b, &out);
 
-		/* Overwrite arg[0] with I node, in case this is a
-		 * shared node.
-		 */
 		PPUTLEFT(arg[0], ELEMENT_COMB, COMB_I);
 
 		break;
@@ -1959,9 +1967,18 @@ action_proc_bop(Reduce *rc, Compile *compile, BinOp bop, HeapNode **arg)
 
 		action_if(rc, compile, bop, OPERATOR_NAME(bop), &a, &b, &out);
 
-		/* Overwrite arg[0] with I node, in case this is a
-		 * shared node.
-		 */
+		PPUTLEFT(arg[0], ELEMENT_COMB, COMB_I);
+
+		break;
+
+	case BI_JOIN:
+		// also lazy in second arg
+		PEPOINTRIGHT(arg[0], &b);
+		PEPOINTRIGHT(arg[1], &a);
+		PEPOINTRIGHT(arg[0], &out);
+
+		action_join(rc, compile, bop, OPERATOR_NAME(bop), &a, &b, &out);
+
 		PPUTLEFT(arg[0], ELEMENT_COMB, COMB_I);
 
 		break;

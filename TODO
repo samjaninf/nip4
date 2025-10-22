@@ -1,73 +1,48 @@
-- not as lazy as they could be:
+- try:
 
-	print
-	++
+    join_sep ", " (map print [1..])
 
-  try:
+  seems to work, but locks the CPU at 100%, never shows a progress bar
 
-	join_sep ", " [1..]
-	print primes
+- try:
 
-  neither ever prints anything, even in the GUI
+    print primes
 
-- ++ implementation
-
-	LHS is MANAGEDSTRING
-
-		build a list of the right length, set last node to be RHS
-		(not [])
-
-	eval LHS to find (a:x) node
-
-		set out to be (a:(x ++ RHS))
-
-	otherwise, error
-
-  code now:
-
-	action_proc_join() calls action_proc_join_sub() for (list ++ list)
-
-	in turn, calls heap_list_cat()
-
-	that uses reduce_clone_list() to clonce the LHS, then replaces elist
-	with RHS
-
-	clone_list uses reduce_map_list(), which does eg. expanding
-	MANAGEDSTRING
-
-- makeing print lazy would probably be hard
+  never prints anything ... hard to make print lazy
 
 - remove trace stuff from reduce
 
+    also remove prefs workspace stuff?
+
 - add multiple definitions, finish function argument destructuring
 
-	sym has a field for "next definition", initially NULL
+    sym has a field for "next definition", initially NULL
 
-`	add_defining looks for an existing sym with this name, if it finds
-	one, add a new sym called "{name}-$$4" or whatever
+`   add_defining looks for an existing sym with this name, if it finds
+    one, add a new sym called "{name}-$$4" or whatever
 
-	chase to the end of "next definition" on the existing sym, append our
-	new sym
+    chase to the end of "next definition" on the existing sym, append our
+    new sym
 
-	during compile, generate code like
+    during compile, generate code like
 
-		fred a b c
-			= destructured_fred, args_match
-			= fred-$$1 a b c
-		{
-			destructured_fred = rhs of fred
-			args_match = a_matches && b_matches && c_matches
-		}
+        fred a b c
+            = destructured_fred, args_match
+            = fred-$$1 a b c
+        {
+            destructured_fred = rhs of fred
+            args_match = a_matches && b_matches && c_matches
+        }
 
-	if a func has many RHS and the last RHS uses destrucuring, generate a
-	final def with
+    if a func has many RHS and the last RHS uses destrucuring, generate a
+    final def with
 
-		fred a b c
-			= error "no def of fred matches args a b c";
+        fred a b c
+            = error "no def of fred matches args a b c";
 
-	- error if more than one def of fred has no destructuring
-	- error if defs don't all have the same number of args
-	- error if a def with no destructuring isn't the last def
+    - error if more than one def of fred has no destructuring
+    - error if defs don't all have the same number of args
+    - error if a def with no destructuring isn't the last def
 
 - try < > in the image titlebar
 
@@ -75,25 +50,25 @@
 
 - toolkitgroupview could have a non-scrolling version as the default
 
-	context would be much clearer, though it would take loads of space
+    context would be much clearer, though it would take loads of space
 
 - add tab completion ... somewhat like VS intellisense?
 
-	should work in workspace entry box, and in program window
+    should work in workspace entry box, and in program window
 
-		vips_fa |
+        vips_fa |
 
-		im_falsecolour in = ...
-		im_fastcor in = ...
-		vips_falsecolour: false-colour an image
-		vips_fastcor: fast correlation
+        im_falsecolour in = ...
+        im_fastcor in = ...
+        vips_falsecolour: false-colour an image
+        vips_fastcor: fast correlation
 
-	maybe a bar down the right shows matches to the thing around the
-	cursor?
+    maybe a bar down the right shows matches to the thing around the
+    cursor?
 
-	a popdown from the cursor shows what tab will complete to
+    a popdown from the cursor shows what tab will complete to
 
-	tooltips around mouse do lookups on text
+    tooltips around mouse do lookups on text
 
 
 
@@ -109,22 +84,22 @@
 
 - get judder with rotate and images smaller than the window
 
-	draw on update, then draw again on relayout
+    draw on update, then draw again on relayout
 
-	hard to fix
+    hard to fix
 
 - show zoomed out tiles too
 
-	should stop some more flicker
+    should stop some more flicker
 
-	seems tricky for some reason?
+    seems tricky for some reason?
 
 - load ws with locked tab, rightclick menu on locked tab does not
   have tick selected
 
   two tabs, lock one, menu on other also shows lock
 
-	a bit tricky to fix
+    a bit tricky to fix
 
   maybe we are forced to have a separate menu for each tab?
 
@@ -132,42 +107,42 @@
 
 - check all batch mode flags
 
-	see eg. vips-bench nip4 benchmark
+    see eg. vips-bench nip4 benchmark
 
 - try to save and restore image view scale and position
 
-	this failed last time I tried :(
+    this failed last time I tried :(
 
 - ^C on a computed animated GIF is only copying the first page
 
-	a limitation of gdk_texture_new_from_bytes()
+    a limitation of gdk_texture_new_from_bytes()
 
 - use "propagate-natural-width" to get better fit of imageview window?
 
-	aim for max 600px on any axis
+    aim for max 600px on any axis
 
-	pick an initial scale
+    pick an initial scale
 
-	drawingarea makes itself that size
+    drawingarea makes itself that size
 
-		we need to implement the sizing machinery, however that works
+        we need to implement the sizing machinery, however that works
 
-	propogate size
+    propogate size
 
-	remove shrink-to-fit
+    remove shrink-to-fit
 
   see imagewindow_set_tilesource() and uncomment the call to
   imageui_set_bestfit() to work on this again
 
 - need preferences?
 
-	or just remove it all
+    or just remove it all
 
 - iimage.h has:
 
-	gboolean show_status;
-	gboolean show_paintbox;
-	gboolean show_convert;
+    gboolean show_status;
+    gboolean show_paintbox;
+    gboolean show_convert;
 
   do we use these?
 
@@ -177,8 +152,8 @@
 - save as TIFF, pick a set of options which will fail (eg. deflate + float
   predictor), save, get error, fix options, save again, get:
 
-	(nip4:3658140): VIPS-WARNING **: 12:51:27.408: ../libvips/iofuncs/object.c:1231: VipsForeignSaveTiffFile can only assign 'nickname' once
-	(nip4:3658140): VIPS-WARNING **: 12:51:27.408: ../libvips/iofuncs/object.c:1231: VipsForeignSaveTiffFile can only assign 'description' once
+    (nip4:3658140): VIPS-WARNING **: 12:51:27.408: ../libvips/iofuncs/object.c:1231: VipsForeignSaveTiffFile can only assign 'nickname' once
+    (nip4:3658140): VIPS-WARNING **: 12:51:27.408: ../libvips/iofuncs/object.c:1231: VipsForeignSaveTiffFile can only assign 'description' once
 
 ## program
 
@@ -186,21 +161,21 @@
 
 - in program window, search is cleared on refresh
 
-	eg. search for is_Plot, click on it, list fills again
+    eg. search for is_Plot, click on it, list fills again
 
-	not clear why this happens? we try to restore the search string
-	and filter
+    not clear why this happens? we try to restore the search string
+    and filter
 
 ## imagewindow
 
 - open imageview window for groups? < and > could move up and down the group
 
-	or disable < > ref for computed images?
+    or disable < > ref for computed images?
 
-	need a groupview widget
+    need a groupview widget
 
-	it would need to make a model for every element in the group, then
-	display a set of views
+    it would need to make a model for every element in the group, then
+    display a set of views
 
 ## ideas
 
@@ -211,7 +186,7 @@
 
 - get rid of
 
-	 TOOL_DIA, TOOL_SEP
+     TOOL_DIA, TOOL_SEP
 
 - for a click on a computed tool, could scroll to or highlight the text?
 
@@ -219,7 +194,7 @@
 
 - drag in left to reorder tools and toolkits
 
-	argh!
+    argh!
 
   I suppose we will need our own two-level tree view
 
@@ -227,14 +202,14 @@
 
 - double-click in browse mode will add two pages with the same name
 
-	harmless, but you get a warning
+    harmless, but you get a warning
 
 - often see
 
-	view_dump(): 3 views
-	0x5e14b821e120 Workspacedefs count=2
-	0x5d40451c8110 Toolkitgroupview count=2
-	0x5d40447a9790 Workspaceview count=1
+    view_dump(): 3 views
+    0x5e14b821e120 Workspacedefs count=2
+    0x5d40451c8110 Toolkitgroupview count=2
+    0x5d40447a9790 Workspaceview count=1
 
   on shutdown
 
@@ -248,104 +223,104 @@
 
 - put a time delay on row label colour change -- stop the flashing
 
-	we have vobject_refresh_queue(), but that does all views, we just
-	want to delay colour changes
+    we have vobject_refresh_queue(), but that does all views, we just
+    want to delay colour changes
 
-	maybe do a separate pass at the end of recomp that sets label colours?
+    maybe do a separate pass at the end of recomp that sets label colours?
 
-	could use this to make parent/child colour change only show after a
-	while ... might look better
+    could use this to make parent/child colour change only show after a
+    while ... might look better
 
 - this fails:
 
-	im_insertset main sub x y
-		= foldr add_another main (zip2 x y)
-	{
-		add_another [x, y] im = insert x y sub im;
-	}
+    im_insertset main sub x y
+        = foldr add_another main (zip2 x y)
+    {
+        add_another [x, y] im = insert x y sub im;
+    }
 
   you have to do:
 
-		add_another pos im
-			= insert x y sub im
-		{
-			x = pos?0;
-			y = pos?1;
-		}
+        add_another pos im
+            = insert x y sub im
+        {
+            x = pos?0;
+            y = pos?1;
+        }
 
   strange!
 
 - in a workspace do:
 
-	x = [1, 2, 3]
+    x = [1, 2, 3]
 
   now ZF expressions which use x will stop working, eg.:
 
-	[x * 2 :: x <- [1..]]
+    [x * 2 :: x <- [1..]]
 
 - syntax error in startup .def stops nip4 loading
 
 - should we support
 
-	A1.value + [1, 2, 3]
+    A1.value + [1, 2, 3]
 
   ought to be easy and safe, though it's a lot of copy-paste
 
-	maybe we can common-up some more code to make it easier?
+    maybe we can common-up some more code to make it easier?
 
   nip2 does it in the vector class, eg.
 
-	A1 + Vector [10, 20, 30]
+    A1 + Vector [10, 20, 30]
 
 - should we wrap all vips8 operators? eg. could make
 
-	vips_add a b = vips_call "add" [a, b] []
+    vips_add a b = vips_call "add" [a, b] []
 
   as we do for vips7
 
-	  not very useful? we'd lose optional args
+      not very useful? we'd lose optional args
 
   maybe:
 
-	vips_add options a b = vips_call "add" [a, b] options
+    vips_add options a b = vips_call "add" [a, b] options
 
-	x = vips_add [$uchar => true] y z
+    x = vips_add [$uchar => true] y z
 
 ## plotting
 
 - in plotdisplay_build_kplot()
 
-	set ksmthtype to smooth a series (PLOT_STYLE_SPLINE) see
-	kplot_attach_smooth()
+    set ksmthtype to smooth a series (PLOT_STYLE_SPLINE) see
+    kplot_attach_smooth()
 
-		not really a spline, more like a blur, this would be better in
-		libvips
+        not really a spline, more like a blur, this would be better in
+        libvips
 
-	maybe use error bars plus thickness to draw a bar?
+    maybe use error bars plus thickness to draw a bar?
 
-	leave it for now, not very important
+    leave it for now, not very important
 
 ## vips8
 
 - vipsobject
 
-	vo_new() could allocate the args array dynamically
+    vo_new() could allocate the args array dynamically
 
-	use vo_set_required_input() in the body of vo_call_fill_spine()
+    use vo_set_required_input() in the body of vo_call_fill_spine()
 
 ## rows
 
 - add multi-select to file open?
 
-	gtk makes it hard to support single and multiple file select in
-	one action
+    gtk makes it hard to support single and multiple file select in
+    one action
 
 - implement range select then drag
 
-	awkward to do since select is on the model, not the view
+    awkward to do since select is on the model, not the view
 
-	we'd need to make a floating column (not just a columnview) and
-	reparent the rows to it
+    we'd need to make a floating column (not just a columnview) and
+    reparent the rows to it
 
 - new row type ... enter " (double quotes) as first character, then there's no
   need to terminate the string
@@ -355,7 +330,7 @@
 
   maybe allow eg. "<span background=\"white\">hello</span>" too?
 
-	formula isn't a great place to do this -- eg. "<function>" won't parse
-	as markup
+    formula isn't a great place to do this -- eg. "<function>" won't parse
+    as markup
 
-	a special graphical view widget for top-level strings would be better
+    a special graphical view widget for top-level strings would be better
