@@ -34,8 +34,8 @@
  */
 
 /* trace each reduction
-#define DEBUG_TRACE
  */
+#define DEBUG_TRACE
 
 /* trace copies of code from compile heap to main heap.
 #define DEBUG_COPY
@@ -46,12 +46,12 @@
  */
 
 /* Turn on WHNF tests.
-#define WHNF_DEBUG
  */
+#define WHNF_DEBUG
 
 /* regular tests that we stay in weak head normal form
-#define WHNF_DEBUG
  */
+#define WHNF_DEBUG
 
 /* State of the reduction engine.
  */
@@ -752,7 +752,7 @@ reduce_is_realvec(Reduce *rc, PElement *base)
 	return TRUE;
 }
 
-/* Test for 1st sz elements are reals. Init sz < 0 for unlimited test.
+/* Test for 1st sz elements are images. Init sz < 0 for unlimited test.
  */
 static void *
 reduce_test_image(Reduce *rc, PElement *base, int *sz)
@@ -1814,8 +1814,7 @@ reduce_start:
 
 		/* Write to node above.
 		 */
-		PEPUTP(&np,
-			GETRT(arg[0]), GETRIGHT(arg[0]));
+		PEPUTP(&np, GETRT(arg[0]), GETRIGHT(arg[0]));
 
 		/* Loop again with new np.
 		 */

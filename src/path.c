@@ -21,8 +21,8 @@
  */
 
 /* just load .defs/.wses from "."
-#define DEBUG_LOCAL
  */
+#define DEBUG_LOCAL
 
 /* show path searches
 #define DEBUG_SEARCH

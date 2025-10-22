@@ -37,6 +37,8 @@
 
 - makeing print lazy would probably be hard
 
+- remove trace stuff from reduce
+
 - add multiple definitions, finish function argument destructuring
 
 	sym has a field for "next definition", initially NULL

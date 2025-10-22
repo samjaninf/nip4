@@ -808,76 +808,6 @@ action_proc_notequal(Reduce *rc, Compile *compile,
 	}
 }
 
-static void *
-action_proc_join_sub(Reduce *rc, PElement *pe,
-	PElement *a, PElement *b, PElement *out)
-{
-	if (PEISMANAGEDSTRING(a)) {
-		PElement tail;
-
-		// expand the static string into a list
-		reduce_clone_list(rc, a, pe);
-		PEPUTPE(&tail, b);
-	}
-	else if (PEISELIST(a)) {
-	}
-	else if (PEISNODE(a) && PEGETVAL(a)->type == TAG_CONS) {
-		HeapNode *cons = PEGETVAL(a);
-		PElement hd;
-		PEPOINTLEFT(hn, &hd);
-		PElement tl;
-		PEPOINTRIGHT(hn, &tl);
-
-		PElement t;
-		if (!heap_list_add(rc->heap, &tl, &t))
-			reduce_throw(rc);
-		PEPUTP(&t,
-	}
-	else
-		g_assert(FALSE);
-
-
-	if (!heap_list_cat(rc, a, b, pe))
-		return a;
-
-	PEPUTPE(out, pe);
-
-	return NULL;
-}
-
-static void
-action_proc_join(Reduce *rc, Compile *compile,
-	int op, const char *name, HeapNode **arg, PElement *out)
-{
-	PElement left, right;
-	PElement *a = &left;
-	PElement *b = &right;
-
-	PEPOINTRIGHT(arg[1], &left);
-	PEPOINTRIGHT(arg[0], &right);
-
-	if (PEISIMAGE(a) && PEISIMAGE(b)) {
-		g_autoptr(VipsArrayImage) c =
-			vips_array_image_newv(2, PEGETIMAGE(a), PEGETIMAGE(b));
-
-		vo_callva(rc, out, "bandjoin", c);
-	}
-	else if (PEISLIST(a) && PEISLIST(b)) {
-		if (reduce_safe_pointer(rc,
-				(reduce_safe_pointer_fn) action_proc_join_sub,
-				a, b, out, NULL))
-			action_boperror(rc, compile, error_get_sub(), op, name, a, b);
-	}
-	else if (PEISIMAGE(a) && PEISELIST(b)) {
-		PEPUTPE(out, a);
-	}
-	else if (PEISIMAGE(b) && PEISELIST(a)) {
-		PEPUTPE(out, b);
-	}
-	else
-		action_boperror(rc, compile, NULL, op, name, a, b);
-}
-
 static void
 action_proc_index(Reduce *rc, Compile *compile,
 	int op, const char *name, HeapNode **arg, PElement *out)
@@ -927,6 +857,74 @@ action_proc_exp(Reduce *rc, Compile *compile,
 
 		vo_callva(rc, out, "math2_const",
 			PEGETIMAGE(b), VIPS_OPERATION_MATH2_WOP, c);
+	}
+	else
+		action_boperror(rc, compile, NULL, op, name, a, b);
+}
+
+static void *
+action_proc_join_sub(Reduce *rc, PElement *pe,
+	PElement *a, PElement *b, PElement *out)
+{
+	if (PEISELIST(a))
+		PEPUTPE(pe, b);
+	else if (PEISMANAGEDSTRING(a)) {
+		PElement new_list = *pe;
+
+		// expand the static string into a list
+		reduce_clone_list(rc, a, &new_list);
+		// and overwrite the terminating [] with b
+		PEPUTPE(&new_list, b);
+	}
+	else if (PEISNODE(a) && PEGETVAL(a)->type == TAG_CONS) {
+		/*
+		HeapNode *cons = PEGETVAL(a);
+		PElement hd;
+		PEPOINTLEFT(hn, &hd);
+		PElement tl;
+		PEPOINTRIGHT(hn, &tl);
+
+		PElement t;
+		if (!heap_list_add(rc->heap, &tl, &t))
+			reduce_throw(rc);
+
+		PEPUTP(&t,
+
+		// we were using this
+		if (!heap_list_cat(rc, a, b, pe))
+			return a;
+
+		*/
+	}
+	else
+		g_assert(FALSE);
+
+	PEPUTPE(out, pe);
+
+	return NULL;
+}
+
+static void
+action_proc_join(Reduce *rc, Compile *compile, int op, const char *name,
+	PElement *a, PElement *b, PElement *out)
+{
+	if (PEISIMAGE(a) && PEISIMAGE(b)) {
+		g_autoptr(VipsArrayImage) c =
+			vips_array_image_newv(2, PEGETIMAGE(a), PEGETIMAGE(b));
+
+		vo_callva(rc, out, "bandjoin", c);
+	}
+	else if (PEISLIST(a) && PEISLIST(b)) {
+		if (reduce_safe_pointer(rc,
+				(reduce_safe_pointer_fn) action_proc_join_sub,
+				a, b, out, NULL))
+			action_boperror(rc, compile, error_get_sub(), op, name, a, b);
+	}
+	else if (PEISIMAGE(a) && PEISELIST(b)) {
+		PEPUTPE(out, a);
+	}
+	else if (PEISIMAGE(b) && PEISELIST(a)) {
+		PEPUTPE(out, b);
 	}
 	else
 		action_boperror(rc, compile, NULL, op, name, a, b);
@@ -1268,10 +1266,6 @@ action_proc_bop_strict(Reduce *rc, Compile *compile,
 		action_proc_index(rc, compile, op, name, arg, out);
 		break;
 
-	case BI_JOIN:
-		action_proc_join(rc, compile, op, name, arg, out);
-		break;
-
 	case BI_EQ:
 		action_proc_equal(rc, compile, op, name, arg, out);
 		break;
@@ -1312,6 +1306,10 @@ action_proc_bop_strict(Reduce *rc, Compile *compile,
 
 	case BI_POW:
 		action_proc_exp(rc, compile, op, name, a, b, out);
+		break;
+
+	case BI_JOIN:
+		action_proc_join(rc, compile, op, name, a, b, out);
 		break;
 
 	case BI_LSHIFT:
