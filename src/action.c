@@ -1593,14 +1593,6 @@ void
 action_proc_construct(Reduce *rc,
 	Compile *compile, HeapNode **arg, PElement *out)
 {
-	if (trace_flags & TRACE_CLASS_NEW) {
-		VipsBuf *buf = trace_push();
-
-		vips_buf_appendf(buf, "constructor \"%s\" ",
-			IOBJECT(compile->sym)->name);
-		trace_args(arg, compile->nparam + compile->nsecret);
-	}
-
 	if (reduce_safe_pointer(rc,
 			(reduce_safe_pointer_fn) action_proc_construct_sub,
 			compile, arg, out, NULL))
@@ -1613,11 +1605,6 @@ action_proc_construct(Reduce *rc,
 #ifdef DEBUG
 		printf("reduce: invoking arg checker\n");
 #endif
-	}
-
-	if (trace_flags & TRACE_CLASS_NEW) {
-		trace_result(TRACE_CLASS_NEW, out);
-		trace_pop();
 	}
 }
 
@@ -1647,23 +1634,7 @@ static void
 action_proc_class_binary(Reduce *rc, Compile *compile,
 	int op, const char *name, PElement *a, PElement *b, PElement *out)
 {
-	TraceFlags flags = op >= 0 ? TRACE_OPERATOR : TRACE_BUILTIN;
 	PElement fn;
-
-	if (trace_flags & flags) {
-		VipsBuf *buf = trace_push();
-
-		vips_buf_appendf(buf, "%s\n", _("invoking method:"));
-		vips_buf_appends(buf, "     ");
-		trace_pelement(a);
-		vips_buf_appendf(buf, ".%s \"%s\" ", MEMBER_OO_BINARY, name);
-		trace_pelement(b);
-		vips_buf_appends(buf, "\n");
-
-		trace_text(flags, "%s", vips_buf_all(buf));
-
-		trace_pop();
-	}
 
 	/* Look up a.oo_binary and build (a.dispatch_binary "add" b)
 	 * application.
@@ -1683,23 +1654,7 @@ static void
 action_proc_class_binary2(Reduce *rc, Compile *compile,
 	int op, const char *name, PElement *a, PElement *b, PElement *out)
 {
-	TraceFlags flags = op >= 0 ? TRACE_OPERATOR : TRACE_BUILTIN;
 	PElement fn;
-
-	if (trace_flags & flags) {
-		VipsBuf *buf = trace_push();
-
-		vips_buf_appendf(buf, "%s\n", _("invoking method:"));
-		vips_buf_appends(buf, "     ");
-		trace_pelement(b);
-		vips_buf_appendf(buf, ".%s \"%s\" ", MEMBER_OO_BINARY2, name);
-		trace_pelement(a);
-		vips_buf_appends(buf, "\n");
-
-		trace_text(flags, "%s", vips_buf_all(buf));
-
-		trace_pop();
-	}
 
 	/* Look up b.dispatch_binary2 and build
 	 * (b.dispatch_binary2 "add" a) application.
@@ -1724,63 +1679,34 @@ action_landlor(Reduce *rc, Compile *compile,
 		 */
 		return;
 
-	if (trace_flags & TRACE_OPERATOR)
-		trace_push();
-
 	/* Examine the LHS and see if we can avoid RHS eval.
 	 */
 	if (PEISCLASS(a))
 		action_proc_class_binary(rc, compile, op, name, a, b, out);
 	else if (PEISBOOL(a)) {
-		if (op == BI_LOR && PEGETBOOL(a)) {
-			if (trace_flags & TRACE_OPERATOR)
-				trace_binop(compile, a, op, b);
-
+		if (op == BI_LOR && PEGETBOOL(a))
 			PEPUTP(out, ELEMENT_BOOL, TRUE);
-
-			if (trace_flags & TRACE_OPERATOR)
-				trace_result(TRACE_OPERATOR, out);
-		}
-		else if (op == BI_LAND && !PEGETBOOL(a)) {
-			if (trace_flags & TRACE_OPERATOR)
-				trace_binop(compile, a, op, b);
-
+		else if (op == BI_LAND && !PEGETBOOL(a))
 			PEPUTP(out, ELEMENT_BOOL, FALSE);
-
-			if (trace_flags & TRACE_OPERATOR)
-				trace_result(TRACE_OPERATOR, out);
-		}
 		else {
 			/* Need to look at RHS too.
 			 */
 			reduce_spine(rc, b);
 
 			if (PEISCOMB(b) && PEGETCOMB(b) != COMB_I) {
-				if (trace_flags & TRACE_OPERATOR)
-					trace_pop();
 				return;
 			}
 
 			if (PEISCLASS(b))
 				action_proc_class_binary2(rc, compile, op, name, a, b, out);
-			else if (PEISBOOL(b)) {
-				if (trace_flags & TRACE_OPERATOR)
-					trace_binop(compile, a, op, b);
-
+			else if (PEISBOOL(b))
 				PEPUTP(out, ELEMENT_BOOL, PEGETBOOL(b));
-
-				if (trace_flags & TRACE_OPERATOR)
-					trace_result(TRACE_OPERATOR, out);
-			}
 			else
 				action_boperror(rc, compile, NULL, op, name, a, b);
 		}
 	}
 	else
 		action_boperror(rc, compile, NULL, op, name, a, b);
-
-	if (trace_flags & TRACE_OPERATOR)
-		trace_pop();
 }
 
 static void
@@ -1800,39 +1726,19 @@ action_if(Reduce *rc, Compile *compile,
 		PElement t, e;
 
 		/* a is condition, b should be [then-part, else-part] ...
-		 * look down b and find them. Block trace for this, not very
-		 * interesting.
+		 * look down b and find them.
 		 */
-		trace_block();
 		reduce_list_index(rc, b, 0, &t);
 		reduce_list_index(rc, b, 1, &e);
-		trace_unblock();
 
 		/* Can be BOOL or image.
 		 */
 		if (PEISBOOL(a)) {
-			if (trace_flags & TRACE_OPERATOR) {
-				VipsBuf *buf = trace_push();
-
-				vips_buf_appendf(buf, "if ");
-				trace_pelement(a);
-				vips_buf_appendf(buf, " then ");
-				trace_pelement(&t);
-				vips_buf_appendf(buf, " else ");
-				trace_pelement(&e);
-				vips_buf_appendf(buf, " ->\n");
-			}
-
 			if (PEGETBOOL(a)) {
 				PEPUTPE(out, &t);
 			}
 			else {
 				PEPUTPE(out, &e);
-			}
-
-			if (trace_flags & TRACE_OPERATOR) {
-				trace_result(TRACE_OPERATOR, out);
-				trace_pop();
 			}
 		}
 		else if (PEISIMAGE(a)) {
@@ -2025,21 +1931,7 @@ static void
 action_proc_class_unary(Reduce *rc, Compile *compile,
 	int op, const char *name, PElement *a, PElement *out)
 {
-	TraceFlags flags = op >= 0 ? TRACE_OPERATOR : TRACE_BUILTIN;
 	PElement fn;
-
-	if (trace_flags & flags) {
-		VipsBuf *buf = trace_push();
-
-		vips_buf_appendf(buf, "%s\n", _("invoking method:"));
-		vips_buf_appends(buf, "     ");
-		trace_pelement(a);
-		vips_buf_appendf(buf, ".%s \"%s\"\n", MEMBER_OO_UNARY, name);
-
-		trace_text(flags, "%s", vips_buf_all(buf));
-
-		trace_pop();
-	}
 
 	/* Look up a.dispatch_unary and build
 	 * (a.oo_unary "minus") application.
@@ -2062,7 +1954,6 @@ action_dispatch(Reduce *rc, Compile *compile, ReduceFunction rfn,
 	int op, const char *name, gboolean override,
 	ActionFn afn, int nargs, HeapNode **arg, void *user)
 {
-	TraceFlags flags = op >= 0 ? TRACE_OPERATOR : TRACE_BUILTIN;
 	PElement a, b;
 	int i;
 
@@ -2093,13 +1984,6 @@ action_dispatch(Reduce *rc, Compile *compile, ReduceFunction rfn,
 	PEPOINTRIGHT(arg[0], &b);
 	PEPOINTRIGHT(arg[1], &a);
 
-	if (trace_flags & flags) {
-		VipsBuf *buf = trace_push();
-
-		vips_buf_appendf(buf, "\"%s\" ", name);
-		trace_args(arg, nargs);
-	}
-
 	if (override && nargs == 2 && PEISCLASS(&a))
 		action_proc_class_binary(rc, compile, op, name, &a, &b, &b);
 	else if (override && nargs == 2 && PEISCLASS(&b))
@@ -2110,9 +1994,4 @@ action_dispatch(Reduce *rc, Compile *compile, ReduceFunction rfn,
 		afn(rc, compile, op, name, arg, &b, user);
 
 	PPUTLEFT(arg[0], ELEMENT_COMB, COMB_I);
-
-	if (trace_flags & flags) {
-		trace_result(flags, &b);
-		trace_pop();
-	}
 }

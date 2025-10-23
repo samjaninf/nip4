@@ -283,7 +283,7 @@ itext_decompile_element(VipsBuf *buf, PElement *base, gboolean top)
 	else if (PEISTAG(base))
 		vips_buf_appends(buf, PEGETTAG(base));
 	else
-		graph_pelement(rc->heap, buf, base, TRACE_FUNCTIONS);
+		graph_pelement(rc->heap, buf, base, FALSE);
 
 	return TRUE;
 }

@@ -1,6 +1,4 @@
-- remove trace stuff from reduce
-
-    also remove prefs workspace stuff?
+- remove remove prefs workspace stuff?
 
     things like max heap size should be settable ... maybe pres are useful?
 
