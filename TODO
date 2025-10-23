@@ -1,6 +1,3 @@
-- remove remove prefs workspace stuff?
-
-    things like max heap size should be settable ... maybe pres are useful?
 
 - add multiple definitions, finish function argument destructuring
 
@@ -31,6 +28,46 @@
     - error if more than one def of fred has no destructuring
     - error if defs don't all have the same number of args
     - error if a def with no destructuring isn't the last def
+
+  test code:
+
+    fact 1 = 1;
+    fact n = n * fact (n - 1);
+    main = fact 3;
+
+  parses to:
+
+    fact $$arg0 = 1
+    {
+        $$patt0 = 1;
+    }
+
+    $$fact_rhs0 n = n * fact (n - 1);
+
+    main = fact 3;
+
+  next:
+
+    - secret_build() needs to loop over next_rhs as well
+
+    - compile_heap() need to work for multiple RHS
+
+        - check set of RHSes follow rules above
+
+        - final one needs to have no patterns, or we synthesise a default rhs
+          which flags a "pattern match failed" error
+
+        - generate pattern match test def
+
+            see compile_pattern_condition(), compile_pattern_error()
+
+        - chain RHSes together with pattern match tests
+
+  where do we make the code for "does object match pattern?"
+
+- remove remove prefs workspace stuff?
+
+    things like max heap size should be settable ... maybe pres are useful?
 
 - try < > in the image titlebar
 

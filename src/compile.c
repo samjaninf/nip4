@@ -28,29 +28,29 @@
  */
 
 /*
-#define DEBUG_RESOLVE
  */
+#define DEBUG_RESOLVE
 
 /* regular (and very slow) sanity checks on symbols ... needs DEBUG in
  * symbol.c as well
-#define DEBUG_SANITY
  */
+#define DEBUG_SANITY
 
 /* count how many nodes we find with common sub-expression removal.
-#define DEBUG_COMMON
  */
+#define DEBUG_COMMON
 
 /* show what everything compiled to
-#define DEBUG_RESULT
  */
+#define DEBUG_RESULT
 
 /* trace list comp compile
-#define DEBUG_LCOMP
  */
+#define DEBUG_LCOMP
 
 /* trace pattern LHS generation
-#define DEBUG_PATTERN
  */
+#define DEBUG_PATTERN
 
 /*
 #define DEBUG
@@ -1468,6 +1468,29 @@ compile_remove_subexpr(Compile *compile, PElement *root)
 	return TRUE;
 }
 
+/* This is a def with multiple RHS. Check that:
+ *
+ * - all defs hjave the same number of args
+ * - no more then def RHS has no pattern matching args
+ * - if there is a no-pattern def, it must be the last one
+ */
+static gboolean
+compile_check_rhs(Compile *compile)
+{
+	g_assert(!compile->sym->generated);
+	g_assert(compile->sym->next_rhs);
+
+	int nargs = -1;
+	for (Symbol *p = compile->sym; p; p = p->next_rhs)
+		if (nargs == -1)
+			nargs = p->nargs;
+		else if (nargs != p->nargs) {
+			error ...
+		}
+
+	return TRUE;
+}
+
 /* Top-level compiler driver.
  */
 
@@ -1482,6 +1505,14 @@ compile_heap(Compile *compile)
 	 */
 	if (compile->sym->placeholder)
 		return NULL;
+
+	/* There could be multiple RHS ... if this is the first RHS, check the
+	 * rules around parameters and patterns.
+	 */
+	if (!compile->sym->generated &&
+		compile->sym->next_rhs &&
+		!compile_check_rhs(compile))
+		return compile->sym;
 
 	PEPOINTE(&base, &compile->base);
 
@@ -1570,7 +1601,8 @@ compile_symbol_sub(Symbol *sym)
 {
 	Compile *compile;
 
-	if (sym->expr && (compile = sym->expr->compile))
+	if (sym->expr &&
+		(compile = sym->expr->compile))
 		if (compile_object_sub(compile))
 			return sym;
 
@@ -1652,14 +1684,12 @@ compile_check_i18n(Compile *compile, ParseNode *pn)
 				static GHashTable *msgid = NULL;
 
 				if (!msgid)
-					msgid = g_hash_table_new(
-						g_str_hash, g_str_equal);
+					msgid = g_hash_table_new(g_str_hash, g_str_equal);
 
 				if (!g_hash_table_lookup(msgid, text)) {
 					char buf[MAX_STRSIZE];
 
-					g_hash_table_insert(msgid,
-						(void *) text, NULL);
+					g_hash_table_insert(msgid, (void *) text, NULL);
 					my_strecpy(buf, text, TRUE);
 					printf("msgid \"%s\"\n", buf);
 					printf("msgstr \"\"\n\n");
@@ -2458,11 +2488,9 @@ compile_pattern_access(Compile *compile,
 			 * item in the trail in the list of elements.
 			 */
 			c.type = PARSE_CONST_NUM;
-			c.val.num = g_slist_index(trail[i]->elist,
-				trail[i + 1]);
+			c.val.num = g_slist_index(trail[i]->elist, trail[i + 1]);
 			right = tree_const_new(compile, c);
-			node = tree_binop_new(compile,
-				BI_SELECT, node, right);
+			node = tree_binop_new(compile, BI_SELECT, node, right);
 			break;
 
 		default:
@@ -2501,34 +2529,27 @@ compile_pattern_condition(Compile *compile,
 				/* Generate is_complex x.
 				 */
 				left = tree_leaf_new(compile, "is_complex");
-				right = compile_pattern_access(compile,
-					leaf, trail, i);
+				right = compile_pattern_access(compile, leaf, trail, i);
 				node2 = tree_appl_new(compile, left, right);
 
-				node = tree_binop_new(compile,
-					BI_LAND, node2, node);
+				node = tree_binop_new(compile, BI_LAND, node2, node);
 				break;
 
 			case BI_CONS:
 				/* Generate is_list x && x != [].
 				 */
 				left = tree_leaf_new(compile, "is_list");
-				right = compile_pattern_access(compile,
-					leaf, trail, i);
+				right = compile_pattern_access(compile, leaf, trail, i);
 				node2 = tree_appl_new(compile, left, right);
 
-				node = tree_binop_new(compile,
-					BI_LAND, node2, node);
+				node = tree_binop_new(compile, BI_LAND, node2, node);
 
-				left = compile_pattern_access(compile,
-					leaf, trail, i);
+				left = compile_pattern_access(compile, leaf, trail, i);
 				n.type = PARSE_CONST_ELIST;
 				right = tree_const_new(compile, n);
-				node2 = tree_binop_new(compile,
-					BI_NOTEQ, left, right);
+				node2 = tree_binop_new(compile, BI_NOTEQ, left, right);
 
-				node = tree_binop_new(compile,
-					BI_LAND, node, node2);
+				node = tree_binop_new(compile, BI_LAND, node, node2);
 				break;
 
 			default:
@@ -2540,8 +2561,7 @@ compile_pattern_condition(Compile *compile,
 			/* Generate is_list x && is_list_len n x.
 			 */
 			left = tree_leaf_new(compile, "is_list");
-			right = compile_pattern_access(compile,
-				leaf, trail, i);
+			right = compile_pattern_access(compile, leaf, trail, i);
 			node2 = tree_appl_new(compile, left, right);
 
 			node = tree_binop_new(compile, BI_LAND, node2, node);
@@ -2551,8 +2571,7 @@ compile_pattern_condition(Compile *compile,
 			n.val.num = g_slist_length(trail[i]->elist);
 			right = tree_const_new(compile, n);
 			left = tree_appl_new(compile, left, right);
-			right = compile_pattern_access(compile,
-				leaf, trail, i);
+			right = compile_pattern_access(compile, leaf, trail, i);
 			node2 = tree_appl_new(compile, left, right);
 
 			node = tree_binop_new(compile, BI_LAND, node, node2);
@@ -2561,8 +2580,7 @@ compile_pattern_condition(Compile *compile,
 		case NODE_CONST:
 			/* Generate x == n.
 			 */
-			left = compile_pattern_access(compile,
-				leaf, trail, i);
+			left = compile_pattern_access(compile, leaf, trail, i);
 			right = tree_const_new(compile, trail[i]->con);
 			node2 = tree_binop_new(compile, BI_EQ, left, right);
 
@@ -2577,8 +2595,7 @@ compile_pattern_condition(Compile *compile,
 			n.val.str = g_strdup(trail[i]->tag);
 			right = tree_const_new(compile, n);
 			node2 = tree_appl_new(compile, left, right);
-			right = compile_pattern_access(compile,
-				leaf, trail, i);
+			right = compile_pattern_access(compile, leaf, trail, i);
 			node2 = tree_appl_new(compile, node2, right);
 
 			node = tree_binop_new(compile, BI_LAND, node2, node);
