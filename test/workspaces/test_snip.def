@@ -86,11 +86,9 @@ tests = concat [
 }
 
 main
-    = [
-        map (const '.') pass,
-        map print_fail fail,
-        "\n"
-    ]
+    = (map (const '.') pass) ++
+      "\n" ++
+      (join_sep "\n" (map print_fail fail))
 {
     split fn l
         = foldr split_item [[], []] l
