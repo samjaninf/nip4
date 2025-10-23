@@ -1,18 +1,8 @@
-- try:
-
-    join_sep ", " (map print [1..])
-
-  seems to work, but locks the CPU at 100%, never shows a progress bar
-
-- try:
-
-    print primes
-
-  never prints anything ... hard to make print lazy
-
 - remove trace stuff from reduce
 
     also remove prefs workspace stuff?
+
+    things like max heap size should be settable ... maybe pres are useful?
 
 - add multiple definitions, finish function argument destructuring
 
