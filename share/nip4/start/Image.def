@@ -2363,7 +2363,10 @@ Test_images_item = class
 				lab_start = colour_transform_to Image_type.LAB start;
 				blocks' = blocks - to_real nstep * to_real ssize +
 					Vector (tl lab_start.value);
-				blocks'' = hd lab_start.value ++ Image blocks';
+                L = image_new size size 1
+					Image_format.FLOAT Image_coding.NOCODING
+					Image_type.B_W lab_start.value?0 0 0;
+				blocks'' = Image L ++ Image blocks';
 				blocks'''
 					= image_set_type Image_type.LAB blocks'', Image grid
 					= 0;

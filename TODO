@@ -1,3 +1,5 @@
+- should allow vips_image ++ Image
+
 - remove remove prefs workspace stuff?
 
     things like max heap size should be settable ... maybe pres are useful?
