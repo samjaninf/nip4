@@ -90,10 +90,6 @@ struct _Symbol {
 	 */
 	gboolean generated;
 
-	/* If this definition has multiple RHS, chain them on this.
-	 */
-	Symbol *next_rhs;
-
 	/* A temporary intermediate symbol generated during parse to hold
 	 * stuff until we need it. Don't generate code for these.
 	 */
@@ -114,7 +110,6 @@ struct _Symbol {
 	/* For WORKSPACE ... the ws we represent.
 	 */
 	Workspace *ws;
-
 };
 
 typedef struct _SymbolClass {

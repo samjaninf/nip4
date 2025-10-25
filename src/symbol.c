@@ -30,8 +30,8 @@
 #include "nip4.h"
 
 /* All debug
- */
 #define DEBUG
+ */
 
 /* Just trace create/destroy.
 #define DEBUG_MAKE
@@ -714,49 +714,55 @@ symbol_rename(Symbol *sym, const char *new_name)
 	return TRUE;
 }
 
+void
+symbol_error_redefine(Symbol *sym)
+{
+	static char txt[200];
+	static VipsBuf buf = VIPS_BUF_STATIC(txt);
+
+	vips_buf_rewind(&buf);
+	vips_buf_appendf(&buf, _("Redefinition of \"%s\"."),
+		IOBJECT(sym)->name);
+	if (sym->tool && sym->tool->lineno != -1) {
+		vips_buf_appendf(&buf, "\n");
+		vips_buf_appendf(&buf, _("Previously defined at line %d."),
+			sym->tool->lineno);
+	}
+
+	yyerror(vips_buf_all(&buf));
+}
+
 /* Name in defining occurence. If this is a top-level definition, clean the
  * old symbol and get ready to attach a user function to it. If its not a top-
  * level definition, we flag an error. Consider repeated parameter names,
  * repeated occurence of names in locals, local name clashes with parameter
  * name etc.
- *
  * We make a ZOMBIE: our caller should turn it into a blank user definition, a
  * parameter etc.
  */
 Symbol *
 symbol_new_defining(Compile *compile, const char *name)
 {
-	static int symbol_rhs_id = 0;
-
 	Symbol *sym;
 
 	/* Block definition of "root" anywhere ... too confusing.
 	 */
 	if (strcmp(name, IOBJECT(symbol_root)->name) == 0)
-		nip2yyerror(_("Attempt to redefine root symbol \"%s\"."), name);
+		nip2yyerror(_("Attempt to redefine root symbol \"%s\"."),
+			name);
 
 	/* Is this a redefinition of an existing symbol?
 	 */
 	if ((sym = compile_lookup(compile, name))) {
+		/* Yes. Check that this redefinition is legal.
+		 */
 		switch (sym->type) {
-		case SYM_VALUE: {
-			/* Redefinition of existing symbol? This is an alternative RHS ...
-			 * we make a new, unique symbol to hold this new set of params and
-			 * RHS.
-			 *
-			 * Enforce rules around parameter numbers etc. in the compiler.
+		case SYM_VALUE:
+			/* Redef of existing symbol? Only allowed at top
+			 * level.
 			 */
-			char name_id[256];
-			Symbol *new_rhs;
-
-			g_snprintf(name_id, 256, "$$%s_rhs%d", name, symbol_rhs_id++);
-			new_rhs = symbol_new(compile, name_id);
-			new_rhs->generated = TRUE;
-
-			sym->next_rhs = new_rhs;
-
-			sym = new_rhs;
-		}
+			if (!is_scope(compile->sym))
+				symbol_error_redefine(sym);
 			break;
 
 		case SYM_ZOMBIE:
@@ -778,8 +784,10 @@ symbol_new_defining(Compile *compile, const char *name)
 		 */
 		icontainer_child_move(ICONTAINER(sym), -1);
 	}
-	else
-		sym = symbol_new(compile, name);
+
+	/* Get it ready.
+	 */
+	sym = symbol_new(compile, name);
 
 	return sym;
 }
