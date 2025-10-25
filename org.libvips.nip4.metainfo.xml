@@ -57,6 +57,19 @@
 
   <releases>
 
+    <release version="9.0.14" date="2025-10-25">
+      <description>
+        <p>
+
+            This version fixes the Magick menu, improves load cancel, and
+            improves the display of computed animated images. There are
+            a lot of fixes to the backend with better startup and shutdown
+            speed, a new vips8 builtin system, lazy batch output, and lazy ++.
+
+        </p>
+      </description>
+    </release>
+
     <release version="9.0.13" date="2025-09-20">
       <description>
         <p>
