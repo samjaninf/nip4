@@ -1470,7 +1470,7 @@ compile_remove_subexpr(Compile *compile, PElement *root)
 
 /* This is a def with multiple RHS. Check that:
  *
- * - all defs have the same number of args
+ * - all defs hjave the same number of args
  * - no more then def RHS has no pattern matching args
  * - if there is a no-pattern def, it must be the last one
  */
@@ -2316,7 +2316,8 @@ compile_lcomp(Compile *compile)
 			/* A filter.
 			 */
 			n1 = compile_copy_tree(compile,
-				element->expr->compile->tree, scope);
+				element->expr->compile->tree,
+				scope);
 			n2 = tree_leafsym_new(scope, child);
 			n3 = tree_leaf_new(scope, "$$sofar");
 			n1 = tree_ifelse_new(scope, n1, n2, n3);
@@ -2334,7 +2335,8 @@ compile_lcomp(Compile *compile)
 				IOBJECT(element)->name);
 			param1->generated = TRUE;
 			symbol_parameter_init(param1);
-			param2 = symbol_new_defining(child->expr->compile, "$$sofar");
+			param2 = symbol_new_defining(child->expr->compile,
+				"$$sofar");
 			param2->generated = TRUE;
 			symbol_parameter_init(param2);
 
@@ -2363,7 +2365,8 @@ compile_lcomp(Compile *compile)
 			}
 			n3 = tree_appl_new(scope, n3, n2);
 			n2 = compile_copy_tree(compile,
-				element->expr->compile->tree, scope);
+				element->expr->compile->tree,
+				scope);
 			n3 = tree_appl_new(scope, n3, n2);
 			scope->tree = n3;
 
