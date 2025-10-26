@@ -1,5 +1,7 @@
 ## master
 
+## 9.0.14 2025/10/25
+
 - fix load cancel
 - disable leak test on shutdown in release builds
 - fix Magick on windows with better quoting
