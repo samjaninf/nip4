@@ -55,25 +55,35 @@ struct _Compile {
 	gboolean is_klass;	/* True if this is a class */
 	gboolean has_super; /* True if has a super-class */
 
-	char *text;		/* The original text */
-	char *prhstext; /* Parameters plus the RHS of the definition */
-	char *rhstext;	/* Just the RHS of the definition */
+	/* TRUE on a RHS if one or more parsms have used patterns, ie. this
+	 * cannote be a def of the default case.
+	 */
+	gboolean params_include_patterns;
 
-	ParseNode *tree;  /* Parse tree we built */
-	GSList *treefrag; /* List of tree bits for easy freeing */
-	Symbol *last_sym; /* The last child we added in this context */
+	/* TRUE on the top compile for this def if the user has given a RHS with
+	 * no patterns (ie. defined the default case).
+	 */
+	gboolean has_default;
 
-	int nparam;		  /* Number of real parameters */
-	GSList *param;	  /* Pointers into locals for real params */
-	int nsecret;	  /* Number of secret parameters */
-	GSList *secret;	  /* Pointers into locals for secret params */
-	Symbol *this;	  /* If we are a class, the "this" local */
-	Symbol *super;	  /* If we are a class, the "super" local */
-	GSList *children; /* Symbols which we directly refer to */
+	char *text;			/* The original text */
+	char *prhstext;		/* Parameters plus the RHS of the definition */
+	char *rhstext;		/* Just the RHS of the definition */
 
-	Element base;	 /* Base of compiled code */
-	Heap *heap;		 /* Heap containing compiled code */
-	GSList *statics; /* Static strings we built */
+	ParseNode *tree;	/* Parse tree we built */
+	GSList *treefrag;	/* List of tree bits for easy freeing */
+	Symbol *last_sym;	/* The last child we added in this context */
+
+	int nparam;			/* Number of real parameters */
+	GSList *param;		/* Pointers into locals for real params */
+	int nsecret;		/* Number of secret parameters */
+	GSList *secret;		/* Pointers into locals for secret params */
+	Symbol *this;		/* If we are a class, the "this" local */
+	Symbol *super;		/* If we are a class, the "super" local */
+	GSList *children;	/* Symbols which we directly refer to */
+
+	Element base;		/* Base of compiled code */
+	Heap *heap;			/* Heap containing compiled code */
+	GSList *statics;	/* Static strings we built */
 };
 
 typedef struct _CompileClass {

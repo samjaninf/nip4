@@ -1392,8 +1392,7 @@ compile_transform_share(HeapNode *hn, Compile *compile)
 				VipsBuf buf = VIPS_BUF_STATIC(txt);
 
 				graph_node(heap, &buf, hn1, TRUE);
-				printf("Found shared code: %s\n",
-					vips_buf_all(&buf));
+				printf("Found shared code: %s\n", vips_buf_all(&buf));
 			}
 #endif /*DEBUG*/
 
@@ -1475,18 +1474,48 @@ compile_remove_subexpr(Compile *compile, PElement *root)
  * - if there is a no-pattern def, it must be the last one
  */
 static gboolean
-compile_check_rhs(Compile *compile)
+compile_rhs_check(Compile *compile)
 {
 	g_assert(!compile->sym->generated);
 	g_assert(compile->sym->next_rhs);
 
-	int nargs = -1;
-	for (Symbol *p = compile->sym; p; p = p->next_rhs)
-		if (nargs == -1)
-			nargs = p->nargs;
-		else if (nargs != p->nargs) {
-			error ...
+	int nparam = -1;
+	int rhs = 1;
+	for (Symbol *p = compile->sym; p; p = p->next_rhs, rhs++) {
+		if (nparam == -1)
+			nparam = p->expr->compile->nparam;
+		else if (p->expr->compile->nparam != nparam) {
+			error_top(_("Argument numbers don't match"));
+			error_sub(_("definition %d of \"%s\" should have %d arguments"),
+				rhs, symbol_name(compile->sym), nparam);
+			return FALSE;
 		}
+
+		if (p->expr->compile->params_include_patterns) {
+			/* This RHS has patterns, so it can't be defined after the
+			 * default.
+			 */
+			if (compile->has_default) {
+				error_top(_("Default case already defined"));
+				error_sub(_("definition %d of \"%s\" follows the default case"),
+					rhs, symbol_name(compile->sym));
+				return FALSE;
+			}
+		}
+		else {
+			/* This RHS has no patterns in the args, so it defines the
+			 * default case.
+			 */
+			if (compile->has_default) {
+				error_top(_("Default case already defined"));
+				error_sub(_("definition %d of \"%s\" is a second default case"),
+					rhs, symbol_name(compile->sym));
+				return FALSE;
+			}
+
+			compile->has_default = TRUE;
+		}
+	}
 
 	return TRUE;
 }
@@ -1506,13 +1535,17 @@ compile_heap(Compile *compile)
 	if (compile->sym->placeholder)
 		return NULL;
 
-	/* There could be multiple RHS ... if this is the first RHS, check the
-	 * rules around parameters and patterns.
+	/* There could be multiple RHS ... if this is the main def, check
+	 * everything and do the codegen.
 	 */
 	if (!compile->sym->generated &&
-		compile->sym->next_rhs &&
-		!compile_check_rhs(compile))
-		return compile->sym;
+		compile->sym->next_rhs) {
+		if (!compile_rhs_check(compile))
+			return compile->sym;
+
+		if (!compile_rhs_codegen(compile))
+			return compile->sym;
+	}
 
 	PEPOINTE(&base, &compile->base);
 

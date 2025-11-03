@@ -445,6 +445,8 @@ params:
             (void) symbol_user_init(sym);
             (void) compile_new_local(sym->expr);
             sym->expr->compile->tree = $2;
+
+            current_compile->params_include_patterns = TRUE;
         }
     }
     ;
