@@ -1,3 +1,10 @@
+is_list_len n x
+        = true, x == [] && n == 0
+        = false, x == [] || n == 0
+        = is_list_len (n - 1) (tl x);
+
+[a] = [1];
+
 factorial 1 = 1;
 factorial n = n * factorial (n - 1);
 

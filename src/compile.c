@@ -1520,6 +1520,29 @@ compile_rhs_check(Compile *compile)
 	return TRUE;
 }
 
+static gboolean
+compile_rhs_codegen(Compile *compile)
+{
+	return TRUE;
+}
+
+static gboolean
+compile_multiple_rhs(Compile *compile)
+{
+	printf("compile_multiple_rhs:\n");
+
+	g_assert(!compile->sym->generated);
+	g_assert(compile->sym->next_rhs);
+
+	if (!compile_rhs_check(compile))
+		return FALSE;
+
+	if (!compile_rhs_codegen(compile))
+		return FALSE;
+
+	return TRUE;
+}
+
 /* Top-level compiler driver.
  */
 
@@ -1539,13 +1562,9 @@ compile_heap(Compile *compile)
 	 * everything and do the codegen.
 	 */
 	if (!compile->sym->generated &&
-		compile->sym->next_rhs) {
-		if (!compile_rhs_check(compile))
-			return compile->sym;
-
-		if (!compile_rhs_codegen(compile))
-			return compile->sym;
-	}
+		compile->sym->next_rhs &&
+		!compile_multiple_rhs(compile))
+		return compile->sym;
 
 	PEPOINTE(&base, &compile->base);
 

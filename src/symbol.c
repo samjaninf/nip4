@@ -1013,8 +1013,8 @@ symbol_recalculate_leaf_sub(Symbol *sym)
 	printf("symbol_recalculate_leaf_sub: %s\n", symbol_name_scope(sym));
 
 	/* We can symbol_recalculate_leaf_sub() syms which are not dirty.
-	 */
 	g_assert(!sym->dirty || symbol_is_leafable(sym));
+	 */
 	g_assert(symbol_ndirty(sym) == 0);
 #endif /*DEBUG_RECALC*/
 
