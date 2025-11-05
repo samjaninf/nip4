@@ -152,6 +152,20 @@ symbol_get_scope(Symbol *sym)
 	return i;
 }
 
+/* Return the final definition, if this symbol has multiple RHS.
+ */
+Symbol *
+symbol_get_last(Symbol *sym)
+{
+	Symbol *last;
+
+	for (last = sym; last; last = last->next_rhs)
+		if (!last->next_rhs)
+			break;
+
+	return last;
+}
+
 /* Make a fully-qualified symbol name .. eg fred.jim, given jim. Don't print
  * static scopes.
  */
@@ -754,7 +768,8 @@ symbol_new_defining(Compile *compile, const char *name)
 			new_rhs = symbol_new(compile, name_id);
 			new_rhs->generated = TRUE;
 
-			sym->next_rhs = new_rhs;
+			// append to the set of defs
+			symbol_get_last(sym)->next_rhs = new_rhs;
 
 			sym = new_rhs;
 		}

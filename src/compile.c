@@ -1467,17 +1467,17 @@ compile_remove_subexpr(Compile *compile, PElement *root)
 	return TRUE;
 }
 
-/* This is a def with multiple RHS. Check that:
+/* This is a def with multiple RHS, or which needs multiple RHS. Check that:
  *
  * - all defs have the same number of args
- * - no more then def RHS has no pattern matching args
+ * - no more than one RHS has no pattern matching args
  * - if there is a no-pattern def, it must be the last one
  */
 static gboolean
 compile_rhs_check(Compile *compile)
 {
 	g_assert(!compile->sym->generated);
-	g_assert(compile->sym->next_rhs);
+	g_assert(compile->sym->next_rhs || !compile->has_default);
 
 	int nparam = -1;
 	int rhs = 1;
@@ -1520,6 +1520,56 @@ compile_rhs_check(Compile *compile)
 	return TRUE;
 }
 
+/* Generate a parsetree for a "pattern match failed" error.
+ */
+static ParseNode *
+compile_pattern_error(Compile *compile)
+{
+	ParseNode *left;
+	ParseConst n;
+	ParseNode *right;
+	ParseNode *node;
+
+	left = tree_leaf_new(compile, "error");
+	n.type = PARSE_CONST_STR;
+	n.val.str = g_strdup(_("pattern match failed"));
+	right = tree_const_new(compile, n);
+	node = tree_appl_new(compile, left, right);
+
+	return node;
+}
+
+/* Append a default case to the set of RHS.
+ */
+static gboolean
+compile_rhs_codegen_default(Compile *compile)
+{
+	g_assert(!compile->has_default);
+
+	printf("compile_rhs_codegen_default: generating default case\n");
+
+	Symbol *parent = symbol_get_parent(compile->sym);
+	Symbol *def = symbol_new_defining(parent->expr->compile,
+		IOBJECT(compile->sym)->name);
+	(void) symbol_user_init(def);
+	(void) compile_new_local(def->expr);
+
+	for (int i = 0; i < compile->nparam; i++) {
+		char name[256];
+
+		g_snprintf(name, sizeof(name), "$$param%d", i);
+		Symbol *param = symbol_new_defining(def->expr->compile, name);
+		param->generated = TRUE;
+		symbol_parameter_init(param);
+	}
+
+	def->expr->compile->tree = compile_pattern_error(def->expr->compile);
+
+	compile->has_default = TRUE;
+
+	return TRUE;
+}
+
 /* We need to:
  *
  * - if there's no default case, generate a final definition
@@ -1531,6 +1581,13 @@ compile_rhs_check(Compile *compile)
  * - for each pattern match def:
  *		- save the rhs tree somewhere, eg. for fred [a] = 1; keep the "1"
  *		- find all the local arg $$pattN on this compile
+ *
+ *				we know compile->nargs, just loop and test?
+ *
+ *				not all args will use patterns
+ *
+ *				we have GSList *compile->param
+ *
  *		- make a new rhs with
  *
  *				ifthenelse(compile_pattern_condition($$patt0) &&
@@ -1563,24 +1620,46 @@ compile_rhs_check(Compile *compile)
 static gboolean
 compile_rhs_codegen(Compile *compile)
 {
+	printf("compile_rhs_codegen:\n");
 
-	for (Symbol *p = compile->sym; p; p = p->next_rhs, rhs++) {
-compile_pattern_lhs(Compile *compile, Symbol *sym, ParseNode *node)
-}
-
-static gboolean
-compile_multiple_rhs(Compile *compile)
-{
-	printf("compile_multiple_rhs:\n");
-
-	g_assert(!compile->sym->generated);
-	g_assert(compile->sym->next_rhs);
-
-	if (!compile_rhs_check(compile))
+	/* Add the default case, if it's missing.
+	 */
+	if (!compile->has_default &&
+		!compile_rhs_codegen_default(compile))
 		return FALSE;
 
-	if (!compile_rhs_codegen(compile))
-		return FALSE;
+	for (Symbol *p = compile->sym; p; p = p->next_sym) {
+		/* Save the existing RHS to make space for the pattern match test.
+		 */
+		Symbol *rhs = symbol_new_defining(scope, "$$rhs");
+		rhs->generated = TRUE;
+		(void) symbol_user_init(rhs);
+		(void) compile_new_local(rhs->expr);
+		rhs->expr->compile->tree = compile->tree;
+		compile->tree = NULL;
+
+		fixme ... call symbol_made(rhs)?
+		need symbol_made() other syms we make?
+
+		/* Generate all the condition tests.
+		 */
+		GSList *conditions = NULL;
+		for (GSList *q = compile->params; q; q = q->next) {
+			Symbol *param = SYMBOL(q->data);
+
+			if (vips_isprefix("$$arg", IOBJECT(param)->name)) {
+				Symbol *patt = compile_lookup(compile, IOBJECT(param)->name);
+				g_assert(patt);
+
+				this is almost right ... but we need to just make the match
+				tree, and to make a set of access symbols
+
+				add compile_rhs_match()?
+
+				compile_pattern_lhs(compile, patt, patt->expr->compile->tree);
+			}
+		}
+	}
 
 	return TRUE;
 }
@@ -1600,13 +1679,18 @@ compile_heap(Compile *compile)
 	if (compile->sym->placeholder)
 		return NULL;
 
-	/* There could be multiple RHS ... if this is the main def, check
-	 * everything and do the codegen.
+	/* If this is a function with many definitions, or if it's one def with
+	 * pattern matching in the args (ie. will need a default case), we need to
+	 * do some codegen.
 	 */
-	if (!compile->sym->generated &&
-		compile->sym->next_rhs &&
-		!compile_multiple_rhs(compile))
-		return compile->sym;
+	if (compile->nparam > 0 &&
+		(compile->sym->next_rhs || !compile->has_default)) {
+		if (!compile_rhs_check(compile))
+			return FALSE;
+
+		if (!compile_rhs_codegen(compile))
+			return FALSE;
+	}
 
 	PEPOINTE(&base, &compile->base);
 
@@ -2700,25 +2784,6 @@ compile_pattern_condition(Compile *compile,
 	return node;
 }
 
-/* Generate a parsetree for a "pattern match failed" error.
- */
-static ParseNode *
-compile_pattern_error(Compile *compile, Symbol *leaf)
-{
-	ParseNode *left;
-	ParseConst n;
-	ParseNode *right;
-	ParseNode *node;
-
-	left = tree_leaf_new(compile, "error");
-	n.type = PARSE_CONST_STR;
-	n.val.str = g_strdup(_("pattern match failed"));
-	right = tree_const_new(compile, n);
-	node = tree_appl_new(compile, left, right);
-
-	return node;
-}
-
 /* Depth of trail we keep as we walk the pattern.
  */
 #define MAX_TRAIL (10)
@@ -2754,7 +2819,7 @@ compile_pattern_lhs_leaf(PatternLhs *lhs, Symbol *leaf)
 			lhs->sym, lhs->trail, lhs->depth),
 		compile_pattern_access(compile,
 			lhs->sym, lhs->trail, lhs->depth),
-		compile_pattern_error(compile, leaf));
+		compile_pattern_error(compile));
 
 #ifdef DEBUG_PATTERN
 	printf("compile_pattern_lhs_leaf: generated\n");
