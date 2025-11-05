@@ -371,8 +371,9 @@ void
 symbol_leaf_set_sanity(void)
 {
 	slist_map(symbol_leaf_set, (SListMapFn) symbol_sanity, NULL);
-	icontainer_map(ICONTAINER(symbol_root->expr->compile),
-		(icontainer_map_fn) symbol_sanity, NULL, NULL);
+	if (symbol_root->expr->compile)
+		icontainer_map(ICONTAINER(symbol_root->expr->compile),
+			(icontainer_map_fn) symbol_sanity, NULL, NULL);
 
 	/* Commented out to reduce spam
 	 *

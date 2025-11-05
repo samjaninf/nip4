@@ -1520,10 +1520,52 @@ compile_rhs_check(Compile *compile)
 	return TRUE;
 }
 
+/* We need to:
+ *
+ * - if there's no default case, generate a final definition
+ *
+ *		$$fred_rhs99 a b c = error "pattern match failed";
+ *
+ *   and link it on to the end of the chain of defs
+ *
+ * - for each pattern match def:
+ *		- save the rhs tree somewhere, eg. for fred [a] = 1; keep the "1"
+ *		- find all the local arg $$pattN on this compile
+ *		- make a new rhs with
+ *
+ *				ifthenelse(compile_pattern_condition($$patt0) &&
+ *								compile_pattern_condition($$patt1) &&
+ *								...,
+ *						   saved rhs,
+ *						   $$fred_rhsNN)
+ *
+ *		- for each $$pattN
+ *			- for each leaf in the pattern
+ *				- make an access var
+ *		- remove the $$pattN locals
+ *
+ * So for:
+ *
+ *		fred [a] = 12;
+ *
+ * We generate:
+ *
+ *		fred $$arg0
+ *			= 12, if is_list $$arg0 && is_list_len 1 $$argv0
+ *			= $$fred_rhs0 $$arg0
+ *		{
+ *			a = $$arg0?0
+ *	    }
+ *
+ *		$$fred_rhs0 $$arg0 = error "pattern match failed";
+ *
+ */
 static gboolean
 compile_rhs_codegen(Compile *compile)
 {
-	return TRUE;
+
+	for (Symbol *p = compile->sym; p; p = p->next_rhs, rhs++) {
+compile_pattern_lhs(Compile *compile, Symbol *sym, ParseNode *node)
 }
 
 static gboolean
@@ -1583,7 +1625,7 @@ compile_heap(Compile *compile)
 	symbol_name_print(compile->sym);
 	printf("\n");
 	if (compile->tree)
-		dump_tree(compile->tree);
+		dump_tree(compile->tree, 2);
 #endif /*DEBUG*/
 
 	/* Compile function body. Tree can be NULL for classes.
