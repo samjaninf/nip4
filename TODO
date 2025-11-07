@@ -1,5 +1,64 @@
 - programming window is showing generated syms, like $$pattern_lhs0
 
+- we need to call symbol_made() on the access symbols that
+  compile_pattern_lhs() makes in case it makes top-level symbols
+
+- ban patterns in class definitions
+
+    or could we allow multiple class defs?
+
+        Fred (Image x) = class { ... };
+
+    probably only useful for trivial classes
+
+- do we allow eg.
+
+    fred [a, b ..] = a + b;
+
+  equivalent to
+
+    fred a:b:x = a + b;
+
+
+
+- change compile_pattern_lhs() to:
+
+    source code:
+
+        [a, b] = fred;
+
+   we generate:
+
+        $$value0 = fred;
+        $$match0 = is_list $$value0 && is_list_len 2 $$value0;
+        a = if $$match0 then $$value0?0 else error "bad patt";
+        b = if $$match0 then $$value0?1 else error "bad patt";
+
+- now we can use the same thing for function arg patching and deconstruction
+
+    - generate one $$matchN for each pattern that checks the whole thing
+
+        not just whether one arg can be fetched without error
+
+        eg.
+
+        $$match0 = is_list $$arg0 && is_list_len 2 $$arg0
+
+    - each access def is eg.
+
+        a = if $$match0 then $$value?0 else error "pattern match failed";
+
+  now for multiple RHS we need to generate
+
+        fred a b = if $$match0 && $$match1 then $$rhs else $$fred_rhs1
+
+
+
+
+
+
+
+
 - add multiple definitions, finish function argument destructuring
 
     sym has a field for "next definition", initially NULL
@@ -50,8 +109,8 @@
   we need to add arg checks and generate code like:
 
     fact $$arg0
-	= 1, $$patt0 == 1
-	= $$fact_rhs0 n
+    = 1, $$patt0 == 1
+    = $$fact_rhs0 n
     {
         $$patt0 = 1;
     }
@@ -64,7 +123,7 @@
 
         - check set of RHSes follow rules above
 
-		see compile_check_rhs()
+        see compile_check_rhs()
 
         - final one needs to have no patterns, or we synthesise a default rhs
           which flags a "pattern match failed" error

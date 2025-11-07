@@ -2865,8 +2865,8 @@ compile_pattern_lhs_sub(ParseNode *node, PatternLhs *lhs)
 	return NULL;
 }
 
-/* Something like "[a] = [1];". sym is the $$pattern we are generating access
- * syms for, node is the pattern tree, compile is the scope in which we
+/* Something like "[a] = [1];". sym is the $$pattern_lhsN we fetch values from,
+ * node is the pattern tree, compile is the scope in which we
  * generate the new defining symbols. Return a list of the syms we built: they
  * will need any final finishing up and then having symbol_made() called on
  * them. You need to free the list, too.
