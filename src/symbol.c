@@ -390,11 +390,10 @@ symbol_leaf_set_sanity(void)
 			(icontainer_map_fn) symbol_sanity, NULL, NULL);
 
 	/* Commented out to reduce spam
-	 *
+	 */
 	printf( "Leaf set: " );
 	slist_map( symbol_leaf_set, (SListMapFn) dump_tiny, NULL );
 	printf( "\n" );
-	 */
 }
 #endif /*DEBUG*/
 

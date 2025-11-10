@@ -289,7 +289,7 @@ definition:
              */
             if (!compile_pattern_has_leaf($1))
                 yyerror(_( "left-hand-side pattern contains no identifiers"));
-            g_snprintf(name, 256, "$$pattern_lhs%d", parse_object_id++);
+            g_snprintf(name, 256, "$$value%d", parse_object_id++);
             sym = symbol_new_defining(current_compile, name);
             sym->generated = TRUE;
             (void) symbol_user_init(sym);
@@ -339,7 +339,7 @@ definition:
             Compile *parent = compile_get_parent(current_compile);
             GSList *built_syms;
 
-            built_syms = compile_pattern_lhs(parent, current_symbol, $1);
+            built_syms = compile_pattern(parent, current_symbol, $1);
 
             if (is_scope(symbol_get_parent(current_symbol)))
                 slist_map(built_syms, (SListMapFn) parse_toplevel_end, NULL);
