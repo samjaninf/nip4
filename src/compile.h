@@ -133,6 +133,7 @@ ParseNode *compile_copy_tree(Compile *fromscope, ParseNode *tree,
 
 void compile_lcomp(Compile *compile);
 
-GSList *compile_pattern_lhs(Compile *compile, Symbol *sym, ParseNode *node);
+GSList *compile_pattern(Compile *compile, Symbol *rhs, ParseNode *node);
 gboolean compile_pattern_has_leaf(ParseNode *node);
 gboolean compile_pattern_has_args(Compile *compile);
+void compile_pattern(Compile *compile, Symbol *rhs, ParseNode *node);

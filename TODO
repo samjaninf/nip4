@@ -3,6 +3,9 @@
 - we need to call symbol_made() on the access symbols that
   compile_pattern_lhs() makes in case it makes top-level symbols
 
+- we are generating new AST as a pass before compile, we'll need to resolve
+  syms after that
+
 - ban patterns in class definitions
 
     or could we allow multiple class defs?
@@ -10,6 +13,19 @@
         Fred (Image x) = class { ... };
 
     probably only useful for trivial classes
+
+- what about
+
+	fred (list x) = ...;
+	fred (complex x) = ...;
+
+  ie. allow names of builtin types as well as class names
+
+  maybe:
+
+	fred (is_list x) = ...;
+
+  ie. a predicate before the arg, as well as a class name?
 
 - do we allow eg.
 

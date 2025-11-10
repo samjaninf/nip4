@@ -2788,41 +2788,47 @@ compile_pattern_condition(Compile *compile,
  */
 #define MAX_TRAIL (10)
 
-typedef struct _PatternLhs {
-	Compile *compile; /* Scope in which we generate new symbols */
-	Symbol *sym;	  /* Thing we access */
+typedef struct _Pattern {
+	Compile *compile;	/* Scope in which we generate new symbols */
+
+	ParseNode *lhs;		/* The pattern we are generating syms from */
+	Symbol *rhs;		/* The thing we fetch values from */
+
+	/* The $$match value.
+	 */
+	Symbol *match;
 
 	/* The trail of nodes representing this slice of the pattern.
 	 */
 	ParseNode *trail[MAX_TRAIL];
 	int depth;
+
+	/* The symbols we have built.
+	 */
 	GSList *built_syms;
-} PatternLhs;
+} Pattern;
 
 /* Generate one reference. leaf is the new sym we generate.
  */
 static void
-compile_pattern_lhs_leaf(PatternLhs *lhs, Symbol *leaf)
+compile_pattern_leaf(Pattern *pattern, Symbol *leaf)
 {
-	Symbol *sym;
-	Compile *compile;
-
-	sym = symbol_new_defining(lhs->compile, IOBJECT(leaf)->name);
+	Symbol *sym = symbol_new_defining(pattern->compile, IOBJECT(leaf)->name);
 	sym->generated = TRUE;
 	(void) symbol_user_init(sym);
 	(void) compile_new_local(sym->expr);
-	lhs->built_syms = g_slist_prepend(lhs->built_syms, sym);
-	compile = sym->expr->compile;
+	pattern->built_syms = g_slist_prepend(pattern->built_syms, sym);
 
+	Compile *compile = sym->expr->compile;
 	compile->tree = tree_ifelse_new(compile,
 		compile_pattern_condition(compile,
-			lhs->sym, lhs->trail, lhs->depth),
+			pattern->rhs, pattern->trail, pattern->depth),
 		compile_pattern_access(compile,
-			lhs->sym, lhs->trail, lhs->depth),
+			pattern->rhs, pattern->trail, pattern->depth),
 		compile_pattern_error(compile));
 
 #ifdef DEBUG_PATTERN
-	printf("compile_pattern_lhs_leaf: generated\n");
+	printf("compile_pattern_leaf: generated\n");
 	dump_compile(compile);
 #endif /*DEBUG_PATTERN*/
 }
@@ -2830,27 +2836,26 @@ compile_pattern_lhs_leaf(PatternLhs *lhs, Symbol *leaf)
 /* Recurse over the pattern generating references.
  */
 static void *
-compile_pattern_lhs_sub(ParseNode *node, PatternLhs *lhs)
+compile_pattern_sub(ParseNode *node, Pattern *pattern)
 {
-	lhs->trail[lhs->depth++] = node;
+	pattern->trail[pattern->depth++] = node;
 
 	switch (node->type) {
 	case NODE_LEAF:
-		compile_pattern_lhs_leaf(lhs, node->leaf);
+		compile_pattern_leaf(pattern, node->leaf);
 		break;
 
 	case NODE_PATTERN_CLASS:
-		compile_pattern_lhs_sub(node->arg1, lhs);
+		compile_pattern_sub(node->arg1, pattern);
 		break;
 
 	case NODE_BINOP:
-		compile_pattern_lhs_sub(node->arg1, lhs);
-		compile_pattern_lhs_sub(node->arg2, lhs);
+		compile_pattern_sub(node->arg1, pattern);
+		compile_pattern_sub(node->arg2, pattern);
 		break;
 
 	case NODE_LISTCONST:
-		slist_map(node->elist,
-			(SListMapFn) compile_pattern_lhs_sub, lhs);
+		slist_map(node->elist, (SListMapFn) compile_pattern_sub, pattern);
 		break;
 
 	case NODE_CONST:
@@ -2860,37 +2865,48 @@ compile_pattern_lhs_sub(ParseNode *node, PatternLhs *lhs)
 		g_assert(0);
 	}
 
-	lhs->depth--;
+	pattern->depth--;
 
 	return NULL;
 }
 
-/* Something like "[a] = [1];". sym is the $$pattern_lhsN we fetch values from,
+/* Something like "[a] = [1];". sym is the $$value0 we fetch values from,
  * node is the pattern tree, compile is the scope in which we
- * generate the new defining symbols. Return a list of the syms we built: they
- * will need any final finishing up and then having symbol_made() called on
- * them. You need to free the list, too.
+ * generate the new defining symbols.
+ *
+ * Return a list of the new symbols we built, they will need finishing up.
  */
 GSList *
-compile_pattern_lhs(Compile *compile, Symbol *sym, ParseNode *node)
+compile_pattern(Compile *compile, Symbol *rhs, ParseNode *node)
 {
-	PatternLhs lhs;
+	static int match_id = 0;
+
+	Pattern pattern;
 
 #ifdef DEBUG_PATTERN
-	printf("compile_pattern_lhs: building access fns for %s\n",
-		symbol_name(sym));
+	printf("compile_pattern: building access fns for %s\n", symbol_name(sym));
 #endif /*DEBUG_PATTERN*/
 
-	lhs.compile = compile;
-	lhs.sym = sym;
-	lhs.depth = 0;
-	lhs.built_syms = NULL;
+	pattern.compile = compile;
+	pattern.rhs = rhs;
+	pattern.depth = 0;
+	pattern.built_syms = NULL;
 
-	compile_pattern_lhs_sub(node, &lhs);
+	char name[256];
+	g_snprintf(name, sizeof(name), "$$match%d", match_id++);
+	Symbol *match = symbol_new_defining(scope, name);
+	match->generated = TRUE;
+	(void) symbol_user_init(match);
+	(void) compile_new_local(match->expr);
+	match->expr->compile->tree =
+		compile_pattern_condition(match->expr->compile, node);
+	pattern->built_syms = g_slist_prepend(pattern->built_syms, match);
 
-	g_assert(lhs.depth == 0);
+	compile_pattern_sub(node, &pattern);
 
-	return lhs.built_syms;
+	g_assert(pattern.depth == 0);
+
+	return pattern.built_syms;
 }
 
 static ParseNode *
