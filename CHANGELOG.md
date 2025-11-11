@@ -1,6 +1,7 @@
 ## master
 
 - pattern matching rewrite
+- add multiple defs and parameter pattern match to compiler
 
 ## 9.0.14 2025/10/23
 

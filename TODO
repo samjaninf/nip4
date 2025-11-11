@@ -1,10 +1,25 @@
+- we are doing codegen at the start of compile, and compile is triggered when
+  we try to eval
+
+  during codegen we add lots of new references (eg. is_list_len) and this
+  will change the leaf set
+
+      we need to do codegen from the thing that picks the next leaf to eval,
+      not from the compiler
+
+      also after doing codegen we need to reschedule recomp since the thing
+      we did codegen for might no longer be in the leaf set
+
+  what if we have multiple defs? could we have $$foobar_rhs5 come up first
+  on the leaf set? how do we find foobar and do codegen on that?
+
+    maybe $$foobar_rhs5 should have a link back to the main foobar def
+
+
 - programming window is showing generated syms, like $$pattern_lhs0
 
 - we need to call symbol_made() on the access symbols that
   compile_pattern_lhs() makes in case it makes top-level symbols
-
-- we are generating new AST as a pass before compile, we'll need to resolve
-  syms after that
 
 - ban patterns in class definitions
 
