@@ -1682,8 +1682,8 @@ compile_heap(Compile *compile)
 	 * pattern matching in the args (ie. will need a default case), we need to
 	 * do some codegen.
 	 */
-	if (compile->nparam > 0 &&
-		(compile->sym->next_rhs || !compile->has_default)) {
+	if (compile->sym->next_rhs ||
+		compile->params_include_patterns) {
 		if (!compile_rhs_check(compile))
 			return FALSE;
 
@@ -2849,7 +2849,7 @@ compile_pattern_leaf(PatternInfo *info, Symbol *leaf)
 	sym->generated = TRUE;
 	(void) symbol_user_init(sym);
 	(void) compile_new_local(sym->expr);
-	info->built_syms = g_slist_append(info->built_syms, sym);
+	symbol_made(sym);
 
 	Compile *compile = sym->expr->compile;
 	compile->tree = tree_ifelse_new(compile,
@@ -2857,7 +2857,12 @@ compile_pattern_leaf(PatternInfo *info, Symbol *leaf)
 		compile_pattern_access(compile, info->value, info->trail, info->depth),
 		compile_pattern_error(compile));
 
-	symbol_made(sym);
+	/* The access sym will contain refs to $$value, $$match etc. which must be
+	 * resolved out one.
+	 */
+	compile_resolve_names(compile, info->compile);
+
+	info->built_syms = g_slist_append(info->built_syms, sym);
 
 #ifdef DEBUG_PATTERN
 	printf("compile_pattern_leaf: generated\n");

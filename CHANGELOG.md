@@ -1,5 +1,9 @@
 ## master
 
+- pattern matching rewrite
+
+## 9.0.14 2025/10/23
+
 - fix load cancel
 - disable leak test on shutdown in release builds
 - fix Magick on windows with better quoting

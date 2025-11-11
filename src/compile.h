@@ -55,8 +55,8 @@ struct _Compile {
 	gboolean is_klass;	/* True if this is a class */
 	gboolean has_super; /* True if has a super-class */
 
-	/* TRUE on a RHS if one or more parsms have used patterns, ie. this
-	 * cannote be a def of the default case.
+	/* TRUE on a RHS if one or more params have used patterns, ie. this
+	 * cannot be a def of the default case.
 	 */
 	gboolean params_include_patterns;
 
