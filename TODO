@@ -15,6 +15,15 @@
 
     maybe $$foobar_rhs5 should have a link back to the main foobar def
 
+- when we generate the new rhs of fred we make
+
+    if $$match0 then 12 else $$fred_rhs0
+
+  should be
+
+    if $$match0 then 12 else $$fred_rhs0 $$arg0
+
+
 
 - programming window is showing generated syms, like $$pattern_lhs0
 
