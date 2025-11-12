@@ -480,9 +480,9 @@ dump_symbol(Symbol *sym)
 	printf("%s->generated = %s\n",
 		IOBJECT(sym)->name, bool_to_char(sym->generated));
 
-	if (!sym->generated && sym->next_rhs) {
-		printf("%s->next_rhs = ", IOBJECT(sym)->name);
-		for (Symbol *p = sym->next_rhs; p; p = sym->next_rhs)
+	if (!sym->generated && sym->next_def) {
+		printf("%s->next_def = ", IOBJECT(sym)->name);
+		for (Symbol *p = sym->next_def; p; p = sym->next_def)
 			printf("%s ", IOBJECT(sym)->name);
 		printf("\n");
 	}

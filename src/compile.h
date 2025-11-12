@@ -116,7 +116,8 @@ Compile *compile_new_toplevel(Expr *expr);
 Compile *compile_new_local(Expr *expr);
 
 void *compile_object(Compile *compile);
-void *compile_toolkit(Toolkit *kit);
+void *compile_codegen_toolkit(Toolkit *kit);
+void *compile_codegen_sym(Symbol *sym);
 
 void compile_error_set(Compile *compile);
 gboolean compile_check(Compile *compile);
@@ -136,3 +137,4 @@ void compile_lcomp(Compile *compile);
 gboolean compile_pattern_has_leaf(ParseNode *node);
 gboolean compile_pattern_has_args(Compile *compile);
 GSList *compile_pattern(Compile *compile, Symbol *value, ParseNode *pattern);
+

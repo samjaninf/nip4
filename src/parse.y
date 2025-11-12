@@ -1465,6 +1465,19 @@ parse_input(int ch, Symbol *sym, Toolkit *kit, int pos)
     }
     yyparse();
 
+    /* We may need to generate some code for eg multiple defs. We must codegen
+     * after parse and not during compile since codegen can add new
+     * dependencies and affect eval ordering.
+     */
+    if (kit) {
+	if (compile_codegen_toolkit(kit))
+	    return FALSE;
+    }
+    else if (sym) {
+	if (compile_codegen_sym(sym))
+	    return FALSE;
+    }
+
     /* All ok.
      */
     return TRUE;

@@ -128,18 +128,8 @@ filemodel_top_load(Filemodel *filemodel,
 {
 	FilemodelClass *filemodel_class = FILEMODEL_GET_CLASS(filemodel);
 
-	if (filemodel_class->top_load) {
-		if (!filemodel_class->top_load(filemodel, state, parent, xnode))
-			return filemodel;
-	}
-	else {
-		error_top(_("Not implemented"));
-		error_sub(_("_%s() not implemented for class \"%s\""),
-			"top_load",
-			G_OBJECT_CLASS_NAME(filemodel_class));
-
+	if (!filemodel_class->top_load(filemodel, state, parent, xnode))
 		return filemodel;
-	}
 
 	return NULL;
 }

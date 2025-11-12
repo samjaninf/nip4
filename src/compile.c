@@ -1467,21 +1467,21 @@ compile_remove_subexpr(Compile *compile, PElement *root)
 	return TRUE;
 }
 
-/* This is a def with multiple RHS, or which needs multiple RHS. Check that:
+/* This is a func with multiple defs, or which needs multiple defs. Check that:
  *
  * - all defs have the same number of args
- * - no more than one RHS has no pattern matching args
+ * - no more than one def has no pattern matching args
  * - if there is a no-pattern def, it must be the last one
  */
 static gboolean
-compile_rhs_check(Compile *compile)
+compile_defs_check(Compile *compile)
 {
 	g_assert(!compile->sym->generated);
-	g_assert(compile->sym->next_rhs || !compile->has_default);
+	g_assert(compile->sym->next_def || !compile->has_default);
 
 	int nparam = -1;
 	int rhs = 1;
-	for (Symbol *p = compile->sym; p; p = p->next_rhs, rhs++) {
+	for (Symbol *p = compile->sym; p; p = p->next_def, rhs++) {
 		if (nparam == -1)
 			nparam = p->expr->compile->nparam;
 		else if (p->expr->compile->nparam != nparam) {
@@ -1539,10 +1539,10 @@ compile_pattern_error(Compile *compile)
 	return node;
 }
 
-/* Append a default case to the set of RHS.
+/* Append a default case to the set of defs.
  */
 static gboolean
-compile_rhs_codegen_default(Compile *compile)
+compile_defs_codegen_default(Compile *compile)
 {
 	g_assert(!compile->has_default);
 
@@ -1571,11 +1571,8 @@ compile_rhs_codegen_default(Compile *compile)
 	compile_resolve_names(def->expr->compile, parent->expr->compile);
 
 #ifdef DEBUG
-	printf("compile_rhs_codegen_default: generated ");
-	symbol_name_print(def);
-	printf("\n");
-	if (def->expr->compile->tree)
-		dump_tree(def->expr->compile->tree, 2);
+	printf("compile_defs_codegen_default: generated ");
+	dump_compile(def->expr->compile);
 #endif /*DEBUG*/
 
 	return TRUE;
@@ -1584,7 +1581,7 @@ compile_rhs_codegen_default(Compile *compile)
 /* Given $$argN, find $$pattN.
  */
 static Symbol *
-compile_rhs_find_pattern(Compile *compile, const char *arg)
+compile_defs_find_pattern(Compile *compile, const char *arg)
 {
 	int n;
 	if (sscanf(arg, "$$arg%d", &n) != 1)
@@ -1600,7 +1597,7 @@ compile_rhs_find_pattern(Compile *compile, const char *arg)
  *
  * - if there's no default case, generate a final definition
  *
- *		$$fred_rhs99 a b c = error "pattern match failed";
+ *		$$fred_def99 a b c = error "pattern match failed";
  *
  *   and link it on to the end of the chain of defs
  *
@@ -1620,7 +1617,7 @@ compile_rhs_find_pattern(Compile *compile, const char *arg)
  *								compile_pattern_condition($$patt1) &&
  *								...,
  *						   saved rhs,
- *						   $$fred_rhsNN)
+ *						   $$fred_defN)
  *
  *		- for each $$pattN
  *			- for each leaf in the pattern
@@ -1635,30 +1632,28 @@ compile_rhs_find_pattern(Compile *compile, const char *arg)
  *
  *		fred $$arg0
  *			= 12, if is_list $$arg0 && is_list_len 1 $$argv0
- *			= $$fred_rhs0 $$arg0
+ *			= $$fred_def0 $$arg0
  *		{
  *			a = $$arg0?0
  *	    }
  *
- *		$$fred_rhs0 $$arg0 = error "pattern match failed";
+ *		$$fred_def0 $$arg0 = error "pattern match failed";
  *
  */
 static gboolean
-compile_rhs_codegen(Compile *compile)
+compile_defs_codegen(Compile *compile)
 {
-	printf("compile_rhs_codegen:\n");
-
 	/* Add the default case, if it's missing.
 	 */
 	if (!compile->has_default &&
-		!compile_rhs_codegen_default(compile))
+		!compile_defs_codegen_default(compile))
 		return FALSE;
 
 	/* For all syms except the last in this set of defs.
 	 *
 	 * We don't need to gen the final one (always the no pattern default case).
 	 */
-	for (Symbol *sym = compile->sym; sym->next_rhs; sym = sym->next_rhs) {
+	for (Symbol *sym = compile->sym; sym->next_def; sym = sym->next_def) {
 		Compile *this_compile = sym->expr->compile;
 
 		/* Collect all the $$matchN we make for this set of pattern matches.
@@ -1671,8 +1666,8 @@ compile_rhs_codegen(Compile *compile)
 			Symbol *param = SYMBOL(q->data);
 
 			if (vips_isprefix("$$arg", IOBJECT(param)->name)) {
-				Symbol *patt =
-					compile_rhs_find_pattern(compile, IOBJECT(param)->name);
+				Symbol *patt = compile_defs_find_pattern(this_compile,
+					IOBJECT(param)->name);
 				g_assert(patt);
 
 				GSList *built = compile_pattern(this_compile,
@@ -1696,6 +1691,16 @@ compile_rhs_codegen(Compile *compile)
 			condition = tree_binop_new(this_compile, BI_LAND, condition, node);
 		}
 
+		/* Generate the call to the next def in the chain.
+		 */
+		ParseNode *next_def = tree_leafsym_new(this_compile, sym->next_def);
+		for (GSList *p = this_compile->param; p; p = p->next) {
+			Symbol *param = SYMBOL(p->data);
+
+			ParseNode *node = tree_leafsym_new(this_compile, param);
+			next_def = tree_appl_new(this_compile, next_def, node);
+		}
+
 		g_slist_free(matches);
 
 		/* Wrap the RHS in a condition, bounce to the next in case of fail.
@@ -1703,12 +1708,18 @@ compile_rhs_codegen(Compile *compile)
 		this_compile->tree = tree_ifelse_new(this_compile,
 			condition,
 			this_compile->tree,		// the old RHS the user wrote
-			tree_leafsym_new(this_compile, sym->next_rhs));
+			next_def);
 
-		/* We may have generated lots of nre refs and zombies in this def,
+		/* We may have generated lots of new refs and zombies in this def,
 		 * resolve them outwards.
 		 */
 		compile_resolve_names(this_compile, compile_get_parent(this_compile));
+
+#ifdef DEBUG
+		printf("compile_defs_codegen: generated:\n");
+		if (this_compile->tree)
+			dump_tree(this_compile->tree, 2);
+#endif /*DEBUG*/
 	}
 
 	return TRUE;
@@ -1842,27 +1853,6 @@ compile_object_sub(Compile *compile)
 void *
 compile_object(Compile *compile)
 {
-	/* If this is a function with many definitions, or if it's one def with
-	 * pattern matching in the args (ie. will need a default case), we need to
-	 * do some codegen.
-	 */
-	if (compile->sym->next_rhs ||
-		compile->params_include_patterns) {
-#ifdef DEBUG
-		printf("*** compile_object: multiple RHS codegen for ");
-		symbol_name_print(compile->sym);
-		printf("\n");
-		if (compile->tree)
-			dump_tree(compile->tree, 2);
-#endif /*DEBUG*/
-
-		if (!compile_rhs_check(compile))
-			return FALSE;
-
-		if (!compile_rhs_codegen(compile))
-			return FALSE;
-	}
-
 	/* Walk this tree of symbols computing the secret lists.
 	 */
 	secret_build(compile);
@@ -1875,29 +1865,50 @@ compile_object(Compile *compile)
 	return NULL;
 }
 
-static void *
-compile_toolkit_sub(Tool *tool)
+void *
+compile_codegen_sym(Symbol *sym)
 {
 	Compile *compile;
 
-	if (tool->sym && tool->sym->expr &&
-		(compile = tool->sym->expr->compile))
-		/* Only if we have no code.
+	if (sym->expr &&
+		(compile = sym->expr->compile)) {
+		/* For now the only codegen is for multiple defs.
 		 */
-		if (compile->base.type == ELEMENT_NOVAL)
-			if (compile_object(compile))
-				return tool;
+		if (compile->sym->next_def ||
+			compile->params_include_patterns) {
+#ifdef DEBUG
+			printf("compile_codegen_sym: multiple def codegen for ");
+			symbol_name_print(compile->sym);
+			printf("\n");
+#endif /*DEBUG*/
+
+			if (!compile_defs_check(compile))
+				return sym;
+
+			if (!compile_defs_codegen(compile))
+				return sym;
+		}
+	}
 
 	return NULL;
 }
 
-/* Scan a toolkit and make sure all the symbols have been compiled.
+static void *
+compile_codegen_tool(Tool *tool)
+{
+	if (tool->sym &&
+		compile_codegen_sym(tool->sym))
+		return tool;
+
+	return NULL;
+}
+
+/* Scan a toolkit and do any codegen.
  */
 void *
-compile_toolkit(Toolkit *kit)
+compile_codegen_toolkit(Toolkit *kit)
 {
-	return toolkit_map(kit,
-		(tool_map_fn) compile_toolkit_sub, NULL, NULL);
+	return toolkit_map(kit, (tool_map_fn) compile_codegen_tool, NULL, NULL);
 }
 
 /* Parse support.
@@ -2488,7 +2499,7 @@ compile_lcomp(Compile *compile)
 	ParseNode *n1, *n2, *n3;
 
 #ifdef DEBUG_LCOMP
-	printf("before compile_lcomp:\n");
+	printf("before compile_lcomp: ");
 	dump_compile(compile);
 #endif /*DEBUG_LCOMP*/
 
@@ -2639,7 +2650,7 @@ compile_lcomp(Compile *compile)
 	}
 
 #ifdef DEBUG_LCOMP
-	printf("after compile_lcomp:\n");
+	printf("after compile_lcomp: ");
 	dump_compile(compile);
 #endif /*DEBUG_LCOMP*/
 
@@ -2924,7 +2935,7 @@ compile_pattern_leaf(PatternInfo *info, Symbol *leaf)
 	info->built_syms = g_slist_append(info->built_syms, sym);
 
 #ifdef DEBUG_PATTERN
-	printf("compile_pattern_leaf: generated\n");
+	printf("compile_pattern_leaf: generated ");
 	dump_compile(compile);
 #endif /*DEBUG_PATTERN*/
 }
@@ -2998,6 +3009,11 @@ compile_pattern_match(Compile *compile, Symbol *value, ParseNode *pattern)
 	 */
 	compile_resolve_names(match->expr->compile, compile);
 
+#ifdef DEBUG
+	printf("compile_pattern_match: generated ");
+	dump_compile(match->expr->compile);
+#endif /*DEBUG*/
+
 	return match;
 }
 
@@ -3017,10 +3033,6 @@ GSList *
 compile_pattern(Compile *compile, Symbol *value, ParseNode *pattern)
 {
 	PatternInfo info;
-
-#ifdef DEBUG_PATTERN
-	printf("compile_pattern: building access fns for %s\n", symbol_name(value));
-#endif /*DEBUG_PATTERN*/
 
 	info.compile = compile;
 	info.value = value;

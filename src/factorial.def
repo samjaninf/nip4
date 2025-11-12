@@ -3,12 +3,13 @@ is_list_len n x
         = false, x == [] || n == 0
         = is_list_len (n - 1) (tl x);
 
+// done
 //[a] = [12];
 
 fred [a] = 12;
-
 main = fred [99];
 
+// todo
 // factorial 1 = 1;
 // factorial n = n * factorial (n - 1);
 

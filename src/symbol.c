@@ -159,8 +159,8 @@ symbol_get_last(Symbol *sym)
 {
 	Symbol *last;
 
-	for (last = sym; last; last = last->next_rhs)
-		if (!last->next_rhs)
+	for (last = sym; last; last = last->next_def)
+		if (!last->next_def)
 			break;
 
 	return last;
@@ -740,7 +740,7 @@ symbol_rename(Symbol *sym, const char *new_name)
 Symbol *
 symbol_new_defining(Compile *compile, const char *name)
 {
-	static int symbol_rhs_id = 0;
+	static int symbol_def_id = 0;
 
 	Symbol *sym;
 
@@ -761,16 +761,16 @@ symbol_new_defining(Compile *compile, const char *name)
 			 * Enforce rules around parameter numbers etc. in the compiler.
 			 */
 			char name_id[256];
-			Symbol *new_rhs;
+			Symbol *new_def;
 
-			g_snprintf(name_id, 256, "$$%s_rhs%d", name, symbol_rhs_id++);
-			new_rhs = symbol_new(compile, name_id);
-			new_rhs->generated = TRUE;
+			g_snprintf(name_id, 256, "$$%s_def%d", name, symbol_def_id++);
+			new_def = symbol_new(compile, name_id);
+			new_def->generated = TRUE;
 
 			// append to the set of defs
-			symbol_get_last(sym)->next_rhs = new_rhs;
+			symbol_get_last(sym)->next_def = new_def;
 
-			sym = new_rhs;
+			sym = new_def;
 		}
 			break;
 

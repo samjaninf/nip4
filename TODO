@@ -1,36 +1,27 @@
-- we are doing codegen at the start of compile, and compile is triggered when
-  we try to eval
+- see:
 
-  during codegen we add lots of new references (eg. is_list_len) and this
-  will change the leaf set
+    No prefs workspace!
+    symbol_recalculate_leaves: Leaf set:
+        (0x5555558db500) *SYM_VALUE $$fred_def0;
+        (0x5555558dc9c0) *SYM_VALUE fred;
+        (0x5555558d7680) *SYM_VALUE is_list_len;
+        (0x5555557a6f40) *SYM_WORKSPACEROOT Workspaces;
 
-      we need to do codegen from the thing that picks the next leaf to eval,
-      not from the compiler
+  so it has not spotted that fred depends on is_list_len
 
-      also after doing codegen we need to reschedule recomp since the thing
-      we did codegen for might no longer be in the leaf set
-
-  what if we have multiple defs? could we have $$foobar_rhs5 come up first
-  on the leaf set? how do we find foobar and do codegen on that?
-
-    maybe $$foobar_rhs5 should have a link back to the main foobar def
-
-- when we generate the new rhs of fred we make
-
-    if $$match0 then 12 else $$fred_rhs0
-
-  should be
-
-    if $$match0 then 12 else $$fred_rhs0 $$arg0
+  are we missing a resolve somewhere?
 
 
+
+
+- need something to stop codegen running multiple times on a def?
 
 - programming window is showing generated syms, like $$pattern_lhs0
 
 - we need to call symbol_made() on the access symbols that
   compile_pattern_lhs() makes in case it makes top-level symbols
 
-- ban patterns in class definitions
+- ban patterns in class parameters
 
     or could we allow multiple class defs?
 
@@ -60,126 +51,6 @@
     fred a:b:x = a + b;
 
 
-
-- change compile_pattern_lhs() to:
-
-    source code:
-
-        [a, b] = fred;
-
-   we generate:
-
-        $$value0 = fred;
-        $$match0 = is_list $$value0 && is_list_len 2 $$value0;
-        a = if $$match0 then $$value0?0 else error "bad patt";
-        b = if $$match0 then $$value0?1 else error "bad patt";
-
-- now we can use the same thing for function arg patching and deconstruction
-
-    - generate one $$matchN for each pattern that checks the whole thing
-
-        not just whether one arg can be fetched without error
-
-        eg.
-
-        $$match0 = is_list $$arg0 && is_list_len 2 $$arg0
-
-    - each access def is eg.
-
-        a = if $$match0 then $$value?0 else error "pattern match failed";
-
-  now for multiple RHS we need to generate
-
-        fred a b = if $$match0 && $$match1 then $$rhs else $$fred_rhs1
-
-
-
-- add
-
-	Symbol *compile_pattern_match(Compile *compile, ParseNode *pattern)
-
-  generate $$matchN and return it
-
-
-
-
-
-- add multiple definitions, finish function argument destructuring
-
-    sym has a field for "next definition", initially NULL
-
-`   add_defining looks for an existing sym with this name, if it finds
-    one, add a new sym called "{name}-$$4" or whatever
-
-    chase to the end of "next definition" on the existing sym, append our
-    new sym
-
-    during compile, generate code like
-
-        fred a b c
-            = destructured_fred, args_match
-            = fred-$$1 a b c
-        {
-            destructured_fred = rhs of fred
-            args_match = a_matches && b_matches && c_matches
-        }
-
-    if a func has many RHS and the last RHS uses destrucuring, generate a
-    final def with
-
-        fred a b c
-            = error "no def of fred matches args a b c";
-
-    - error if more than one def of fred has no destructuring
-    - error if defs don't all have the same number of args
-    - error if a def with no destructuring isn't the last def
-
-  test code:
-
-    fact 1 = 1;
-    fact n = n * fact (n - 1);
-    main = fact 3;
-
-  parses to:
-
-    fact $$arg0 = 1
-    {
-        $$patt0 = 1;
-    }
-
-    $$fact_rhs0 n = n * fact (n - 1);
-
-    main = fact 3;
-
-  we need to add arg checks and generate code like:
-
-    fact $$arg0
-    = 1, $$patt0 == 1
-    = $$fact_rhs0 n
-    {
-        $$patt0 = 1;
-    }
-
-  next:
-
-    - secret_build() needs to loop over next_rhs as well
-
-    - compile_heap() need to work for multiple RHS
-
-        - check set of RHSes follow rules above
-
-        see compile_check_rhs()
-
-        - final one needs to have no patterns, or we synthesise a default rhs
-          which flags a "pattern match failed" error
-
-        - generate pattern match test def
-
-            see compile_pattern_condition(), compile_pattern_error()
-
-        - chain RHSes together with pattern match tests
-
-  where do we make the code for "does object match pattern?"
 
 - remove remove prefs workspace stuff?
 
