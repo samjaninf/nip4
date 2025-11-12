@@ -10,6 +10,9 @@
       also after doing codegen we need to reschedule recomp since the thing
       we did codegen for might no longer be in the leaf set
 
+      or ... codegen for multiple RHS at the end of the parse unit? we
+      don't want multiple defs to accumulate between parse units
+
   what if we have multiple defs? could we have $$foobar_rhs5 come up first
   on the leaf set? how do we find foobar and do codegen on that?
 
