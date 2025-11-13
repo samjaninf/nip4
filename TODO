@@ -3,6 +3,22 @@
 	same problem: how do we stop funcs linking acorss parse units? u
 	need some kind of lock, perhaps set by codegen?
 
+- what does the programming window do for multiple defs?
+
+	probably need to follow next_def and concatenate them all
+
+- rework pattern matching in lcomps
+
+- add our test cases to the test suite
+
+	and add a few more
+
+- try:
+
+	fred [a] = 12;
+
+  when we make the default case, does it go into fred as a local? it probably
+  should
 
 
 

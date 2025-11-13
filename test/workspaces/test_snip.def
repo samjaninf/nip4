@@ -59,6 +59,27 @@ test_binary op_name fn
     }
 }
 
+test_deconstruct = concat [
+    [test_deconstruct, "deconstruct"],
+    [test_arg_deconstruct, "argument deconstruct"]
+]
+{
+	[a] = [12];
+    test_deconstruct = a == 12;
+
+    fred [a] = 12;
+    test_arg_deconstruct = fred [99] == 12;
+}
+
+test_multidef = concat [
+    [test_multidef, "multiple definitions"]
+]
+{
+    factorial 1 = 1;
+    factorial n = n * factorial (n - 1);
+    test_multidef = factorial 3 == 6;
+}
+
 tests = concat [
     test_binary "add" add,
     test_binary "subtract" subtract,
@@ -72,6 +93,8 @@ tests = concat [
     test_unary "constant multiplied by" (converse multiply 7),
     test_unary "constant subtracted from" (subtract 4),
     test_unary "subtract constant" (converse subtract 4),
+    test_deconstruct,
+    test_multidef,
     [
         ["" ++ "a" == "a", "concat"],
         [hd [1, error "nope"] == 1, "lazy hd"]
