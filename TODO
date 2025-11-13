@@ -1,10 +1,46 @@
+- this example
+
+	factorial 1 = 1;
+	factorial n = n * factorial (n - 1);
+
+  codegens to
+
+	factorial $$arg0
+		= if $$match then 1 else $$factorial_def0 $$arg0
+	{
+		$$match = $$arg0 == 1;
+	}
+
+	$$factorial_def0 n = n * factorial (n - 1);
+
+  but that's mutual top-level recursion and won't work!
+
+  we must make all next_def into locals of the first def, perhaps
+
+	factorial $$arg0
+		= if $$match then 1 else $$factorial_def0 $$arg0
+	{
+		$$match = $$arg0 == 1;
+		$$factorial_def0 n = n * factorial (n - 1);
+	}
+
+  do we do this in parse.y, or move the syms in the codegen phase?
+
+  	try doing it in parse.y first
+
+
+
+
 
 - need something to stop codegen running multiple times on a def?
 
-- programming window is showing generated syms, like $$pattern_lhs0
+	same problem: how do we stop funcs linking acorss parse units? u
+	need some kind of lock, perhaps set by codegen?
 
-- we need to call symbol_made() on the access symbols that
-  compile_pattern_lhs() makes in case it makes top-level symbols
+
+
+
+- programming window is showing generated syms, like $$pattern_lhs0?
 
 - ban patterns in class parameters
 

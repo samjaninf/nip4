@@ -260,7 +260,8 @@ toplevel_definition:
     }
     ;
 
-/* Parse a new defining occurence. This can be a local or a top-level.
+/* Parse a new defining occurence. This can be a local or a top-level or a new
+ * def for an existing sym that we make into a local.
  */
 definition:
     simple_pattern {
@@ -273,7 +274,8 @@ definition:
         if ($1->type == NODE_LEAF) {
             const char *name = IOBJECT($1->leaf)->name;
 
-            /* Make a new defining occurence.
+            /* Make a new defining occurence. If there's already a sym of this
+ 	     * name, this new sym will become a local of that.
              */
             sym = symbol_new_defining(current_compile, name);
 

@@ -754,9 +754,8 @@ symbol_new_defining(Compile *compile, const char *name)
 	if ((sym = compile_lookup(compile, name))) {
 		switch (sym->type) {
 		case SYM_VALUE: {
-			/* Redefinition of existing symbol? This is an alternative RHS ...
-			 * we make a new, unique symbol to hold this new set of params and
-			 * RHS.
+			/* A multiple definition? This becomes a local of the existing
+			 * sym.
 			 *
 			 * Enforce rules around parameter numbers etc. in the compiler.
 			 */
@@ -764,7 +763,7 @@ symbol_new_defining(Compile *compile, const char *name)
 			Symbol *new_def;
 
 			g_snprintf(name_id, 256, "$$%s_def%d", name, symbol_def_id++);
-			new_def = symbol_new(compile, name_id);
+			new_def = symbol_new(sym->expr->compile, name_id);
 			new_def->generated = TRUE;
 
 			// append to the set of defs
