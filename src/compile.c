@@ -1715,6 +1715,10 @@ compile_defs_codegen(Compile *compile)
 		 */
 		compile_resolve_names(this_compile, compile_get_parent(this_compile));
 
+		/* Update recomp links in case this is a top-levelk sym
+		 */
+		symbol_made(sym);
+
 #ifdef DEBUG
 		printf("compile_defs_codegen: generated:\n");
 		if (this_compile->tree)
