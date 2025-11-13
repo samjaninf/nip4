@@ -275,7 +275,8 @@ definition:
             const char *name = IOBJECT($1->leaf)->name;
 
             /* Make a new defining occurence. If there's already a sym of this
- 	     * name, this new sym will become a local of that.
+ 	     * name, this new sym will become a local of that with a name like
+	     * "$$name_defN".
              */
             sym = symbol_new_defining(current_compile, name);
 
