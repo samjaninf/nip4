@@ -1,26 +1,25 @@
-- need something to stop codegen running multiple times on a def?
-
-	same problem: how do we stop funcs linking acorss parse units? u
-	need some kind of lock, perhaps set by codegen?
+- filemodel_open should take a FilemodelClass, not a filemodel, as arg, and
+  should do filemodel_new_from_file() to make the filemodel that the file is
+  loaded into
 
 - what does the programming window do for multiple defs?
 
-	probably need to follow next_def and concatenate them all
+    probably need to follow next_def and concatenate them all
 
 - rework pattern matching in lcomps
 
 - add our test cases to the test suite
 
-	and add a few more
+    and add a few more
 
 - try:
 
-	fred [a] = 12;
+    fred [a] = 12;
 
   when we make the default case, does it go into fred as a local? it probably
   should
 
-
+- dir should hide $$vars
 
 - programming window is showing generated syms, like $$pattern_lhs0?
 
@@ -34,14 +33,14 @@
 
 - what about
 
-	fred (list x) = ...;
-	fred (complex x) = ...;
+    fred (list x) = ...;
+    fred (complex x) = ...;
 
   ie. allow names of builtin types as well as class names
 
   maybe:
 
-	fred (is_list x) = ...;
+    fred (is_list x) = ...;
 
   ie. a predicate before the arg, as well as a class name?
 

@@ -1875,23 +1875,21 @@ compile_codegen_sym(Symbol *sym)
 	Compile *compile;
 
 	if (sym->expr &&
-		(compile = sym->expr->compile)) {
-		/* For now the only codegen is for multiple defs.
-		 */
-		if (compile->sym->next_def ||
-			compile->params_include_patterns) {
+		(compile = sym->expr->compile) &&
+		compile->sym->needs_codegen) {
 #ifdef DEBUG
-			printf("compile_codegen_sym: multiple def codegen for ");
-			symbol_name_print(compile->sym);
-			printf("\n");
+		printf("compile_codegen_sym: codegen for ");
+		symbol_name_print(compile->sym);
+		printf("\n");
 #endif /*DEBUG*/
 
-			if (!compile_defs_check(compile))
-				return sym;
+		/* For now the only codegen is for multiple defs.
+		 */
+		if (!compile_defs_check(compile) ||
+			!compile_defs_codegen(compile))
+			return sym;
 
-			if (!compile_defs_codegen(compile))
-				return sym;
-		}
+		compile->sym->needs_codegen = FALSE;
 	}
 
 	return NULL;

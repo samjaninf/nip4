@@ -477,6 +477,8 @@ dump_symbol(Symbol *sym)
 		IOBJECT(sym)->name, sym->ndirtychildren);
 	printf("%s->leaf = %s\n",
 		IOBJECT(sym)->name, bool_to_char(sym->leaf));
+	printf("%s->needs_codegen = %s\n",
+		IOBJECT(sym)->name, bool_to_char(sym->needs_codegen));
 	printf("%s->generated = %s\n",
 		IOBJECT(sym)->name, bool_to_char(sym->generated));
 

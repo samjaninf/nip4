@@ -306,7 +306,6 @@ symbol_clear(Symbol *sym)
 	sym->leaf = FALSE;
 
 	sym->generated = FALSE;
-	sym->placeholder = FALSE;
 
 	sym->tool = NULL;
 
@@ -728,11 +727,13 @@ symbol_rename(Symbol *sym, const char *new_name)
 	return TRUE;
 }
 
-/* Name in defining occurence. If this is a top-level definition, clean the
- * old symbol and get ready to attach a user function to it. If its not a top-
- * level definition, we flag an error. Consider repeated parameter names,
- * repeated occurence of names in locals, local name clashes with parameter
- * name etc.
+extern Toolkit *current_kit;
+
+/* Name in defining occurrence.
+ *
+ * If this is a redefinition of an existing def in this kit, add it as a local
+ * of the existing def and tag for codegen. Consider repeated param names,
+ * param names clashing with locals.
  *
  * We make a ZOMBIE: our caller should turn it into a blank user definition, a
  * parameter etc.
@@ -749,15 +750,16 @@ symbol_new_defining(Compile *compile, const char *name)
 	if (strcmp(name, IOBJECT(symbol_root)->name) == 0)
 		nip2yyerror(_("Attempt to redefine root symbol \"%s\"."), name);
 
-	/* Is this a redefinition of an existing symbol?
+	/* Is this a redefinition of an existing symbol in this scope?
 	 */
 	if ((sym = compile_lookup(compile, name))) {
-		switch (sym->type) {
-		case SYM_VALUE: {
-			/* A multiple definition? This becomes a local of the existing
-			 * sym.
+		if (sym->type == SYM_VALUE &&
+			sym->tool &&
+			sym->tool->kit == current_kit) {
+			/* This is a new def for an existing top-level def in this kit.
 			 *
-			 * Enforce rules around parameter numbers etc. in the compiler.
+			 * This new def should be attached as a local of that first def,
+			 * and the whole thing needs tagging for a codegen pass.
 			 */
 			char name_id[256];
 			Symbol *new_def;
@@ -769,25 +771,25 @@ symbol_new_defining(Compile *compile, const char *name)
 			// append to the set of defs
 			symbol_get_last(sym)->next_def = new_def;
 
+			// sym has multiple defs and will need a codegen pass
+			sym->needs_codegen = TRUE;
+
 			sym = new_def;
 		}
-			break;
-
-		case SYM_ZOMBIE:
+		else if (sym->type == SYM_ZOMBIE) {
 			/* This is the definition for a previously referenced
 			 * symbol. Just return the ZOMBIE we made.
 			 */
-			break;
-
-		default:
-			/* Parameter, workspace, etc.
+		}
+		else {
+			/* Parameter, workspace, redef of an existing def in another kit.
 			 */
 			nip2yyerror(_("Can't redefine %s \"%s\"."),
 				decode_SymbolType_user(sym->type), name);
 			/*NOTREACHED*/
 		}
 
-		/* This is the defining occurence ... move to the end of the
+		/* This is a defining occurrence ... move to the end of the
 		 * traverse order.
 		 */
 		icontainer_child_move(ICONTAINER(sym), -1);

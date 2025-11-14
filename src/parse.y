@@ -260,7 +260,7 @@ toplevel_definition:
     }
     ;
 
-/* Parse a new defining occurence. This can be a local or a top-level or a new
+/* Parse a new defining occurrence. This can be a local or a top-level or a new
  * def for an existing sym that we make into a local.
  */
 definition:
@@ -274,7 +274,7 @@ definition:
         if ($1->type == NODE_LEAF) {
             const char *name = IOBJECT($1->leaf)->name;
 
-            /* Make a new defining occurence. If there's already a sym of this
+            /* Make a new defining occurrence. If there's already a sym of this
  	     * name, this new sym will become a local of that with a name like
 	     * "$$name_defN".
              */
@@ -429,7 +429,7 @@ params:
         if ($2->type == NODE_LEAF) {
             const char *name = IOBJECT($2->leaf)->name;
 
-            /* Make defining occurence.
+            /* Make defining occurrence.
              */
             sym = symbol_new_defining(current_compile, name);
             (void) symbol_parameter_init(sym);
@@ -450,6 +450,7 @@ params:
             sym->expr->compile->tree = $2;
 
             current_compile->params_include_patterns = TRUE;
+            current_compile->sym->needs_codegen = TRUE;
         }
     }
     ;
