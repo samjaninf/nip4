@@ -30,8 +30,8 @@
 #include "nip4.h"
 
 /* All debug
- */
 #define DEBUG
+ */
 
 /* Just trace create/destroy.
 #define DEBUG_MAKE
@@ -786,8 +786,21 @@ symbol_new_defining(Compile *compile, const char *name)
 		else {
 			/* Parameter, workspace, redef of an existing def in another kit.
 			 */
-			nip2yyerror(_("Can't redefine %s \"%s\"."),
+			char txt[200];
+			VipsBuf buf = VIPS_BUF_STATIC(txt);
+
+			vips_buf_appendf(&buf, _("Can't redefine %s \"%s\""),
 				decode_SymbolType_user(sym->type), name);
+
+			if (sym->tool &&
+				sym->tool->kit) {
+				vips_buf_appendf(&buf, ", ");
+				vips_buf_appendf(&buf, _("previous definition was %s:%d"),
+					FILEMODEL(sym->tool->kit)->filename, sym->tool->lineno);
+			}
+			vips_buf_appendf(&buf, ".");
+
+			nip2yyerror("%s", vips_buf_all(&buf));
 			/*NOTREACHED*/
 		}
 

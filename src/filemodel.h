@@ -136,16 +136,16 @@ void filemodel_save(GtkWindow *window, Filemodel *filemodel,
 	FilemodelSaveasResult next,
 	FilemodelSaveasResult error, void *a, void *b);
 
-void filemodel_open(GtkWindow *window, Filemodel *filemodel,
-	const char *verb,
+void filemodel_merge(GtkWindow *window,
+	Filemodel *filemodel, const char *verb,
 	FilemodelSaveasResult next,
 	FilemodelSaveasResult error, void *a, void *b);
-void filemodel_open2(GtkWindow *window, FilemodelClass *class, Model *parent,
-	const char *verb,
+void filemodel_new_from_file(GtkWindow *window,
+	FilemodelClass *class, Model *parent, const char *verb,
 	FilemodelSaveasResult next,
 	FilemodelSaveasResult error, void *a, void *b);
-void filemodel_replace(GtkWindow *window, Filemodel *filemodel,
-	const char *verb,
+void filemodel_replace(GtkWindow *window,
+	Filemodel *filemodel, const char *verb,
 	FilemodelSaveasResult next,
 	FilemodelSaveasResult error, void *a, void *b);
 

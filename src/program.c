@@ -482,7 +482,7 @@ program_open_action(GSimpleAction *action,
 	FilemodelClass *class = FILEMODEL_CLASS(g_type_class_peek(TOOLKIT_TYPE));
 	Model *model = MODEL(program->kitg);
 
-	filemodel_open2(GTK_WINDOW(program), class, model, _("Open"),
+	filemodel_new_from_file(GTK_WINDOW(program), class, model, _("Open"),
 		program_open_next,
 		program_saveas_error, program, NULL);
 }

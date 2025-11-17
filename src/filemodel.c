@@ -925,7 +925,7 @@ filemodel_save(GtkWindow *window, Filemodel *filemodel,
 }
 
 static void
-filemodel_open_sub(GObject *source_object,
+filemodel_merge_sub(GObject *source_object,
 	GAsyncResult *res, gpointer user_data)
 {
 	GtkFileDialog *dialog = GTK_FILE_DIALOG(source_object);
@@ -958,8 +958,7 @@ filemodel_open_sub(GObject *source_object,
 }
 
 void
-filemodel_open(GtkWindow *window, Filemodel *filemodel,
-	const char *verb,
+filemodel_merge(GtkWindow *window, Filemodel *filemodel, const char *verb,
 	FilemodelSaveasResult next,
 	FilemodelSaveasResult error, void *a, void *b)
 {
@@ -995,11 +994,11 @@ filemodel_open(GtkWindow *window, Filemodel *filemodel,
 		g_object_unref(filters);
 	}
 
-	gtk_file_dialog_open(dialog, window, NULL, &filemodel_open_sub, NULL);
+	gtk_file_dialog_open(dialog, window, NULL, &filemodel_merge_sub, NULL);
 }
 
 static void
-filemodel_open2_sub(GObject *source_object,
+filemodel_new_from_file_sub(GObject *source_object,
 	GAsyncResult *res, gpointer user_data)
 {
 	GtkFileDialog *dialog = GTK_FILE_DIALOG(source_object);
@@ -1035,8 +1034,8 @@ filemodel_open2_sub(GObject *source_object,
 }
 
 void
-filemodel_open2(GtkWindow *window, FilemodelClass *class, Model *parent,
-	const char *verb,
+filemodel_new_from_file(GtkWindow *window,
+	FilemodelClass *class, Model *parent, const char *verb,
 	FilemodelSaveasResult next,
 	FilemodelSaveasResult error, void *a, void *b)
 {
@@ -1070,7 +1069,8 @@ filemodel_open2(GtkWindow *window, FilemodelClass *class, Model *parent,
 	gtk_file_dialog_set_filters(dialog, G_LIST_MODEL(filters));
 	g_object_unref(filters);
 
-	gtk_file_dialog_open(dialog, window, NULL, &filemodel_open2_sub, NULL);
+	gtk_file_dialog_open(dialog,
+		window, NULL, &filemodel_new_from_file_sub, NULL);
 }
 
 typedef struct _Suspension {
@@ -1091,7 +1091,7 @@ filemodel_replace_next(GtkWindow *window,
 
 	model_empty(MODEL(filemodel));
 
-	filemodel_open(sus->window, sus->filemodel, sus->verb,
+	filemodel_merge(sus->window, sus->filemodel, sus->verb,
 		sus->next, sus->error, sus->a, sus->b);
 
 	g_free(sus);
@@ -1109,15 +1109,13 @@ filemodel_replace_error(GtkWindow *window,
 }
 
 void
-filemodel_replace(GtkWindow *window, Filemodel *filemodel,
-	const char *verb,
+filemodel_replace(GtkWindow *window, Filemodel *filemodel, const char *verb,
 	FilemodelSaveasResult next,
 	FilemodelSaveasResult error, void *a, void *b)
 {
 	Suspension *sus = g_new(Suspension, 1);
 	sus->window = window;
 	sus->filemodel = filemodel;
-	sus->verb = verb;
 	sus->next = next;
 	sus->error = error;
 	sus->a = a;
