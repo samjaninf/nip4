@@ -1,7 +1,3 @@
-- filemodel_open should take a FilemodelClass, not a filemodel, as arg, and
-  should do filemodel_new_from_file() to make the filemodel that the file is
-  loaded into
-
 - what does the programming window do for multiple defs?
 
     probably need to follow next_def and concatenate them all

@@ -440,6 +440,8 @@ symbol_strip(Symbol *sym)
 		sym->ws = NULL;
 	}
 
+	sym->next_def = NULL;
+
 	/* It's a ZOMBIE now.
 	 */
 	sym->type = SYM_ZOMBIE;
