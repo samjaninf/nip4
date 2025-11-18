@@ -1,8 +1,4 @@
-- Image_file is not working
-
-
-
-- lcomps leaves stray unreffed symbols in "list unresolved"
+- lcomps leave stray unreffed symbols in "list unresolved"
 
     Image_transform_item.Resize_item.Size_within_item.action.within ($SAVEDIR/start/Image.def:509)  refers to undefined symbol h
     Image_transform_item.Resize_item.Size_within_item.action.within ($SAVEDIR/start/Image.def:509)  refers to undefined symbol w

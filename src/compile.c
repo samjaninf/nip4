@@ -2677,31 +2677,31 @@ compile_lcomp(Compile *compile)
  */
 #define MAX_TRAIL (50)
 
-/* Generate code to access element n of a pattern trail from a value.
+/* Generate code to access element depth of a pattern trail from a value.
  *
- * Eg, pattern is
+ * Eg,:
  *
- *		[[[a]]]
+ *		$$patt0 = [12, (13, a)]
+ *		$$value0 = [12, (13, 14)]
  *
- * the trail for "a" will be
+ * the trail for "a" is built as we recurse down $$patt0 AST, so:
  *
- *		0) LISTCONST 1) LISTCONST 2) LISTCONST 3) LEAF
+ *		0) LISTCONST 1) COMPLEX 2) IM
  *
- * then access(0) will be
+ * with n == 3 meaning 3 items in trail.
  *
- *		leaf
+ * For access, we read from left, so:
  *
- * and access(1) will be
+ *	depth	generate		type
  *
- *		leaf?0
+ *	0		$$value0		list
+ *	1		$$value0?1		complex
+ *	2		im $$value0?1	ref to a
  *
- * and access(3) (to get the value for a) will be
- *
- *		leaf?0?0?0
  */
 static ParseNode *
 compile_pattern_access(Compile *compile,
-	Symbol *value, ParseNode **trail, int n)
+	Symbol *value, ParseNode **trail, int depth)
 {
 	ParseNode *node;
 	ParseNode *left;
@@ -2712,7 +2712,7 @@ compile_pattern_access(Compile *compile,
 	 */
 	node = tree_leafsym_new(compile, value);
 
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i < depth; i++)
 		switch (trail[i]->type) {
 		case NODE_CONST:
 		case NODE_PATTERN_CLASS:
@@ -2764,7 +2764,7 @@ compile_pattern_access(Compile *compile,
 }
 
 /* Generate a parsetree for the match test. trail is the trail of parsenodes
- * we have recursed down, so at the root of the pattern, depth == 1 and the
+ * we have recursed down to find this
  * pattern root is in trail[0].
  *
  * Return NULL for no testing needed.
@@ -2794,7 +2794,7 @@ compile_pattern_condition(Compile *compile,
 			/* Generate is_complex x.
 			 */
 			left = tree_leaf_new(compile, "is_complex");
-			right = compile_pattern_access(compile, value, trail, depth);
+			right = compile_pattern_access(compile, value, trail, depth - 1);
 			node = tree_appl_new(compile, left, right);
 			break;
 
@@ -2802,10 +2802,10 @@ compile_pattern_condition(Compile *compile,
 			/* Generate is_list x && x != [].
 			 */
 			left = tree_leaf_new(compile, "is_list");
-			right = compile_pattern_access(compile, value, trail, depth);
+			right = compile_pattern_access(compile, value, trail, depth - 1);
 			node = tree_appl_new(compile, left, right);
 
-			left = compile_pattern_access(compile, value, trail, depth);
+			left = compile_pattern_access(compile, value, trail, depth - 1);
 			c.type = PARSE_CONST_ELIST;
 			right = tree_const_new(compile, c);
 			node2 = tree_binop_new(compile, BI_NOTEQ, left, right);
@@ -2926,7 +2926,8 @@ compile_pattern_leaf(PatternInfo *info, Symbol *leaf)
 	Compile *compile = sym->expr->compile;
 	compile->tree = tree_ifelse_new(compile,
 		tree_leaf_new(compile, IOBJECT(info->match)->name),
-		compile_pattern_access(compile, info->value, info->trail, info->depth),
+		compile_pattern_access(compile,
+			info->value, info->trail, info->depth - 1),
 		compile_pattern_error(compile));
 
 	/* The access sym will contain refs to $$value, $$match etc. which must be

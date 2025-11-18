@@ -1,7 +1,7 @@
-//is_list_len n x
-//        = true, x == [] && n == 0
-//        = false, x == [] || n == 0
-//        = is_list_len (n - 1) (tl x);
+is_list_len n x
+        = true, x == [] && n == 0
+        = false, x == [] || n == 0
+        = is_list_len (n - 1) (tl x);
 
 // done
 
@@ -10,8 +10,13 @@
 //fred [a] = 12;
 //main = fred [99];
 
-factorial 1 = 1;
-factorial n = n * factorial (n - 1);
+//factorial 1 = 1;
+//factorial n = n * factorial (n - 1);
+
+[12, (13, a)] = [12, (13, 14)];
+main = a == 14;
+
+//a:x = [1, 2];
 
 // todo
 

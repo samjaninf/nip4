@@ -895,7 +895,7 @@ dump_tree(ParseNode *n, int indent)
 		else
 			printf("Superclass construct\n");
 
-		slist_map_rev(n->elist, (SListMapFn) dump_list_element, &indent);
+		slist_map(n->elist, (SListMapFn) dump_list_element, &indent);
 		break;
 
 	default:
