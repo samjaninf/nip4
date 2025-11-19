@@ -28,33 +28,33 @@
  */
 
 /*
-#define DEBUG_RESOLVE
  */
+#define DEBUG_RESOLVE
 
 /* regular (and very slow) sanity checks on symbols ... needs DEBUG in
  * symbol.c as well
-#define DEBUG_SANITY
  */
+#define DEBUG_SANITY
 
 /* count how many nodes we find with common sub-expression removal.
-#define DEBUG_COMMON
  */
+#define DEBUG_COMMON
 
 /* show what everything compiled to
-#define DEBUG_RESULT
  */
+#define DEBUG_RESULT
 
 /* trace list comp compile
-#define DEBUG_LCOMP
  */
+#define DEBUG_LCOMP
 
 /* trace pattern LHS generation
-#define DEBUG_PATTERN
  */
+#define DEBUG_PATTERN
 
 /*
-#define DEBUG
  */
+#define DEBUG
 
 #include "nip4.h"
 
@@ -1879,8 +1879,10 @@ compile_codegen_sym(Symbol *sym)
 		compile->sym->needs_codegen) {
 #ifdef DEBUG
 		printf("compile_codegen_sym: codegen for ");
-		symbol_name_print(compile->sym);
+		symbol_name_print(sym);
 		printf("\n");
+		printf("\tbefore codegen, AST is:\n");
+		dump_compile(compile);
 #endif /*DEBUG*/
 
 		/* For now the only codegen is for multiple defs.
@@ -2139,6 +2141,10 @@ compile_resolve_names_sub(Symbol *sym, Compile *outer)
 {
 	const char *name = IOBJECT(sym)->name;
 	Symbol *old;
+
+	printf("compile_resolve_names_sub: trying ");
+	symbol_name_print(sym);
+	printf("...\n");
 
 	/* Is it the sort of thing we are looking for? ZOMBIEs only, please.
 	 */

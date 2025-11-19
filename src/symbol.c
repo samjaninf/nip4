@@ -30,8 +30,8 @@
 #include "nip4.h"
 
 /* All debug
-#define DEBUG
  */
+#define DEBUG
 
 /* Just trace create/destroy.
 #define DEBUG_MAKE
@@ -540,13 +540,11 @@ static void
 symbol_dispose(GObject *gobject)
 {
 	Symbol *sym;
-	Compile *compile;
 
 	g_return_if_fail(gobject != NULL);
 	g_return_if_fail(IS_SYMBOL(gobject));
 
 	sym = SYMBOL(gobject);
-	compile = COMPILE(ICONTAINER(sym)->parent);
 
 #ifdef DEBUG_MAKE
 	printf("symbol_dispose: ");
@@ -554,10 +552,15 @@ symbol_dispose(GObject *gobject)
 	printf("(%p)\n", sym);
 #endif /*DEBUG_MAKE*/
 
-	/* Make sure we're not leaving last_sym dangling.
+	/* Does our parent ref us as next_def? Clear it.
 	 */
-	if (compile && compile->last_sym == sym)
-		compile->last_sym = NULL;
+	if (sym->expr &&
+		sym->expr->compile) {
+		Compile *parent_compile = compile_get_parent(sym->expr->compile);
+
+		if (parent_compile->sym->next_def == sym)
+			parent_compile->sym->next_def = NULL;
+	}
 
 	/* Clear state.
 	 */

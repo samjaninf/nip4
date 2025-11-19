@@ -1,22 +1,32 @@
-is_list_len n x
-        = true, x == [] && n == 0
-        = false, x == [] || n == 0
-        = is_list_len (n - 1) (tl x);
+//is_list_len n x
+//        = true, x == [] && n == 0
+//        = false, x == [] || n == 0
+//        = is_list_len (n - 1) (tl x);
 
 // done
 
 //[a] = [12];
 
-//fred [a] = 12;
-//main = fred [99];
+//fred (x, y) = (12, 13);
+//main = fred (14, 15);
 
 //factorial 1 = 1;
 //factorial n = n * factorial (n - 1);
 
-[12, (13, a)] = [12, (13, 14)];
-main = a == 14;
+//[12, (13, a)] = [12, (13, 14)];
+//main = a == 14;
 
 //a:x = [1, 2];
 
+fred (a:x) = a:[1, 2];
+main = fred [3];
+
+//foldr fn st [] = st;
+//foldr fn st (x:xs) = fn x (foldr fn st xs);
+
+//add a b = a + b;
+//main = foldr add 0 [1 .. 10];
+
 // todo
+// x = [y :: y <- [1..]];
 
