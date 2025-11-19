@@ -275,8 +275,8 @@ definition:
             const char *name = IOBJECT($1->leaf)->name;
 
             /* Make a new defining occurrence. If there's already a sym of this
- 	     * name, this new sym will become a local of that with a name like
-	     * "$$name_defN".
+             * name, this new sym will become a local of that with a name like
+             * "$$name_defN".
              */
             sym = symbol_new_defining(current_compile, name);
 
@@ -329,14 +329,8 @@ definition:
         compile_resolve_names(current_compile,
             compile_get_parent(current_compile));
 
-        /* Is this the end of a top-level? Needs extra work to add to
-         * the enclosing toolkit etc.
-         */
-        if (is_scope(symbol_get_parent(current_symbol)))
-            parse_toplevel_end(current_symbol);
-
-        /* Is this a pattern definition? Expand the pattern to a
-         * set of access defs.
+        /* Is this (pattern = rhs)? current_symbol is $$valueN and we need
+         * to make a set of peer symbols which access that.
          */
         if ($1->type != NODE_LEAF) {
             Compile *parent = compile_get_parent(current_compile);
@@ -344,13 +338,24 @@ definition:
 
             built_syms = compile_pattern(parent, current_symbol, $1);
 
+            /* We may have made some top levels.
+             */
             if (is_scope(symbol_get_parent(current_symbol)))
                 slist_map(built_syms, (SListMapFn) parse_toplevel_end, NULL);
+
+            /* Note the source code on each of the access funcs.
+             */
             slist_map(built_syms,
                 (SListMapFn) parse_access_end, current_symbol);
 
             g_slist_free(built_syms);
         }
+
+        /* Is this the end of a top-level? Needs extra work to add to
+         * the enclosing toolkit etc.
+         */
+        if (is_scope(symbol_get_parent(current_symbol)))
+            parse_toplevel_end(current_symbol);
 
         scope_pop();
     }
@@ -412,8 +417,6 @@ params_plus_rhs:
 params:
     /* Empty */ |
     params simple_pattern {
-        Symbol *sym;
-
         /* If the pattern is just an identifier, make it a direct
          * parameter. Otherwise make an anon param and put the pattern
          * in as a local with the same id.
@@ -429,25 +432,31 @@ params:
         if ($2->type == NODE_LEAF) {
             const char *name = IOBJECT($2->leaf)->name;
 
-            /* Make defining occurrence.
+            /* A single name ... make the zombie into a parameter.
              */
-            sym = symbol_new_defining(current_compile, name);
+            Symbol *sym = symbol_new_defining(current_compile, name);
             (void) symbol_parameter_init(sym);
         }
         else {
             char name[256];
 
             g_snprintf(name, 256, "$$arg%d", parse_object_id);
-            sym = symbol_new_defining(current_compile, name);
-            sym->generated = TRUE;
-            (void) symbol_parameter_init(sym);
+            Symbol *arg = symbol_new_defining(current_compile, name);
+            arg->generated = TRUE;
+            (void) symbol_parameter_init(arg);
 
-            g_snprintf(name, 256, "$$patt%d", parse_object_id++);
-            sym = symbol_new_defining(current_compile, name);
-            sym->generated = TRUE;
-            (void) symbol_user_init(sym);
-            (void) compile_new_local(sym->expr);
-            sym->expr->compile->tree = $2;
+            /* Use the pattern to make a match func plus a set of locals
+             * which access this arg.
+             */
+            GSList *built_syms = compile_pattern(current_compile, arg, $2);
+
+            // note the match func for the codegen pass
+            if (built_syms)
+                current_compile->matchers =
+                    g_slist_prepend(current_compile->matchers,
+                        SYMBOL(built_syms->data));
+
+            g_slist_free(built_syms);
 
             current_compile->params_include_patterns = TRUE;
             current_compile->sym->needs_codegen = TRUE;
@@ -1474,12 +1483,12 @@ parse_input(int ch, Symbol *sym, Toolkit *kit, int pos)
      * dependencies and affect eval ordering.
      */
     if (kit) {
-	if (compile_codegen_toolkit(kit))
-	    return FALSE;
+    if (compile_codegen_toolkit(kit))
+        return FALSE;
     }
     else if (sym) {
-	if (compile_codegen_sym(sym))
-	    return FALSE;
+    if (compile_codegen_sym(sym))
+        return FALSE;
     }
 
     /* All ok.

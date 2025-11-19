@@ -1,37 +1,9 @@
 - try
 
-    fred (a:x) = a:[1, 2];
-    main = fred [3];
-
-  get
-
-    symbol a is not defined
-    a is referred to by
-        fred ($HOME/GIT/nip4/src/factorial.def:21)
-
-  we parse
-
-    fred (a:x) = a:[1, 2];
-
-  and after parse, resolve outwards, creating root.a, which is a zombie
-
-  during codegen we create fred.a, but it's too late, the ref in fred has
-  already become root.a
-
-  we must create fred.a, fred.x during pattern parse
-
-
-
-- try
-
     foldr fn st [] = st;
     foldr fn st (x:xs) = fn x (foldr fn st xs);
 
-  get
 
-    ymbol x is not defined
-    x is referred to by
-        foldr ($HOME/GIT/nip4/src/factorial.def:21)
 
 - lcomps leave stray unreffed symbols in "list unresolved"
 

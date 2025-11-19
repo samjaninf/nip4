@@ -268,6 +268,7 @@ compile_finalize(GObject *gobject)
 	(void) slist_map(compile->children,
 		(SListMapFn) symbol_link_break, compile);
 	VIPS_FREEF(g_slist_free, compile->children);
+	VIPS_FREEF(g_slist_free, compile->matchers);
 
 	/* Remove static strings we created.
 	 */
@@ -1656,36 +1657,12 @@ compile_defs_codegen(Compile *compile)
 	for (Symbol *sym = compile->sym; sym->next_def; sym = sym->next_def) {
 		Compile *this_compile = sym->expr->compile;
 
-		/* Collect all the $$matchN we make for this set of pattern matches.
-		 */
-		GSList *matches = NULL;
-
-		/* Codegen for each pattern parameter.
-		 */
-		for (GSList *q = this_compile->param; q; q = q->next) {
-			Symbol *param = SYMBOL(q->data);
-
-			if (vips_isprefix("$$arg", IOBJECT(param)->name)) {
-				Symbol *patt = compile_defs_find_pattern(this_compile,
-					IOBJECT(param)->name);
-				g_assert(patt);
-
-				GSList *built = compile_pattern(this_compile,
-						param, patt->expr->compile->tree);
-
-				Symbol *match = SYMBOL(built->data);
-				matches = g_slist_prepend(matches, match);
-
-				g_slist_free(built);
-			}
-		}
-
 		/* AND all the matches together.
 		 */
-		g_assert(matches);
-		Symbol *match = SYMBOL(matches->data);
+		g_assert(this_compile->matchers);
+		Symbol *match = SYMBOL(this_compile->matchers->data);
 		ParseNode *condition = tree_leafsym_new(this_compile, match);
-		for (GSList *p = matches->next; p; p = p->next) {
+		for (GSList *p = this_compile->matchers->next; p; p = p->next) {
 			match = SYMBOL(p->data);
 			ParseNode *node = tree_leafsym_new(this_compile, match);
 			condition = tree_binop_new(this_compile, BI_LAND, condition, node);
@@ -1700,8 +1677,6 @@ compile_defs_codegen(Compile *compile)
 			ParseNode *node = tree_leafsym_new(this_compile, param);
 			next_def = tree_appl_new(this_compile, next_def, node);
 		}
-
-		g_slist_free(matches);
 
 		/* Wrap the RHS in a condition, bounce to the next in case of fail.
 		 */
@@ -2770,8 +2745,7 @@ compile_pattern_access(Compile *compile,
 }
 
 /* Generate a parsetree for the match test. trail is the trail of parsenodes
- * we have recursed down to find this
- * pattern root is in trail[0].
+ * we have recursed down to find this pattern root is in trail[0].
  *
  * Return NULL for no testing needed.
  */

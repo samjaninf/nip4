@@ -84,6 +84,8 @@ struct _Compile {
 	Element base;		/* Base of compiled code */
 	Heap *heap;			/* Heap containing compiled code */
 	GSList *statics;	/* Static strings we built */
+
+	GSList *matchers;	/* The match synbols we built for pattern args */
 };
 
 typedef struct _CompileClass {
