@@ -1,17 +1,3 @@
-- try
-
-    main
-        = factorial 6
-    {
-        factorial 1 = 1;
-        factorial n = n * factorial (n - 1);
-    }
-
-  fails with "can't redefine factorial"
-
-    symbol.c:796
-
-
 - lcomps leave stray unreffed symbols in "list unresolved"
 
     Image_transform_item.Resize_item.Size_within_item.action.within ($SAVEDIR/start/Image.def:509)  refers to undefined symbol h

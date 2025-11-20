@@ -30,8 +30,8 @@
 #include "nip4.h"
 
 /* All debug
- */
 #define DEBUG
+ */
 
 /* Just trace create/destroy.
 #define DEBUG_MAKE
@@ -147,6 +147,19 @@ symbol_get_scope(Symbol *sym)
 	Symbol *i;
 
 	for (i = sym; i && !is_scope(i); i = symbol_get_parent(i))
+		;
+
+	return i;
+}
+
+/* Get the enclosing top-level for a sym.
+ */
+Symbol *
+symbol_get_top(Symbol *sym)
+{
+	Symbol *i;
+
+	for (i = sym; i && !is_top(i); i = symbol_get_parent(i))
 		;
 
 	return i;
@@ -735,6 +748,28 @@ symbol_rename(Symbol *sym, const char *new_name)
 
 extern Toolkit *current_kit;
 
+/* Can we add a new def to a sym?
+ */
+static gboolean
+symbol_can_add_def(Symbol *sym)
+{
+	/* The sym is in current_kit? it must be in the same parse unit, so a new
+	 * def is OK
+	 */
+	if (sym->type == SYM_VALUE &&
+		sym->tool &&
+		sym->tool->kit == current_kit)
+		return TRUE;
+
+	/* Is this a local def? A second def is also OK, since we must still be
+	 * parsing.
+	 */
+	if (symbol_get_parent(sym)->type == SYM_VALUE)
+		return TRUE;
+
+	return FALSE;
+}
+
 /* Name in defining occurrence.
  *
  * If this is a redefinition of an existing def in this kit, add it as a local
@@ -759,10 +794,14 @@ symbol_new_defining(Compile *compile, const char *name)
 	/* Is this a redefinition of an existing symbol in this scope?
 	 */
 	if ((sym = compile_lookup(compile, name))) {
-		if (sym->type == SYM_VALUE &&
-			sym->tool &&
-			sym->tool->kit == current_kit) {
-			/* This is a new def for an existing top-level def in this kit.
+		if (sym->type == SYM_ZOMBIE) {
+			/* This is the definition for a previously referenced
+			 * symbol. Just return the ZOMBIE we made.
+			 */
+		}
+		else if (symbol_can_add_def(sym)) {
+			/* This is a new def for an existing def, either a local or a
+			 * top-level.
 			 *
 			 * This new def should be attached as a local of that first def,
 			 * and the whole thing needs tagging for a codegen pass.
@@ -782,13 +821,9 @@ symbol_new_defining(Compile *compile, const char *name)
 
 			sym = new_def;
 		}
-		else if (sym->type == SYM_ZOMBIE) {
-			/* This is the definition for a previously referenced
-			 * symbol. Just return the ZOMBIE we made.
-			 */
-		}
 		else {
-			/* Parameter, workspace, redef of an existing def in another kit.
+			/* Eg. redef of parameter, workspace, an existing def in
+			 * another kit.
 			 */
 			char txt[200];
 			VipsBuf buf = VIPS_BUF_STATIC(txt);

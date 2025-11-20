@@ -279,7 +279,6 @@ definition:
              * "$$name_defN".
              */
             sym = symbol_new_defining(current_compile, name);
-
             (void) symbol_user_init(sym);
             (void) compile_new_local(sym->expr);
         }
@@ -460,6 +459,11 @@ params:
 
             current_compile->params_include_patterns = TRUE;
             current_compile->sym->needs_codegen = TRUE;
+
+            /* Tag the toplevel as needing codegen so we don't have to
+             * search every symbol.
+             */
+            symbol_get_top(current_compile->sym)->needs_codegen = TRUE;
         }
     }
     ;
@@ -1483,12 +1487,12 @@ parse_input(int ch, Symbol *sym, Toolkit *kit, int pos)
      * dependencies and affect eval ordering.
      */
     if (kit) {
-    if (compile_codegen_toolkit(kit))
-        return FALSE;
+        if (compile_codegen_toolkit(kit))
+            return FALSE;
     }
     else if (sym) {
-    if (compile_codegen_sym(sym))
-        return FALSE;
+        if (compile_codegen_toplevel(sym))
+            return FALSE;
     }
 
     /* All ok.

@@ -119,7 +119,7 @@ Compile *compile_new_local(Expr *expr);
 
 void *compile_object(Compile *compile);
 void *compile_codegen_toolkit(Toolkit *kit);
-void *compile_codegen_sym(Symbol *sym);
+void *compile_codegen_toplevel(Symbol *sym);
 
 void compile_error_set(Compile *compile);
 gboolean compile_check(Compile *compile);

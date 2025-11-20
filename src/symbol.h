@@ -146,6 +146,7 @@ Symbol *symbol_get_parent(Symbol *sym);
 Workspace *symbol_get_workspace(Symbol *sym);
 Tool *symbol_get_tool(Symbol *sym);
 Symbol *symbol_get_scope(Symbol *sym);
+Symbol *symbol_get_top(Symbol *sym);
 Symbol *symbol_get_last(Symbol *sym);
 
 void symbol_qualified_name(Symbol *sym, VipsBuf *buf);

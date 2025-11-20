@@ -28,33 +28,33 @@
  */
 
 /*
- */
 #define DEBUG_RESOLVE
+ */
 
 /* regular (and very slow) sanity checks on symbols ... needs DEBUG in
  * symbol.c as well
- */
 #define DEBUG_SANITY
+ */
 
 /* count how many nodes we find with common sub-expression removal.
- */
 #define DEBUG_COMMON
+ */
 
 /* show what everything compiled to
- */
 #define DEBUG_RESULT
+ */
 
 /* trace list comp compile
- */
 #define DEBUG_LCOMP
+ */
 
 /* trace pattern LHS generation
- */
 #define DEBUG_PATTERN
+ */
 
 /*
- */
 #define DEBUG
+ */
 
 #include "nip4.h"
 
@@ -1829,14 +1829,12 @@ compile_object(Compile *compile)
 	return NULL;
 }
 
-void *
-compile_codegen_sym(Symbol *sym)
+static void *
+compile_codegen(Compile *compile)
 {
-	Compile *compile;
+	Symbol *sym = compile->sym;
 
-	if (sym->expr &&
-		(compile = sym->expr->compile) &&
-		compile->sym->needs_codegen) {
+	if (sym->needs_codegen) {
 #ifdef DEBUG
 		printf("compile_codegen_sym: codegen for ");
 		symbol_name_print(sym);
@@ -1847,12 +1845,30 @@ compile_codegen_sym(Symbol *sym)
 
 		/* For now the only codegen is for multiple defs.
 		 */
-		if (!compile_defs_check(compile) ||
-			!compile_defs_codegen(compile))
-			return sym;
-
-		compile->sym->needs_codegen = FALSE;
+		if (sym->next_def ||
+			!compile->has_default) {
+			if (!compile_defs_check(compile) ||
+				!compile_defs_codegen(compile))
+				return sym;
+		}
 	}
+
+	sym->needs_codegen = FALSE;
+
+	return NULL;
+}
+
+/* This is a top-level def: search for any syms which need a codegen pass. For
+ * example, a top-level def might have locals with multiple defs.
+ */
+void *
+compile_codegen_toplevel(Symbol *sym)
+{
+	if (sym->expr &&
+		sym->expr->compile &&
+		compile_map_all(sym->expr->compile,
+			(map_compile_fn) compile_codegen, NULL))
+		return sym;
 
 	return NULL;
 }
@@ -1861,7 +1877,8 @@ static void *
 compile_codegen_tool(Tool *tool)
 {
 	if (tool->sym &&
-		compile_codegen_sym(tool->sym))
+		tool->sym->needs_codegen &&
+		compile_codegen_toplevel(tool->sym))
 		return tool;
 
 	return NULL;
