@@ -15,7 +15,7 @@ fmts = [
 ];
 
 // we need a to_real that does images as well
-to_real x
+to_real2 x
     = abs x, is_complex x
     = mean x, is_Image x
     = x;
@@ -33,9 +33,9 @@ test_unary op_name fn
         message = join_sep " " (map print [
             "unary", fname, op_name, x, "==", image, number, matrix
         ]);
-        image = (to_real @ fn @ ifmt @ to_image) x;
-        number = (to_real @ fn @ nfmt) x;
-        //matrix = (to_real @ fn @ ifmt @ to_matrix) x;
+        image = (to_real2 @ fn @ ifmt @ to_image) x;
+        number = (to_real2 @ fn @ nfmt) x;
+        //matrix = (to_real2 @ fn @ ifmt @ to_matrix) x;
         matrix = image;
     }
 }
@@ -52,9 +52,9 @@ test_binary op_name fn
         message = join_sep " " (map print [
             "binary", fname, x, op_name, y, "==", image, number, matrix
         ]);
-        image = to_real (fn ((ifmt @ to_image) x) ((ifmt @ to_image) y));
-        number = to_real (fn (nfmt x) (nfmt y));
-        //matrix = to_real (fn ((ifmt @ to_matrix) x) ((ifmt @ to_matrix) y));
+        image = to_real2 (fn ((ifmt @ to_image) x) ((ifmt @ to_image) y));
+        number = to_real2 (fn (nfmt x) (nfmt y));
+        //matrix = to_real2 (fn ((ifmt @ to_matrix) x) ((ifmt @ to_matrix) y));
         matrix = image;
     }
 }

@@ -18,8 +18,8 @@
 
 //a:x = [1, 2];
 
-fred (a:x) = a:[1, 2];
-main = fred [3];
+//fred (a:x) = a:[1, 2];
+//main = fred [3];
 
 //foldr fn st [] = st;
 //foldr fn st (x:xs) = fn x (foldr fn st xs);
@@ -27,6 +27,12 @@ main = fred [3];
 //add a b = a + b;
 //main = foldr add 0 [1 .. 10];
 
-// todo
 // x = [y :: y <- [1..]];
+
+main
+    = factorial 6
+{
+    factorial 1 = 1;
+    factorial n = n * factorial (n - 1);
+}
 

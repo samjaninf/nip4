@@ -1579,21 +1579,6 @@ compile_defs_codegen_default(Compile *compile)
 	return TRUE;
 }
 
-/* Given $$argN, find $$pattN.
- */
-static Symbol *
-compile_defs_find_pattern(Compile *compile, const char *arg)
-{
-	int n;
-	if (sscanf(arg, "$$arg%d", &n) != 1)
-		return NULL;
-
-	char name[256];
-	g_snprintf(name, sizeof(name), "$$patt%d", n);
-
-	return compile_lookup(compile, name);
-}
-
 /* We need to:
  *
  * - if there's no default case, generate a final definition
@@ -2116,10 +2101,6 @@ compile_resolve_names_sub(Symbol *sym, Compile *outer)
 {
 	const char *name = IOBJECT(sym)->name;
 	Symbol *old;
-
-	printf("compile_resolve_names_sub: trying ");
-	symbol_name_print(sym);
-	printf("...\n");
 
 	/* Is it the sort of thing we are looking for? ZOMBIEs only, please.
 	 */

@@ -1,8 +1,15 @@
 - try
 
-    foldr fn st [] = st;
-    foldr fn st (x:xs) = fn x (foldr fn st xs);
+    main
+        = factorial 6
+    {
+        factorial 1 = 1;
+        factorial n = n * factorial (n - 1);
+    }
 
+  fails with "can't redefine factorial"
+
+    symbol.c:796
 
 
 - lcomps leave stray unreffed symbols in "list unresolved"

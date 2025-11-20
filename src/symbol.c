@@ -558,7 +558,8 @@ symbol_dispose(GObject *gobject)
 		sym->expr->compile) {
 		Compile *parent_compile = compile_get_parent(sym->expr->compile);
 
-		if (parent_compile->sym->next_def == sym)
+		if (parent_compile &&
+			parent_compile->sym->next_def == sym)
 			parent_compile->sym->next_def = NULL;
 	}
 
