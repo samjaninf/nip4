@@ -1192,14 +1192,9 @@ reduce_start:
 			 * links to dirty syms through dynamic dependencies.
 			 */
 			if (sym->dirty) {
-				char txt[256];
-				VipsBuf buf = VIPS_BUF_STATIC(txt);
-
-				symbol_qualified_name(sym, &buf);
-
 				error_top(_("No value"));
-				error_sub(_("symbol \"%s\" has no value"), vips_buf_all(&buf));
-
+				error_sub(_("symbol \"%s\" has no value"),
+					symbol_name(sym));
 				reduce_throw(rc);
 			}
 

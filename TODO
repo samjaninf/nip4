@@ -4,22 +4,35 @@
 
     things like max heap size should be settable ... maybe pres are useful?
 
-- lcomps leave stray unreffed symbols in "list unresolved"
+- add multiple definitions, finish function argument destructuring
 
-    Image_transform_item.Resize_item.Size_within_item.action.within ($SAVEDIR/start/Image.def:509)  refers to undefined symbol h
-    Image_transform_item.Resize_item.Size_within_item.action.within ($SAVEDIR/start/Image.def:509)  refers to undefined symbol w
+    sym has a field for "next definition", initially NULL
 
-- rework pattern matching in lcomps
+`   add_defining looks for an existing sym with this name, if it finds
+    one, add a new sym called "{name}-$$4" or whatever
 
-- what does the programming window do for multiple defs?
+    chase to the end of "next definition" on the existing sym, append our
+    new sym
 
-    probably need to follow next_def and concatenate them all
+    during compile, generate code like
 
-- dir should hide $$vars
+        fred a b c
+            = destructured_fred, args_match
+            = fred-$$1 a b c
+        {
+            destructured_fred = rhs of fred
+            args_match = a_matches && b_matches && c_matches
+        }
 
-- programming window is showing generated syms, like $$pattern_lhs0?
+    if a func has many RHS and the last RHS uses destrucuring, generate a
+    final def with
 
-- ban patterns in class parameters
+        fred a b c
+            = error "no def of fred matches args a b c";
+
+    - error if more than one def of fred has no destructuring
+    - error if defs don't all have the same number of args
+    - error if a def with no destructuring isn't the last def
 
 - try < > in the image titlebar
 

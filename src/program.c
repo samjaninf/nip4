@@ -470,8 +470,11 @@ program_open_next(GtkWindow *win, Filemodel *filemodel, void *a, void *b)
 {
 	Program *program = PROGRAM(a);
 
+	char name[VIPS_PATH_MAX];
+	name_from_filename(filemodel->filename, name);
+	toolkit_set_name(TOOLKIT(filemodel), name);
+
 	program_select_tool(program, TOOLKIT(filemodel), NULL);
-	symbol_recalculate_all();
 }
 
 static void
@@ -479,10 +482,9 @@ program_open_action(GSimpleAction *action,
 	GVariant *parameter, gpointer user_data)
 {
 	Program *program = PROGRAM(user_data);
-	FilemodelClass *class = FILEMODEL_CLASS(g_type_class_peek(TOOLKIT_TYPE));
-	Model *model = MODEL(program->kitg);
 
-	filemodel_new_from_file(GTK_WINDOW(program), class, model, _("Open"),
+	Toolkit *kit = toolkit_new_filename(program->kitg, "untitled");
+	filemodel_open(GTK_WINDOW(program), FILEMODEL(kit), _("Open"),
 		program_open_next,
 		program_saveas_error, program, NULL);
 }
