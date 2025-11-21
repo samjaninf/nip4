@@ -260,98 +260,105 @@ toplevel_definition:
 	}
 	;
 
-/* Parse a new defining occurence. This can be a local or a top-level.
+/* Parse a new defining occurrence. This can be a local or a top-level or a new
+ * def for an existing sym that we make into a local.
  */
 definition:
-   	simple_pattern {
-		Symbol *sym;
+    simple_pattern {
+        Symbol *sym;
 
-		/* Two forms: <name pattern-list rhs>, or <pattern rhs>.
-		 * Enforce the no-args-to-pattern-assignment rule in the arg
-		 * pattern parser.
-		 */
-		if ($1->type == NODE_LEAF) {
-			const char *name = IOBJECT($1->leaf)->name;
+        /* Two forms: <name pattern-list rhs>, or <pattern rhs>.
+         * Enforce the no-args-to-pattern-assignment rule in the arg
+         * pattern parser.
+         */
+        if ($1->type == NODE_LEAF) {
+            const char *name = IOBJECT($1->leaf)->name;
 
-			/* Make a new defining occurence.
-			 */
-			sym = symbol_new_defining(current_compile, name);
+            /* Make a new defining occurrence. If there's already a sym of this
+             * name, this new sym will become a local of that with a name like
+             * "$$name_defN".
+             */
+            sym = symbol_new_defining(current_compile, name);
+            (void) symbol_user_init(sym);
+            (void) compile_new_local(sym->expr);
+        }
+        else {
+            char name[256];
 
-			(void) symbol_user_init(sym);
-			(void) compile_new_local(sym->expr);
-		}
-		else {
-			char name[256];
+            /* We have <pattern rhs>. Make an anon symbol for this
+             * value, then the variables in the pattern become
+             * toplevels which access that.
+             */
+            if (!compile_pattern_has_leaf($1))
+                yyerror(_( "left-hand-side pattern contains no identifiers"));
+            g_snprintf(name, 256, "$$value%d", parse_object_id++);
+            sym = symbol_new_defining(current_compile, name);
+            sym->generated = TRUE;
+            (void) symbol_user_init(sym);
+            (void) compile_new_local(sym->expr);
+        }
 
-			/* We have <pattern rhs>. Make an anon symbol for this
-			 * value, then the variables in the pattern become
-			 * toplevels which access that.
-			 */
-			if (!compile_pattern_has_leaf($1))
-				yyerror(_( "left-hand-side pattern contains no identifiers"));
-			g_snprintf(name, 256, "$$pattern_lhs%d", parse_object_id++);
-			sym = symbol_new_defining(current_compile, name);
-			sym->generated = TRUE;
-			(void) symbol_user_init(sym);
-			(void) compile_new_local(sym->expr);
-		}
+        /* Note on the enclosing last_sym. Things like the program
+         * window use this to work out what sym to display after a
+         * parse. symbol_dispose() is careful to NULL this out.
+         */
+        current_compile->last_sym = sym;
 
-		/* Note on the enclosing last_sym. Things like the program
-		 * window use this to work out what sym to display after a
-		 * parse. symbol_dispose() is careful to NULL this out.
-		 */
-		current_compile->last_sym = sym;
+        /* Initialise symbol parsing variables. Save old current symbol,
+         * add new one.
+         */
+        scope_push();
+        current_symbol = sym;
+        current_compile = sym->expr->compile;
 
-		/* Initialise symbol parsing variables. Save old current symbol,
-		 * add new one.
-		 */
-		scope_push();
-		current_symbol = sym;
-		current_compile = sym->expr->compile;
+        g_assert(!current_compile->param);
+        g_assert(current_compile->nparam == 0);
 
-		g_assert(!current_compile->param);
-		g_assert(current_compile->nparam == 0);
+        /* Junk any old def text.
+         */
+        VIPS_FREE(current_compile->text);
+        VIPS_FREE(current_compile->prhstext);
+        VIPS_FREE(current_compile->rhstext);
+    }
+    params_plus_rhs {
+        compile_check(current_compile);
 
-		/* Junk any old def text.
-		 */
-		VIPS_FREE(current_compile->text);
-		VIPS_FREE(current_compile->prhstext);
-		VIPS_FREE(current_compile->rhstext);
-	}
-	params_plus_rhs {
-		compile_check(current_compile);
+        /* Link unresolved names into the outer scope.
+         */
+        compile_resolve_names(current_compile,
+            compile_get_parent(current_compile));
 
-		/* Link unresolved names into the outer scope.
-		 */
-		compile_resolve_names(current_compile,
-			compile_get_parent(current_compile));
+        /* Is this (pattern = rhs)? current_symbol is $$valueN and we need
+         * to make a set of peer symbols which access that.
+         */
+        if ($1->type != NODE_LEAF) {
+            Compile *parent = compile_get_parent(current_compile);
+            GSList *built_syms;
 
-		/* Is this the end of a top-level? Needs extra work to add to
-		 * the enclosing toolkit etc.
-		 */
-		if (is_scope(symbol_get_parent(current_symbol)))
-			parse_toplevel_end(current_symbol);
+            built_syms = compile_pattern(parent, current_symbol, $1);
 
-		/* Is this a pattern definition? Expand the pattern to a
-		 * set of access defs.
-		 */
-		if ($1->type != NODE_LEAF) {
-			Compile *parent = compile_get_parent(current_compile);
-			GSList *built_syms;
+            /* We may have made some top levels.
+             */
+            if (is_scope(symbol_get_parent(current_symbol)))
+                slist_map(built_syms, (SListMapFn) parse_toplevel_end, NULL);
 
-			built_syms = compile_pattern_lhs(parent, current_symbol, $1);
+            /* Note the source code on each of the access funcs.
+             */
+            slist_map(built_syms,
+                (SListMapFn) parse_access_end, current_symbol);
 
-			if (is_scope(symbol_get_parent(current_symbol)))
-				slist_map(built_syms, (SListMapFn) parse_toplevel_end, NULL);
-			slist_map(built_syms,
-				(SListMapFn) parse_access_end, current_symbol);
+            g_slist_free(built_syms);
+        }
 
-			g_slist_free(built_syms);
-		}
+        /* Is this the end of a top-level? Needs extra work to add to
+         * the enclosing toolkit etc.
+         */
+        if (is_scope(symbol_get_parent(current_symbol)))
+            parse_toplevel_end(current_symbol);
 
-		scope_pop();
-	}
-	;
+        scope_pop();
+    }
+    ;
 
 /* Parse params/body/locals into current_expr
  */
@@ -408,46 +415,58 @@ params_plus_rhs:
 
 params:
     /* Empty */ |
-	params simple_pattern {
-		Symbol *sym;
+    params simple_pattern {
+        /* If the pattern is just an identifier, make it a direct
+         * parameter. Otherwise make an anon param and put the pattern
+         * in as a local with the same id.
+         *
+         *  fred [a] = 12;
+         *
+         * parses to:
+         *
+         *  fred $$arg42 = 12 { $$patt42 = [a]; }
+         *
+         * A later pass creates the "a = $$arg42?0" definition.
+         */
+        if ($2->type == NODE_LEAF) {
+            const char *name = IOBJECT($2->leaf)->name;
 
-		/* If the pattern is just an identifier, make it a direct
-		 * parameter. Otherwise make an anon param and put the pattern
-		 * in as a local with the same id.
-		 *
-		 *	fred [a] = 12;
-		 *
-		 * parses to:
-		 *
-		 *	fred $$arg42 = 12 { $$patt42 = [a]; }
-		 *
-		 * A later pass creates the "a = $$arg42?0" definition.
-		 */
-		if ($2->type == NODE_LEAF) {
-			const char *name = IOBJECT($2->leaf)->name;
+            /* A single name ... make the zombie into a parameter.
+             */
+            Symbol *sym = symbol_new_defining(current_compile, name);
+            (void) symbol_parameter_init(sym);
+        }
+        else {
+            char name[256];
 
-			/* Make defining occurence.
-			 */
-			sym = symbol_new_defining(current_compile, name);
-			(void) symbol_parameter_init(sym);
-		}
-		else {
-			char name[256];
+            g_snprintf(name, 256, "$$arg%d", parse_object_id);
+            Symbol *arg = symbol_new_defining(current_compile, name);
+            arg->generated = TRUE;
+            (void) symbol_parameter_init(arg);
 
-			g_snprintf(name, 256, "$$arg%d", parse_object_id);
-			sym = symbol_new_defining(current_compile, name);
-			sym->generated = TRUE;
-			(void) symbol_parameter_init(sym);
+            /* Use the pattern to make a match func plus a set of locals
+             * which access this arg.
+             */
+            GSList *built_syms = compile_pattern(current_compile, arg, $2);
 
-			g_snprintf(name, 256, "$$patt%d", parse_object_id++);
-			sym = symbol_new_defining(current_compile, name);
-			sym->generated = TRUE;
-			(void) symbol_user_init(sym);
-			(void) compile_new_local(sym->expr);
-			sym->expr->compile->tree = $2;
-		}
-	}
-	;
+            // note the match func for the codegen pass
+            if (built_syms)
+                current_compile->matchers =
+                    g_slist_prepend(current_compile->matchers,
+                        SYMBOL(built_syms->data));
+
+            g_slist_free(built_syms);
+
+            current_compile->params_include_patterns = TRUE;
+            current_compile->sym->needs_codegen = TRUE;
+
+            /* Tag the toplevel as needing codegen so we don't have to
+             * search every symbol.
+             */
+            symbol_get_top(current_compile->sym)->needs_codegen = TRUE;
+        }
+    }
+    ;
 
 body :
     '=' TK_CLASS crhs {
@@ -1463,9 +1482,22 @@ parse_input(int ch, Symbol *sym, Toolkit *kit, int pos)
 	}
 	yyparse();
 
-	/* All ok.
-	 */
-	return TRUE;
+    /* We may need to generate some code for eg multiple defs. We must codegen
+     * after parse and not during compile since codegen can add new
+     * dependencies and affect eval ordering.
+     */
+    if (kit) {
+        if (compile_codegen_toolkit(kit))
+            return FALSE;
+    }
+    else if (sym) {
+        if (compile_codegen_toplevel(sym))
+            return FALSE;
+    }
+
+    /* All ok.
+     */
+    return TRUE;
 }
 
 /* Parse the input into a set of symbols at a position in a kit.
