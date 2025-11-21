@@ -1,3 +1,17 @@
+- test_image.ws fails with:
+
+	error in binary ++
+	left = 50
+	right = Image <604x604 float, 2 bands, multiband 0x580a32188220>
+	called from "Test_images_item.Colour_atlas_item.action._result.blocks''"
+
+  because we no longer allow non-class on the left for ++ overloads
+
+  need a Vector on the left I guess
+
+
+- nicholas's bug report
+
 - lcomps leave stray unreffed symbols in "list unresolved"
 
     Image_transform_item.Resize_item.Size_within_item.action.within ($SAVEDIR/start/Image.def:509)  refers to undefined symbol h
