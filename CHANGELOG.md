@@ -6,7 +6,7 @@
 - reloading a toolkit now deletes all defs, then does load ... adding a new
   def to a func across a parse unit is now an error
 
-## 9.0.14 2025/10/23
+## 9.0.14 2025/10/25
 
 - fix load cancel
 - disable leak test on shutdown in release builds
