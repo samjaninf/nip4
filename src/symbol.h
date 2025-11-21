@@ -86,6 +86,10 @@ struct _Symbol {
 	int ndirtychildren;	 /* Number of dirty top syms we refer to */
 	gboolean leaf;		 /* True for in recomp set */
 
+	/* This symbol will need a codegen pass at the end of this parse unit.
+	 */
+	gboolean needs_codegen;
+
 	/* This is a generated symbol, like $$result, $$fn1, whatever.
 	 */
 	gboolean generated;
@@ -137,6 +141,8 @@ Symbol *symbol_get_parent(Symbol *sym);
 Workspace *symbol_get_workspace(Symbol *sym);
 Tool *symbol_get_tool(Symbol *sym);
 Symbol *symbol_get_scope(Symbol *sym);
+Symbol *symbol_get_top(Symbol *sym);
+Symbol *symbol_get_last(Symbol *sym);
 
 void symbol_qualified_name(Symbol *sym, VipsBuf *buf);
 void symbol_qualified_name_relative(Symbol *context,

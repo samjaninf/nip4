@@ -260,7 +260,8 @@ toplevel_definition:
 	}
 	;
 
-/* Parse a new defining occurence. This can be a local or a top-level.
+/* Parse a new defining occurrence. This can be a local or a top-level or a new
+ * def for an existing sym that we make into a local.
  */
 definition:
    	simple_pattern {

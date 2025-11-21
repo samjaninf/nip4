@@ -152,6 +152,33 @@ symbol_get_scope(Symbol *sym)
 	return i;
 }
 
+/* Get the enclosing top-level for a sym.
+ */
+Symbol *
+symbol_get_top(Symbol *sym)
+{
+	Symbol *i;
+
+	for (i = sym; i && !is_top(i); i = symbol_get_parent(i))
+		;
+
+	return i;
+}
+
+/* Return the final definition, if this symbol has multiple RHS.
+ */
+Symbol *
+symbol_get_last(Symbol *sym)
+{
+	Symbol *last;
+
+	for (last = sym; last; last = last->next_def)
+		if (!last->next_def)
+			break;
+
+	return last;
+}
+
 /* Make a fully-qualified symbol name .. eg fred.jim, given jim. Don't print
  * static scopes.
  */
@@ -292,7 +319,6 @@ symbol_clear(Symbol *sym)
 	sym->leaf = FALSE;
 
 	sym->generated = FALSE;
-	sym->placeholder = FALSE;
 
 	sym->tool = NULL;
 
@@ -371,15 +397,15 @@ void
 symbol_leaf_set_sanity(void)
 {
 	slist_map(symbol_leaf_set, (SListMapFn) symbol_sanity, NULL);
-	icontainer_map(ICONTAINER(symbol_root->expr->compile),
-		(icontainer_map_fn) symbol_sanity, NULL, NULL);
+	if (symbol_root->expr->compile)
+		icontainer_map(ICONTAINER(symbol_root->expr->compile),
+			(icontainer_map_fn) symbol_sanity, NULL, NULL);
 
 	/* Commented out to reduce spam
-	 *
+	 */
 	printf( "Leaf set: " );
 	slist_map( symbol_leaf_set, (SListMapFn) dump_tiny, NULL );
 	printf( "\n" );
-	 */
 }
 #endif /*DEBUG*/
 
@@ -426,6 +452,8 @@ symbol_strip(Symbol *sym)
 		sym->ws->sym = NULL;
 		sym->ws = NULL;
 	}
+
+	sym->next_def = NULL;
 
 	/* It's a ZOMBIE now.
 	 */
@@ -525,13 +553,11 @@ static void
 symbol_dispose(GObject *gobject)
 {
 	Symbol *sym;
-	Compile *compile;
 
 	g_return_if_fail(gobject != NULL);
 	g_return_if_fail(IS_SYMBOL(gobject));
 
 	sym = SYMBOL(gobject);
-	compile = COMPILE(ICONTAINER(sym)->parent);
 
 #ifdef DEBUG_MAKE
 	printf("symbol_dispose: ");
@@ -539,10 +565,16 @@ symbol_dispose(GObject *gobject)
 	printf("(%p)\n", sym);
 #endif /*DEBUG_MAKE*/
 
-	/* Make sure we're not leaving last_sym dangling.
+	/* Does our parent ref us as next_def? Clear it.
 	 */
-	if (compile && compile->last_sym == sym)
-		compile->last_sym = NULL;
+	if (sym->expr &&
+		sym->expr->compile) {
+		Compile *parent_compile = compile_get_parent(sym->expr->compile);
+
+		if (parent_compile &&
+			parent_compile->sym->next_def == sym)
+			parent_compile->sym->next_def = NULL;
+	}
 
 	/* Clear state.
 	 */
@@ -751,7 +783,7 @@ symbol_new_defining(Compile *compile, const char *name)
 		nip2yyerror(_("Attempt to redefine root symbol \"%s\"."),
 			name);
 
-	/* Is this a redefinition of an existing symbol?
+	/* Is this a redefinition of an existing symbol in this scope?
 	 */
 	if ((sym = compile_lookup(compile, name))) {
 		/* Yes. Check that this redefinition is legal.
@@ -765,21 +797,31 @@ symbol_new_defining(Compile *compile, const char *name)
 				symbol_error_redefine(sym);
 			break;
 
-		case SYM_ZOMBIE:
-			/* This is the definition for a previously referenced
-			 * symbol. Just return the ZOMBIE we made.
+			sym = new_def;
+		}
+		else {
+			/* Eg. redef of parameter, workspace, an existing def in
+			 * another kit.
 			 */
-			break;
+			char txt[200];
+			VipsBuf buf = VIPS_BUF_STATIC(txt);
 
-		default:
-			/* Parameter, workspace, etc.
-			 */
-			nip2yyerror(_("Can't redefine %s \"%s\"."),
+			vips_buf_appendf(&buf, _("Can't redefine %s \"%s\""),
 				decode_SymbolType_user(sym->type), name);
+
+			if (sym->tool &&
+				sym->tool->kit) {
+				vips_buf_appendf(&buf, ", ");
+				vips_buf_appendf(&buf, _("previous definition was %s:%d"),
+					FILEMODEL(sym->tool->kit)->filename, sym->tool->lineno);
+			}
+			vips_buf_appendf(&buf, ".");
+
+			nip2yyerror("%s", vips_buf_all(&buf));
 			/*NOTREACHED*/
 		}
 
-		/* This is the defining occurence ... move to the end of the
+		/* This is a defining occurrence ... move to the end of the
 		 * traverse order.
 		 */
 		icontainer_child_move(ICONTAINER(sym), -1);
@@ -1021,9 +1063,14 @@ symbol_recalculate_leaf_sub(Symbol *sym)
 	printf("symbol_recalculate_leaf_sub: %s\n", symbol_name_scope(sym));
 
 	/* We can symbol_recalculate_leaf_sub() syms which are not dirty.
-	 */
+	 *
+	 * Both these asserts can fail with regular code, just here for debugging.
+	 *
+	 * Test 2 will fail for mutual top-level recursion.
+	 *
 	g_assert(!sym->dirty || symbol_is_leafable(sym));
 	g_assert(symbol_ndirty(sym) == 0);
+	 */
 #endif /*DEBUG_RECALC*/
 
 	error_clear();
