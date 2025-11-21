@@ -746,35 +746,44 @@ symbol_rename(Symbol *sym, const char *new_name)
 	return TRUE;
 }
 
-void
-symbol_error_redefine(Symbol *sym)
+extern Toolkit *current_kit;
+
+/* Can we add a new def to a sym?
+ */
+static gboolean
+symbol_can_add_def(Symbol *sym)
 {
-	static char txt[200];
-	static VipsBuf buf = VIPS_BUF_STATIC(txt);
+	/* The sym is in current_kit? it must be in the same parse unit, so a new
+	 * def is OK
+	 */
+	if (sym->type == SYM_VALUE &&
+		sym->tool &&
+		sym->tool->kit == current_kit)
+		return TRUE;
 
-	vips_buf_rewind(&buf);
-	vips_buf_appendf(&buf, _("Redefinition of \"%s\"."),
-		IOBJECT(sym)->name);
-	if (sym->tool && sym->tool->lineno != -1) {
-		vips_buf_appendf(&buf, "\n");
-		vips_buf_appendf(&buf, _("Previously defined at line %d."),
-			sym->tool->lineno);
-	}
+	/* Is this a local def? A second def is also OK, since we must still be
+	 * parsing.
+	 */
+	if (symbol_get_parent(sym)->type == SYM_VALUE)
+		return TRUE;
 
-	yyerror(vips_buf_all(&buf));
+	return FALSE;
 }
 
-/* Name in defining occurence. If this is a top-level definition, clean the
- * old symbol and get ready to attach a user function to it. If its not a top-
- * level definition, we flag an error. Consider repeated parameter names,
- * repeated occurence of names in locals, local name clashes with parameter
- * name etc.
+/* Name in defining occurrence.
+ *
+ * If this is a redefinition of an existing def in this kit, add it as a local
+ * of the existing def and tag for codegen. Consider repeated param names,
+ * param names clashing with locals.
+ *
  * We make a ZOMBIE: our caller should turn it into a blank user definition, a
  * parameter etc.
  */
 Symbol *
 symbol_new_defining(Compile *compile, const char *name)
 {
+	static int symbol_def_id = 0;
+
 	Symbol *sym;
 
 	/* Block definition of "root" anywhere ... too confusing.
@@ -786,16 +795,30 @@ symbol_new_defining(Compile *compile, const char *name)
 	/* Is this a redefinition of an existing symbol in this scope?
 	 */
 	if ((sym = compile_lookup(compile, name))) {
-		/* Yes. Check that this redefinition is legal.
-		 */
-		switch (sym->type) {
-		case SYM_VALUE:
-			/* Redef of existing symbol? Only allowed at top
-			 * level.
+		if (sym->type == SYM_ZOMBIE) {
+			/* This is the definition for a previously referenced
+			 * symbol. Just return the ZOMBIE we made.
 			 */
-			if (!is_scope(compile->sym))
-				symbol_error_redefine(sym);
-			break;
+		}
+		else if (symbol_can_add_def(sym)) {
+			/* This is a new def for an existing def, either a local or a
+			 * top-level.
+			 *
+			 * This new def should be attached as a local of that first def,
+			 * and the whole thing needs tagging for a codegen pass.
+			 */
+			char name_id[256];
+			Symbol *new_def;
+
+			g_snprintf(name_id, 256, "$$%s_def%d", name, symbol_def_id++);
+			new_def = symbol_new(sym->expr->compile, name_id);
+			new_def->generated = TRUE;
+
+			// append to the set of defs
+			symbol_get_last(sym)->next_def = new_def;
+
+			// sym has multiple defs and will need a codegen pass
+			sym->needs_codegen = TRUE;
 
 			sym = new_def;
 		}
