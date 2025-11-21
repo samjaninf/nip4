@@ -152,33 +152,6 @@ symbol_get_scope(Symbol *sym)
 	return i;
 }
 
-/* Get the enclosing top-level for a sym.
- */
-Symbol *
-symbol_get_top(Symbol *sym)
-{
-	Symbol *i;
-
-	for (i = sym; i && !is_top(i); i = symbol_get_parent(i))
-		;
-
-	return i;
-}
-
-/* Return the final definition, if this symbol has multiple RHS.
- */
-Symbol *
-symbol_get_last(Symbol *sym)
-{
-	Symbol *last;
-
-	for (last = sym; last; last = last->next_def)
-		if (!last->next_def)
-			break;
-
-	return last;
-}
-
 /* Make a fully-qualified symbol name .. eg fred.jim, given jim. Don't print
  * static scopes.
  */
@@ -319,6 +292,7 @@ symbol_clear(Symbol *sym)
 	sym->leaf = FALSE;
 
 	sym->generated = FALSE;
+	sym->placeholder = FALSE;
 
 	sym->tool = NULL;
 
@@ -397,15 +371,15 @@ void
 symbol_leaf_set_sanity(void)
 {
 	slist_map(symbol_leaf_set, (SListMapFn) symbol_sanity, NULL);
-	if (symbol_root->expr->compile)
-		icontainer_map(ICONTAINER(symbol_root->expr->compile),
-			(icontainer_map_fn) symbol_sanity, NULL, NULL);
+	icontainer_map(ICONTAINER(symbol_root->expr->compile),
+		(icontainer_map_fn) symbol_sanity, NULL, NULL);
 
 	/* Commented out to reduce spam
-	 */
+	 *
 	printf( "Leaf set: " );
 	slist_map( symbol_leaf_set, (SListMapFn) dump_tiny, NULL );
 	printf( "\n" );
+	 */
 }
 #endif /*DEBUG*/
 
@@ -452,8 +426,6 @@ symbol_strip(Symbol *sym)
 		sym->ws->sym = NULL;
 		sym->ws = NULL;
 	}
-
-	sym->next_def = NULL;
 
 	/* It's a ZOMBIE now.
 	 */
@@ -553,11 +525,13 @@ static void
 symbol_dispose(GObject *gobject)
 {
 	Symbol *sym;
+	Compile *compile;
 
 	g_return_if_fail(gobject != NULL);
 	g_return_if_fail(IS_SYMBOL(gobject));
 
 	sym = SYMBOL(gobject);
+	compile = COMPILE(ICONTAINER(sym)->parent);
 
 #ifdef DEBUG_MAKE
 	printf("symbol_dispose: ");
@@ -565,16 +539,10 @@ symbol_dispose(GObject *gobject)
 	printf("(%p)\n", sym);
 #endif /*DEBUG_MAKE*/
 
-	/* Does our parent ref us as next_def? Clear it.
+	/* Make sure we're not leaving last_sym dangling.
 	 */
-	if (sym->expr &&
-		sym->expr->compile) {
-		Compile *parent_compile = compile_get_parent(sym->expr->compile);
-
-		if (parent_compile &&
-			parent_compile->sym->next_def == sym)
-			parent_compile->sym->next_def = NULL;
-	}
+	if (compile && compile->last_sym == sym)
+		compile->last_sym = NULL;
 
 	/* Clear state.
 	 */
@@ -746,44 +714,35 @@ symbol_rename(Symbol *sym, const char *new_name)
 	return TRUE;
 }
 
-extern Toolkit *current_kit;
-
-/* Can we add a new def to a sym?
- */
-static gboolean
-symbol_can_add_def(Symbol *sym)
+void
+symbol_error_redefine(Symbol *sym)
 {
-	/* The sym is in current_kit? it must be in the same parse unit, so a new
-	 * def is OK
-	 */
-	if (sym->type == SYM_VALUE &&
-		sym->tool &&
-		sym->tool->kit == current_kit)
-		return TRUE;
+	static char txt[200];
+	static VipsBuf buf = VIPS_BUF_STATIC(txt);
 
-	/* Is this a local def? A second def is also OK, since we must still be
-	 * parsing.
-	 */
-	if (symbol_get_parent(sym)->type == SYM_VALUE)
-		return TRUE;
+	vips_buf_rewind(&buf);
+	vips_buf_appendf(&buf, _("Redefinition of \"%s\"."),
+		IOBJECT(sym)->name);
+	if (sym->tool && sym->tool->lineno != -1) {
+		vips_buf_appendf(&buf, "\n");
+		vips_buf_appendf(&buf, _("Previously defined at line %d."),
+			sym->tool->lineno);
+	}
 
-	return FALSE;
+	yyerror(vips_buf_all(&buf));
 }
 
-/* Name in defining occurrence.
- *
- * If this is a redefinition of an existing def in this kit, add it as a local
- * of the existing def and tag for codegen. Consider repeated param names,
- * param names clashing with locals.
- *
+/* Name in defining occurence. If this is a top-level definition, clean the
+ * old symbol and get ready to attach a user function to it. If its not a top-
+ * level definition, we flag an error. Consider repeated parameter names,
+ * repeated occurence of names in locals, local name clashes with parameter
+ * name etc.
  * We make a ZOMBIE: our caller should turn it into a blank user definition, a
  * parameter etc.
  */
 Symbol *
 symbol_new_defining(Compile *compile, const char *name)
 {
-	static int symbol_def_id = 0;
-
 	Symbol *sym;
 
 	/* Block definition of "root" anywhere ... too confusing.
@@ -792,59 +751,35 @@ symbol_new_defining(Compile *compile, const char *name)
 		nip2yyerror(_("Attempt to redefine root symbol \"%s\"."),
 			name);
 
-	/* Is this a redefinition of an existing symbol in this scope?
+	/* Is this a redefinition of an existing symbol?
 	 */
 	if ((sym = compile_lookup(compile, name))) {
-		if (sym->type == SYM_ZOMBIE) {
+		/* Yes. Check that this redefinition is legal.
+		 */
+		switch (sym->type) {
+		case SYM_VALUE:
+			/* Redef of existing symbol? Only allowed at top
+			 * level.
+			 */
+			if (!is_scope(compile->sym))
+				symbol_error_redefine(sym);
+			break;
+
+		case SYM_ZOMBIE:
 			/* This is the definition for a previously referenced
 			 * symbol. Just return the ZOMBIE we made.
 			 */
-		}
-		else if (symbol_can_add_def(sym)) {
-			/* This is a new def for an existing def, either a local or a
-			 * top-level.
-			 *
-			 * This new def should be attached as a local of that first def,
-			 * and the whole thing needs tagging for a codegen pass.
+			break;
+
+		default:
+			/* Parameter, workspace, etc.
 			 */
-			char name_id[256];
-			Symbol *new_def;
-
-			g_snprintf(name_id, 256, "$$%s_def%d", name, symbol_def_id++);
-			new_def = symbol_new(sym->expr->compile, name_id);
-			new_def->generated = TRUE;
-
-			// append to the set of defs
-			symbol_get_last(sym)->next_def = new_def;
-
-			// sym has multiple defs and will need a codegen pass
-			sym->needs_codegen = TRUE;
-
-			sym = new_def;
-		}
-		else {
-			/* Eg. redef of parameter, workspace, an existing def in
-			 * another kit.
-			 */
-			char txt[200];
-			VipsBuf buf = VIPS_BUF_STATIC(txt);
-
-			vips_buf_appendf(&buf, _("Can't redefine %s \"%s\""),
+			nip2yyerror(_("Can't redefine %s \"%s\"."),
 				decode_SymbolType_user(sym->type), name);
-
-			if (sym->tool &&
-				sym->tool->kit) {
-				vips_buf_appendf(&buf, ", ");
-				vips_buf_appendf(&buf, _("previous definition was %s:%d"),
-					FILEMODEL(sym->tool->kit)->filename, sym->tool->lineno);
-			}
-			vips_buf_appendf(&buf, ".");
-
-			nip2yyerror("%s", vips_buf_all(&buf));
 			/*NOTREACHED*/
 		}
 
-		/* This is a defining occurrence ... move to the end of the
+		/* This is the defining occurence ... move to the end of the
 		 * traverse order.
 		 */
 		icontainer_child_move(ICONTAINER(sym), -1);
@@ -1086,14 +1021,9 @@ symbol_recalculate_leaf_sub(Symbol *sym)
 	printf("symbol_recalculate_leaf_sub: %s\n", symbol_name_scope(sym));
 
 	/* We can symbol_recalculate_leaf_sub() syms which are not dirty.
-	 *
-	 * Both these asserts can fail with regular code, just here for debugging.
-	 *
-	 * Test 2 will fail for mutual top-level recursion.
-	 *
+	 */
 	g_assert(!sym->dirty || symbol_is_leafable(sym));
 	g_assert(symbol_ndirty(sym) == 0);
-	 */
 #endif /*DEBUG_RECALC*/
 
 	error_clear();

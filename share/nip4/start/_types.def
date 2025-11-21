@@ -272,7 +272,8 @@ Vector value = class
 			is_Vector x &&
 			len value == len x.value &&
 			op.type == Operator_type.COMPOUND_REWRAP],
-		// (is_Image x) is left for the Image class to handle
+		[x.Image (vec op'.op_name x.value value),
+			is_Image x],
 		[vec op'.op_name x value,
 			is_image x],
 		[op.fn this.value x,
@@ -911,8 +912,6 @@ Image value = class
 			has_image x],
 		[wrap (op.fn this.value (get_number x)),
 			has_number x],
-        [wrap (vec op.op_name this.value x.value),
-            is_Vector x],
 		// if it's not a class on the RHS, handle here ... just apply and
 		// rewrap
 		[wrap (op.fn this.value x),

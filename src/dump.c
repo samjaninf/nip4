@@ -381,7 +381,7 @@ dump_compile(Compile *compile)
 
 	if (compile->tree) {
 		printf("%s->compile->tree = \n", IOBJECT(sym)->name);
-		(void) dump_tree(compile->tree, 2);
+		(void) dump_tree(compile->tree);
 	}
 #ifdef VERBOSE
 	printf("%s->compile->treefrag = %d pointers\n", IOBJECT(sym)->name,
@@ -477,17 +477,6 @@ dump_symbol(Symbol *sym)
 		IOBJECT(sym)->name, sym->ndirtychildren);
 	printf("%s->leaf = %s\n",
 		IOBJECT(sym)->name, bool_to_char(sym->leaf));
-	printf("%s->needs_codegen = %s\n",
-		IOBJECT(sym)->name, bool_to_char(sym->needs_codegen));
-	printf("%s->generated = %s\n",
-		IOBJECT(sym)->name, bool_to_char(sym->generated));
-
-	if (!sym->generated && sym->next_def) {
-		printf("%s->next_def = ", IOBJECT(sym)->name);
-		for (Symbol *p = sym->next_def; p; p = sym->next_def)
-			printf("%s ", IOBJECT(sym)->name);
-		printf("\n");
-	}
 
 	printf("%s->tool = kit ", IOBJECT(sym)->name);
 	if (sym->tool)
@@ -785,117 +774,92 @@ dump_parseconst(ParseConst *pc)
 	}
 }
 
-static void *
-dump_list_element(ParseNode *n, int *indent)
-{
-	printf("%*c", *indent, ' ');
-	printf("ITEM\n");
-	dump_tree(n, *indent + 2);
-
-	return NULL;
-}
-
 /* Dump a parse tree.
  */
 void *
-dump_tree(ParseNode *n, int indent)
+dump_tree(ParseNode *n)
 {
 	switch (n->type) {
 	case NODE_NONE:
-		printf("%*c", indent, ' ');
 		printf("node->type == NODE_NONE\n");
 		break;
 
 	case NODE_APPLY:
-		printf("%*c", indent, ' ');
 		printf("Function application\n");
-		printf("%*c", indent, ' ');
-		printf("LHS\n");
-		(void) dump_tree(n->arg1, indent + 2);
-		printf("%*c", indent, ' ');
-		printf("RHS\n");
-		(void) dump_tree(n->arg2, indent + 2);
+		printf("LHS = ");
+		(void) dump_tree(n->arg1);
+		printf("RHS = ");
+		(void) dump_tree(n->arg2);
 		break;
 
 	case NODE_CLASS:
-		printf("%*c", indent, ' ');
 		printf("Class: ");
 		(void) dump_compile_tiny(n->klass);
 		printf("\n");
 		break;
 
 	case NODE_LEAF:
-		printf("%*c", indent, ' ');
 		printf("Leaf symbol (%p): ", n->leaf);
 		(void) dump_tiny(n->leaf);
 		printf("\n");
 		break;
 
 	case NODE_TAG:
-		printf("%*c", indent, ' ');
 		printf("Tag: %s\n", n->tag);
 		break;
 
 	case NODE_BINOP:
-		printf("%*c", indent, ' ');
 		printf("Binary operator %s\n", decode_BinOp(n->biop));
-		printf("%*c", indent, ' ');
-		printf("LHS\n");
-		(void) dump_tree(n->arg1, indent + 2);
-		printf("%*c", indent, ' ');
-		printf("RHS\n");
-		(void) dump_tree(n->arg2, indent + 2);
+		printf("Left expression:\n");
+		(void) dump_tree(n->arg1);
+		printf("Right expression:\n");
+		(void) dump_tree(n->arg2);
 		break;
 
 	case NODE_UOP:
-		printf("%*c", indent, ' ');
-		printf("Unary operator %s:\n", decode_UnOp(n->uop));
-		(void) dump_tree(n->arg1, indent + 2);
+		printf("Unary operator %s\n", decode_UnOp(n->uop));
+		printf("Arg expression:\n");
+		(void) dump_tree(n->arg1);
 		break;
 
 	case NODE_CONST:
-		printf("%*c", indent, ' ');
 		printf("Constant ");
 		dump_parseconst(&n->con);
 		printf("\n");
 		break;
 
 	case NODE_GENERATOR:
-		printf("%*c", indent, ' ');
 		printf("List generator\n");
-		printf("%*c", indent, ' ');
 		printf("Start:\n");
-		(void) dump_tree(n->arg1, indent + 2);
+		(void) dump_tree(n->arg1);
 		if (n->arg2) {
-			printf("%*c", indent, ' ');
 			printf("Next:\n");
-			(void) dump_tree(n->arg2, indent + 2);
+			(void) dump_tree(n->arg2);
 		}
 		if (n->arg3) {
-			printf("%*c", indent, ' ');
 			printf("End:\n");
-			(void) dump_tree(n->arg3, indent + 2);
+			(void) dump_tree(n->arg3);
 		}
 		break;
 
 	case NODE_COMPOSE:
-		printf("%*c", indent, ' ');
 		printf("Function compose\n");
-		printf("LHS\n");
-		(void) dump_tree(n->arg1, indent + 2);
-		printf("RHS\n");
-		(void) dump_tree(n->arg2, indent + 2);
+		printf("Left:\n");
+		(void) dump_tree(n->arg1);
+		printf("Right:\n");
+		(void) dump_tree(n->arg2);
 		break;
 
 	case NODE_LISTCONST:
 	case NODE_SUPER:
-		printf("%*c", indent, ' ');
 		if (n->type == NODE_LISTCONST)
 			printf("List constant\n");
 		else
 			printf("Superclass construct\n");
 
-		slist_map(n->elist, (SListMapFn) dump_list_element, &indent);
+		printf("***[\n");
+		slist_map_rev(n->elist, (SListMapFn) dump_tree, NULL);
+		printf("***]\n");
 		break;
 
 	default:
