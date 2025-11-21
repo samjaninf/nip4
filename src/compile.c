@@ -1477,7 +1477,6 @@ compile_remove_subexpr(Compile *compile, PElement *root)
 static gboolean
 compile_defs_check(Compile *compile)
 {
-	g_assert(!compile->sym->generated);
 	g_assert(compile->sym->next_def || !compile->has_default);
 
 	int nparam = -1;
