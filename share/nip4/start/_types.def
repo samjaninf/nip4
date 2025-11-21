@@ -272,8 +272,7 @@ Vector value = class
 			is_Vector x &&
 			len value == len x.value &&
 			op.type == Operator_type.COMPOUND_REWRAP],
-		[x.Image (vec op'.op_name x.value value),
-			is_Image x],
+		// (is_Image x) is left for the Image class to handle
 		[vec op'.op_name x value,
 			is_image x],
 		[op.fn this.value x,
