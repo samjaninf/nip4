@@ -440,7 +440,7 @@
                 {
                     "type" : "git",
                     "url" : "https://github.com/libvips/libvips.git",
-                    "commit" : "1ca82eb21227aba41236df5795764e8ce6a0bdf5"
+                    "commit" : "698159ecc6e0d4428316388f783c2fa66a7a17fd"
                 }
             ]
         },
@@ -465,14 +465,11 @@
             "name" : "nip4",
             "builddir" : true,
             "buildsystem" : "meson",
-            "config-opts" : [
-                "--buildtype=release"
-            ],
             "sources" : [
                 {
                     "type" : "git",
                     "url" : "https://github.com/jcupitt/nip4.git",
-                    "commit" : "afb26a7d1f0afc874a0615ba5ce167c1ef5b21ee"
+                    "commit" : "fb6371083bbbfe0e7147ceea238fca3c00d6e15f"
                 }
             ]
         }

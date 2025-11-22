@@ -57,6 +57,17 @@
 
   <releases>
 
+    <release version="9.0.15" date="2025-11-22">
+      <description>
+        <p>
+
+            This build improves nip4's programming language with argument
+            pattern matching and function overloads.
+
+        </p>
+      </description>
+    </release>
+
     <release version="9.0.14" date="2025-10-25">
       <description>
         <p>
@@ -86,9 +97,9 @@
       <description>
         <p>
 
-		This version has many image display improvements, an EXE icon
-		on windows, high-DPI support, better group and ungroup, better
-		row drag, and a much better toolkit menu.
+        This version has many image display improvements, an EXE icon
+        on windows, high-DPI support, better group and ungroup, better
+        row drag, and a much better toolkit menu.
 
         </p>
       </description>
@@ -98,9 +109,9 @@
       <description>
         <p>
 
-		This version has a rewritten tilecache which should be o
-		dramatically faster in many cases. Flicker on updates should
-		also be gone. Plus many small fixes, see the CHANGELOG.
+        This version has a rewritten tilecache which should be o
+        dramatically faster in many cases. Flicker on updates should
+        also be gone. Plus many small fixes, see the CHANGELOG.
 
         </p>
       </description>
@@ -110,11 +121,11 @@
       <description>
         <p>
 
-		This version adds better OME-TIFF handling (along with other
-		image display improvements), better menu state initialisation,
-		and more view properties are shared with thumbnails. It adds
-		"Merge column" and "Merge tab" submenus. Region manipulation
-		during recomputation is now much more responsive.
+        This version adds better OME-TIFF handling (along with other
+        image display improvements), better menu state initialisation,
+        and more view properties are shared with thumbnails. It adds
+        "Merge column" and "Merge tab" submenus. Region manipulation
+        during recomputation is now much more responsive.
 
         </p>
       </description>
