@@ -1254,8 +1254,7 @@ is_EOF(void)
 }
 
 /* Return the text we have accumulated for the current definition. Remove
- * leading and trailing whitespace and spare semicolons. out needs to be
- * MAX_STRSIZE.
+ * leading and trailing whitespace. out needs to be MAX_STRSIZE.
  */
 char *
 input_text(char *out)
@@ -1268,10 +1267,10 @@ input_text(char *out)
     int len;
     int i;
 
-    for (i = start; i < end && (isspace(buf[i]) || buf[i] == ';'); i++)
+    for (i = start; i < end && isspace(buf[i]); i++)
         ;
     start = i;
-    for (i = end - 1; i > start && (isspace(buf[i]) || buf[i] == ';'); i--)
+    for (i = end - 1; i > start && isspace(buf[i]); i--)
         ;
     end = i + 1;
 

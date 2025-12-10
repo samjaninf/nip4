@@ -20,9 +20,9 @@
 
  */
 
-/* just load .defs/.wses from "."
-#define DEBUG_LOCAL
+/* just load startup defs/.wses from "."
  */
+#define DEBUG_LOCAL
 
 /* show path searches
 #define DEBUG_SEARCH

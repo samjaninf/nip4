@@ -247,11 +247,19 @@ program_set_tool(Program *program, Tool *tool)
 		WEAKREF_SET(program->tool, tool);
 
 		if (tool) {
-			if (tool->sym->expr)
-				program_set_text(program, tool->sym->expr->compile->text, TRUE);
+			char txt[MAX_STRSIZE];
+			VipsBuf buf = VIPS_BUF_STATIC(txt);
+
+			if (tool->sym->expr) {
+
+				for (Symbol *sym = tool->sym; sym; sym = sym->next_def) {
+					vips_buf_appends(&buf, sym->expr->compile->text);
+					vips_buf_appends(&buf, "\n");
+				}
+
+				program_set_text(program, vips_buf_all(&buf), TRUE);
+			}
 			else if (tool->sym->type == SYM_BUILTIN) {
-				char txt[MAX_STRSIZE];
-				VipsBuf buf = VIPS_BUF_STATIC(txt);
 
 				vips_buf_appendf(&buf, "%s\n\n", tool->help);
 				builtin_usage(&buf, tool->sym->builtin);

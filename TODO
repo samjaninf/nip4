@@ -1,15 +1,24 @@
 - nicholas's bug report
 
+- what does the programming window do for multiple defs?
+
+    must delete old tool on |> or we'll see multiple defs
+
+    make foldr into a multiple rhs, use for testing
+
 - lcomps leave stray unreffed symbols in "list unresolved"
 
     Image_transform_item.Resize_item.Size_within_item.action.within ($SAVEDIR/start/Image.def:509)  refers to undefined symbol h
     Image_transform_item.Resize_item.Size_within_item.action.within ($SAVEDIR/start/Image.def:509)  refers to undefined symbol w
 
-- rework pattern matching in lcomps
+	I think patterns are going into the enclosing scope, not a subscope
 
-- what does the programming window do for multiple defs?
+	rework pattern matching in lcomps
 
-    probably need to follow next_def and concatenate them all
+
+
+
+- row and coloumn drag should need ctrl + mouse
 
 - dir should hide $$vars
 
