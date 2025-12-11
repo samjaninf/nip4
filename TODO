@@ -1,7 +1,14 @@
+- segv on exit
+
+	MOSAIC_WINDOW_SIZE
+
 - lcomp rewrite
+
+  first test case
 
 	fred = [x :: x <- [1..10]];
 
+  where is x made? should be local of fred
 
 - nicholas's bug report
 

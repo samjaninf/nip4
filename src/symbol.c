@@ -591,15 +591,21 @@ symbol_dispose(GObject *gobject)
 		symbol_dirty_clear(sym);
 	}
 
+	/* Any symbols which refer to us must have errors.
+	 */
+	if (sym->type == SYM_VALUE)
+
+
+		topparents is a Link* not a sym
+
+
+		(void) slist_map(sym->topparents,
+			(SListMapFn) symbol_destroy_error, sym);
+
 	/* Strip it down.
 	 */
 	(void) symbol_strip(sym);
 	IDESTROY(sym->tool);
-
-	/* Any symbols which refer to us must have errors.
-	 */
-	(void) slist_map(sym->topparents,
-		(SListMapFn) symbol_destroy_error, sym);
 
 	/* Remove links from any expr which refer to us.
 	 */
