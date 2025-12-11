@@ -124,7 +124,7 @@ foldl1 fn l
  * foldr :: (* -> ** -> **) -> ** -> [*] -> **
  */
 foldr fn st [] = st;
-foldr fn st a:x = fn x (foldr fn st x);
+foldr fn st a:x = fn a (foldr fn st x);
 
 /* foldr1 fn l: like foldr, but use the last element as the start value
  *
