@@ -1,8 +1,25 @@
 - nicholas's bug report
 
-- what does the programming window do for multiple defs?
+- we need a better way of decising if a def is a redefinition or an
+  alternative definition
 
-    must delete old tool on |> or we'll see multiple defs
+	maybe have
+
+		int parse_serial_number
+
+	increment whenever we start a new parse unit, store the serial number
+	in the symbol, use that to decide if this is a redef, or it's OKo
+
+	get rid of the thing that removes a tool before starting parse, too
+	unreliable
+
+
+- parse_onedef() was using single_definition, which also increments
+  tool_position, do we need to do that?
+
+- test renaming a tool
+
+- what does the programming window do for multiple defs?
 
     make foldr into a multiple rhs, use for testing
 
