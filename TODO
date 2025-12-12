@@ -1,3 +1,17 @@
+- leak check iObject etc. with a table of live objects we walk on exit
+
+- segv on exit
+
+	MOSAIC_WINDOW_SIZE
+
+- lcomp rewrite
+
+  first test case
+
+	fred = [x :: x <- [1..10]];
+
+  where is x made? should be local of fred
+
 - nicholas's bug report
 
 - drag in workspace JUST scrolls and selects (non destructive stuff)
@@ -6,16 +20,21 @@
 
 - start nip4, open a workspace, empty ws is not deleted
 
+- parse_onedef() was using single_definition, which also increments
+  tool_position, do we need to do that?
+
 - lcomps leave stray unreffed symbols in "list unresolved"
 
     Image_transform_item.Resize_item.Size_within_item.action.within ($SAVEDIR/start/Image.def:509)  refers to undefined symbol h
     Image_transform_item.Resize_item.Size_within_item.action.within ($SAVEDIR/start/Image.def:509)  refers to undefined symbol w
 
-- rework pattern matching in lcomps
+	I think patterns are going into the enclosing scope, not a subscope
 
-- what does the programming window do for multiple defs?
+	rework pattern matching in lcomps
 
-    probably need to follow next_def and concatenate them all
+- row and coloumn drag should need ctrl + mouse
+
+	maybe just row drag? col drag is more obvious
 
     pressing |> in prorgam window needs to delete the tool before reparsing or
     we'll see a multiple def

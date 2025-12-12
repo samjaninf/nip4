@@ -41,8 +41,8 @@
  */
 
 /* Time each GC, handy for benchmarking.
- */
 #define DEBUG_GC_TIME
+ */
 
 #include "nip4.h"
 

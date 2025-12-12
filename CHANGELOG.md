@@ -1,5 +1,7 @@
 ## master
 
+- add multiple defs to program window
+
 ## 9.0.15 2025/11/22
 
 - pattern matching rewrite
