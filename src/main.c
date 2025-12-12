@@ -295,6 +295,7 @@ main_startup(int argc, char **argv)
 		g_warning(_("unable to read max file descriptors"));
 #endif /*HAVE_GETRLIMIT*/
 
+	error_init();
 	path_init();
 
 	/* Always make these in case some get deleted.

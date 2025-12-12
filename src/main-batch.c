@@ -231,13 +231,7 @@ main_set(const char *str)
         /* Another parse error.
          */
         expr_error_get(sym->expr);
-
-        /* Block changes to error_string ... symbol_destroy()
-         * can set this for compound objects.
-         */
-        error_block();
         IDESTROY(sym);
-        error_unblock();
 
         return FALSE;
     }

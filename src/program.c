@@ -315,7 +315,6 @@ program_parse(Program *program)
     if (!parse_toplevel(program->kit, program->tool_pos)) {
         text_view_select_text(GTK_TEXT_VIEW(program->text_view),
             input_state.charpos - yyleng, input_state.charpos);
-
 		// in case we started something we couldn't finish
 		IDESTROY(compile->last_sym);
 

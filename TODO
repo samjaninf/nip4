@@ -1,9 +1,5 @@
 - leak check iObject etc. with a table of live objects we walk on exit
 
-- segv on exit
-
-	MOSAIC_WINDOW_SIZE
-
 - lcomp rewrite
 
   first test case
@@ -17,6 +13,8 @@
 - drag in workspace JUST scrolls and selects (non destructive stuff)
 
 	hold crtl to drag rows and columns
+
+	maybe col drag is ok and we should just stop row drag?
 
 - start nip4, open a workspace, empty ws is not deleted
 

@@ -541,13 +541,15 @@ symbol_not_defined(Symbol *sym)
  * error.
  */
 static void *
-symbol_destroy_error(Symbol *parent, Symbol *child)
+symbol_destroy_error(Compile *compile, Symbol *sym)
 {
-	if (parent->expr &&
-		parent->expr->compile) {
-		symbol_not_defined(child);
-		compile_error_set(parent->expr->compile);
-	}
+	// don't mess up the error buffer
+	error_push();
+
+	symbol_not_defined(sym);
+	compile_error_set(compile);
+
+	error_pop();
 
 	return NULL;
 }
@@ -591,21 +593,15 @@ symbol_dispose(GObject *gobject)
 		symbol_dirty_clear(sym);
 	}
 
-	/* Any symbols which refer to us must have errors.
-	 */
-	if (sym->type == SYM_VALUE)
-
-
-		topparents is a Link* not a sym
-
-
-		(void) slist_map(sym->topparents,
-			(SListMapFn) symbol_destroy_error, sym);
-
 	/* Strip it down.
 	 */
 	(void) symbol_strip(sym);
 	IDESTROY(sym->tool);
+
+	/* Any Compile which refer to us must have errors.
+	 */
+	(void) slist_map(sym->parents,
+		(SListMapFn) symbol_destroy_error, sym);
 
 	/* Remove links from any expr which refer to us.
 	 */

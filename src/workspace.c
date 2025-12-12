@@ -550,13 +550,7 @@ workspace_add_def(Workspace *ws, const char *str)
 		/* Another parse error.
 		 */
 		expr_error_get(sym->expr);
-
-		/* Block changes to error_string ... symbol_destroy()
-		 * can set this for compound objects.
-		 */
-		error_block();
 		IDESTROY(sym);
-		error_unblock();
 
 		return NULL;
 	}
@@ -592,9 +586,7 @@ workspace_add_def_recalc(Workspace *ws, const char *str)
 		/* Eval error.
 		 */
 		expr_error_get(sym->expr);
-		error_block();
 		IDESTROY(sym);
-		error_unblock();
 
 		return NULL;
 	}
