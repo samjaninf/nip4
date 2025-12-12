@@ -1,5 +1,11 @@
 - nicholas's bug report
 
+- drag in workspace JUST scrolls and selects (non destructive stuff)
+
+	hold crtl to drag rows and columns
+
+- start nip4, open a workspace, empty ws is not deleted
+
 - lcomps leave stray unreffed symbols in "list unresolved"
 
     Image_transform_item.Resize_item.Size_within_item.action.within ($SAVEDIR/start/Image.def:509)  refers to undefined symbol h
@@ -10,6 +16,9 @@
 - what does the programming window do for multiple defs?
 
     probably need to follow next_def and concatenate them all
+
+    pressing |> in prorgam window needs to delete the tool before reparsing or
+    we'll see a multiple def
 
 - dir should hide $$vars
 
@@ -44,7 +53,17 @@
 
     fred a:b:x = a + b;
 
+- haskell has lambdas as
 
+	foldr (\x y -> (x + y) / 2) 54 [12, 4, 10, 6]
+
+  maybe we should copy this? we'd get patterns in the lambda var then
+
+- make "About" non-modal and update on gc
+
+	use progress system?
+
+	add a new GC signal
 
 - remove remove prefs workspace stuff?
 
