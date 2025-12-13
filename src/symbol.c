@@ -30,8 +30,8 @@
 #include "nip4.h"
 
 /* All debug
-#define DEBUG
  */
+#define DEBUG
 
 /* Just trace create/destroy.
 #define DEBUG_MAKE
