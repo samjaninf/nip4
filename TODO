@@ -80,7 +80,12 @@
 
   need to strip trailing ';'
 
-- leak check iObject etc. with a table of live objects we walk on exit
+
+
+- do row select on button up, and as part of the mainwindow event state
+  machine
+
+  same for up down buttons
 
 - lcomp rewrite
 
