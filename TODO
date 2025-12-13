@@ -1,3 +1,85 @@
+- lcomp example in compile.c:
+
+  Example: after parse we have:
+
+    [(x, y) :: x <- [1..3]; y <- [x..3]; x + y > 3];
+
+    ... $$lcomp1 ...
+    {
+        $$lcomp1 = NULL
+        {
+            $$result = (x, y);
+            // elements in left-to-right order
+            // in compile->children
+            x = [1..3]
+            y = [x..3]
+            $$filter1 = x + y > 3
+        }
+    }
+
+  we generate this code:
+
+    z = $$lcomp1
+    {
+        $$lcomp1 = foldr $f1 [] [1..3]
+        {
+            $f1 x $sofar = foldr $f2 $sofar [x..3]
+            {
+                $f2 y $sofar = if x + y > 3 then $f3 else $sofar
+                {
+                    $f3 = (x, y) : $sofar;
+                }
+            }
+        }
+    }
+
+  and compute this result:
+
+    [1 + 3j, 2 + 2j, 2 + 3j, 3 + 3j]
+
+  looking at compiler run, we leave A1.x undefined
+
+
+- try
+
+	fred = [x :: x <- [1..10]]
+
+	fred = $$lcomp0
+	{
+		$$lcomp0 = foldr $$fn1 [] [1..10]
+		{
+			$$result = x ZOMBIE
+			$$pattern1 = x ZOMBIE
+			$$generator1 = [1..10]
+			$$fn1 $$generator1 $$sofar = x : $$sofar
+			{
+				x = if $$match2 then $$generator1 else err ..
+				$$match2 = true
+			}
+		}
+	}
+
+  we gen refs tp fred.$$lcomp0.x, but we never seem to define it
+
+  we never use $$result or $$pattern1 (in this case anyway)
+
+  re-read the lcomp compiler now we kow what it makes
+
+
+
+
+
+
+- try
+
+	A1: 12
+
+  go back, click on A1, see:
+
+	A1: 12;
+
+  need to strip trailing ';'
+
 - leak check iObject etc. with a table of live objects we walk on exit
 
 - lcomp rewrite

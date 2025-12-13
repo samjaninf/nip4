@@ -28,33 +28,33 @@
  */
 
 /*
-#define DEBUG_RESOLVE
  */
+#define DEBUG_RESOLVE
 
 /* regular (and very slow) sanity checks on symbols ... needs DEBUG in
  * symbol.c as well
-#define DEBUG_SANITY
  */
+#define DEBUG_SANITY
 
 /* count how many nodes we find with common sub-expression removal.
-#define DEBUG_COMMON
  */
+#define DEBUG_COMMON
 
 /* show what everything compiled to
-#define DEBUG_RESULT
  */
+#define DEBUG_RESULT
 
 /* trace list comp compile
-#define DEBUG_LCOMP
  */
+#define DEBUG_LCOMP
 
 /* trace pattern LHS generation
-#define DEBUG_PATTERN
  */
+#define DEBUG_PATTERN
 
 /*
-#define DEBUG
  */
+#define DEBUG
 
 #include "nip4.h"
 
@@ -2410,7 +2410,7 @@ compile_copy_tree(Compile *fromscope, ParseNode *tree, Compile *toscope)
 		}
 	}
 
-  and we generate this code:
+  we generate this code:
 
 	z = $$lcomp1
 	{
@@ -2425,6 +2425,10 @@ compile_copy_tree(Compile *fromscope, ParseNode *tree, Compile *toscope)
 			}
 		}
 	}
+
+  and compute this result:
+
+	[1 + 3j, 2 + 2j, 2 + 3j, 3 + 3j]
 
  */
 
