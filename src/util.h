@@ -51,6 +51,8 @@
 		(B) = swapp_t; \
 	}
 
+#define MAX_ERROR_LENGTH (1024)
+
 void error_init(void);
 void error_clear(void);
 void error_push(void);

@@ -24,6 +24,7 @@
 /*
 #define DEBUG
  */
+#define DEBUG_LEAK
 
 #include "nip4.h"
 
@@ -38,6 +39,10 @@ enum {
 G_DEFINE_TYPE(iObject, iobject, G_TYPE_OBJECT)
 
 static guint iobject_signals[SIG_LAST] = { 0 };
+
+#ifdef DEBUG_LEAK
+GSList *iobject_all = NULL;
+#endif /*DEBUG_LEAK*/
 
 /* Don't emit "destroy" immediately, do it from the _dispose handler, see
  * below.
@@ -122,6 +127,10 @@ iobject_finalize(GObject *gobject)
 	VIPS_FREE(iobject->name);
 	VIPS_FREE(iobject->caption);
 
+#ifdef DEBUG_LEAK
+	iobject_all = g_slist_remove(iobject_all, iobject);
+#endif /*DEBUG_LEAK*/
+
 	G_OBJECT_CLASS(iobject_parent_class)->finalize(gobject);
 }
 
@@ -188,6 +197,10 @@ iobject_init(iObject *iobject)
 	/* Init our instance fields.
 	 */
 	iobject->floating = TRUE;
+
+#ifdef DEBUG_LEAK
+	iobject_all = g_slist_prepend(iobject_all, iobject);
+#endif /*DEBUG_LEAK*/
 }
 
 /* Test the name field ... handy with map.
@@ -279,4 +292,19 @@ iobject_get_user_name(iObject *object)
 	const char *class_name = IOBJECT_GET_CLASS_NAME(object);
 
 	return user_name ? user_name : class_name;
+}
+
+void
+iobject_leak(void)
+{
+#ifdef DEBUG_LEAK
+	if (iobject_all) {
+		printf("leaked objects:\n");
+		int n = 0;
+		for (GSList *i = iobject_all; i; i = i->next) {
+			printf("%d) ", n++);
+			iobject_dump(IOBJECT(i->data));
+		}
+	}
+#endif /*DEBUG_LEAK*/
 }

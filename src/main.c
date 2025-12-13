@@ -428,7 +428,8 @@ main_shutdown(void)
 	managed_check_all_destroyed();
 	util_check_all_destroyed();
 	view_dump();
-#endif /*DEBUG_LEAK*/
+	iobject_leak();
+#endif /*!RELEASE*/
 
 	/* Can we leave files in tmp after ^C/^V?
 	 */

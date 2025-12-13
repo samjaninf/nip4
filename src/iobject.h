@@ -108,3 +108,4 @@ void iobject_sink(iObject *iobject);
 void iobject_ref_sink(iObject *iobject);
 void iobject_dump(iObject *iobject);
 const char *iobject_get_user_name(iObject *object);
+void iobject_leak(void);

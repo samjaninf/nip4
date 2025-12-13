@@ -40,7 +40,6 @@
  * to drop the top one.
  */
 #define MAX_ERROR_STACK (10)
-#define MAX_ERROR_LENGTH (1024)
 static int error_sp = 0;
 static VipsBuf error_top_buf[MAX_ERROR_STACK];
 static VipsBuf error_sub_buf[MAX_ERROR_STACK];
