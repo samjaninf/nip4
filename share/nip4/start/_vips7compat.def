@@ -12,8 +12,7 @@ im_mask2vips = vips_image_from_matrix;
 im_vips2mask = vips_matrix_from_image;
 
 // vips7 wrappers
-im_black x y b = vips_black [$bands => b] x y;
-im_fgrey x y = vips_grey [] x y;
+
 
 im_rot90 x = vips_rot [] x "d90";
 im_rot180 x = vips_rot [] x "d180";
@@ -210,6 +209,30 @@ im_convsep in matrix = vips_convsep [$precision => "integer"] in matrix;
 im_aconvsep in matrix = vips_convsep [$precision => "approximate"] in matrix;
 im_convsepf in matrix = vips_convsep [$precision => "float"] in matrix;
 
+im_conv_f = im_convf;
+im_convsep_f = im_convsepf;
+
+im__trim_raw width heigh image
+    = vips_crop [] image x y w h
+{
+    x = width / 2;
+    y = height / 2;
+    w = width;
+    h = height;
+}
+
+im__trim_raw_matrix matrix image
+    = im__trim_raw matrix.width matrix.height image;
+
+im_convsepf_raw in matrix
+    = im__trim_raw_matrix matrix (im_convsepf in matrix);
+im_convf_raw in matrix
+    = im__trim_raw_matrix matrix (im_convf in matrix);
+im_convsep_raw in matrix
+    = im__trim_raw_matrix matrix (im_convsep in matrix);
+im_conv_raw in matrix
+    = im__trim_raw_matrix matrix (im_conv in matrix);
+
 im_compass in matrix
     = vips_compass [
         $times => 8,
@@ -238,6 +261,12 @@ im_rotate_dmask45 matrix
     matrix' = vips_rot45 [] matrix;
 }
 
+im_rotate_dmask90 matrix
+    = im_vips2mask matrix'
+{
+    matrix' = vips_rot [] matrix "d90";
+}
+
 im_log_dmask sigma min_amp
     = im_vips2mask matrix
 {
@@ -261,10 +290,16 @@ im_sharpen in mask_size x1 y2 y3 m1 m2
     ] in;
 
 im_rank in xsize ysize n = vips_rank [] in xsize ysize n;
+im_rank_raw in xsize ysize n
+    = im__trim_raw xsize ysize (im_rank in xsize ysize n);
 im_rank_image in index = vips_bandrank [$index => index] in;
 
 im_dilate in mask = vips_morph [] in mask "dilate";
 im_erode in mask = vips_morph [] in mask "erode";
+im_dilate_raw in mask
+    = im__trim_raw_matrix mask (im_dilate in mask);
+im_erode_raw in mask
+    = im__trim_raw_matrix mask (im_erode in mask);
 
 im_flt_image_freq in type p1 p2 p3 p4 p5
     = vips_freqmult [] in mask
@@ -367,6 +402,9 @@ im_text text font width alignment dpi
         $dpi => dpi
     ] text;
 
+im_black x y b = vips_black [$bands => b] x y;
+
+im_fgrey x y = vips_grey [] x y;
 im_grey xsize ysize = vips_grey [$uchar => true] xsize ysize;
 
 im_eye xsize ysize factor
@@ -419,6 +457,16 @@ im_zerox in flag
 im_icc_ac2rc in profile
     = error "not implemented";
 im_transform_search sample reference max_error max_iterations order ipol wrap
+    = error "not implemented";
+im_greyc_mask src mask iterations amplitude sharpness anisotropy alpha sigma dl da gauss_prec interpolation fast_approx
+    = error "not implemented";
+im_greyc src iterations amplitude sharpness anisotropy alpha sigma dl da gauss_prec interpolation fast_approx
+    = error "not implemented";
+im_estpar src par order ipol wrap displ
+    = error "not implemented";
+im_resize_linear in X Y
+    = error "not implemented";
+im_lab_morph in greyscale L_offset L_scale a_scale b_scale
     = error "not implemented";
 
 im_cntlines in dir = vips_countlines [] in dir;
@@ -567,4 +615,3 @@ im_draw_circle image cx cy radius fill ink
 im_segment test = vips_labelregions [$segments => true] test;
 
 im_transform in params ipol wrap = vips_quadratic [] in params;
-

@@ -30,6 +30,7 @@
 /*
 #define DEBUG_VERBOSE
 #define DEBUG
+#define DEBUG_COMPAT
  */
 
 #include "nip4.h"
@@ -925,9 +926,9 @@ workspace_build_compat_fn(const char *filename)
 		compat_minor[n_compat] = minor;
 		n_compat += 1;
 
-#ifdef DEBUG
+#ifdef DEBUG_COMPAT
 		printf("\tfound major = %d, minor = %d\n", major, minor);
-#endif /*DEBUG*/
+#endif /*DEBUG_COMPAT*/
 	}
 
 	return NULL;
@@ -941,6 +942,9 @@ workspace_build_compat(void)
 	if (n_compat > 0)
 		return;
 
+#ifdef DEBUG_COMPAT
+	printf("workspace_build_compat: searching ...\n");
+#endif /*DEBUG_COMPAT*/
 	path_map_dir("$VIPSHOME/share/" PACKAGE "/compat", "*.*",
 		(path_map_fn) workspace_build_compat_fn, NULL);
 }
@@ -954,9 +958,9 @@ workspace_have_compat(int major, int minor, int *best_major, int *best_minor)
 	int i;
 	int best;
 
-#ifdef DEBUG
+#ifdef DEBUG_COMPAT
 	printf("workspace_have_compat: searching for %d.%d\n", major, minor);
-#endif /*DEBUG*/
+#endif /*DEBUG_COMPAT*/
 
 	/* Sets of ws compatibility defs cover themselves and any earlier
 	 * releases, as far back as the next set of compat defs. We need to
@@ -977,9 +981,9 @@ workspace_have_compat(int major, int minor, int *best_major, int *best_minor)
 	if (best == -1)
 		return 0;
 
-#ifdef DEBUG
+#ifdef DEBUG_COMPAT
 	printf("\tfound %d.%d\n", compat_major[best], compat_minor[best]);
-#endif /*DEBUG*/
+#endif /*DEBUG_COMPAT*/
 
 	if (best_major)
 		*best_major = compat_major[best];
@@ -1025,10 +1029,10 @@ workspace_load_compat(Workspace *ws, int major, int minor)
 		}
 		path_free2(path);
 
-#ifdef DEBUG
+#ifdef DEBUG_COMPAT
 		printf("workspace_load_compat: loaded %d.%d\n",
 			best_major, best_minor);
-#endif /*DEBUG*/
+#endif /*DEBUG_COMPAT*/
 	}
 
 	return TRUE;
