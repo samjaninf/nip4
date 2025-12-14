@@ -298,6 +298,7 @@ void
 iobject_leak(void)
 {
 #ifdef DEBUG_LEAK
+	printf("iobject_leak: leak checking ...\n");
 	if (iobject_all) {
 		printf("leaked objects:\n");
 		int n = 0;

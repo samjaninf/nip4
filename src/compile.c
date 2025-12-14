@@ -28,33 +28,33 @@
  */
 
 /*
- */
 #define DEBUG_RESOLVE
+ */
 
 /* regular (and very slow) sanity checks on symbols ... needs DEBUG in
  * symbol.c as well
- */
 #define DEBUG_SANITY
+ */
 
 /* count how many nodes we find with common sub-expression removal.
- */
 #define DEBUG_COMMON
+ */
 
 /* show what everything compiled to
- */
 #define DEBUG_RESULT
+ */
 
 /* trace list comp compile
- */
 #define DEBUG_LCOMP
+ */
 
 /* trace pattern LHS generation
- */
 #define DEBUG_PATTERN
+ */
 
 /*
- */
 #define DEBUG
+ */
 
 #include "nip4.h"
 

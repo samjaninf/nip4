@@ -85,7 +85,11 @@
 - do row select on button up, and as part of the mainwindow event state
   machine
 
-  same for up down buttons
+	same for up down buttons
+
+	same for textview flip to formula
+
+	need our own tiny subcolumnview event system
 
 - lcomp rewrite
 
