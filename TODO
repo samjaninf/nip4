@@ -1,3 +1,7 @@
+- test plain pattern matching too eg
+
+	[a, b, c] = fred;
+
 - lcomp rewrite
 
   first test case
@@ -84,12 +88,6 @@
 
 	need our own tiny subcolumnview event system
 
-- drag in workspace JUST scrolls and selects (non destructive stuff)
-
-	hold crtl to drag rows and columns
-
-	maybe col drag is ok and we should just stop row drag?
-
 - nicholas's bug report
 
 - parse_onedef() was using single_definition, which also increments
@@ -103,13 +101,6 @@
 	I think patterns are going into the enclosing scope, not a subscope
 
 	rework pattern matching in lcomps
-
-- row and coloumn drag should need ctrl + mouse
-
-	maybe just row drag? col drag is more obvious
-
-    pressing |> in prorgam window needs to delete the tool before reparsing or
-    we'll see a multiple def
 
 - dir should hide $$vars
 
