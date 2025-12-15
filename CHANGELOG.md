@@ -1,6 +1,9 @@
 ## master
 
 - add multiple defs to program window
+- must hold ctrl to drag rows
+- improve empty mainwindow culling
+- fix compatibility of back compat menus
 
 ## 9.0.15 2025/11/22
 

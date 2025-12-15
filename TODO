@@ -1,3 +1,11 @@
+- lcomp rewrite
+
+  first test case
+
+	fred = [x :: x <- [1..10]];
+
+  where is x made? should be local of fred
+
 - lcomp example in compile.c:
 
   Example: after parse we have:
@@ -67,21 +75,6 @@
 
 
 
-
-
-
-- try
-
-	A1: 12
-
-  go back, click on A1, see:
-
-	A1: 12;
-
-  need to strip trailing ';'
-
-
-
 - do row select on button up, and as part of the mainwindow event state
   machine
 
@@ -91,23 +84,13 @@
 
 	need our own tiny subcolumnview event system
 
-- lcomp rewrite
-
-  first test case
-
-	fred = [x :: x <- [1..10]];
-
-  where is x made? should be local of fred
-
-- nicholas's bug report
-
 - drag in workspace JUST scrolls and selects (non destructive stuff)
 
 	hold crtl to drag rows and columns
 
 	maybe col drag is ok and we should just stop row drag?
 
-- start nip4, open a workspace, empty ws is not deleted
+- nicholas's bug report
 
 - parse_onedef() was using single_definition, which also increments
   tool_position, do we need to do that?
