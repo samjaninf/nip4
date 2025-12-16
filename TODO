@@ -1,6 +1,22 @@
+- try
+
+	A1: 12
+	click on A1, no terminating semicolon
+	edit to "99", return
+	click again, a trailing semicolon has appeared
+
+  do we use differnent parse_*() calls for the column new item line and
+  editing a formula
+
 - test plain pattern matching too eg
 
 	[a, b, c] = fred;
+
+  I think this uses the new generator, check
+
+- reread the lcomp code generator
+
+	compile_lcomp()
 
 - lcomp rewrite
 
@@ -134,6 +150,16 @@
   equivalent to
 
     fred a:b:x = a + b;
+
+- we could allow
+
+	fred x x = 12;
+
+  meaning, two args, must be equal
+
+	fred x [x, y, z] = y + z;
+
+  meaning first list element must equal first arg
 
 - haskell has lambdas as
 

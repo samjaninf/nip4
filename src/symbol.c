@@ -856,6 +856,10 @@ symbol_new_defining(Compile *compile, const char *name)
 	else
 		sym = symbol_new(compile, name);
 
+	printf("symbol_new_defining: made ");
+	symbol_name_print(sym);
+	printf("\n");
+
 	return sym;
 }
 
@@ -869,12 +873,19 @@ symbol_new_reference(Compile *compile, const char *name)
 {
 	Symbol *sym = compile_lookup(compile, name);
 
+	if (g_str_equal(name, "y"))
+		printf("BANANA!!!\n");
+
 	if (!sym)
 		sym = symbol_new(compile, name);
 
 	/* Note the new dependency.
 	 */
 	compile_link_make(compile, sym);
+
+	printf("symbol_new_reference: made ");
+	symbol_name_print(sym);
+	printf("\n");
 
 	return sym;
 }

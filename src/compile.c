@@ -28,8 +28,8 @@
  */
 
 /*
-#define DEBUG_RESOLVE
  */
+#define DEBUG_RESOLVE
 
 /* regular (and very slow) sanity checks on symbols ... needs DEBUG in
  * symbol.c as well
@@ -45,12 +45,12 @@
  */
 
 /* trace list comp compile
-#define DEBUG_LCOMP
  */
+#define DEBUG_LCOMP
 
 /* trace pattern LHS generation
-#define DEBUG_PATTERN
  */
+#define DEBUG_PATTERN
 
 /*
 #define DEBUG
@@ -2129,10 +2129,15 @@ compile_resolve_names_sub(Symbol *sym, Compile *outer)
 		/* Nothing on the outer table of that name. Can just move the
 		 * symbol across.
 		 */
+#ifdef DEBUG_RESOLVE
+		printf("compile_resolve: moving zombie ");
+		symbol_name_print(sym);
+		printf("out one scope\n");
+#endif /*DEBUG_RESOLVE*/
+
 		g_object_ref(G_OBJECT(sym));
 		icontainer_child_remove(ICONTAINER(sym));
-		icontainer_child_add(ICONTAINER(outer),
-			ICONTAINER(sym), -1);
+		icontainer_child_add(ICONTAINER(outer), ICONTAINER(sym), -1);
 		g_object_unref(G_OBJECT(sym));
 	}
 
@@ -2465,6 +2470,46 @@ compile_lcomp_find_pattern(GSList *children, const char *generator)
 	return NULL;
 }
 
+/* Recurse over the pattern removing references.
+ */
+static void *
+compile_lcomp_pattern_zombies(ParseNode *node)
+{
+	switch (node->type) {
+	case NODE_LEAF:
+#ifdef DEBUG_LCOMP
+		printf("compile_lcomp_pattern_zombies: removing ");
+		dump_tiny(node->leaf);
+		printf("\n");
+#endif /*DEBUG_LCOMP*/
+
+		IDESTROY(node->leaf);
+		break;
+
+	case NODE_PATTERN_CLASS:
+		compile_lcomp_pattern_zombies(node->arg1);
+		break;
+
+	case NODE_BINOP:
+		compile_lcomp_pattern_zombies(node->arg1);
+		compile_lcomp_pattern_zombies(node->arg2);
+		break;
+
+	case NODE_LISTCONST:
+		slist_map(node->elist,
+			(SListMapFn) compile_lcomp_pattern_zombies, NULL);
+		break;
+
+	case NODE_CONST:
+		break;
+
+	default:
+		g_assert(0);
+	}
+
+	return NULL;
+}
+
 void
 compile_lcomp(Compile *compile)
 {
@@ -2473,12 +2518,6 @@ compile_lcomp(Compile *compile)
 	 */
 	static int count = 1;
 
-	GSList *children;
-	gboolean sofar;
-	Compile *scope;
-	Symbol *result;
-	GSList *p;
-	Symbol *child;
 	char name[256];
 	ParseNode *n1, *n2, *n3;
 
@@ -2490,7 +2529,7 @@ compile_lcomp(Compile *compile)
 	/* Find all the elements of the lcomp: generators, filters, patterns
 	 * and $$result.
 	 */
-	children = NULL;
+	g_autoptr(GSList) children = NULL;
 	(void) icontainer_map(ICONTAINER(compile),
 		(icontainer_map_fn) compile_lcomp_find, &children, NULL);
 
@@ -2504,21 +2543,21 @@ compile_lcomp(Compile *compile)
 
 	/* As yet no list to build on.
 	 */
-	sofar = FALSE;
+	gboolean sofar = FALSE;
 
 	/* Start by building a tree in this scope.
 	 */
-	scope = compile;
+	Compile *scope = compile;
 
 	/* Not seen the result element yet, but we should.
 	 */
-	result = NULL;
+	Symbol *result = NULL;
 
 	/* Now generate code for each element, either a filter or a generator.
 	 * If we do a generator, we need to search for the associated pattern
 	 * and expand it.
 	 */
-	for (p = children; p; p = p->next) {
+	for (GSList *p = children; p; p = p->next) {
 		Symbol *element = (Symbol *) p->data;
 
 		/* Just note the result element ... we use it right at the end.
@@ -2538,7 +2577,7 @@ compile_lcomp(Compile *compile)
 		 * this scope.
 		 */
 		g_snprintf(name, 256, "$$fn%d", count++);
-		child = symbol_new_defining(scope, name);
+		Symbol *child = symbol_new_defining(scope, name);
 		child->generated = TRUE;
 		(void) symbol_user_init(child);
 		(void) compile_new_local(child->expr);
@@ -2618,6 +2657,24 @@ compile_lcomp(Compile *compile)
 	n3 = tree_binop_new(compile, BI_CONS, n1, n2);
 	scope->tree = n3;
 
+	/* Remove all variables made by patterns. They will
+	 *
+	 */
+	for (GSList *p = children; p; p = p->next) {
+		Symbol *child = SYMBOL(p->data);
+
+		if (is_prefix("$$patt", IOBJECT(child)->name))
+			compile_lcomp_pattern_zombies(child->expr->compile->tree);
+	}
+
+	/* We can now remove all placeholders.
+	 */
+	for (GSList *p = children; p; p = p->next) {
+		Symbol *child = SYMBOL(p->data);
+
+		IDESTROY(child);
+	}
+
 	/* Loop outwards again, closing the scopes we made.
 	 */
 	while (scope != compile) {
@@ -2637,8 +2694,6 @@ compile_lcomp(Compile *compile)
 	printf("after compile_lcomp: ");
 	dump_compile(compile);
 #endif /*DEBUG_LCOMP*/
-
-	g_slist_free(children);
 }
 
 /* Compile a pattern LHS. Generate a sym for each pattern variable, each of

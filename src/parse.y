@@ -126,7 +126,8 @@ void *parse_access_end(Symbol *sym, Symbol *main);
 %token TK_INT TK_FLOAT TK_DOUBLE TK_SIGNED TK_UNSIGNED TK_COMPLEX
 %token TK_SEPARATOR TK_DIALOG TK_LSHIFT TK_RSHIFT
 
-%type <yy_node> expr binop uop rhs list_expression comma_list body
+%type <yy_node> expr binop uop rhs list_expression list_expression_contents
+%type <yy_node> comma_list body
 %type <yy_node> simple_pattern complex_pattern list_pattern
 %type <yy_node> leaf_pattern
 %type <yy_node> crhs cexprlist prhs lambda
@@ -574,7 +575,7 @@ expr:
     } |
     TK_IDENT {
         $$ = tree_leaf_new(current_compile, $1);
-        g_free( $1 );
+        g_free($1);
     } |
     TK_TAG {
         $$ = tree_tag_new(current_compile, $1);
@@ -636,7 +637,7 @@ lambda:
         if (!compile_check(current_compile))
             yyerror(error_get_sub());
 
-        /* Link unresolved names in to the outer scope.
+        /* Link unresolved names to the outer scope.
          */
         compile_resolve_names(current_compile,
             compile_get_parent(current_compile));
@@ -650,27 +651,15 @@ lambda:
     ;
 
 list_expression:
-    '[' expr TK_DOTDOTDOT ']' {
-        $$ = tree_generator_new(current_compile, $2, NULL, NULL);
-    } |
-    '[' expr TK_DOTDOTDOT expr ']' {
-        $$ = tree_generator_new(current_compile, $2, NULL, $4);
-    } |
-    '[' expr ',' expr TK_DOTDOTDOT ']' {
-        $$ = tree_generator_new(current_compile, $2, $4, NULL);
-    } |
-    '[' expr ',' expr TK_DOTDOTDOT expr ']' {
-        $$ = tree_generator_new(current_compile, $2, $4, $6);
-    } |
-    '[' expr TK_SUCHTHAT {
+    '[' {
         char name[256];
         Symbol *sym;
         Compile *enclosing = current_compile;
 
-        /* Make an anonymous symbol local to the current sym, copy
-         * the map expr inside that.
+        /* Make an anonymous symbol local to the current sym to hold any list
+         * objects we create. For example, this could be an lcomp.
          */
-        g_snprintf(name, 256, "$$lcomp%d", parse_object_id++);
+        g_snprintf(name, 256, "$$list%d", parse_object_id++);
         sym = symbol_new_defining(current_compile, name);
         (void) symbol_user_init(sym);
         sym->generated = TRUE;
@@ -681,49 +670,65 @@ list_expression:
         scope_push();
         current_symbol = sym;
         current_compile = sym->expr->compile;
-
-        /* Somewhere to save the result expr. We have to copy the
-         * expr, as we want it to be bound in $$lcomp's context so
-         * that it can see the generators.
-         */
-        sym = symbol_new_defining(current_compile, "$$result");
-        sym->generated = TRUE;
-        sym->placeholder = TRUE;
-        (void) symbol_user_init(sym);
-        (void) compile_new_local(sym->expr);
-        sym->expr->compile->tree = compile_copy_tree(enclosing, $2,
-            sym->expr->compile);
     }
-    generator frompred_list ']' {
-        Symbol *sym;
-
-        /* The map expr can refer to generator names. Resolve inwards
-         * so it links to the generators.
-         */
-        compile_resolve_names(compile_get_parent(current_compile),
-            current_compile);
-
-        /* Generate the code for the list comp.
-         */
-        compile_lcomp(current_compile);
-
-        compile_check(current_compile);
+    list_expression_contents {
+	/* The tree we generated is the value of $$listN
+	 */
+	current_symbol->expr->compile->tree = $2;
 
         /* Link unresolved names outwards.
          */
         compile_resolve_names(current_compile,
             compile_get_parent(current_compile));
 
-        /* The value of the expr is the anon we defined.
+        /* The value of the expr is a ref to the anon we defined.
          */
         sym = current_symbol;
         scope_pop();
         $$ = tree_leafsym_new(current_compile, sym);
+    }
+    ']'
+    ;
+
+list_expression_contents:
+    expr TK_DOTDOTDOT {
+        $$ = tree_generator_new(current_compile, $1, NULL, NULL);
     } |
-    '[' comma_list ']' {
-        $$ = $2;
+    expr TK_DOTDOTDOT expr {
+        $$ = tree_generator_new(current_compile, $1, NULL, $3);
     } |
-    '[' ']' {
+    expr ',' expr TK_DOTDOTDOT {
+        $$ = tree_generator_new(current_compile, $1, $3, NULL);
+    } |
+    expr ',' expr TK_DOTDOTDOT expr {
+        $$ = tree_generator_new(current_compile, $1, $3, $5);
+    } |
+    expr TK_SUCHTHAT {
+        /* Somewhere to save the result expr.
+         */
+        sym = symbol_new_defining(current_compile, "$$result");
+        sym->generated = TRUE;
+        sym->placeholder = TRUE;
+        (void) symbol_user_init(sym);
+        (void) compile_new_local(sym->expr);
+        sym->expr->compile->tree = $1;
+    }
+    generator frompred_list {
+        /* Generate the code for the list comp.
+         */
+        compile_lcomp(current_compile);
+        compile_check(current_compile);
+
+        /* lcomp compile sets the value of $$listN, just return that (our
+ 	 * enclosing production will set it again pointlessly).
+         */
+        $$ = current_symbol->expr->compile->tree;
+        scope_pop();
+    } |
+    comma_list {
+        $$ = $1;
+    } |
+    /* empty */ {
         ParseConst elist;
 
         elist.type = PARSE_CONST_ELIST;
@@ -969,7 +974,8 @@ simple_pattern:
     }
     ;
 
-/* Stuff that can appear in a complex (a, b) pattern.
+/* Stuff that can appear in a complex (a, b) pattern. We make a reference that
+ * will get replaced by a definition in the post-parse phase.
  */
 leaf_pattern:
     TK_IDENT {
