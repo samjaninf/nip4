@@ -126,8 +126,8 @@ void *parse_access_end(Symbol *sym, Symbol *main);
 %token TK_INT TK_FLOAT TK_DOUBLE TK_SIGNED TK_UNSIGNED TK_COMPLEX
 %token TK_SEPARATOR TK_DIALOG TK_LSHIFT TK_RSHIFT
 
-%type <yy_node> expr binop uop rhs list_expression list_expression_contents
-%type <yy_node> comma_list body
+%type <yy_node> expr binop uop rhs comma_list body
+%type <yy_node> list_expression list_expression_contents
 %type <yy_node> simple_pattern complex_pattern list_pattern
 %type <yy_node> leaf_pattern
 %type <yy_node> crhs cexprlist prhs lambda
@@ -674,20 +674,27 @@ list_expression:
     list_expression_contents {
 	/* The tree we generated is the value of $$listN
 	 */
-	current_symbol->expr->compile->tree = $2;
+	current_symbol->expr->compile->tree = $3;
 
         /* Link unresolved names outwards.
          */
         compile_resolve_names(current_compile,
             compile_get_parent(current_compile));
 
-        /* The value of the expr is a ref to the anon we defined.
-         */
         sym = current_symbol;
         scope_pop();
-        $$ = tree_leafsym_new(current_compile, sym);
     }
-    ']'
+    ']' {
+        /* The value of the expr is a ref to the anon we defined.
+         */
+        $$ = tree_leafsym_new(current_compile, sym);
+    } |
+    '[' ']' {
+        ParseConst elist;
+
+        elist.type = PARSE_CONST_ELIST;
+        $$ = tree_const_new(current_compile, elist);
+    }
     ;
 
 list_expression_contents:
@@ -727,12 +734,6 @@ list_expression_contents:
     } |
     comma_list {
         $$ = $1;
-    } |
-    /* empty */ {
-        ParseConst elist;
-
-        elist.type = PARSE_CONST_ELIST;
-        $$ = tree_const_new(current_compile, elist);
     }
     ;
 
