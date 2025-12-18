@@ -23,8 +23,8 @@
 
 /*
 #define DEBUG
- */
 #define DEBUG_LEAK
+ */
 
 #include "nip4.h"
 

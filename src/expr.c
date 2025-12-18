@@ -203,8 +203,8 @@ expr_get_root_dynamic(Expr *expr)
  *
  * For example, row A1 could be "[x::x<-A2]", that would be expanded to
  * something like
- * "$lcomp0 {$lcomp0 = foldr $f0 [] A2 {$f0 x $sofar = x : $sofar}}"
- * Now, row A1 depends on A2, but expr A1 will not ... it's $lcomp0, the local
+ * "$list0 {$list0 = foldr $f0 [] A2 {$f0 x $sofar = x : $sofar}}"
+ * Now, row A1 depends on A2, but expr A1 will not ... it's $list0, the local
  * expr of A1, that will get called for expr_dirty.
  *
  * Return NULL for expr is not a row and has no enclosing rows.

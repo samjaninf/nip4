@@ -28,8 +28,8 @@
  */
 
 /*
- */
 #define DEBUG_RESOLVE
+ */
 
 /* regular (and very slow) sanity checks on symbols ... needs DEBUG in
  * symbol.c as well
@@ -45,12 +45,12 @@
  */
 
 /* trace list comp compile
- */
 #define DEBUG_LCOMP
+ */
 
 /* trace pattern LHS generation
- */
 #define DEBUG_PATTERN
+ */
 
 /*
 #define DEBUG
@@ -2402,9 +2402,9 @@ compile_copy_tree(Compile *fromscope, ParseNode *tree, Compile *toscope)
 
 	[(x, y) :: x <- [1..3]; y <- [x..3]; x + y > 3];
 
-	... $$lcomp1 ...
+	... $$list1 ...
 	{
-		$$lcomp1 = NULL
+		$$list1 = NULL
 		{
 			$$result = (x, y);
 			// elements in left-to-right order
@@ -2417,9 +2417,9 @@ compile_copy_tree(Compile *fromscope, ParseNode *tree, Compile *toscope)
 
   we generate this code:
 
-	z = $$lcomp1
+	z = $$list1
 	{
-		$$lcomp1 = foldr $f1 [] [1..3]
+		$$list1 = foldr $f1 [] [1..3]
 		{
 			$f1 x $sofar = foldr $f2 $sofar [x..3]
 			{
@@ -2657,8 +2657,12 @@ compile_lcomp(Compile *compile)
 	n3 = tree_binop_new(compile, BI_CONS, n1, n2);
 	scope->tree = n3;
 
-	/* Remove all variables made by patterns. They will
+	/* Remove all variables made by patterns. We don't want them to be
+	 * resolved outwards into the enclosing scope.
 	 *
+	 * Also, the pattern placeholders refer to them, so unless we remove them,
+	 * we can't remove the placeholsders without leaving dangling patch
+	 * pointers.
 	 */
 	for (GSList *p = children; p; p = p->next) {
 		Symbol *child = SYMBOL(p->data);
@@ -2667,7 +2671,7 @@ compile_lcomp(Compile *compile)
 			compile_lcomp_pattern_zombies(child->expr->compile->tree);
 	}
 
-	/* We can now remove all placeholders.
+	/* We can now remove all placeholders, so untidy.
 	 */
 	for (GSList *p = children; p; p = p->next) {
 		Symbol *child = SYMBOL(p->data);

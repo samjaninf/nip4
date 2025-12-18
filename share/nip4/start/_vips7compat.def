@@ -212,7 +212,7 @@ im_convsepf in matrix = vips_convsep [$precision => "float"] in matrix;
 im_conv_f = im_convf;
 im_convsep_f = im_convsepf;
 
-im__trim_raw width heigh image
+im__trim_raw width height image
     = vips_crop [] image x y w h
 {
     x = width / 2;

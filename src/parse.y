@@ -115,6 +115,7 @@ void *parse_access_end(Symbol *sym, Symbol *main);
     ParseConst yy_const;
     UnOp yy_uop;
     BinOp yy_binop;
+    Symbol *yy_sym;
 }
 
 %token TK_TAG TK_IDENT TK_CONST TK_DOTDOTDOT TK_LAMBDA TK_FROM TK_TO TK_SUCHTHAT
@@ -172,8 +173,8 @@ void *parse_access_end(Symbol *sym, Symbol *main);
   which is also an expr. We don't know which branch to take until we see a
   '<' or a ';'.
 
-  Use bison's GLR system to parse this, and ignore the first 13 reduce/reduce
-  conflicts caused by this ambiguity.
+  Use bison's GLR system to parse this, and ignore the first 9 reduce/reduce
+  and 4 shift/reduce conflicts caused by this ambiguity.
 
   FIXME ... we now depend on bison, but we still have some yacc compatibility
   stuff in here, and we don't use all of bison's nice features (eg. for
@@ -182,7 +183,8 @@ void *parse_access_end(Symbol *sym, Symbol *main);
  */
 
 %glr-parser
-%expect-rr 13
+%expect 4
+%expect-rr 9
 
 %define parse.error verbose
 
@@ -654,7 +656,6 @@ list_expression:
     '[' {
         char name[256];
         Symbol *sym;
-        Compile *enclosing = current_compile;
 
         /* Make an anonymous symbol local to the current sym to hold any list
          * objects we create. For example, this could be an lcomp.
@@ -670,6 +671,10 @@ list_expression:
         scope_push();
         current_symbol = sym;
         current_compile = sym->expr->compile;
+
+	/* Later stages need the anon sym.
+	 */
+	$<yy_sym>$ = sym;
     }
     list_expression_contents {
 	/* The tree we generated is the value of $$listN
@@ -681,13 +686,12 @@ list_expression:
         compile_resolve_names(current_compile,
             compile_get_parent(current_compile));
 
-        sym = current_symbol;
         scope_pop();
     }
     ']' {
         /* The value of the expr is a ref to the anon we defined.
          */
-        $$ = tree_leafsym_new(current_compile, sym);
+        $$ = tree_leafsym_new(current_compile, $<yy_sym>2);
     } |
     '[' ']' {
         ParseConst elist;
@@ -713,7 +717,7 @@ list_expression_contents:
     expr TK_SUCHTHAT {
         /* Somewhere to save the result expr.
          */
-        sym = symbol_new_defining(current_compile, "$$result");
+        Symbol *sym = symbol_new_defining(current_compile, "$$result");
         sym->generated = TRUE;
         sym->placeholder = TRUE;
         (void) symbol_user_init(sym);
@@ -730,7 +734,6 @@ list_expression_contents:
  	 * enclosing production will set it again pointlessly).
          */
         $$ = current_symbol->expr->compile->tree;
-        scope_pop();
     } |
     comma_list {
         $$ = $1;

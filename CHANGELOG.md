@@ -4,6 +4,7 @@
 - must hold ctrl to drag rows
 - improve empty mainwindow culling
 - fix compatibility of back compat menus
+- better name scoping for list comprehensions
 
 ## 9.0.15 2025/11/22
 

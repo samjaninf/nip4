@@ -1,3 +1,17 @@
+- dir should hide $$vars
+
+    dir Workspaces works
+    dir Workspaces.tab1 is brown argh
+
+- programming window is showing generated syms, like $$pattern_lhs0?
+
+- test plain pattern matching too eg
+
+	[a, b, c] = [1, 2, 3];
+
+  enter this in ws defs, title area shows "5 definitions", I guess
+  $$listN and $$matchN
+
 - try
 
 	A1: 12
@@ -7,93 +21,6 @@
 
   do we use differnent parse_*() calls for the column new item line and
   editing a formula
-
-- test plain pattern matching too eg
-
-	[a, b, c] = fred;
-
-  I think this uses the new generator, check
-
-- reread the lcomp code generator
-
-	compile_lcomp()
-
-- lcomp rewrite
-
-  first test case
-
-	fred = [x :: x <- [1..10]];
-
-  where is x made? should be local of fred
-
-- lcomp example in compile.c:
-
-  Example: after parse we have:
-
-    [(x, y) :: x <- [1..3]; y <- [x..3]; x + y > 3];
-
-    ... $$lcomp1 ...
-    {
-        $$lcomp1 = NULL
-        {
-            $$result = (x, y);
-            // elements in left-to-right order
-            // in compile->children
-            x = [1..3]
-            y = [x..3]
-            $$filter1 = x + y > 3
-        }
-    }
-
-  we generate this code:
-
-    z = $$lcomp1
-    {
-        $$lcomp1 = foldr $f1 [] [1..3]
-        {
-            $f1 x $sofar = foldr $f2 $sofar [x..3]
-            {
-                $f2 y $sofar = if x + y > 3 then $f3 else $sofar
-                {
-                    $f3 = (x, y) : $sofar;
-                }
-            }
-        }
-    }
-
-  and compute this result:
-
-    [1 + 3j, 2 + 2j, 2 + 3j, 3 + 3j]
-
-  looking at compiler run, we leave A1.x undefined
-
-
-- try
-
-	fred = [x :: x <- [1..10]]
-
-	fred = $$lcomp0
-	{
-		$$lcomp0 = foldr $$fn1 [] [1..10]
-		{
-			$$result = x ZOMBIE
-			$$pattern1 = x ZOMBIE
-			$$generator1 = [1..10]
-			$$fn1 $$generator1 $$sofar = x : $$sofar
-			{
-				x = if $$match2 then $$generator1 else err ..
-				$$match2 = true
-			}
-		}
-	}
-
-  we gen refs tp fred.$$lcomp0.x, but we never seem to define it
-
-  we never use $$result or $$pattern1 (in this case anyway)
-
-  re-read the lcomp compiler now we kow what it makes
-
-
 
 - do row select on button up, and as part of the mainwindow event state
   machine
@@ -108,19 +35,6 @@
 
 - parse_onedef() was using single_definition, which also increments
   tool_position, do we need to do that?
-
-- lcomps leave stray unreffed symbols in "list unresolved"
-
-    Image_transform_item.Resize_item.Size_within_item.action.within ($SAVEDIR/start/Image.def:509)  refers to undefined symbol h
-    Image_transform_item.Resize_item.Size_within_item.action.within ($SAVEDIR/start/Image.def:509)  refers to undefined symbol w
-
-	I think patterns are going into the enclosing scope, not a subscope
-
-	rework pattern matching in lcomps
-
-- dir should hide $$vars
-
-- programming window is showing generated syms, like $$pattern_lhs0?
 
 - ban patterns in class parameters
 
