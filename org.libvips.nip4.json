@@ -428,6 +428,46 @@
         },
 
         {
+            "name" : "libraw",
+            "builddir" : true,
+            "buildsystem" : "autotools",
+            "config-opts" : [
+                "--disable-examples",
+                "--enable-openmp",
+                "--enable-jpeg",
+                "--enable-zlib",
+                "--enable-lcms"
+            ],
+            "sources" : [
+                {
+                    "type" : "archive",
+                    "url" : "https://www.libraw.org/data/LibRaw-0.21.4.tar.gz",
+                    "sha256" : "6be43f19397e43214ff56aab056bf3ff4925ca14012ce5a1538a172406a09e63"
+                }
+            ]
+        },
+
+        {
+            "name" : "libultrahdr",
+            "builddir" : true,
+            "buildsystem" : "cmake-ninja",
+            "build-options" : {
+                "config-opts" : [
+                    "-DCMAKE_INSTALL_LIBDIR=lib",
+                    "-DUHDR_BUILD_EXAMPLES=FALSE",
+                    "-DUHDR_MAX_DIMENSION=65500"
+                ]
+            },
+            "sources" : [
+                {
+                    "type" : "git",
+                    "url" : "https://github.com/google/libultrahdr.git",
+                    "tag" : "v1.4.0"
+                }
+            ]
+        },
+
+        {
             "name" : "libvips",
             "builddir" : true,
             "buildsystem" : "meson",
@@ -440,7 +480,7 @@
                 {
                     "type" : "git",
                     "url" : "https://github.com/libvips/libvips.git",
-                    "commit" : "698159ecc6e0d4428316388f783c2fa66a7a17fd"
+                    "tag" : "v8.18.0"
                 }
             ]
         },
