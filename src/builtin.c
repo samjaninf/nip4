@@ -1018,10 +1018,14 @@ dir_scope(Symbol *sym, Reduce *rc, PElement *list)
 {
 	PElement t;
 
-	if (!heap_list_add(rc->heap, list, &t) ||
-		!heap_managedstring_new(rc->heap, IOBJECT(sym)->name, &t))
-		reduce_throw(rc);
-	(void) heap_list_next(list);
+	// hide zombies, hide generated symbols (like $$matchN)
+	if (is_visible(sym)) {
+		if (!heap_list_add(rc->heap, list, &t) ||
+			!heap_managedstring_new(rc->heap, IOBJECT(sym)->name, &t))
+			reduce_throw(rc);
+
+		(void) heap_list_next(list);
+	}
 
 	return NULL;
 }

@@ -1,13 +1,21 @@
-- dir should hide $$vars
+- in ws defs, try
 
-    dir Workspaces works
-    dir Workspaces.tab1 is brown argh
+    [a] = 1;
+
+  then:
+
+    A1: a
+
+  should be "pattern match failed", but we just get brown :(
+
+  do we need to resolve outwards from the enclosing scope of $$matchN? there
+  do seem to be some zombies in the workspace
 
 - programming window is showing generated syms, like $$pattern_lhs0?
 
-- test plain pattern matching too eg
+  also ws defs, eg.
 
-	[a, b, c] = [1, 2, 3];
+        [a, b, c] = [1, 2, 3];
 
   enter this in ws defs, title area shows "5 definitions", I guess
   $$listN and $$matchN

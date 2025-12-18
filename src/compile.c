@@ -2958,7 +2958,6 @@ static void
 compile_pattern_leaf(PatternInfo *info, Symbol *leaf)
 {
 	Symbol *sym = symbol_new_defining(info->compile, IOBJECT(leaf)->name);
-	sym->generated = TRUE;
 	(void) symbol_user_init(sym);
 	(void) compile_new_local(sym->expr);
 	symbol_made(sym);
