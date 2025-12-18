@@ -1018,6 +1018,10 @@ dir_scope(Symbol *sym, Reduce *rc, PElement *list)
 {
 	PElement t;
 
+	printf("dir_scope: ");
+	dump_tiny(sym);
+	printf("\n");
+
 	// hide zombies, hide generated symbols (like $$matchN)
 	if (is_visible(sym)) {
 		if (!heap_list_add(rc->heap, list, &t) ||
