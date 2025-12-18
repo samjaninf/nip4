@@ -905,10 +905,10 @@ mainwindow_title_update(Mainwindow *main)
 		vips_buf_appends(&title, _("unsaved workspace"));
 
 	if ((ws = mainwindow_get_workspace(main))) {
-		vips_buf_appends(&title, " - ");
+		vips_buf_appends(&title, " — ");
 		vips_buf_appendf(&title, "%s", IOBJECT(ws->sym)->name);
 		if (ws->kitg->compat_major) {
-			vips_buf_appends(&title, " - ");
+			vips_buf_appends(&title, " — ");
 			vips_buf_appends(&title, _("compatibility mode"));
 			vips_buf_appendf(&title, " %d.%d",
 				ws->kitg->compat_major,

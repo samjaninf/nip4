@@ -305,7 +305,8 @@ definition:
          * window use this to work out what sym to display after a
          * parse. symbol_dispose() is careful to NULL this out.
          */
-        current_compile->last_sym = sym;
+	if (is_visible(sym))
+		current_compile->last_sym = sym;
 
         /* Initialise symbol parsing variables. Save old current symbol,
          * add new one.
@@ -1063,7 +1064,8 @@ nip2yyerror(const char *sub, ...)
 
     error_top(_("Parse error"));
 
-    if (current_compile && current_compile->last_sym)
+    if (current_compile &&
+	current_compile->last_sym)
         error_sub(_("Error in %s: %s"),
             IOBJECT(current_compile->last_sym)->name, buf);
     else
@@ -1440,11 +1442,14 @@ scope_reset(void)
 void *
 parse_toplevel_end(Symbol *sym)
 {
-    Tool *tool;
+    // don't make tools for eg. $$matchN etc.
+    if (is_visible(sym)) {
+        Tool *tool;
 
-    tool = tool_new_sym(current_kit, tool_position, sym);
-    tool->lineno = last_top_lineno;
-    symbol_made(sym);
+        tool = tool_new_sym(current_kit, tool_position, sym);
+        tool->lineno = last_top_lineno;
+        symbol_made(sym);
+    }
 
     return NULL;
 }

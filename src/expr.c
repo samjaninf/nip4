@@ -72,7 +72,7 @@ expr_error_print(Expr *expr, VipsBuf *buf)
 		vips_buf_appendf(buf, " (");
 		row_qualified_name(expr->row, buf);
 		if (FILEMODEL(wsg)->filename)
-			vips_buf_appendf(buf, " - %s",
+			vips_buf_appendf(buf, " — %s",
 				FILEMODEL(wsg)->filename);
 		vips_buf_appendf(buf, ")");
 	}

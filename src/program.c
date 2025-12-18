@@ -96,7 +96,7 @@ program_refresh(Program *program)
         symbol_qualified_name(program->kitg->root, &title);
 
         if (program->kitg->compat_major)
-            vips_buf_appendf(&title, _(" - compatibility mode %d.%d"),
+            vips_buf_appendf(&title, _(" — compatibility mode %d.%d"),
                 program->kitg->compat_major, program->kitg->compat_minor);
     }
 
@@ -112,7 +112,7 @@ program_refresh(Program *program)
     }
 
     if (program->tool) {
-        vips_buf_appends(&subtitle, " - ");
+        vips_buf_appends(&subtitle, " — ");
         symbol_qualified_name(program->tool->sym, &subtitle);
     }
 

@@ -1,47 +1,12 @@
-- in ws defs, try
+- try
 
-    a = error "hello";
+	Edit toolkits ...
+	[a, b, c] = [1, 2, 3];
+	|>
+	add a space
+	|>
 
-  then:
-
-    A1: a
-
-  should be error, but we just get brown :(
-
-  do we need to resolve outwards to link error correctly?
-
-    seeing ZOMBIE error in dir(tab)
-
-  where do we do "resolve to root" in column line entry?
-
-    workspace_add_def_recalc()
-        workspace_add_def()
-            parse_rhs()
-                expr_resolve()
-            symbol_made()
-
-  maybe expr resolve?
-
-  in ws defs
-
-    a = add;
-
-  then
-
-    A1: a 2 2
-
-  works fine ... why does only error fail to resolve?
-
-    also see zombie add for a, strange, maybe we just don't remove them?
-
-- programming window is showing generated syms, like $$pattern_lhs0?
-
-  also ws defs, eg.
-
-        [a, b, c] = [1, 2, 3];
-
-  enter this in ws defs, title area shows "5 definitions", I guess
-  $$listN and $$matchN
+  error: second def of "c"
 
 - try
 
