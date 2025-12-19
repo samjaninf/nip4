@@ -8,6 +8,9 @@
 
   error: second def of "c"
 
+  probably OK -- we can always delete the three defs separately, and this has
+  to be a very rare case
+
 - try
 
 	A1: 12
@@ -76,6 +79,16 @@
 	foldr (\x y -> (x + y) / 2) 54 [12, 4, 10, 6]
 
   maybe we should copy this? we'd get patterns in the lambda var then
+
+  right now lambda vars are just
+
+	`\` TK_IDENT expr
+
+  we'd have
+
+	`\` simple_pattern_list `->` expr
+
+  make a new scope after the `\` to hold the patterns
 
 - make "About" non-modal and update on gc
 
