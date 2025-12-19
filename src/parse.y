@@ -341,7 +341,11 @@ definition:
 
             built_syms = compile_pattern(parent, current_symbol, $1);
 
-            /* We may have made some top levels.
+            /* We may have made some top levels, eg. if the def is
+             *
+	     *		[a, b, c] = [1, 2, 3];
+             *
+	     * finish the syms up.
              */
             if (is_scope(symbol_get_parent(current_symbol)))
                 slist_map(built_syms, (SListMapFn) parse_toplevel_end, NULL);
@@ -429,8 +433,12 @@ params:
          * parses to:
          *
          *  fred $$arg42 = 12 { $$patt42 = [a]; }
+	 *
+	 * then compile_pattern() transforms to:
          *
-         * A later pass creates the "a = $$arg42?0" definition.
+         *  fred $$arg42 = 12 { $$match42 = is_list $$arg43 && is_list_len
+	 *  $$arg422; a = $$arg42?0 }
+         *
          */
         if ($2->type == NODE_LEAF) {
             const char *name = IOBJECT($2->leaf)->name;
@@ -463,11 +471,6 @@ params:
 
             current_compile->params_include_patterns = TRUE;
             current_compile->sym->needs_codegen = TRUE;
-
-            /* Tag the toplevel as needing codegen so we don't have to
-             * search every symbol.
-             */
-            symbol_get_top(current_compile->sym)->needs_codegen = TRUE;
         }
     }
     ;

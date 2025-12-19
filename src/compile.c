@@ -3067,7 +3067,7 @@ compile_pattern_match(Compile *compile, Symbol *value, ParseNode *pattern)
  *		a = if $$match0 then $$value0?0 else error "pattern match failed"
  *		b = ...
  *
- * Return a list of the new symbols we built, they will need finishing up.
+ * Return a list of the new symbols we built.
  *
  * The first returned sym is the $$match test.
  */

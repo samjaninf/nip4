@@ -769,7 +769,8 @@ symbol_can_add_def(Symbol *sym)
 	/* Is this a local def? A second def is also OK, since we must still be
 	 * parsing.
 	 */
-	if (symbol_get_parent(sym)->type == SYM_VALUE)
+	if (sym->type == SYM_VALUE &&
+		!is_top(sym))
 		return TRUE;
 
 	return FALSE;

@@ -1,13 +1,16 @@
-- we have lots of comments in parse.y about patterns needing a separate later
-  pass, eg. in "params" production
+- test antoine lady again
 
-	is this correct? don't we compile patterns during parse now?
+	if we used lambda, it won't!
 
-	we still set needs_codegen for syms with patterns, is this necessary?
+	maybe we need to go back to
+
+	TK_LAMBDA param expr
 
 - rename "nip4-batch" as "snip"?
 
 	look for other commands called "snip" in debian
+
+	name seems to be free
 
 - try
 
