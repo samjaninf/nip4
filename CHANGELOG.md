@@ -5,6 +5,7 @@
 - improve empty mainwindow culling
 - fix compatibility of back compat menus
 - better name scoping for list comprehensions
+- switch to haskell lambda syntax with pattern matching
 
 ## 9.0.15 2025/11/22
 

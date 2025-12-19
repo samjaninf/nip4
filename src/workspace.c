@@ -527,7 +527,8 @@ workspace_add_def(Workspace *ws, const char *str)
 	printf("workspace_add_def: %s\n", str);
 #endif /*DEBUG*/
 
-	if (!str || strspn(str, WHITESPACE) == strlen(str))
+	if (!str ||
+		strspn(str, WHITESPACE) == strlen(str))
 		return NULL;
 
 	/* Try parsing as a "fred = 12" style def.
@@ -592,7 +593,7 @@ workspace_add_def_recalc(Workspace *ws, const char *str)
 		return NULL;
 	}
 
-	/* Jump to column containing object.
+	/* Scroll to bottom of column containing object.
 	 */
 	column_set_open(col, TRUE);
 	column_scrollto(col, MODEL_SCROLL_BOTTOM);

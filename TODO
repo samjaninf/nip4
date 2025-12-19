@@ -1,3 +1,24 @@
+- we have lots of comments in parse.y about patterns needing a separate later
+  pass, eg. in "params" production
+
+	is this correct? don't we compile patterns during parse now?
+
+	we still set needs_codegen for syms with patterns, is this necessary?
+
+- rename "nip4-batch" as "snip"?
+
+	look for other commands called "snip" in debian
+
+- try
+
+	A1: 12
+	click on A1, no terminating semicolon
+	edit to "99", return
+	click again, a trailing semicolon has appeared
+
+  do we use differnent parse_*() calls for the column new item line and
+  editing a formula
+
 - try
 
 	Edit toolkits ...
@@ -11,15 +32,7 @@
   probably OK -- we can always delete the three defs separately, and this has
   to be a very rare case
 
-- try
-
-	A1: 12
-	click on A1, no terminating semicolon
-	edit to "99", return
-	click again, a trailing semicolon has appeared
-
-  do we use differnent parse_*() calls for the column new item line and
-  editing a formula
+  add "delete tool"?
 
 - do row select on button up, and as part of the mainwindow event state
   machine
@@ -73,22 +86,6 @@
 	fred x [x, y, z] = y + z;
 
   meaning first list element must equal first arg
-
-- haskell has lambdas as
-
-	foldr (\x y -> (x + y) / 2) 54 [12, 4, 10, 6]
-
-  maybe we should copy this? we'd get patterns in the lambda var then
-
-  right now lambda vars are just
-
-	`\` TK_IDENT expr
-
-  we'd have
-
-	`\` simple_pattern_list `->` expr
-
-  make a new scope after the `\` to hold the patterns
 
 - make "About" non-modal and update on gc
 

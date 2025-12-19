@@ -118,8 +118,8 @@ void *parse_access_end(Symbol *sym, Symbol *main);
     Symbol *yy_sym;
 }
 
-%token TK_TAG TK_IDENT TK_CONST TK_DOTDOTDOT TK_LAMBDA TK_FROM TK_TO TK_SUCHTHAT
-%token TK_UMINUS TK_UPLUS TK_POW
+%token TK_TAG TK_IDENT TK_CONST TK_DOTDOTDOT TK_LAMBDA TK_FROM TK_TO
+%token TK_UMINUS TK_UPLUS TK_POW TK_SUCHTHAT TK_MAP
 %token TK_LESS TK_LESSEQ TK_MORE TK_MOREEQ TK_NOTEQ
 %token TK_LAND TK_LOR TK_BAND TK_BOR TK_JOIN TK_DIFF
 %token TK_IF TK_THEN TK_ELSE
@@ -139,7 +139,7 @@ void *parse_access_end(Symbol *sym, Symbol *main);
 %left TK_LAMBDA
 %nonassoc TK_IF
 %left ','
-%left TK_TO
+%left TK_MAP
 %left TK_LOR
 %left TK_LAND '@'
 %left TK_BOR
@@ -606,7 +606,7 @@ expr:
     ;
 
 lambda:
-    TK_LAMBDA TK_IDENT %prec TK_LAMBDA {
+    TK_LAMBDA {
         char name[256];
         Symbol *sym;
 
@@ -625,17 +625,9 @@ lambda:
         scope_push();
         current_symbol = sym;
         current_compile = sym->expr->compile;
-
-        /* Make the parameter.
-         */
-        sym = symbol_new_defining(current_compile, $2);
-        symbol_parameter_init(sym);
-        g_free($2);
     }
-    expr {
-        Symbol *sym;
-
-        current_compile->tree = $4;
+    params TK_TO expr %prec TK_LAMBDA {
+        current_compile->tree = $5;
 
         if (!compile_check(current_compile))
             yyerror(error_get_sub());
@@ -647,7 +639,7 @@ lambda:
 
         /* The value of the expr is the anon we defined.
          */
-        sym = current_symbol;
+        Symbol *sym = current_symbol;
         scope_pop();
         $$ = tree_leafsym_new(current_compile, sym);
     }
@@ -889,7 +881,7 @@ binop:
 
         $$ = pn1;
     } |
-    expr TK_TO expr {
+    expr TK_MAP expr {
         ParseNode *pn;
 
         pn = tree_leaf_new(current_compile, "mknvpair");

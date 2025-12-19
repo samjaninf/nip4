@@ -64,7 +64,7 @@ Group value = class
 			op.op_name == "if_then_else"],
 		[map_binary op.fn this x,
 			is_Group x],
-		[map_unary (\a op.fn a x) this,
+		[map_unary (\a -> op.fn a x) this,
 			true]
 	] ++ super.oo_binary_table op x;
 
