@@ -44,19 +44,19 @@ There's a zip for each version on the [releases
 page](https://github.com/jcupitt/nip4/releases). Download
 `nip4-x86_64-9.0.11.zip`, unzip somewhere, and run `bin/nip4.exe`.
 
-If you see rendering problems, it's worth trying another backend. By default,
-nip4 uses Vulkan to draw the UI, and some older versions of Windows can be a
-bit wonky for this.
+If you see rendering problems, it's worth trying another backend.
+By default, vipsdisp uses Vulkan to draw the UI, and this can be a bit wonky
+on some older versions of Windows.
 
 If you see something like a blank window on startup, try:
 
 ```console
 > set GSK_RENDERER=cairo
-> nip4
+> vipsdisp
 ```
 
 That will use a software only fallback to draw the UI and should work on any
-Windows, though it will be a bit slower.
+version of Windows, though it will be a bit slower
 
 ## macOS
 
