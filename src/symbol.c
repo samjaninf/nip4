@@ -951,38 +951,6 @@ symbol_parameter_builtin_init(Symbol *sym)
 	return TRUE;
 }
 
-static void *
-symbol_resolve_sub(Compile *compile)
-{
-	/* Resolve any inner scopes to this scope.
-	 */
-	(void) icontainer_map(ICONTAINER(compile),
-		(icontainer_map_fn) symbol_resolve_sub, NULL, NULL);
-
-	/* And any zombies we have outwards again.
-	 */
-	Compile *outer = compile_get_parent(compile);
-	if (outer)
-		compile_resolve_names(compile, outer);
-
-	return NULL;
-}
-
-/* Resolve names in a top-level symbol.
- *
- * Starting at the innermost compile, we recursively resolve outwards, linking
- * all symbols.
- */
-void
-symbol_resolve(Symbol *sym)
-{
-	g_assert(is_top(sym));
-
-	if (sym->expr &&
-		sym->expr->compile)
-		(void) symbol_resolve_sub(sym->expr->compile);
-}
-
 /* Get the next dirty leaf symbol.
  */
 static Symbol *

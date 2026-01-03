@@ -1,41 +1,18 @@
+- this works
+
+	[x :: x <- [1..10]]
+
+  this does not!
+
+	[[x] :: x <- [1..10]]
+	symbol x is not defined
+
+  are we still resolving too early?
+
 - we call compile_lcomp() during parse .. do we need a separate codegen apss
   now? can we remove needs_codegen?
 
 	should we set needs_codegen on the enclosing toplevel sym?
-
-- list in lcomp exprs don't work
-
-	fred = [[y] :: y <- [1..10]];
-
-  the inner [y] is a scope, it gets resolved out to fred, and then can't be
-  moved to the inner foldr
-
-  solutions:
-
-	- all list constants become functions
-
-		yuk!
-
-	- delay all resolving until the end of parse
-
-		we have an end-of-toplevel-parse func somewhere, this might
-		work?
-
-		compile_resolve_names() called from five places in parse.y
-
-		and quite a few in compile.c
-
-			try this
-
-		resolve needs to run after codegen
-
-			compile_codegen_toplevel()
-
-		in compile_check()? that's the previous end of parse point
-
-			nope, useless, gets called all the time
-
-	- go back to the way lcomps were
 
 - when dragging a mark on the cross you can only go up and left
 
@@ -45,34 +22,9 @@
 
 	show computed transform
 
-- try
+- check antoine_lady again
 
-	[[(x, y) :: x <- [1..10]] :: y <- [1..10]]
-
-  segv, worked fine in 9.0.15 before lcomp rewrite
-
-	try not removing zombies and placeholders?
-
-	do we copy expr into the inner context correctly?
-
-  comment out the placeholder and zombie cleaning and the crash goes, instead
-  we get
-
-	Not found in A1
-	symbol A1.y is not defined
-
-  seem to be resolving outwards too early?
-
-  this
-
-	y = 12
-	[(x, y) :: x <- [1..10]]
-
-  works fine
-
-- there's some other issue with antoine_lady as well
-
-	markup.C1 fails
+	markup.C1 fails?
 
 - rename "nip4-batch" as "snip"?
 

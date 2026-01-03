@@ -132,6 +132,36 @@ compile_map_all(Compile *compile, map_compile_fn fn, void *a)
 	return NULL;
 }
 
+static Compile *
+compile_map_all_inner_sub(Symbol *sym, map_compile_fn fn, void *a)
+{
+	return sym->expr && sym->expr->compile ?
+		compile_map_all_inner(sym->expr->compile, fn, a) : NULL;
+}
+
+/* Apply a function to a compile ... and any local compiles.
+ *
+ * Bottom-up (ie. innermost first) version.
+ */
+Compile *
+compile_map_all_inner(Compile *compile, map_compile_fn fn, void *a)
+{
+	Compile *res;
+
+	/* Any children.
+	 */
+	if ((res = (Compile *) icontainer_map(ICONTAINER(compile),
+			 (icontainer_map_fn) compile_map_all_inner_sub, (void *) fn, a)))
+		return res;
+
+	/* And us.
+	 */
+	if ((res = fn(compile, a)))
+		return res;
+
+	return NULL;
+}
+
 /* Look up by name.
  */
 Symbol *
@@ -356,6 +386,8 @@ compile_new(Expr *expr)
 	Compile *compile = COMPILE(g_object_new(COMPILE_TYPE, NULL));
 
 	compile->sym = expr->sym;
+
+	printf("compile_new: compile = %p, sym = %p\n", compile, expr->sym);
 
 	/* Junk any old compile.
 	 */
@@ -1566,10 +1598,6 @@ compile_defs_codegen_default(Compile *compile)
 
 	compile->has_default = TRUE;
 
-	/* We ref error, resolve outwards.
-	 */
-	compile_resolve_names(def->expr->compile, parent->expr->compile);
-
 #ifdef DEBUG
 	printf("compile_defs_codegen_default: generated ");
 	dump_compile(def->expr->compile);
@@ -1668,11 +1696,6 @@ compile_defs_codegen(Compile *compile)
 			condition,
 			this_compile->tree,		// the old RHS the user wrote
 			next_def);
-
-		/* We may have generated lots of new refs and zombies in this def,
-		 * resolve them outwards.
-		 */
-		compile_resolve_names(this_compile, compile_get_parent(this_compile));
 
 		/* Update recomp links in case this is a top-levelk sym
 		 */
@@ -1818,7 +1841,7 @@ compile_object(Compile *compile)
 {
 	/* Link all symbols.
 	 */
-	symbol_resolve(compile->sym);
+	compile_resolve_static(compile->sym);
 
 	/* Walk this tree of symbols computing the secret lists.
 	 */
@@ -2162,6 +2185,32 @@ compile_resolve_names(Compile *inner, Compile *outer)
 		(icontainer_map_fn) compile_resolve_names_sub, outer, NULL);
 }
 
+static void *
+compile_resolve_static_sub(Compile *compile, void *user_data)
+{
+	/* Resolve any zombies we have outwards again.
+	 */
+	Compile *outer = compile_get_parent(compile);
+	if (outer)
+		compile_resolve_names(compile, outer);
+
+	return NULL;
+}
+
+/* Resolve names in a top-level symbol.
+ *
+ * Starting at the innermost compile, we recursively resolve outwards, linking
+ * all symbols.
+ */
+void
+compile_resolve_static(Symbol *sym)
+{
+	if (sym->expr &&
+		sym->expr->compile)
+		compile_map_all_inner(sym->expr->compile,
+			compile_resolve_static_sub, NULL);
+}
+
 /* Hit a top-level zombie during reduction. Search outwards to root looking on
  * enclosing tables for a match.
  */
@@ -2326,11 +2375,6 @@ compile_copy_sym(Symbol *sym, Compile *dest)
 		copy_sym->expr->compile->tree = tree_copy(
 			copy_sym->expr->compile, sym->expr->compile->tree);
 
-		/* Copying the tree may have made some zombies. Resolve
-		 * outwards.
-		 */
-		compile_resolve_names(copy_sym->expr->compile, dest);
-
 		break;
 
 	case SYM_PARAM:
@@ -2391,11 +2435,6 @@ compile_copy_tree(Compile *fromscope, ParseNode *tree, Compile *toscope)
 	}
 
 	copy_tree = tree_copy(toscope, tree);
-
-	/* Copying the tree may have made some zombies. Resolve
-	 * outwards.
-	 */
-	compile_resolve_names(toscope, compile_get_parent(toscope));
 
 	return copy_tree;
 }
@@ -2966,11 +3005,6 @@ compile_pattern_leaf(PatternInfo *info, Symbol *leaf)
 			info->value, info->trail, info->depth - 1),
 		compile_pattern_error(compile));
 
-	/* The access sym will contain refs to $$value, $$match etc. which must be
-	 * resolved out one.
-	 */
-	compile_resolve_names(compile, info->compile);
-
 	info->built_syms = g_slist_append(info->built_syms, sym);
 
 #ifdef DEBUG_PATTERN
@@ -3042,11 +3076,6 @@ compile_pattern_match(Compile *compile, Symbol *value, ParseNode *pattern)
 		c.val.bol = TRUE;
 		match->expr->compile->tree = tree_const_new(match->expr->compile, c);
 	}
-
-	/* The $$match can call eg. is_list_len, we need to resolve these
-	 * references.
-	 */
-	compile_resolve_names(match->expr->compile, compile);
 
 #ifdef DEBUG
 	printf("compile_pattern_match: generated ");

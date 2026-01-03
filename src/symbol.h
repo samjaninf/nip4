@@ -179,8 +179,6 @@ gboolean symbol_user_init(Symbol *sym);
 gboolean symbol_parameter_init(Symbol *sym);
 gboolean symbol_parameter_builtin_init(Symbol *sym);
 
-void symbol_resolve(Symbol *sym);
-
 gboolean symbol_busy(void);
 
 void *symbol_sanity(Symbol *sym);
