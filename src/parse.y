@@ -118,7 +118,7 @@ void *parse_access_end(Symbol *sym, Symbol *main);
     Symbol *yy_sym;
 }
 
-%token TK_TAG TK_IDENT TK_CONST TK_DOTDOTDOT TK_LAMBDA TK_FROM TK_TO
+%token TK_TAG TK_IDENT TK_CONST TK_DOTDOTDOT TK_LAMBDA TK_FROM
 %token TK_UMINUS TK_UPLUS TK_POW TK_SUCHTHAT TK_MAP
 %token TK_LESS TK_LESSEQ TK_MORE TK_MOREEQ TK_NOTEQ
 %token TK_LAND TK_LOR TK_BAND TK_BOR TK_JOIN TK_DIFF
@@ -421,9 +421,8 @@ params_plus_rhs:
     }
     ;
 
-params:
-    /* Empty */ |
-    params simple_pattern {
+single_param:
+    simple_pattern {
         /* If the pattern is just an identifier, make it a direct
          * parameter. Otherwise make an anon param and put the pattern
          * in as a local with the same id.
@@ -433,15 +432,15 @@ params:
          * parses to:
          *
          *  fred $$arg42 = 12 { $$patt42 = [a]; }
-	 *
-	 * then compile_pattern() transforms to:
+         *
+         * then compile_pattern() transforms to:
          *
          *  fred $$arg42 = 12 { $$match42 = is_list $$arg43 && is_list_len
-	 *  $$arg422; a = $$arg42?0 }
+         *  $$arg422; a = $$arg42?0 }
          *
          */
-        if ($2->type == NODE_LEAF) {
-            const char *name = IOBJECT($2->leaf)->name;
+        if ($1->type == NODE_LEAF) {
+            const char *name = IOBJECT($1->leaf)->name;
 
             /* A single name ... make the zombie into a parameter.
              */
@@ -459,7 +458,7 @@ params:
             /* Use the pattern to make a match func plus a set of locals
              * which access this arg.
              */
-            GSList *built_syms = compile_pattern(current_compile, arg, $2);
+            GSList *built_syms = compile_pattern(current_compile, arg, $1);
 
             // note the match func for the codegen pass
             if (built_syms)
@@ -470,9 +469,13 @@ params:
             g_slist_free(built_syms);
 
             current_compile->params_include_patterns = TRUE;
-            current_compile->sym->needs_codegen = TRUE;
         }
     }
+    ;
+
+params:
+    /* Empty */ |
+    params single_param
     ;
 
 body :
@@ -629,8 +632,8 @@ lambda:
         current_symbol = sym;
         current_compile = sym->expr->compile;
     }
-    params TK_TO expr %prec TK_LAMBDA {
-        current_compile->tree = $5;
+    single_param expr %prec TK_LAMBDA {
+        current_compile->tree = $4;
 
         if (!compile_check(current_compile))
             yyerror(error_get_sub());
@@ -727,9 +730,10 @@ list_expression_contents:
         compile_check(current_compile);
 
         /* lcomp compile sets the value of $$listN, just return that (our
- 	 * enclosing production will set it again pointlessly).
+         * enclosing production will set it again pointlessly).
          */
         $$ = current_symbol->expr->compile->tree;
+
     } |
     comma_list {
         $$ = $1;

@@ -1,11 +1,11 @@
 ## master
 
-- add multiple defs to program window
+- add multiple defs support to program window
 - must hold ctrl to drag rows
 - improve empty mainwindow culling
-- fix compatibility of back compat menus
-- better name scoping for list comprehensions
-- switch to haskell lambda syntax with pattern matching
+- fix fwd compatibility of back compat menus
+- better scoping for list comprehensions
+- lambdas support pattern matching
 
 ## 9.0.15 2025/11/22
 

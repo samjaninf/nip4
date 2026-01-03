@@ -45,8 +45,8 @@
  */
 
 /* trace list comp compile
-#define DEBUG_LCOMP
  */
+#define DEBUG_LCOMP
 
 /* trace pattern LHS generation
 #define DEBUG_PATTERN
@@ -2651,33 +2651,41 @@ compile_lcomp(Compile *compile)
 	 */
 	g_assert(result);
 
+#ifdef DEBUG_LCOMP
+	printf("copying expr ");
+	dump_tiny(result);
+	printf("to inner lcomp\n");
+#endif /*DEBUG_LCOMP*/
+
 	n1 = compile_copy_tree(result->expr->compile,
 		result->expr->compile->tree, scope);
 	n2 = tree_leaf_new(scope, "$$sofar");
 	n3 = tree_binop_new(compile, BI_CONS, n1, n2);
 	scope->tree = n3;
 
+	printf("compile_lcomp: remove zombies and placeholders\n");
+
 	/* Remove all variables made by patterns. We don't want them to be
 	 * resolved outwards into the enclosing scope.
 	 *
 	 * Also, the pattern placeholders refer to them, so unless we remove them,
-	 * we can't remove the placeholsders without leaving dangling patch
+	 * we can't remove the placeholders without leaving dangling patch
 	 * pointers.
-	 */
 	for (GSList *p = children; p; p = p->next) {
 		Symbol *child = SYMBOL(p->data);
 
 		if (is_prefix("$$patt", IOBJECT(child)->name))
 			compile_lcomp_pattern_zombies(child->expr->compile->tree);
 	}
+	 */
 
 	/* We can now remove all placeholders, so untidy.
-	 */
 	for (GSList *p = children; p; p = p->next) {
 		Symbol *child = SYMBOL(p->data);
 
 		IDESTROY(child);
 	}
+	 */
 
 	/* Loop outwards again, closing the scopes we made.
 	 */

@@ -34,8 +34,8 @@
  */
 
 /* Just trace create/destroy.
-#define DEBUG_MAKE
  */
+#define DEBUG_MAKE
 
 /* Time recomputes.
 #define DEBUG_TIME
@@ -857,6 +857,12 @@ symbol_new_defining(Compile *compile, const char *name)
 	else
 		sym = symbol_new(compile, name);
 
+#ifdef DEBUG_MAKE
+	printf("symbol_new_defining: ");
+	symbol_name_print(sym);
+	printf("(%p)\n", sym);
+#endif /*DEBUG_MAKE*/
+
 	return sym;
 }
 
@@ -876,6 +882,12 @@ symbol_new_reference(Compile *compile, const char *name)
 	/* Note the new dependency.
 	 */
 	compile_link_make(compile, sym);
+
+#ifdef DEBUG_MAKE
+	printf("symbol_new_reference: ");
+	symbol_name_print(sym);
+	printf("\n");
+#endif /*DEBUG_MAKE*/
 
 	return sym;
 }

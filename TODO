@@ -1,10 +1,36 @@
-- test antoine lady again
+- we call compile_lcomp() during parse .. do we need a separate codegen apss
+  now? can we remove needs_codegen?
 
-	if we used lambda, it won't!
+	should we set needs_codegen on the enclosing toplevel sym?
 
-	maybe we need to go back to
+- try
 
-	TK_LAMBDA param expr
+	[[(x, y) :: x <- [1..10]] :: y <- [1..10]]
+
+  segv, worked fine in 9.0.15 before lcomp rewrite
+
+	try not removing zombies and placeholders?
+
+	do we copy expr into the inner context correctly?
+
+  comment out the placeholder and zombie cleaning and the crash goes, instead
+  we get
+
+	Not found in A1
+	symbol A1.y is not defined
+
+  seem to be resolving outwards too early?
+
+  this
+
+	y = 12
+	[(x, y) :: x <- [1..10]]
+
+  works fine
+
+- there's some other issue with antoine_lady as well
+
+	markup.C1 fails
 
 - rename "nip4-batch" as "snip"?
 
