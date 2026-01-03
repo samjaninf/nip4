@@ -3,6 +3,48 @@
 
 	should we set needs_codegen on the enclosing toplevel sym?
 
+- list in lcomp exprs don't work
+
+	fred = [[y] :: y <- [1..10]];
+
+  the inner [y] is a scope, it gets resolved out to fred, and then can't be
+  moved to the inner foldr
+
+  solutions:
+
+	- all list constants become functions
+
+		yuk!
+
+	- delay all resolving until the end of parse
+
+		we have an end-of-toplevel-parse func somewhere, this might
+		work?
+
+		compile_resolve_names() called from five places in parse.y
+
+		and quite a few in compile.c
+
+			try this
+
+		resolve needs to run after codegen
+
+			compile_codegen_toplevel()
+
+		in compile_check()? that's the previous end of parse point
+
+			nope, useless, gets called all the time
+
+	- go back to the way lcomps were
+
+- when dragging a mark on the cross you can only go up and left
+
+- linear match
+
+	allow refine tie points + no-resize atr the same time
+
+	show computed transform
+
 - try
 
 	[[(x, y) :: x <- [1..10]] :: y <- [1..10]]

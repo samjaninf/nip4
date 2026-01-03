@@ -1716,12 +1716,12 @@ compile_heap(Compile *compile)
 	}
 
 #ifdef DEBUG
+#endif /*DEBUG*/
 	printf("*** compile_heap: about to compile ");
 	symbol_name_print(compile->sym);
 	printf("\n");
 	if (compile->tree)
 		dump_tree(compile->tree, 2);
-#endif /*DEBUG*/
 
 	/* Compile function body. Tree can be NULL for classes.
 	 */
@@ -1816,6 +1816,10 @@ compile_object_sub(Compile *compile)
 void *
 compile_object(Compile *compile)
 {
+	/* Link all symbols.
+	 */
+	symbol_resolve(compile->sym);
+
 	/* Walk this tree of symbols computing the secret lists.
 	 */
 	secret_build(compile);
@@ -1835,12 +1839,12 @@ compile_codegen(Compile *compile)
 
 	if (sym->needs_codegen) {
 #ifdef DEBUG
+#endif /*DEBUG*/
 		printf("compile_codegen_sym: codegen for ");
 		symbol_name_print(sym);
 		printf("\n");
 		printf("\tbefore codegen, AST is:\n");
 		dump_compile(compile);
-#endif /*DEBUG*/
 
 		/* For now the only codegen is for multiple defs.
 		 */
@@ -2068,12 +2072,12 @@ static void
 compile_resolve(Symbol *sym, Symbol *zombie)
 {
 #ifdef DEBUG_RESOLVE
+#endif /*DEBUG_RESOLVE*/
 	printf("compile_resolve: resolving zombie ");
 	symbol_name_print(zombie);
 	printf("to symbol ");
 	symbol_name_print(sym);
 	printf("\n");
-#endif /*DEBUG_RESOLVE*/
 
 	/* Symbol on outer table. Patch pointers to zombie to point to
 	 * sym instead.
@@ -2522,9 +2526,9 @@ compile_lcomp(Compile *compile)
 	ParseNode *n1, *n2, *n3;
 
 #ifdef DEBUG_LCOMP
+#endif /*DEBUG_LCOMP*/
 	printf("before compile_lcomp: ");
 	dump_compile(compile);
-#endif /*DEBUG_LCOMP*/
 
 	/* Find all the elements of the lcomp: generators, filters, patterns
 	 * and $$result.
@@ -2686,21 +2690,6 @@ compile_lcomp(Compile *compile)
 		IDESTROY(child);
 	}
 	 */
-
-	/* Loop outwards again, closing the scopes we made.
-	 */
-	while (scope != compile) {
-		/* We know check can't fail on generated code.
-
-			FIXME ... yuk, maybe compile_lcomp should be
-			failable too
-
-		 */
-		(void) compile_check(scope);
-		compile_resolve_names(scope, compile_get_parent(scope));
-
-		scope = compile_get_parent(scope);
-	}
 
 #ifdef DEBUG_LCOMP
 	printf("after compile_lcomp: ");

@@ -327,11 +327,6 @@ definition:
     params_plus_rhs {
         compile_check(current_compile);
 
-        /* Link unresolved names into the outer scope.
-         */
-        compile_resolve_names(current_compile,
-            compile_get_parent(current_compile));
-
         /* Is this (pattern = rhs)? current_symbol is $$valueN and we need
          * to make a set of peer symbols which access that.
          */
@@ -522,10 +517,6 @@ crhs:
          */
         compile_check(current_compile);
 
-        /* Link unresolved names.
-         */
-        compile_resolve_names(current_compile, parent);
-
         scope_pop();
 
         $$ = current_parsenode;
@@ -638,11 +629,6 @@ lambda:
         if (!compile_check(current_compile))
             yyerror(error_get_sub());
 
-        /* Link unresolved names to the outer scope.
-         */
-        compile_resolve_names(current_compile,
-            compile_get_parent(current_compile));
-
         /* The value of the expr is the anon we defined.
          */
         Symbol *sym = current_symbol;
@@ -679,11 +665,6 @@ list_expression:
 	/* The tree we generated is the value of $$listN
 	 */
 	current_symbol->expr->compile->tree = $3;
-
-        /* Link unresolved names outwards.
-         */
-        compile_resolve_names(current_compile,
-            compile_get_parent(current_compile));
 
         scope_pop();
     }
