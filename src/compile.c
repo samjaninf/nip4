@@ -2212,9 +2212,14 @@ compile_resolve_static(Symbol *sym)
 	printf("\n");
 
 	if (sym->expr &&
-		sym->expr->compile)
+		sym->expr->compile) {
 		compile_map_all_inner(sym->expr->compile,
 			compile_resolve_static_sub, NULL);
+
+		printf("compile_resolve_static: after resolve, compile is\n");
+		dump_compile(sym->expr->compile);
+		printf("compile_resolve_static: done\n");
+	}
 }
 
 /* Hit a top-level zombie during reduction. Search outwards to root looking on
@@ -2322,9 +2327,12 @@ compile_find_generated_node(Compile *compile, ParseNode *node,
 		printf("  symbol_get_parent()->compile = %p\n",
 				symbol_get_parent(sym)->expr->compile);
 
+		/*
 		if (sym->generated &&
 			symbol_get_parent(sym) &&
 			symbol_get_parent(sym)->expr->compile == compile)
+		 */
+		if (sym->generated)
 			*list = g_slist_prepend(*list, sym);
 	}
 
@@ -2733,21 +2741,22 @@ compile_lcomp(Compile *compile)
 	 * Also, the pattern placeholders refer to them, so unless we remove them,
 	 * we can't remove the placeholders without leaving dangling patch
 	 * pointers.
+	 */
 	for (GSList *p = children; p; p = p->next) {
 		Symbol *child = SYMBOL(p->data);
 
 		if (is_prefix("$$patt", IOBJECT(child)->name))
 			compile_lcomp_pattern_zombies(child->expr->compile->tree);
 	}
-	 */
 
-	/* We can now remove all placeholders, so untidy.
+	/* Remove all placeholders, they may contain refs to symbols which will
+	 * not resolve and will block computation.
+	 */
 	for (GSList *p = children; p; p = p->next) {
 		Symbol *child = SYMBOL(p->data);
 
 		IDESTROY(child);
 	}
-	 */
 
 #ifdef DEBUG_LCOMP
 	printf("after compile_lcomp: ");
