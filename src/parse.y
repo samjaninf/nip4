@@ -665,13 +665,13 @@ list_expression:
 	/* The tree we generated is the value of $$listN
 	 */
 	current_symbol->expr->compile->tree = $3;
-
-        scope_pop();
     }
     ']' {
         /* The value of the expr is a ref to the anon we defined.
          */
         $$ = tree_leafsym_new(current_compile, $<yy_sym>2);
+
+        scope_pop();
     } |
     '[' ']' {
         ParseConst elist;
@@ -703,6 +703,11 @@ list_expression_contents:
         (void) symbol_user_init(sym);
         (void) compile_new_local(sym->expr);
         sym->expr->compile->tree = $1;
+
+	printf("parse.y:709 -- made ");
+	symbol_name_print(sym);
+	printf("\n");
+
     }
     generator frompred_list {
         /* Generate the code for the list comp.

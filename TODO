@@ -1,13 +1,26 @@
+- check compile_copy_tree() for expr copy
+
+
+
 - this works
 
-	[x :: x <- [1..10]]
+	[y :: y <- [1..10]]
 
   this does not!
 
-	[[x] :: x <- [1..10]]
-	symbol x is not defined
+	[[y] :: y <- [1..10]]
+	symbol y is not defined
 
   are we still resolving too early?
+
+	when we copy the result expr, are we not copying the zombie too?
+
+	$$list0 is the lcomp, $$list1 is the [y], $$list2 is the generator
+
+	$$list1 refers to SYM_ZOMBIE fred.$$list0.$$list1.y
+
+	we need to copy the zombie as well, so it gets resolved to PARAM
+	$$fn1.y
 
 - we call compile_lcomp() during parse .. do we need a separate codegen apss
   now? can we remove needs_codegen?

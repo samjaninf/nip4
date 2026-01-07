@@ -90,7 +90,8 @@ struct _Symbol {
 	 */
 	gboolean needs_codegen;
 
-	/* This is a generated symbol, like $$result, $$fn1, whatever.
+	/* This is a generated symbol, like $$listN, $$fn1, whatever, something
+	 * that will be compiled.
 	 */
 	gboolean generated;
 
@@ -105,7 +106,10 @@ struct _Symbol {
 
 	/* X-tras for definitions.
 	 */
-	Tool *tool; /* Tool and toolkit defined in */
+
+	/* Tool and toolkit defined in.
+	 */
+	Tool *tool;
 
 	/* X-tras for SYM_BUILTIN ... our function.
 	 */

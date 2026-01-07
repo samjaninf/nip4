@@ -2205,6 +2205,12 @@ compile_resolve_static_sub(Compile *compile, void *user_data)
 void
 compile_resolve_static(Symbol *sym)
 {
+#ifdef DEBUG
+#endif /*DEBUG*/
+	printf("compile_resolve_static: ");
+	symbol_name_print(sym);
+	printf("\n");
+
 	if (sym->expr &&
 		sym->expr->compile)
 		compile_map_all_inner(sym->expr->compile,
@@ -2304,13 +2310,23 @@ static void *
 compile_find_generated_node(Compile *compile, ParseNode *node,
 	GSList **list)
 {
-	Symbol *sym = node->leaf;
+	if (node->type == NODE_LEAF) {
+		Symbol *sym = node->leaf;
 
-	if (node->type == NODE_LEAF &&
-		sym->generated &&
-		symbol_get_parent(sym) &&
-		symbol_get_parent(sym)->expr->compile == compile)
-		*list = g_slist_prepend(*list, sym);
+		printf("compile_find_generated_node: sym = ");
+		symbol_name_print(sym);
+		printf("\n");
+
+		printf("  generated = %d\n", sym->generated);
+		printf("  symbol_get_parent() = %p\n", symbol_get_parent(sym));
+		printf("  symbol_get_parent()->compile = %p\n",
+				symbol_get_parent(sym)->expr->compile);
+
+		if (sym->generated &&
+			symbol_get_parent(sym) &&
+			symbol_get_parent(sym)->expr->compile == compile)
+			*list = g_slist_prepend(*list, sym);
+	}
 
 	return NULL;
 }
@@ -2341,12 +2357,12 @@ compile_copy_sym(Symbol *sym, Compile *dest)
 	Symbol *copy_sym;
 
 #ifdef DEBUG
+#endif /*DEBUG*/
 	printf("compile_copy_sym: copying ");
 	symbol_name_print(sym);
 	printf("to scope of ");
 	compile_name_print(dest);
 	printf("\n");
-#endif /*DEBUG*/
 
 	/* Must be a different place.
 	 */
@@ -2365,8 +2381,7 @@ compile_copy_sym(Symbol *sym, Compile *dest)
 		(void) symbol_user_init(copy_sym);
 		(void) compile_new_local(copy_sym->expr);
 
-		/* Copy any locals over. We have to do this before we copy the
-		 * tree so that the new tree links to the new syms.
+		/* Copy any locals over.
 		 */
 		icontainer_map(ICONTAINER(sym->expr->compile),
 			(icontainer_map_fn) compile_copy_sym,
@@ -2408,12 +2423,12 @@ compile_copy_tree(Compile *fromscope, ParseNode *tree, Compile *toscope)
 	ParseNode *copy_tree;
 
 #ifdef DEBUG
+#endif /*DEBUG*/
 	printf("compile_copy_tree: copying tree from ");
 	compile_name_print(fromscope);
 	printf(" to ");
 	compile_name_print(toscope);
 	printf("\n");
-#endif /*DEBUG*/
 
 	/* A new context? Copy generated syms over.
 	 */
@@ -2423,10 +2438,10 @@ compile_copy_tree(Compile *fromscope, ParseNode *tree, Compile *toscope)
 		generated = compile_find_generated(fromscope, tree);
 
 #ifdef DEBUG
+#endif /*DEBUG*/
 		printf("with generated children: ");
 		(void) slist_map(generated, (SListMapFn) dump_tiny, NULL);
 		printf("\n");
-#endif /*DEBUG*/
 
 		slist_map(generated,
 			(SListMapFn) compile_copy_sym, toscope);
@@ -2435,6 +2450,10 @@ compile_copy_tree(Compile *fromscope, ParseNode *tree, Compile *toscope)
 	}
 
 	copy_tree = tree_copy(toscope, tree);
+
+#ifdef DEBUG
+#endif /*DEBUG*/
+	printf("compile_copy_tree: done\n");
 
 	return copy_tree;
 }
@@ -2570,7 +2589,7 @@ compile_lcomp(Compile *compile)
 	dump_compile(compile);
 
 	/* Find all the elements of the lcomp: generators, filters, patterns
-	 * and $$result.
+	 * and result.
 	 */
 	g_autoptr(GSList) children = NULL;
 	(void) icontainer_map(ICONTAINER(compile),
