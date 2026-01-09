@@ -34,8 +34,8 @@
  */
 
 /* Just trace create/destroy.
- */
 #define DEBUG_MAKE
+ */
 
 /* Time recomputes.
 #define DEBUG_TIME
@@ -599,9 +599,10 @@ symbol_dispose(GObject *gobject)
 	IDESTROY(sym->tool);
 
 	/* Any Compile which refer to us must have errors.
-	 */
 	(void) slist_map(sym->parents,
 		(SListMapFn) symbol_destroy_error, sym);
+	 */
+	printf("symbol_dispose: set errors\n");
 
 	/* Remove links from any expr which refer to us.
 	 */

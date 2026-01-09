@@ -1,31 +1,26 @@
-- check compile_copy_tree() for expr copy
+- can we delay codegen, resolve, compile until we need it?
+
+  on startup, fred is compiled, but foldr is not
+
+  after compile, n_dirty_children etc will change, we need to reconsider what
+  to eval next
+
+  compiler currently runs:
+
+	compile_object()
+	heap_copy()
+	reduce_regenerate()
 
 
 
-- this works
+  need to compile in order to display toolkit menus, load workspaces, process
+  "enter" in column widget, if we discover an uncompiled def during reduction
 
-	[y :: y <- [1..10]]
+  much simpler to compile to the end of top-level def parse!
 
-  this does not!
+	  how much quicker would lazy compile make startup ? is it worth it?
 
-	[[y] :: y <- [1..10]]
-	symbol y is not defined
 
-  are we still resolving too early?
-
-	when we copy the result expr, are we not copying the zombie too?
-
-	$$list0 is the lcomp, $$list1 is the [y], $$list2 is the generator
-
-	$$list1 refers to SYM_ZOMBIE fred.$$list0.$$list1.y
-
-	we need to copy the zombie as well, so it gets resolved to PARAM
-	$$fn1.y
-
-- we call compile_lcomp() during parse .. do we need a separate codegen apss
-  now? can we remove needs_codegen?
-
-	should we set needs_codegen on the enclosing toplevel sym?
 
 - when dragging a mark on the cross you can only go up and left
 
