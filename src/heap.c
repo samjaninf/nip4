@@ -453,7 +453,7 @@ heap_link(Heap *heap, Compile *compile, heap_max_fn max_fn, int stsz, int rsz)
 	heap->mxb = 1 + (heap->max_fn(heap) / rsz);
 }
 
-/* Create an empty heap. mxsz is maximum size of heap in units of nodes,
+/* Create an empty heap. max_fn sets the maximum size of heap in nodes,
  * stsz is start size, rsz is heap growth unit.
  */
 Heap *
@@ -818,13 +818,13 @@ heap_getmem(Heap *heap)
 	if (!heap->free) {
 		error_top(_("Heap full"));
 		if (heap->compile) {
-			char txt[100];
-			VipsBuf buf = VIPS_BUF_STATIC(txt);
-
-			compile_name(heap->compile, &buf);
 			error_sub(_("the compile heap for %s has filled, "
 						"make it smaller and less complicated"),
-				vips_buf_all(&buf));
+				symbol_name(heap->compile->sym));
+
+			printf("compile heap for %s has filled\n",
+					symbol_name(heap->compile->sym));
+			printf("\tncells = %d\n", heap->ncells);
 		}
 		else
 			error_sub(_("the main calculation heap has filled, "

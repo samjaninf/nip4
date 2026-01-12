@@ -1,3 +1,52 @@
+- some locals are filling their compile heaps:
+
+	Magick_canny_item.action.command.$$list170
+
+  code is
+
+	Magick_canny_item = class
+	    Menuaction "_Canny" "detect a wide range of edges" {
+	    action x = class
+		_result {
+		_vislevel = 3;
+
+		radius = Magick.blur_rad_widget;
+		sigma = Magick.sigma_widget;
+		lowPc = Scale "lower percent" 0 100 10;
+		highPc = Scale "lower percent" 0 100 10;
+
+		command = Magick.command [
+		    "'%s'",
+		    "-canny",
+		    concat ["'",
+			print radius.value ++ "x" ++
+			print sigma.value ++ "+" ++
+			print lowPc.value ++ "%+" ++
+			print highPc.value ++ "%" ++ "'"
+		    ],
+		    "'%s'"
+		];
+
+		_result = Magick.system command x;
+	    }
+	}
+
+  minimal?
+
+	A = class {
+	    a = 12;
+	    b = [concat [a]];
+	}
+
+
+
+
+
+- testing:
+
+	- image_convert_to_image is missing a toolkit label
+	- image_new_image is failing with compile heap overflow
+
 - when dragging a mark on the cross you can only go up and left
 
 - linear match
