@@ -1422,6 +1422,13 @@ scope_reset(void)
 void *
 parse_toplevel_end(Symbol *sym)
 {
+    // compile zero-arg top levels so they get added to the recomp tree
+    if (sym->expr &&
+        sym->expr->compile &&
+        sym->expr->compile->nparam == 0 &&
+        compile_object(sym->expr->compile))
+        compile_error_set(sym->expr->compile);
+
     // don't make tools for eg. $$matchN etc.
     if (is_visible(sym)) {
         Tool *tool;

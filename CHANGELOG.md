@@ -4,8 +4,9 @@
 - must hold ctrl to drag rows
 - improve empty mainwindow culling
 - fix fwd compatibility of back compat menus
-- better scoping for list comprehensions
+- rewrite of list comprehensions improves scoping
 - lambdas support pattern matching
+- lazy compile of functions
 
 ## 9.0.15 2025/11/22
 
