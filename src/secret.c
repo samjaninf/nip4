@@ -25,12 +25,12 @@
  */
 
 /*
-#define DEBUG
  */
+#define DEBUG
 
 /* Just show secrets we added
-#define DEBUG_ADD
  */
+#define DEBUG_ADD
 
 #include "nip4.h"
 
@@ -286,9 +286,9 @@ secret_all(Compile *compile)
 {
 	if (slist_map(compile->param, (SListMapFn) secret_all_sym, compile) ||
 		slist_map(compile->secret, (SListMapFn) secret_all_sym, compile))
-		return compile
+		return compile;
 
-			return NULL;
+	return NULL;
 }
 #endif /*DEBUG*/
 
@@ -329,5 +329,6 @@ secret_build(Compile *compile)
 	} while (changed);
 
 	printf("secret_build: after build, compile is:\n");
-	dump_compile(compile);
+	int indent = 0;
+	dump_compile(compile, &indent);
 }

@@ -276,11 +276,11 @@ heap_finalize(GObject *gobject)
 }
 
 static void
-heap_info(iObject *iobject, VipsBuf *buf)
+heap_info(iObject *iobject, VipsBuf *buf, int indent)
 {
 	Heap *heap = HEAP(iobject);
 
-	vips_buf_appendf(buf, "compile = ");
+	vips_buf_appendf(buf, "%*cheap->compile = ", indent, ' ');
 	if (heap->compile)
 		if (heap->compile->sym) {
 			symbol_qualified_name(heap->compile->sym, buf);
@@ -289,20 +289,29 @@ heap_info(iObject *iobject, VipsBuf *buf)
 		else
 			vips_buf_appendf(buf, "(compile, but no sym)\n");
 	else
-		vips_buf_appendf(buf, "(no compile)\n");
-	vips_buf_appendf(buf, "mxb (max blocks) = %d\n", heap->mxb);
-	vips_buf_appendf(buf, "rsz (nodes per block) = %d\n", heap->rsz);
-	vips_buf_appendf(buf, "nb (number of blocks) = %d\n", heap->nb);
-	vips_buf_appendf(buf, "emark = %d pointers\n",
+		vips_buf_appendf(buf, "%*c(no compile)\n", indent, ' ');
+
+	indent += 2;
+	vips_buf_appendf(buf, "%*cmxb (max blocks) = %d\n", indent, ' ',
+		heap->mxb);
+	vips_buf_appendf(buf, "%*crsz (nodes per block) = %d\n", indent, ' ',
+		heap->rsz);
+	vips_buf_appendf(buf, "%*cnb (number of blocks) = %d\n", indent, ' ',
+		heap->nb);
+	vips_buf_appendf(buf, "%*cemark = %d pointers\n",indent, ' ',
 		g_hash_table_size(heap->emark));
-	vips_buf_appendf(buf, "rmark = %d pointers\n",
+	vips_buf_appendf(buf, "%*crmark = %d pointers\n",indent, ' ',
 		g_hash_table_size(heap->rmark));
-	vips_buf_appendf(buf, "ncells (cells allocated) = %d\n", heap->ncells);
-	vips_buf_appendf(buf, "nfree (cells free at last GC) = %d\n", heap->nfree);
-	vips_buf_appendf(buf, "mtable (Managed blocks) = %d pointers\n",
+	vips_buf_appendf(buf, "%*cncells (cells allocated) = %d\n", indent, ' ',
+		heap->ncells);
+	vips_buf_appendf(buf, "%*cnfree (cells free at last GC) = %d\n",
+		indent, ' ',
+		heap->nfree);
+	vips_buf_appendf(buf, "%*cmtable (Managed blocks) = %d pointers\n",
+		indent, ' ',
 		g_hash_table_size(heap->mtable));
 
-	IOBJECT_CLASS(parent_class)->info(iobject, buf);
+	IOBJECT_CLASS(parent_class)->info(iobject, buf, indent);
 }
 
 /* Empty a heap block.
@@ -2498,7 +2507,7 @@ lisp_pelement(VipsBuf *buf, PElement *base,
 
 	case ELEMENT_MANAGED:
 		vips_buf_appendf(buf, "<Managed* %p, ", PEGETVAL(base));
-		iobject_info(IOBJECT(PEGETVAL(base)), buf);
+		iobject_info(IOBJECT(PEGETVAL(base)), buf, 0);
 		vips_buf_appendf(buf, ">");
 		break;
 

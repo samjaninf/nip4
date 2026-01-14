@@ -78,7 +78,7 @@ iobject_changed(iObject *iobject)
 }
 
 void *
-iobject_info(iObject *iobject, VipsBuf *buf)
+iobject_info(iObject *iobject, VipsBuf *buf, int indent)
 {
 	iObjectClass *iobject_class = IOBJECT_GET_CLASS(iobject);
 
@@ -86,7 +86,7 @@ iobject_info(iObject *iobject, VipsBuf *buf)
 	g_return_val_if_fail(IS_IOBJECT(iobject), NULL);
 
 	if (iobject_class->info)
-		iobject_class->info(iobject, buf);
+		iobject_class->info(iobject, buf, indent);
 
 	return NULL;
 }
@@ -145,13 +145,17 @@ iobject_real_changed(iObject *iobject)
 }
 
 static void
-iobject_real_info(iObject *iobject, VipsBuf *buf)
+iobject_real_info(iObject *iobject, VipsBuf *buf, int indent)
 {
 	if (iobject->name)
-		vips_buf_appendf(buf, "name = \"%s\"\n", iobject->name);
+		vips_buf_appendf(buf, "%*cname = \"%s\"\n",  indent, ' ',
+			iobject->name);
 	if (iobject->caption)
-		vips_buf_appendf(buf, "caption = \"%s\"\n", iobject->caption);
-	vips_buf_appendf(buf, "iObject :: \"%s\"\n", G_OBJECT_TYPE_NAME(iobject));
+		vips_buf_appendf(buf, "%*ccaption = \"%s\"\n",  indent, ' ',
+			iobject->caption);
+	vips_buf_appendf(buf, "%*ciObject :: \"%s\"\n",
+		indent, ' ',
+		G_OBJECT_TYPE_NAME(iobject));
 }
 
 static void
@@ -276,12 +280,12 @@ iobject_ref_sink(iObject *iobject)
 }
 
 void
-iobject_dump(iObject *iobject)
+iobject_dump(iObject *iobject, int indent)
 {
 	char txt[1000];
 	VipsBuf buf = VIPS_BUF_STATIC(txt);
 
-	iobject_info(iobject, &buf);
+	iobject_info(iobject, &buf, indent);
 	printf("%s", vips_buf_all(&buf));
 }
 

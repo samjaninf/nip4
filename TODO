@@ -45,6 +45,7 @@
 	    b = [c [a]];
 	}
 
+
 generate_reference: compile(0x55555583a320) A.A refs sym A
 generate_reference: compile(0x5555558b8380) A.b.$$list0.$$list1 refs sym A.a
 generate_reference: compile(0x5555558b8380) A.b.$$list0.$$list1 refs sym A.this
@@ -57,6 +58,13 @@ generate_reference: compile(0x5555558b6fc0) A.b.$$list0 refs sym A.this
 
 
 - add lcomp tests to test_snip
+
+    [[y] :: y <- [1..10]]
+    [[[[y]]] :: y <- [1..10]]
+    [[[[x, y]]] :: y <- [1..3], x <- [1..3]]
+    [[[x, y] :: x <- [1..3]] :: y <- [1..3]]
+    [[[x, y] :: x <- [1..3]; x != y] :: y <- [1..3]]
+    [[x, y] :: x <- [1..3]; y <- [1..3]; x != y]
 
 - testing:
 

@@ -6,7 +6,8 @@
 - fix fwd compatibility of back compat menus
 - rewrite of list comprehensions improves scoping
 - lambdas support pattern matching
-- lazy compile of functions
+- deferred compile of functions
+- deferred name resolution
 
 ## 9.0.15 2025/11/22
 

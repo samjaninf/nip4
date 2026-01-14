@@ -491,26 +491,28 @@ row_add_dirty_child_name(Link *link, VipsBuf *buf)
 }
 
 static void
-row_info(iObject *iobject, VipsBuf *buf)
+row_info(iObject *iobject, VipsBuf *buf, int indent)
 {
 	Row *row = ROW(iobject);
 
+	vips_buf_appendf(buf, "%*c", indent, ' ');
 	vips_buf_appends(buf, _("Name"));
 	vips_buf_appends(buf, ": ");
 	row_qualified_name(row, buf);
 	vips_buf_appends(buf, "\n");
 
 	if (row->expr)
-		iobject_info(IOBJECT(row->expr), buf);
+		iobject_info(IOBJECT(row->expr), buf, indent);
 	if (row->child_rhs &&
 		row->child_rhs->itext)
-		iobject_info(IOBJECT(row->child_rhs->itext), buf);
+		iobject_info(IOBJECT(row->child_rhs->itext), buf, indent);
 	if (row->child_rhs &&
 		row->child_rhs->graphic)
-		iobject_info(IOBJECT(row->child_rhs->graphic), buf);
+		iobject_info(IOBJECT(row->child_rhs->graphic), buf, indent);
 	if (row->top_row->sym) {
 		if (row->top_row->sym->topchildren) {
 			row_qualified_name(row, buf);
+			vips_buf_appendf(buf, "%*c", indent, ' ');
 			vips_buf_appends(buf, " ");
 			/* Expands to eg. "B1 refers to: B2, B3".
 			 */
@@ -522,6 +524,7 @@ row_info(iObject *iobject, VipsBuf *buf)
 		}
 		if (row->top_row->sym->topparents) {
 			row_qualified_name(row, buf);
+			vips_buf_appendf(buf, "%*c", indent, ' ');
 			vips_buf_appends(buf, " ");
 			/* Expands to eg. "B1 is referred to by: B2, B3".
 			 */
@@ -539,6 +542,7 @@ row_info(iObject *iobject, VipsBuf *buf)
 
 		if (sym->ndirtychildren) {
 			row_qualified_name(row, buf);
+			vips_buf_appendf(buf, "%*c", indent, ' ');
 			vips_buf_appends(buf, " ");
 			vips_buf_appends(buf, _("is blocked on"));
 			vips_buf_appends(buf, ": ");

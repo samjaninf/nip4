@@ -60,10 +60,11 @@ itext_finalize(GObject *gobject)
 }
 
 static void
-itext_info(iObject *iobject, VipsBuf *buf)
+itext_info(iObject *iobject, VipsBuf *buf, int indent)
 {
 	iText *itext = ITEXT(iobject);
 
+	vips_buf_appendf(buf, "%*c", indent, ' ');
 	vips_buf_appends(buf, _("Formula"));
 	vips_buf_appendf(buf, ": %s\n", itext->formula);
 }
@@ -239,7 +240,7 @@ itext_decompile_element(VipsBuf *buf, PElement *base, gboolean top)
 			vips_buf_appendf(buf, "<NULL managed>");
 		else {
 			vips_buf_appendf(buf, "<%s ", G_OBJECT_TYPE_NAME(managed));
-			iobject_info(IOBJECT(managed), buf);
+			iobject_info(IOBJECT(managed), buf, 0);
 			vips_buf_appends(buf, ">");
 		}
 	}
@@ -374,7 +375,7 @@ itext_add_element(VipsBuf *buf, PElement *base,
 		Managed *managed = PEGETMANAGED(base);
 
 		vips_buf_appends(buf, "<");
-		iobject_info(IOBJECT(managed), buf);
+		iobject_info(IOBJECT(managed), buf, 0);
 		vips_buf_appends(buf, ">");
 	}
 	else if (PEISCLASS(base)) {

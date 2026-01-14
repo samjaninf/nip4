@@ -35,6 +35,7 @@
 
 /*
  */
+#define VERBOSE
 #define DEBUG
 
 /* Dump a binary operator.
@@ -317,13 +318,14 @@ dump_expr(Expr *expr, int *indent)
 
 	printf("%*cexpr (%p)->sym->name = \"%s\"\n", *indent, ' ',
 		expr, IOBJECT(sym)->name);
+
+	*indent += 2;
+
 	if (expr->row)
 		printf("%*c%s->row = (set)\n", *indent, ' ', IOBJECT(sym)->name);
 
-	if (expr->compile) {
-		printf("%*c%s->compile:\n", *indent, ' ', IOBJECT(sym)->name);
+	if (expr->compile)
 		dump_compile(expr->compile, indent);
-	}
 
 	printf("%*c", *indent, ' ');
 	if (sym->dirty)
@@ -342,6 +344,8 @@ dump_expr(Expr *expr, int *indent)
 	if (expr->error_sub)
 		printf("%*c%s->expr->error_sub = \"%s\"\n", *indent, ' ',
 			IOBJECT(sym)->name, expr->error_sub);
+
+	*indent -= 2;
 }
 
 /* Dump a compile, tiny.
@@ -363,37 +367,38 @@ dump_compile(Compile *compile, int *indent)
 {
 	Symbol *sym = compile->sym;
 
-	printf("compile (%p)->sym->name = \"%s\"\n", *indent, ' ',
+	printf("%*ccompile (%p)->sym->name = \"%s\"\n", *indent, ' ',
 		compile, IOBJECT(sym)->name);
 
+	*indent += 2;
+
 #ifdef VERBOSE
-	printf("%s->class = %s\n", *indent, ' ',
+	printf("%*c%s->is_klass = %s\n", *indent, ' ',
 		IOBJECT(sym)->name, bool_to_char(compile->is_klass));
-	printf("%s->super = %s\n", *indent, ' ',
+	printf("%*c%s->has_super = %s\n", *indent, ' ',
 		IOBJECT(sym)->name, bool_to_char(compile->has_super));
 
-	printf("%s->compile->text = \"%s\"\n", *indent, ' ',
+	printf("%*c%s->text = \"%s\"\n", *indent, ' ',
 		IOBJECT(sym)->name, compile->text);
-	printf("%s->compile->prhstext = \"%s\"\n", *indent, ' ',
+	printf("%*c%s->prhstext = \"%s\"\n", *indent, ' ',
 		IOBJECT(sym)->name, compile->prhstext);
-	printf("%s->compile->rhstext = \"%s\"\n", *indent, ' ',
+	printf("%*c%s->rhstext = \"%s\"\n", *indent, ' ',
 		IOBJECT(sym)->name, compile->rhstext);
 #endif /*VERBOSE*/
 
 	if (compile->tree) {
-		printf("%s->compile->tree = \n", *indent, ' ', IOBJECT(sym)->name);
+		printf("%*c%s->tree = \n", *indent, ' ', IOBJECT(sym)->name);
 		*indent += 2;
 		(void) dump_tree(compile->tree, *indent);
 		*indent -= 2;
 	}
 #ifdef VERBOSE
-	printf("%*c%s->compile->treefrag = %d pointers\n", *indent, ' ',
+	printf("%*c%s->treefrag = %d pointers\n", *indent, ' ',
 		IOBJECT(sym)->name, g_slist_length(compile->treefrag));
 #endif /*VERBOSE*/
 
 	if (icontainer_get_n_children(ICONTAINER(compile)) > 0) {
-		printf("%*c%s->compile->children =\n", *indent, ' ',
-			IOBJECT(sym)->name);
+		printf("%*c%s->children:\n", *indent, ' ', IOBJECT(sym)->name);
 		*indent += 2;
 		(void) icontainer_map(ICONTAINER(compile),
 			(icontainer_map_fn) dump_symbol, indent, NULL);
@@ -405,39 +410,44 @@ dump_compile(Compile *compile, int *indent)
 		char txt[100];
 		VipsBuf buf = VIPS_BUF_STATIC(txt);
 
-		printf("%*c%s->compile->nparam = %d\n", *indent, ' ',
+		printf("%*c%s->nparam = %d\n", *indent, ' ',
 			IOBJECT(sym)->name, compile->nparam);
-		printf("%s->compile->param = ", *indent, ' ', IOBJECT(sym)->name);
+		printf("%*c%s->param = ", *indent, ' ', IOBJECT(sym)->name);
 		(void) slist_map(compile->param, (SListMapFn) dump_tiny, NULL);
 		printf("\n");
-		printf("%*c%s->compile->nsecret = %d\n", *indent, ' ',
+		printf("%*c%s->nsecret = %d\n", *indent, ' ',
 			IOBJECT(sym)->name, compile->nsecret);
-		printf("%*c%s->compile->secret = ", *indent, ' ', IOBJECT(sym)->name);
+		printf("%*c%s->secret = ", *indent, ' ', IOBJECT(sym)->name);
 		(void) slist_map(compile->secret, (SListMapFn) dump_tiny, NULL);
 		printf("\n");
-		printf("%*c%s->compile->this = ", *indent, ' ', IOBJECT(sym)->name);
+		printf("%*c%s->this = ", *indent, ' ', IOBJECT(sym)->name);
 		if (compile->this)
 			dump_tiny(compile->this);
 		else
 			printf("(null)");
 		printf("\n");
-		printf("%*c%s->compile->super = ", *indent, ' ', IOBJECT(sym)->name);
+		printf("%*c%s->super:", *indent, ' ', IOBJECT(sym)->name);
 		if (compile->super)
 			dump_tiny(compile->super);
 		else
 			printf("(null)");
 		printf("\n");
-		printf("%*c%s->compile->children = ", *indent, ' ', IOBJECT(sym)->name);
+		printf("%*c%s->children = ", *indent, ' ', IOBJECT(sym)->name);
 		(void) slist_map(compile->children, (SListMapFn) dump_tiny, NULL);
 		printf("\n");
 
 		graph_element(compile->heap, &buf, &compile->base, FALSE);
-		printf("%*c%s->compile->base = %s\n", *indent, ' ',
+		printf("%*c%s->base = %s\n", *indent, ' ',
 			IOBJECT(sym)->name, vips_buf_all(&buf));
-		if (compile->heap)
-			iobject_dump(IOBJECT(compile->heap));
+		if (compile->heap) {
+			*indent += 2;
+			iobject_dump(IOBJECT(compile->heap), *indent);
+			*indent -= 2;
+		}
 	}
 #endif /*VERBOSE*/
+
+	*indent -= 2;
 }
 
 /* Print a full symbol and all it's children.
@@ -449,13 +459,18 @@ dump_symbol(Symbol *sym, int *indent)
 	(void) dump_tiny(sym);
 	printf("\n");
 
+	*indent += 2;
+
 #ifdef VERBOSE
 	printf("%*c%s->patch = %d pointers\n", *indent, ' ',
 		IOBJECT(sym)->name, g_slist_length(sym->patch));
 #endif /*VERBOSE*/
 
-	if (sym->expr)
-		dump_expr(sym->expr, *indent);
+	if (sym->expr) {
+		*indent += 2;
+		dump_expr(sym->expr, indent);
+		*indent -= 2;
+	}
 
 #ifdef VERBOSE
 	printf("%*c%s->base = ", *indent, ' ', IOBJECT(sym)->name);
@@ -466,8 +481,7 @@ dump_symbol(Symbol *sym, int *indent)
 		pgraph(&root);
 	}
 	else
-		printf("<sym is dirty ... can't print>");
-	printf("\n");
+		printf("<sym is dirty ... can't print>\n");
 
 	printf("%*c%s->dirty = %s\n", *indent, ' ',
 		IOBJECT(sym)->name, bool_to_char(sym->dirty));
@@ -477,7 +491,7 @@ dump_symbol(Symbol *sym, int *indent)
 
 	/* Prints topchildren and topparents.
 	 */
-	dump_links(sym, *indent);
+	dump_links(sym, indent);
 	printf("%*c%s->ndirtychildren = %d\n", *indent, ' ',
 		IOBJECT(sym)->name, sym->ndirtychildren);
 	printf("%*c%s->leaf = %s\n", *indent, ' ',
@@ -496,10 +510,12 @@ dump_symbol(Symbol *sym, int *indent)
 
 	printf("%*c%s->tool = kit ", *indent, ' ', IOBJECT(sym)->name);
 	if (sym->tool)
-		dump_kit(sym->tool->kit, *indent, ' ');
+		dump_kit(sym->tool->kit, indent);
 	else
 		printf("<NULL>\n");
 #endif /*VERBOSE*/
+
+	*indent -= 2;
 
 	return NULL;
 }
@@ -509,7 +525,7 @@ dump_symbol(Symbol *sym, int *indent)
 void
 dump_symbol_table(void)
 {
-	int intent = 0;
+	int indent = 0;
 	(void) icontainer_map(ICONTAINER(symbol_root->expr->compile),
 		(icontainer_map_fn) dump_symbol, &indent, NULL);
 }
@@ -538,10 +554,10 @@ dump_tiny_tool(Tool *tool)
 /* Print out the syms in a kit.
  */
 void *
-dump_kit(Toolkit *kit)
+dump_kit(Toolkit *kit, int *indent)
 {
-	printf("kit->name = %s; ", IOBJECT(kit)->name);
-	printf("%s->tools = ", IOBJECT(kit)->name);
+	printf("%*ckit->name = %s; ", *indent, ' ', IOBJECT(kit)->name);
+	printf("%*c%s->tools = ", *indent, ' ', IOBJECT(kit)->name);
 	icontainer_map(ICONTAINER(kit),
 		(icontainer_map_fn) dump_tiny_tool, NULL, NULL);
 	printf("\n");
@@ -563,9 +579,11 @@ void
 psym(char *name)
 {
 	Symbol *s;
+	int indent;
 
+	indent = 0;
 	if ((s = sym(name)))
-		(void) dump_symbol(s);
+		(void) dump_symbol(s, &indent);
 	else
 		printf("Symbol \"%s\" not found\n", name);
 }
@@ -602,7 +620,7 @@ psymv(char *name)
 /* Pretty-print an element.
  */
 static void
-print_element(type, void *arg, int indent)
+print_element(EType type, void *arg, int indent)
 {
 	switch (type) {
 	case ELEMENT_NOVAL:

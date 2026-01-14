@@ -220,20 +220,21 @@ tool_type_to_char(Tooltype type)
 }
 
 static void
-tool_info(iObject *iobject, VipsBuf *buf)
+tool_info(iObject *iobject, VipsBuf *buf, int indent)
 {
 	Tool *tool = TOOL(iobject);
 
-	IOBJECT_CLASS(tool_parent_class)->info(iobject, buf);
+	IOBJECT_CLASS(tool_parent_class)->info(iobject, buf, indent);
 
-	vips_buf_appendf(buf, "type = \"%s\"\n", tool_type_to_char(tool->type));
+	vips_buf_appendf(buf, "%*ctype = \"%s\"\n", indent, ' ',
+		tool_type_to_char(tool->type));
 	if (tool->type == TOOL_SYM)
-		vips_buf_appendf(buf, "symbol = \"%s\"\n",
+		vips_buf_appendf(buf, "%*csymbol = \"%s\"\n",indent, ' ',
 			IOBJECT(tool->sym)->name);
 	if (tool->lineno != -1)
-		vips_buf_appendf(buf, "lineno = %d\n", tool->lineno);
+		vips_buf_appendf(buf, "%*clineno = %d\n", indent, ' ', tool->lineno);
 	if (tool->kit)
-		vips_buf_appendf(buf, "toolkit = \"%s\"\n",
+		vips_buf_appendf(buf, "%*ctoolkit = \"%s\"\n",indent, ' ',
 			IOBJECT(tool->kit)->name);
 }
 
