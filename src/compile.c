@@ -501,7 +501,7 @@ compile_dotsym(Compile *compile, Symbol *sym, PElement *rhs, PElement *out)
 	return TRUE;
 }
 
-/* Compile a reference to sym from expr.
+/* Compile a reference to sym from compile.
  */
 static gboolean
 compile_reference(Compile *compile, Symbol *sym, PElement *out)
@@ -510,12 +510,12 @@ compile_reference(Compile *compile, Symbol *sym, PElement *out)
 	Compile *parent = compile_get_parent(compile);
 
 #ifdef DEBUG
-	printf("generate_reference: ref to ");
-	symbol_name_print(sym);
-	printf("inside ");
-	compile_name_print(compile);
-	printf("\n");
 #endif /*DEBUG*/
+	printf("generate_reference: ");
+	compile_name_print(compile);
+	printf("refs sym ");
+	symbol_name_print(sym);
+	printf("\n");
 
 	if (g_slist_find(compile->param, sym) ||
 		g_slist_find(compile->secret, sym)) {
@@ -549,7 +549,7 @@ compile_reference(Compile *compile, Symbol *sym, PElement *out)
 		Symbol *sths = symbol_get_parent(sym)->expr->compile->this;
 		PElement rhs;
 
-		/* Sym is a member of an enclosing class ...
+		/* sym is a member of an enclosing class ...
 		 * generate (.sym ref-to-this-for-that-class)
 		 */
 		if (!compile_dotsym(compile, sym, &rhs, out) ||
@@ -1838,10 +1838,10 @@ void *
 compile_object(Compile *compile)
 {
 	/*
+	 */
 	printf("compile_object: ");
 	symbol_name_print(compile->sym);
 	printf("\n");
-	 */
 
 	/* Link all symbols.
 	 */

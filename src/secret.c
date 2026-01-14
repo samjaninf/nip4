@@ -327,4 +327,7 @@ secret_build(Compile *compile)
 		(void) compile_map_all(compile,
 			(map_compile_fn) secret_close, &changed);
 	} while (changed);
+
+	printf("secret_build: after build, compile is:\n");
+	dump_compile(compile);
 }

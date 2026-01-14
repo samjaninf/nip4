@@ -1,3 +1,10 @@
+- improve dump compile output
+
+	indent rather than blank lines
+
+- check secret generation
+
+
 - some locals are filling their compile heaps:
 
 	Magick_canny_item.action.command.$$list170
@@ -35,12 +42,21 @@
 
 	A = class {
 	    a = 12;
-	    b = [concat [a]];
+	    b = [c [a]];
 	}
 
+generate_reference: compile(0x55555583a320) A.A refs sym A
+generate_reference: compile(0x5555558b8380) A.b.$$list0.$$list1 refs sym A.a
+generate_reference: compile(0x5555558b8380) A.b.$$list0.$$list1 refs sym A.this
+generate_reference: compile(0x5555558b6fc0) A.b.$$list0 refs sym c
+generate_reference: compile(0x5555558b6fc0) A.b.$$list0 refs sym A.b.$$list0.$$list1
+generate_reference: compile(0x5555558b6fc0) A.b.$$list0 refs sym A.this
+generate_reference: compile(0x5555558b6fc0) A.b.$$list0 refs sym A.this
 
 
 
+
+- add lcomp tests to test_snip
 
 - testing:
 

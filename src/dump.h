@@ -35,9 +35,9 @@ char *decode_SymbolType(SymbolType t);
 char *decode_SymbolType_user(SymbolType t);
 
 void *dump_tiny(Symbol *sym);
-void *dump_symbol(Symbol *sym);
-void dump_expr(Expr *expr);
-void dump_compile(Compile *compile);
+void *dump_symbol(Symbol *sym, int *indent);
+void dump_expr(Expr *expr, int *indent);
+void dump_compile(Compile *compile, int *indent);
 void dump_symbol_table(void);
 void *dump_kit(Toolkit *kit);
 Symbol *sym(char *name);
