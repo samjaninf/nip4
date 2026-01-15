@@ -510,12 +510,12 @@ compile_reference(Compile *compile, Symbol *sym, PElement *out)
 	Compile *parent = compile_get_parent(compile);
 
 #ifdef DEBUG
-#endif /*DEBUG*/
 	printf("generate_reference: ");
 	compile_name_print(compile);
 	printf("refs sym ");
 	symbol_name_print(sym);
 	printf("\n");
+#endif /*DEBUG*/
 
 	if (g_slist_find(compile->param, sym) ||
 		g_slist_find(compile->secret, sym)) {

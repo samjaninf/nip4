@@ -25,12 +25,12 @@
  */
 
 /*
- */
 #define DEBUG
+ */
 
 /* Just show secrets we added
- */
 #define DEBUG_ADD
+ */
 
 #include "nip4.h"
 
@@ -327,8 +327,4 @@ secret_build(Compile *compile)
 		(void) compile_map_all(compile,
 			(map_compile_fn) secret_close, &changed);
 	} while (changed);
-
-	printf("secret_build: after build, compile is:\n");
-	int indent = 0;
-	dump_compile(compile, &indent);
 }

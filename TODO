@@ -1,61 +1,14 @@
-- improve dump compile output
 
-	indent rather than blank lines
+- this fails to compile
 
-- check secret generation
+	a 0 [] = true;
 
+  error:
 
-- some locals are filling their compile heaps:
+	Error: Parse error
+	Error: Can't redefine parameter "$$arg0".
 
-	Magick_canny_item.action.command.$$list170
-
-  code is
-
-	Magick_canny_item = class
-	    Menuaction "_Canny" "detect a wide range of edges" {
-	    action x = class
-		_result {
-		_vislevel = 3;
-
-		radius = Magick.blur_rad_widget;
-		sigma = Magick.sigma_widget;
-		lowPc = Scale "lower percent" 0 100 10;
-		highPc = Scale "lower percent" 0 100 10;
-
-		command = Magick.command [
-		    "'%s'",
-		    "-canny",
-		    concat ["'",
-			print radius.value ++ "x" ++
-			print sigma.value ++ "+" ++
-			print lowPc.value ++ "%+" ++
-			print highPc.value ++ "%" ++ "'"
-		    ],
-		    "'%s'"
-		];
-
-		_result = Magick.system command x;
-	    }
-	}
-
-  minimal?
-
-	A = class {
-	    a = 12;
-	    b = [c [a]];
-	}
-
-
-generate_reference: compile(0x55555583a320) A.A refs sym A
-generate_reference: compile(0x5555558b8380) A.b.$$list0.$$list1 refs sym A.a
-generate_reference: compile(0x5555558b8380) A.b.$$list0.$$list1 refs sym A.this
-generate_reference: compile(0x5555558b6fc0) A.b.$$list0 refs sym c
-generate_reference: compile(0x5555558b6fc0) A.b.$$list0 refs sym A.b.$$list0.$$list1
-generate_reference: compile(0x5555558b6fc0) A.b.$$list0 refs sym A.this
-generate_reference: compile(0x5555558b6fc0) A.b.$$list0 refs sym A.this
-
-
-
+  does it fail with more than one const param?
 
 - add lcomp tests to test_snip
 

@@ -397,14 +397,6 @@ dump_compile(Compile *compile, int *indent)
 		IOBJECT(sym)->name, g_slist_length(compile->treefrag));
 #endif /*VERBOSE*/
 
-	if (icontainer_get_n_children(ICONTAINER(compile)) > 0) {
-		printf("%*c%s->children:\n", *indent, ' ', IOBJECT(sym)->name);
-		*indent += 2;
-		(void) icontainer_map(ICONTAINER(compile),
-			(icontainer_map_fn) dump_symbol, indent, NULL);
-		*indent -= 2;
-	}
-
 #ifdef VERBOSE
 	{
 		char txt[100];
@@ -446,6 +438,14 @@ dump_compile(Compile *compile, int *indent)
 		}
 	}
 #endif /*VERBOSE*/
+
+	if (icontainer_get_n_children(ICONTAINER(compile)) > 0) {
+		printf("%*c%s contains:\n", *indent, ' ', IOBJECT(sym)->name);
+		*indent += 2;
+		(void) icontainer_map(ICONTAINER(compile),
+			(icontainer_map_fn) dump_symbol, indent, NULL);
+		*indent -= 2;
+	}
 
 	*indent -= 2;
 }
@@ -557,7 +557,7 @@ void *
 dump_kit(Toolkit *kit, int *indent)
 {
 	printf("%*ckit->name = %s; ", *indent, ' ', IOBJECT(kit)->name);
-	printf("%*c%s->tools = ", *indent, ' ', IOBJECT(kit)->name);
+	printf("%*c%s contains: ", *indent, ' ', IOBJECT(kit)->name);
 	icontainer_map(ICONTAINER(kit),
 		(icontainer_map_fn) dump_tiny_tool, NULL, NULL);
 	printf("\n");

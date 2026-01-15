@@ -667,11 +667,14 @@ list_expression:
 	current_symbol->expr->compile->tree = $3;
     }
     ']' {
+        scope_pop();
+
         /* The value of the expr is a ref to the anon we defined.
+	 *
+	 * This must come after the pop, since its the old compile which
+	 * refs the anon symbol.
          */
         $$ = tree_leafsym_new(current_compile, $<yy_sym>2);
-
-        scope_pop();
     } |
     '[' ']' {
         ParseConst elist;
