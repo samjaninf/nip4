@@ -1,3 +1,28 @@
+- first startup error:
+
+	compile_object: Perspective_item
+	with generated children:
+	with generated children:
+	expr_error_set: error in get_option.hits.$$list287 : top="Not found" sub="symbol get_option.hits.$$list287.n is not defined"
+
+
+
+- is compile defer faster?
+
+  git main benchmark (still lots of errors):
+
+	$ time nip4-batch --test
+	real	0m0.394s
+	user	0m0.355s
+	sys	0m0.038s
+
+  v9.0.15 for comparison:
+
+	$ time nip4-batch --test
+	real	0m0.372s
+	user	0m0.337s
+	sys	0m0.034s
+
 
 - this fails to compile
 
@@ -18,11 +43,6 @@
     [[[x, y] :: x <- [1..3]] :: y <- [1..3]]
     [[[x, y] :: x <- [1..3]; x != y] :: y <- [1..3]]
     [[x, y] :: x <- [1..3]; y <- [1..3]; x != y]
-
-- testing:
-
-	- image_convert_to_image is missing a toolkit label
-	- image_new_image is failing with compile heap overflow
 
 - when dragging a mark on the cross you can only go up and left
 
