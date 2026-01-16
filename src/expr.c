@@ -456,10 +456,10 @@ expr_error_set(Expr *expr)
 	 */
 	if (!expr->err) {
 #ifdef DEBUG_ERROR
-#endif /*DEBUG_ERROR*/
 		printf("expr_error_set: error in ");
 		symbol_name_print(expr->sym);
 		printf(": top=\"%s\" sub=\"%s\"\n", error_get_top(), error_get_sub());
+#endif /*DEBUG_ERROR*/
 
 		g_assert(strlen(error_get_top()) > 0);
 		g_assert(strlen(error_get_sub()) > 0);

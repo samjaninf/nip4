@@ -531,7 +531,7 @@ program_linkreport_action(GSimpleAction *action,
         (void) toolkitgroup_map(program->kitg,
             (toolkit_map_fn) program_linkreport_kit, &buf, NULL);
         if (vips_buf_is_empty(&buf)) {
-            vips_buf_appends(&buf, _("No unresolved symbols found."));
+            vips_buf_appends(&buf, _("No unresolved symbols found"));
             vips_buf_appends(&buf, "\n");
         }
 

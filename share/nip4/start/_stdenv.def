@@ -2,10 +2,10 @@
  */
 
 get_option options defaults f
-	= error (_ "unknown parameter " ++ f), hits == []
-	= hits?0
+    = error (_ "unknown parameter " ++ f), hits == []
+    = hits?0
 {
-	hits = [v :: [n, v] <- options ++ defaults; n == f];
+    hits = [v :: [n, v] <- options ++ defaults; n == f];
 }
 
 /* Various operators as functions.
