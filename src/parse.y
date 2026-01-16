@@ -1425,7 +1425,12 @@ scope_reset(void)
 void *
 parse_toplevel_end(Symbol *sym)
 {
+    // uncomment for eager compile
+    //if (compile_object(sym->expr->compile))
+        //compile_error_set(sym->expr->compile);
+
     // compile zero-arg top levels so they get added to the recomp tree
+    // defer compile of functions
     if (sym->expr &&
         sym->expr->compile &&
         sym->expr->compile->nparam == 0 &&

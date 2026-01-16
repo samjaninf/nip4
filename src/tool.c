@@ -689,53 +689,6 @@ toolitem_print_all(Toolitem *toolitem)
 }
 #endif /*DEBUG_MENUS*/
 
-/* Rebuild the toolitem tree.
- */
-static void
-tool_toolitem_rebuild(Tool *tool)
-{
-	VIPS_FREEF(toolitem_free, tool->toolitem);
-
-	switch (tool->type) {
-	case TOOL_SYM:
-		if (is_menuable(tool->sym))
-			tool->toolitem = toolitem_build_all(tool,
-				tool->sym->expr->compile,
-				&tool->sym->expr->root,
-				NULL);
-		break;
-
-	case TOOL_SEP:
-		if ((tool->toolitem = toolitem_new(NULL, NULL, tool)))
-			tool->toolitem->is_separator = TRUE;
-		break;
-
-	default:
-		g_assert(0);
-	}
-
-	iobject_changed(IOBJECT(tool));
-
-#ifdef DEBUG_MENUS
-	if (tool->toolitem)
-		toolitem_print_all(tool->toolitem);
-#endif /*DEBUG_MENUS*/
-}
-
-/* The expr has a new value.
- */
-static void
-tool_new_value_cb(Symbol *sym, Tool *tool)
-{
-#ifdef DEBUG
-	printf("tool_new_value_cb: new value for ");
-	symbol_name_print(sym);
-	printf("\n");
-#endif /*DEBUG*/
-
-	tool_toolitem_rebuild(tool);
-}
-
 static void
 tool_set_help(Tool *tool)
 {
@@ -782,6 +735,53 @@ tool_set_help(Tool *tool)
 		VIPS_SETSTR(tool->help, NULL);
 }
 
+/* Rebuild the toolitem tree.
+ */
+static void
+tool_toolitem_rebuild(Tool *tool)
+{
+	VIPS_FREEF(toolitem_free, tool->toolitem);
+
+	switch (tool->type) {
+	case TOOL_SYM:
+		if (is_menuable(tool->sym))
+			tool->toolitem = toolitem_build_all(tool,
+				tool->sym->expr->compile,
+				&tool->sym->expr->root,
+				NULL);
+		break;
+
+	case TOOL_SEP:
+		if ((tool->toolitem = toolitem_new(NULL, NULL, tool)))
+			tool->toolitem->is_separator = TRUE;
+		break;
+
+	default:
+		g_assert(0);
+	}
+
+	iobject_changed(IOBJECT(tool));
+
+#ifdef DEBUG_MENUS
+	if (tool->toolitem)
+		toolitem_print_all(tool->toolitem);
+#endif /*DEBUG_MENUS*/
+}
+
+/* The expr has a new value.
+ */
+static void
+tool_new_value_cb(Symbol *sym, Tool *tool)
+{
+#ifdef DEBUG
+#endif /*DEBUG*/
+	printf("tool_new_value_cb: new value for ");
+	symbol_name_print(sym);
+	printf("\n");
+
+	tool_toolitem_rebuild(tool);
+}
+
 /* Add a symbol to a toolkit.
  */
 Tool *
@@ -822,10 +822,10 @@ tool_new_sym(Toolkit *kit, int pos, Symbol *sym)
 	tool_set_help(tool);
 
 #ifdef DEBUG
+#endif /*DEBUG*/
 	printf("tool_new_sym: new tool for ");
 	symbol_name_print(sym);
 	printf("at %p\n", tool);
-#endif /*DEBUG*/
 
 	return tool;
 }

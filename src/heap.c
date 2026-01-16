@@ -1833,10 +1833,10 @@ heap_copy(Heap *heap, Compile *compile, PElement *out)
 	}
 
 #ifdef DEBUG
+#endif /*DEBUG*/
 	printf("heap_copy: ");
 	symbol_name_print(compile->sym);
 	printf("\n");
-#endif /*DEBUG*/
 
 	/* Check for possible C stack overflow ... can't go over 2M on most
 	 * systems if we're using (or any of our libs are using) threads.

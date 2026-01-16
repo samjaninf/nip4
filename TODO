@@ -1,21 +1,94 @@
 - Colour_to_colour_item menu item does not work
 
 
-- is deferred compile faster?
+Fred = class
+  Menuaction (_ "Con_vert to Colour") (_ "convert anything to a colour") {
+  action x = to_colour x;
+}
 
-  git main benchmark on banana (still lots of errors):
+  works if you enter the class in tk edit
+
+  maybe Colour_to_colour_item is being compiled before Menuaction? and
+  compiling Menuaction does not update tools defined earlier?
+
+  eager compile fixes this bug
+
+  tool_new_value_cb() is not being called for Colour_to_colour_item ... is it
+  being recomputed after Menuaction is compiled?
+
+	tool_new_value_cb() is being called for plenty of other menu items,
+	eg. Colour_new_item
+
+  seeing:
+
+	symbol_recalculate_leaf_sub: root.Colour_to_colour_item
+        (error: No value symbol "Menuitem" has no value)
+        (error: in root.Colour_to_colour_item)
+
+  we later compile Menuitem successfully, but don't go back for
+  Colour_to_colour_item
+
+  in _types.def:
+
+	Menu = class {}
+	Menuitem label tooltip = class Menu {}
+	Menuaction label tooltip = class Menuitem label tooltip {}
+	Colour_to_colour_item = class
+	  Menuaction (_ "Con_vert to Colour") (_ "convert anything to a colour") {
+	  action x = to_colour x;
+	}
+
+  so symbol_recalculate_leaf_sub() on Colour_to_colour_item is failing to
+  force the compile of Menuitem
+
+  we see:
+
+	heap_copy: Colour_to_colour_item
+	heap_copy: Colour_to_colour_item.super
+	heap_copy: Menuaction
+	heap_copy: Menuaction.super
+
+  so it copies immediate deps, but does not copy transitive deps
+
+  reduce should see a noval for Menuitem and force a compile_object
+
+  why is heap_copy() copying deps? it should just copy the symbol and let
+  reduce copy other stuff on demand
+
+  it's compiling NOVAL elements during the copy, we should leave them as NOVAL
+  and move the compile & copy to the reduction loop
+
+  where do we see NOVAL during reduction?
+
+	reduce.c:1193
+
+
+
+
+
+- git main benchmark, eager compile, release build (still lots of errors):
 
 	$ time nip4-batch --test
-	real	0m0.394s
-	user	0m0.355s
-	sys	0m0.038s
+	real	0m0.766s
+	user	0m0.687s
+	sys	0m0.078s
 
-  v9.0.15 for comparison:
+  deferred compile
 
 	$ time nip4-batch --test
-	real	0m0.372s
-	user	0m0.337s
-	sys	0m0.034s
+	real	0m0.570s
+	user	0m0.504s
+	sys	0m0.065s
+
+  25% speedup?
+
+  deferred compile compiles 557 defs on startup, eager compile compiles 1244
+  defs
+
+- try
+
+	$ nip4-batch --test
+	--test: errors found
 
 - this fails to compile
 
@@ -26,7 +99,7 @@
 	Error: Parse error
 	Error: Can't redefine parameter "$$arg0".
 
-  does it fail with more than one const param?
+  does it parse always fail with more than one const param?
 
 - add lcomp tests to test_snip
 
@@ -38,6 +111,8 @@
     [[x, y] :: x <- [1..3]; y <- [1..3]; x != y]
 
 - when dragging a mark on the cross you can only go up and left
+
+  also, add drag on hguide/vguide line to move guide
 
 - linear match
 

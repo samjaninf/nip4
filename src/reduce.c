@@ -1188,8 +1188,16 @@ reduce_start:
 		case SYM_VALUE: {
 			Compile *compile = sym->expr->compile;
 
-			/* Make sure it's clean ... we can get
-			 * links to dirty syms through dynamic dependencies.
+			/* It might be dirty because it hasn't been compiled yet.
+			 */
+			if (sym->dirty &&
+				compile) {
+				if (compile_object(compile))
+					reduce_throw(rc);
+			}
+
+			/* It might still be dirty if we discovered this sym via dynamic
+			 * dependency.
 			 */
 			if (sym->dirty) {
 				char txt[256];

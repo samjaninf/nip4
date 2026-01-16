@@ -52,6 +52,10 @@
 #define DEBUG_RESOLVE
  */
 
+/* Trace objects as they are compiled
+ */
+#define DEBUG_COMPILE
+
 /*
 #define DEBUG
  */
@@ -1837,11 +1841,11 @@ compile_object_sub(Compile *compile)
 void *
 compile_object(Compile *compile)
 {
-	/*
-	 */
+#ifdef DEBUG_COMPILE
 	printf("compile_object: ");
 	symbol_name_print(compile->sym);
 	printf("\n");
+#endif /*DEBUG_COMPILE*/
 
 	/* Link all symbols.
 	 */
@@ -2438,10 +2442,10 @@ compile_move_tree(Compile *fromscope, ParseNode *tree, Compile *toscope)
 		copy = compile_find_generated(fromscope, tree);
 
 #ifdef DEBUG
-#endif /*DEBUG*/
 		printf("with generated children: ");
 		(void) slist_map(copy, (SListMapFn) dump_tiny, NULL);
 		printf("\n");
+#endif /*DEBUG*/
 
 		slist_map(copy,
 			(SListMapFn) compile_copy_sym, toscope);
