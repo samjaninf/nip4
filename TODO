@@ -1,45 +1,9 @@
-- Colour > New > Colour
-
-	symbol "_Object" has no value
-
-  code
-
-	_Object = class {
-	    check = check_args this;
-
-	    // these should always be defined
-	    _check_args = [];
-	    _check_all = [];
-
-	    /* Operator overloading stuff.
-	     */
-	    oo_binary op x = oo_binary_function (oo_binary_lookup op) this x;
-	    oo_binary' op x = oo_binary'_function (oo_binary_lookup op) x this;
-	    oo_unary op = oo_unary_function (oo_unary_lookup op) this;
-
-	    oo_binary_table op x = [];
-	    oo_unary_table op = [];
-	}
-
-  remove
-
-	    check = check_args this;
-
-  and it all works
-
-	A = class {
-	    check = check_args this;
-
-	    _check_args = [];
-	    _check_all = [];
-	};
-
-  also seems to work
+- Colour_to_colour_item menu item does not work
 
 
 - is deferred compile faster?
 
-  git main benchmark (still lots of errors):
+  git main benchmark on banana (still lots of errors):
 
 	$ time nip4-batch --test
 	real	0m0.394s

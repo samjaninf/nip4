@@ -546,8 +546,13 @@ symbol_destroy_error(Compile *compile, Symbol *sym)
 	// don't mess up the error buffer
 	error_push();
 
-	symbol_not_defined(sym);
-	compile_error_set(compile);
+	// not for placeholders or zombies ... they get removed during parse
+	// and should not set error states
+	if (sym->type != SYM_ZOMBIE &&
+		!sym->placeholder) {
+		symbol_not_defined(sym);
+		compile_error_set(compile);
+	}
 
 	error_pop();
 
@@ -593,15 +598,15 @@ symbol_dispose(GObject *gobject)
 		symbol_dirty_clear(sym);
 	}
 
-	/* Strip it down.
-	 */
-	(void) symbol_strip(sym);
-	IDESTROY(sym->tool);
-
 	/* Any Compile which refers to us must have errors.
 	 */
 	(void) slist_map(sym->parents,
 		(SListMapFn) symbol_destroy_error, sym);
+
+	/* Strip it down.
+	 */
+	(void) symbol_strip(sym);
+	IDESTROY(sym->tool);
 
 	/* Remove links from any expr which refer to us.
 	 */
