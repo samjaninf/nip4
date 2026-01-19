@@ -1188,22 +1188,21 @@ reduce_start:
 		case SYM_VALUE: {
 			Compile *compile = sym->expr->compile;
 
-			/* It might be dirty because it hasn't been compiled yet.
+			/* If it's been compiled, has zero args, but it's still dirty,
+			 * something must have gone wrong in dependency discovery.
+			 *
+			 * This can happen with dynamic deps.
 			 */
 			if (sym->dirty &&
-				compile) {
-				if (compile_object(compile))
-					reduce_throw(rc);
-			}
-
-			/* It might still be dirty if we discovered this sym via dynamic
-			 * dependency.
-			 */
-			if (sym->dirty) {
+				compile->base.type != ELEMENT_NOVAL &&
+				compile->nparam + compile->nsecret == 0) {
 				char txt[256];
 				VipsBuf buf = VIPS_BUF_STATIC(txt);
 
 				symbol_qualified_name(sym, &buf);
+
+	if (g_str_equal(IOBJECT(compile->sym)->name, "Menu"))
+		printf("kjhkjhkjhkjh\n");
 
 				error_top(_("No value"));
 				error_sub(_("symbol \"%s\" has no value"), vips_buf_all(&buf));

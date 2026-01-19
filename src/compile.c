@@ -1847,6 +1847,9 @@ compile_object(Compile *compile)
 	printf("\n");
 #endif /*DEBUG_COMPILE*/
 
+	if (g_str_equal(IOBJECT(compile->sym)->name, "Menu"))
+		printf("|BANANANANANAN\n");
+
 	/* Link all symbols.
 	 */
 	compile_resolve_static(compile->sym);

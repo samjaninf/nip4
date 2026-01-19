@@ -1,3 +1,29 @@
+- we can compile things, but they are still flagged as dirty
+
+  are we not clearing dirty after compile? or should we recompute dirty? what
+  if a func depends on a zsro-arg value?
+
+- Menu is compiled way before Menuitem, it should be ok
+
+	dirty is clear after compile_object(), but has been set by the time
+	Colour_to_colour_item executes
+
+  what is setting dirty on Menu?o
+
+#0  symbol_dirty_set (sym=0x5555583cbf10) at ../src/link.c:549
+#1  0x00005555555e4e71 in symbol_dirty (sym=0x5555583cbf10, serial=9635)
+    at ../src/link.c:567
+#2  0x00005555555ab576 in expr_dirty (expr=0x5555583d7c10, serial=9635)
+    at ../src/expr.c:573
+#3  0x000055555561699f in symbol_made (sym=0x5555583cbf10)
+    at ../src/symbol.c:503
+#4  0x000055555557a9db in parse_toplevel_end (sym=0x5555583cbf10)
+    at ../src/parse.y:1446
+
+
+
+
+
 - Colour_to_colour_item menu item does not work
 
 
@@ -62,9 +88,20 @@ Fred = class
 
 	reduce.c:1193
 
+  remove compile in heap_copy(), only trigger compile in reduce.c
+
+  compile if the value of the expr is noval, and do that before checking dirty,
+  since  dirty syms can also need compilimng
 
 
 
+
+- we test main_c_stack_base for overflow in several palces, have a funcc for
+  this
+
+  copy_node() should have a test too
+
+  maybe a macro?
 
 - git main benchmark, eager compile, release build (still lots of errors):
 

@@ -1820,17 +1820,8 @@ copy_node(Heap *heap, HeapNode *ri[], HeapNode *hn, PElement *out)
 gboolean
 heap_copy(Heap *heap, Compile *compile, PElement *out)
 {
-	Element *root = &compile->base;
+	Element *base = &compile->base;
 	HeapNode *ri[MAX_RELOC];
-
-	/* Check for possible C stack overflow ... can't go over 2M on most
-	 * systems if we're using (or any of our libs are using) threads.
-	 */
-	if ((char *) main_c_stack_base - (char *) &heap > 2000000) {
-		error_top(_("Overflow error"));
-		error_sub(_("C stack overflow, circular definition"));
-		return FALSE;
-	}
 
 #ifdef DEBUG
 #endif /*DEBUG*/
@@ -1838,20 +1829,19 @@ heap_copy(Heap *heap, Compile *compile, PElement *out)
 	symbol_name_print(compile->sym);
 	printf("\n");
 
-	/* Check for possible C stack overflow ... can't go over 2M on most
-	 * systems if we're using (or any of our libs are using) threads.
+	/* Compile it, if it's not yet compiled.
 	 */
-	if ((char *) main_c_stack_base - (char *) &heap > 2000000) {
-		error_top(_("Overflow error"));
-		error_sub(_("C stack overflow, expression too complex"));
-		return FALSE;
+	if (base->type == ELEMENT_NOVAL) {
+		if (compile_object(compile) ||
+			base->type == ELEMENT_NOVAL)
+			return FALSE;
 	}
 
-	switch (root->type) {
+	switch (base->type) {
 	case ELEMENT_NODE:
 		/* Need a tree copy.
 		 */
-		if (!copy_node(heap, &ri[0], (HeapNode *) root->ele, out))
+		if (!copy_node(heap, &ri[0], (HeapNode *) base->ele, out))
 			return FALSE;
 		break;
 
@@ -1869,18 +1859,10 @@ heap_copy(Heap *heap, Compile *compile, PElement *out)
 	case ELEMENT_MANAGED:
 		/* Copy value.
 		 */
-		PEPUTP(out, root->type, root->ele);
+		PEPUTP(out, base->type, base->ele);
 		break;
 
 	case ELEMENT_NOVAL:
-		/* Not compiled yet: compile now, then copy.
-		 */
-		if (compile_object(compile))
-			return FALSE;
-		if (!heap_copy(heap, compile, out))
-			return FALSE;
-		break;
-
 	default:
 		g_assert(FALSE);
 	}
