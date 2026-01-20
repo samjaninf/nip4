@@ -1,3 +1,85 @@
+- test case
+
+	A = class {};
+	B caption = class A {};
+	main = B "hello";
+
+  see
+
+	symbol_recalculate_leaves: Leaf set:
+	symbol_recalculate_leaf_sub: root.main
+	heap_copy: main
+	heap_copy: B
+	compile_object: B
+	heap_copy: B.super
+		(found dirty children)
+	 nsym->name = (0x5555558b1140) *SYM_VALUE main;
+	  main->patch = 2 pointers
+	    expr (0x5555558b4280)->sym->name = "main"
+	      compile (0x5555558b4340)->sym->name = "main"
+		main->is_klass = false
+		main->has_super = false
+		main->text = ";
+
+	main = B "hello";"
+		main->prhstext = "B "hello";"
+		main->rhstext = "B "hello";"
+		main->tree =
+		  Function application
+		  LHS
+		    Leaf symbol (0x5555558ad160): (0x5555558ad160) *SYM_VALUE B;
+		  RHS
+		    Constant "hello"
+		main->treefrag = 3 pointers
+		main->nparam = 0
+		main->param =
+		main->nsecret = 0
+		main->secret =
+		main->this = (null)
+		main->super:(null)
+		main->children = (0x5555558ad160) *SYM_VALUE B;
+		main->base = <unevaluated>
+		  heap->compile = main(0x5555558b1140) (sym)
+		    mxb (max blocks) = 101
+		    rsz (nodes per block) = 100
+		    nb (number of blocks) = 1
+		    emark = 1 pointers
+		    rmark = 0 pointers
+		    ncells (cells allocated) = 0
+		    nfree (cells free at last GC) = 0
+		    mtable (Managed blocks) = 0 pointers
+		    name = "main"
+		    iObject :: "Heap"
+	      <symbol is dirty ... can't print root>
+	  main->base = <sym is dirty ... can't print>
+	  main->dirty = true
+	  main->parents = (compile->sym->name = root )
+	  main ->topchildren =
+	    link->parent = main (dirty)
+	    link->child = B (dirty)
+	    link->serial = 0
+	    link->static_links = (expr->sym->name = main )  count = 1 ;
+	    link->dynamic_links =
+	  main ->topparents =
+	  main->ndirtychildren = 1
+	  main->leaf = false
+	  main->needs_codegen = false
+	  main->generated = false
+	  main->tool = kit   kit->name = test;   test contains: (0x5555558a9680) SYM_VALUE A; (0x5555558ad160) *SYM_VALUE B; (0x5555558b1140) *SYM_VALUE main;
+
+  main has a static_link to B, B is dirty, main has ndirtychildren 1
+
+  B is a func that's still marked dirty, even though funcs can't be dirty once
+  they are compiled
+
+  set dirty in symbol_made I guess? or is it dirty at the end of compile?:w
+
+
+
+
+
+
+
 - we can compile things, but they are still flagged as dirty
 
   are we not clearing dirty after compile? or should we recompute dirty? what

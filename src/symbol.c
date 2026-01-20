@@ -351,6 +351,8 @@ symbol_root_init(void)
 }
 
 /* Should a symbol be in the leaf set?
+ *
+ * Only zero arg symbols, since leaves should be things with definite values,
  */
 static gboolean
 symbol_is_leafable(Symbol *sym)
@@ -359,7 +361,9 @@ symbol_is_leafable(Symbol *sym)
 		sym->dirty &&
 		sym->expr &&
 		!sym->expr->err &&
-		sym->ndirtychildren == 0)
+		sym->ndirtychildren == 0 &&
+		sym->expr->compile &&
+		sym->expr->compile->nparam + sym->expr->compile->nsecret == 0)
 		return TRUE;
 
 	return FALSE;
@@ -1181,8 +1185,11 @@ symbol_recalculate_leaf_sub(Symbol *sym)
 		}
 	}
 #ifdef DEBUG_RECALC
-	else
+	else {
 		printf("\t(found dirty children)\n");
+		int indent = 0;
+		dump_symbol(sym, &indent);
+	}
 #endif /*DEBUG_RECALC*/
 
 	return NULL;
@@ -1203,10 +1210,10 @@ symbol_recalculate_leaf(void)
 	classmodel_dirty_updated();
 
 #ifdef DEBUG
+#endif /*DEBUG*/
 	printf("symbol_recalculate_leaves: Leaf set: ");
 	slist_map(symbol_leaf_set, (SListMapFn) dump_tiny, NULL);
 	printf("\n");
-#endif /*DEBUG*/
 
 	/* Grab stuff off the leaf set.
 	 */

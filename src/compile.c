@@ -1842,10 +1842,10 @@ void *
 compile_object(Compile *compile)
 {
 #ifdef DEBUG_COMPILE
+#endif /*DEBUG_COMPILE*/
 	printf("compile_object: ");
 	symbol_name_print(compile->sym);
 	printf("\n");
-#endif /*DEBUG_COMPILE*/
 
 	if (g_str_equal(IOBJECT(compile->sym)->name, "Menu"))
 		printf("|BANANANANANAN\n");

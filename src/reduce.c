@@ -1958,6 +1958,7 @@ reduce_regenerate(Expr *expr, PElement *out)
 	}
 
 #ifdef DEBUG_REGEN
+#endif /*DEBUG_REGEN*/
 	{
 		char txt[1024];
 		VipsBuf buf = VIPS_BUF_STATIC(txt);
@@ -1967,7 +1968,6 @@ reduce_regenerate(Expr *expr, PElement *out)
 		expr_name_print(expr);
 		printf("graph: %s\n", vips_buf_all(&buf));
 	}
-#endif /*DEBUG_REGEN*/
 
 	reduce_current_expr = expr;
 	if (!reduce_pelement(rc, reduce_spine, out)) {
@@ -1979,6 +1979,7 @@ reduce_regenerate(Expr *expr, PElement *out)
 	reduce_current_expr = NULL;
 
 #ifdef DEBUG_REGEN
+#endif /*DEBUG_REGEN*/
 	{
 		char txt[1024];
 		VipsBuf buf = VIPS_BUF_STATIC(txt);
@@ -1995,7 +1996,6 @@ reduce_regenerate(Expr *expr, PElement *out)
 		expr_name_print(expr);
 		printf(" to: %s\n", vips_buf_all(&buf));
 	}
-#endif /*DEBUG_REGEN*/
 
 	return TRUE;
 }
