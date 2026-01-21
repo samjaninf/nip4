@@ -37,8 +37,8 @@
  */
 
 /* show what everything compiled to
-#define DEBUG_RESULT
  */
+#define DEBUG_RESULT
 
 /* trace list comp compile
 #define DEBUG_LCOMP
@@ -1895,27 +1895,29 @@ compile_codegen(Compile *compile)
 	return NULL;
 }
 
-/* This is a top-level def: search for any syms which need a codegen pass. For
- * example, a top-level def might have locals with multiple defs.
+/* Compile a toplevel. Do any codegen, then compile the object.
  */
 void *
-compile_codegen_toplevel(Symbol *sym)
+compile_toplevel(Symbol *sym)
 {
 	if (sym->expr &&
-		sym->expr->compile &&
-		compile_map_all(sym->expr->compile,
+		sym->expr->compile) {
+		if (compile_map_all(sym->expr->compile,
 			(map_compile_fn) compile_codegen, NULL))
-		return sym;
+			return sym;
+		if (compile_object(sym->expr->compile))
+			return sym;
+	}
 
 	return NULL;
 }
 
 static void *
-compile_codegen_tool(Tool *tool)
+compile_tool(Tool *tool)
 {
 	if (tool->sym &&
 		tool->sym->needs_codegen &&
-		compile_codegen_toplevel(tool->sym))
+		compile_toplevel(tool->sym))
 		return tool;
 
 	return NULL;
@@ -1924,9 +1926,9 @@ compile_codegen_tool(Tool *tool)
 /* Scan a toolkit and do any codegen.
  */
 void *
-compile_codegen_toolkit(Toolkit *kit)
+compile_toolkit(Toolkit *kit)
 {
-	return toolkit_map(kit, (tool_map_fn) compile_codegen_tool, NULL, NULL);
+	return toolkit_map(kit, (tool_map_fn) compile_tool, NULL, NULL);
 }
 
 /* Parse support.

@@ -72,8 +72,42 @@
   B is a func that's still marked dirty, even though funcs can't be dirty once
   they are compiled
 
-  set dirty in symbol_made I guess? or is it dirty at the end of compile?:w
+  set dirty in symbol_made I guess? or is it dirty at the end of compile?
 
+  B is dirty before compile_object() ... when is it set dirty?
+
+
+parse_toplevel_end():
+    // don't make tools for eg. $$matchN etc.
+    if (is_visible(sym)) {
+        Tool *tool;
+
+        tool = tool_new_sym(current_kit, tool_position, sym);
+        tool->lineno = last_top_lineno;
+        symbol_made(sym);
+    }
+
+do we still need this somewhere?
+
+
+- try
+
+	12
+
+  to make A1, value not shown
+
+  need symbol_made()?
+
+  on enter:
+
+	compile_object: A1
+	compile_object: A1
+	symbol_recalculate_leaf_sub: tab1.A1
+		success: <no value (type 15)>
+	symbol_recalculate_all_force: starting bg recalc ...
+	symbol_recalculate_idle:
+	symbol_recalculate_leaf_sub: tab1.tab1
+	symbol_recalculate_idle: bg recalc done
 
 
 

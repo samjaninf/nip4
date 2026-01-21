@@ -1824,13 +1824,13 @@ heap_copy(Heap *heap, Compile *compile, PElement *out)
 	HeapNode *ri[MAX_RELOC];
 
 #ifdef DEBUG
-#endif /*DEBUG*/
 	printf("heap_copy: ");
 	symbol_name_print(compile->sym);
 	printf("\n");
+#endif /*DEBUG*/
 
-	/* Compile it, if it's not yet compiled.
-	 */
+	/* Compile it, if it's not yet compiled. Eg. argc/argv,
+	*/
 	if (base->type == ELEMENT_NOVAL) {
 		if (compile_object(compile) ||
 			base->type == ELEMENT_NOVAL)
@@ -1863,6 +1863,9 @@ heap_copy(Heap *heap, Compile *compile, PElement *out)
 		break;
 
 	case ELEMENT_NOVAL:
+		/* Should not happen! This is only there for things that haven't been
+		 * compiled yet, or for errors.
+		 */
 	default:
 		g_assert(FALSE);
 	}

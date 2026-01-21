@@ -104,8 +104,8 @@ void scope_reset(void);
 
 /* Helper functions.
  */
-void *parse_toplevel_end(Symbol *sym);
 void *parse_access_end(Symbol *sym, Symbol *main);
+
 %}
 
 %union {
@@ -305,8 +305,8 @@ definition:
          * window use this to work out what sym to display after a
          * parse. symbol_dispose() is careful to NULL this out.
          */
-	if (is_visible(sym))
-		current_compile->last_sym = sym;
+        if (is_visible(sym))
+            current_compile->last_sym = sym;
 
         /* Initialise symbol parsing variables. Save old current symbol,
          * add new one.
@@ -332,32 +332,25 @@ definition:
          */
         if ($1->type != NODE_LEAF) {
             Compile *parent = compile_get_parent(current_compile);
-            GSList *built_syms;
-
-            built_syms = compile_pattern(parent, current_symbol, $1);
-
-            /* We may have made some top levels, eg. if the def is
-             *
-	     *		[a, b, c] = [1, 2, 3];
-             *
-	     * finish the syms up.
-             */
-            if (is_scope(symbol_get_parent(current_symbol)))
-                slist_map(built_syms, (SListMapFn) parse_toplevel_end, NULL);
+            g_autoptr(GSList) built_syms =
+                compile_pattern(parent, current_symbol, $1);
 
             /* Note the source code on each of the access funcs.
              */
             slist_map(built_syms,
                 (SListMapFn) parse_access_end, current_symbol);
-
-            g_slist_free(built_syms);
         }
+        else if (is_scope(symbol_get_parent(current_symbol)) &&
+            is_visible(current_symbol) &&
+            current_kit) {
+            /* End of a toplevel ... make a tool and add it.
+             */
+            Tool *tool;
 
-        /* Is this the end of a top-level? Needs extra work to add to
-         * the enclosing toolkit etc.
-         */
-        if (is_scope(symbol_get_parent(current_symbol)))
-            parse_toplevel_end(current_symbol);
+            tool = tool_new_sym(current_kit, tool_position, current_symbol);
+            tool->lineno = last_top_lineno;
+            symbol_made(current_symbol);
+        }
 
         scope_pop();
     }
@@ -657,22 +650,22 @@ list_expression:
         current_symbol = sym;
         current_compile = sym->expr->compile;
 
-	/* Later stages need the anon sym.
-	 */
-	$<yy_sym>$ = sym;
+    /* Later stages need the anon sym.
+     */
+    $<yy_sym>$ = sym;
     }
     list_expression_contents {
-	/* The tree we generated is the value of $$listN
-	 */
-	current_symbol->expr->compile->tree = $3;
+    /* The tree we generated is the value of $$listN
+     */
+    current_symbol->expr->compile->tree = $3;
     }
     ']' {
         scope_pop();
 
         /* The value of the expr is a ref to the anon we defined.
-	 *
-	 * This must come after the pop, since its the old compile which
-	 * refs the anon symbol.
+     *
+     * This must come after the pop, since its the old compile which
+     * refs the anon symbol.
          */
         $$ = tree_leafsym_new(current_compile, $<yy_sym>2);
     } |
@@ -1048,7 +1041,7 @@ nip2yyerror(const char *sub, ...)
     error_top(_("Parse error"));
 
     if (current_compile &&
-	current_compile->last_sym)
+    current_compile->last_sym)
         error_sub(_("Error in %s: %s"),
             IOBJECT(current_compile->last_sym)->name, buf);
     else
@@ -1420,35 +1413,6 @@ scope_reset(void)
     scope_sp = 0;
 }
 
-/* End of top level parse. Fix up the symbol.
- */
-void *
-parse_toplevel_end(Symbol *sym)
-{
-    // uncomment for eager compile
-    //if (compile_object(sym->expr->compile))
-        //compile_error_set(sym->expr->compile);
-
-    // compile zero-arg top levels so they get added to the recomp tree
-    // defer compile of functions
-    if (sym->expr &&
-        sym->expr->compile &&
-        sym->expr->compile->nparam == 0 &&
-        compile_object(sym->expr->compile))
-        compile_error_set(sym->expr->compile);
-
-    // don't make tools for eg. $$matchN etc.
-    if (is_visible(sym)) {
-        Tool *tool;
-
-        tool = tool_new_sym(current_kit, tool_position, sym);
-        tool->lineno = last_top_lineno;
-        symbol_made(sym);
-    }
-
-    return NULL;
-}
-
 /* Built a pattern access definition. Set the various text fragments from the
  * def we are drived from.
  */
@@ -1491,16 +1455,14 @@ parse_input(int ch, Symbol *sym, Toolkit *kit, int pos)
     }
     yyparse();
 
-    /* We may need to generate some code for eg multiple defs. We must codegen
-     * after parse and not during compile since codegen can add new
-     * dependencies and affect eval ordering.
+    /* Codegen and compile everything.
      */
     if (kit) {
-        if (compile_codegen_toolkit(kit))
+        if (compile_toolkit(kit))
             return FALSE;
     }
     else if (sym) {
-        if (compile_codegen_toplevel(sym))
+        if (compile_toplevel(sym))
             return FALSE;
     }
 

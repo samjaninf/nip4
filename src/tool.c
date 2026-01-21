@@ -774,10 +774,10 @@ static void
 tool_new_value_cb(Symbol *sym, Tool *tool)
 {
 #ifdef DEBUG
-#endif /*DEBUG*/
 	printf("tool_new_value_cb: new value for ");
 	symbol_name_print(sym);
 	printf("\n");
+#endif /*DEBUG*/
 
 	tool_toolitem_rebuild(tool);
 }
@@ -822,10 +822,10 @@ tool_new_sym(Toolkit *kit, int pos, Symbol *sym)
 	tool_set_help(tool);
 
 #ifdef DEBUG
-#endif /*DEBUG*/
 	printf("tool_new_sym: new tool for ");
 	symbol_name_print(sym);
 	printf("at %p\n", tool);
+#endif /*DEBUG*/
 
 	return tool;
 }
