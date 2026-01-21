@@ -343,8 +343,7 @@ definition:
         else if (is_scope(symbol_get_parent(current_symbol)) &&
             is_visible(current_symbol) &&
             current_kit) {
-            /* End of a toplevel ... make a tool and add it.
-             */
+            // End of a toplevel ... make a tool and add it.
             Tool *tool;
 
             tool = tool_new_sym(current_kit, tool_position, current_symbol);
@@ -1530,11 +1529,6 @@ parse_rhs(Expr *expr, ParseRhsSyntax syntax)
     /* Resolve any dynamic refs.
      */
     expr_resolve(expr);
-
-    /* Compile.
-     */
-    if (compile_object(compile))
-        return FALSE;
 
     return TRUE;
 }

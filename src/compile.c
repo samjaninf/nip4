@@ -37,8 +37,8 @@
  */
 
 /* show what everything compiled to
- */
 #define DEBUG_RESULT
+ */
 
 /* trace list comp compile
 #define DEBUG_LCOMP
@@ -1736,8 +1736,6 @@ compile_heap(Compile *compile)
 		PEPUTP(&base, ELEMENT_NOVAL, (void *) 2);
 		if (!heap_gc(compile->heap))
 			return compile->sym;
-
-		return NULL;
 	}
 
 #ifdef DEBUG
@@ -1842,13 +1840,10 @@ void *
 compile_object(Compile *compile)
 {
 #ifdef DEBUG_COMPILE
-#endif /*DEBUG_COMPILE*/
 	printf("compile_object: ");
 	symbol_name_print(compile->sym);
 	printf("\n");
-
-	if (g_str_equal(IOBJECT(compile->sym)->name, "Menu"))
-		printf("|BANANANANANAN\n");
+#endif /*DEBUG_COMPILE*/
 
 	/* Link all symbols.
 	 */
@@ -1916,7 +1911,6 @@ static void *
 compile_tool(Tool *tool)
 {
 	if (tool->sym &&
-		tool->sym->needs_codegen &&
 		compile_toplevel(tool->sym))
 		return tool;
 

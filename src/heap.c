@@ -1863,9 +1863,6 @@ heap_copy(Heap *heap, Compile *compile, PElement *out)
 		break;
 
 	case ELEMENT_NOVAL:
-		/* Should not happen! This is only there for things that haven't been
-		 * compiled yet, or for errors.
-		 */
 	default:
 		g_assert(FALSE);
 	}

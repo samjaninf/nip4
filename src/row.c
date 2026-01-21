@@ -1558,7 +1558,8 @@ row_recomp_row(Row *row)
 
 	/* Parse and compile any changes to our text since we last came through.
 	 */
-	if (rhs && rhs->itext &&
+	if (rhs &&
+		rhs->itext &&
 		heapmodel_update_heap(HEAPMODEL(rhs->itext)))
 		return FALSE;
 

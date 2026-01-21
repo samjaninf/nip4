@@ -30,8 +30,8 @@
 #include "nip4.h"
 
 /* trace each regeneration
- */
 #define DEBUG_REGEN
+ */
 
 /* trace each reduction
 #define DEBUG_TRACE
@@ -1200,9 +1200,6 @@ reduce_start:
 				VipsBuf buf = VIPS_BUF_STATIC(txt);
 
 				symbol_qualified_name(sym, &buf);
-
-	if (g_str_equal(IOBJECT(compile->sym)->name, "Menu"))
-		printf("kjhkjhkjhkjh\n");
 
 				error_top(_("No value"));
 				error_sub(_("symbol \"%s\" has no value"), vips_buf_all(&buf));

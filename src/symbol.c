@@ -42,8 +42,8 @@
  */
 
 /* Show symbols as we recalc
- */
 #define DEBUG_RECALC
+ */
 
 /* If DEBUG is on, make sure other debugs are on too.
  */
@@ -1029,9 +1029,6 @@ static gboolean
 symbol_recalculate_sub(Symbol *sym)
 {
 	gboolean result = TRUE;
-
-	if (g_str_equal(IOBJECT(sym)->name, "Colour_to_colour_item"))
-		printf("BANANA\n");
 
 #ifdef DEBUG_TIME
     static GTimer *timer = NULL;
