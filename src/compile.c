@@ -53,8 +53,8 @@
  */
 
 /* Trace objects as they are compiled
- */
 #define DEBUG_COMPILE
+ */
 
 /*
 #define DEBUG
@@ -1849,6 +1849,11 @@ compile_object(Compile *compile)
 	 */
 	compile_resolve_static(compile->sym);
 
+	/* Now everything is linked, we can update the top-level
+	 * parent/child graph.
+	 */
+	symbol_made(compile->sym);
+
 	/* Walk this tree of symbols computing the secret lists.
 	 */
 	secret_build(compile);
@@ -1922,6 +1927,8 @@ compile_tool(Tool *tool)
 void *
 compile_toolkit(Toolkit *kit)
 {
+	printf("compile_toolkit: %s\n", IOBJECT(kit)->name);
+
 	return toolkit_map(kit, (tool_map_fn) compile_tool, NULL, NULL);
 }
 
@@ -2227,7 +2234,8 @@ compile_resolve_static(Symbol *sym)
 		printf("compile_resolve_static: after resolve ");
 		symbol_name_print(sym);
 		printf("\n");
-		dump_compile(sym->expr->compile);
+		int indent = 0;
+		dump_compile(sym->expr->compile, &indent);
 #endif /*DEBUG_RESOLVE*/
 	}
 }

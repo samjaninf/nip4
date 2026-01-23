@@ -1829,14 +1829,6 @@ heap_copy(Heap *heap, Compile *compile, PElement *out)
 	printf("\n");
 #endif /*DEBUG*/
 
-	/* Compile it, if it's not yet compiled. Eg. argc/argv,
-	*/
-	if (base->type == ELEMENT_NOVAL) {
-		if (compile_object(compile) ||
-			base->type == ELEMENT_NOVAL)
-			return FALSE;
-	}
-
 	switch (base->type) {
 	case ELEMENT_NODE:
 		/* Need a tree copy.
@@ -1863,6 +1855,16 @@ heap_copy(Heap *heap, Compile *compile, PElement *out)
 		break;
 
 	case ELEMENT_NOVAL:
+		/* Not yet compiled ... eg. perhaps argv.
+		 */
+		if (compile_object(compile) ||
+			base->type == ELEMENT_NOVAL)
+			return FALSE;
+
+		if (!heap_copy(heap, compile, out))
+			return FALSE;
+		break;
+
 	default:
 		g_assert(FALSE);
 	}

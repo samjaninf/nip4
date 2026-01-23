@@ -1,11 +1,23 @@
+
+
+
+
 - try
 
-	nip4 ~/pics/k2.jpg
+	A1: vips_black [] 10 10
+	A2: Image A1
 
-  A1 is blocked on lots of things
+  A2 blocks on eg. check_args (and many others)
 
-  why don't we compile everything on startup? loads of bits are missing
-  from logs
+  does check_args neverf get on the recomp list? why hasn't it been cleaned?
+
+  A2 logs:
+
+	links to Image and A1 during compile
+	on recomp, links destroyed,
+
+  are we not adding check_args to the recomp list? do we have something
+  stopping functions going on?
 
 
 

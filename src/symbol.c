@@ -42,8 +42,8 @@
  */
 
 /* Show symbols as we recalc
-#define DEBUG_RECALC
  */
+#define DEBUG_RECALC
 
 /* If DEBUG is on, make sure other debugs are on too.
  */
@@ -508,7 +508,8 @@ symbol_made(Symbol *sym)
 	}
 
 #ifdef DEBUG
-	dump_symbol(sym);
+	int indent = 0;
+	dump_symbol(sym, &indent);
 #endif /*DEBUG*/
 }
 
@@ -1207,10 +1208,10 @@ symbol_recalculate_leaf(void)
 	classmodel_dirty_updated();
 
 #ifdef DEBUG
+#endif /*DEBUG*/
 	printf("symbol_recalculate_leaves: Leaf set: ");
 	slist_map(symbol_leaf_set, (SListMapFn) dump_tiny, NULL);
 	printf("\n");
-#endif /*DEBUG*/
 
 	/* Grab stuff off the leaf set.
 	 */
