@@ -3,6 +3,37 @@
 	$ nip4-batch --test
 	--test: errors found
 
+  lots of eg.:
+
+	error in "CSV_SEPARATOR" (CSV_SEPARATOR — $SAVEDIR/start/Preferences.ws): symbol "O1" has no value
+
+  start nip4, then
+
+	A1: Preferences.O1
+        error: Preferences.O1 has no value
+
+  load prefs workspace, seems fine
+
+
+- also see:
+
+	error in "$$list327": symbol measure_sample.cods.$$list327.$$list331 is not defined
+	error in "$$list319": symbol measure_draw.cods.$$list319.$$list323 is not defined
+
+  code is:
+
+    cods = [[x * patch_width + left_margin, y * patch_height + top_margin] ::
+            y <- [0 .. down - 1]; x <- [0 .. across - 1]];
+
+- also see:
+
+	error in "$$list394": symbol cluster.merge.pairs.$$list394.$$list398 is not defined
+
+  code is:
+
+	pairs = [[x, y] :: x <- [0 .. m - 1]; y <- [x + 1, x + 2 .. m - 1]];
+
+
 
 
 

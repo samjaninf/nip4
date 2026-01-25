@@ -88,6 +88,21 @@ main_error_exit(const char *fmt, ...)
 		fprintf(stderr, "\n");
     }
 
+	if (main_option_verbose &&
+		expr_error_all) {
+        fprintf(stderr, "errors found in the following expressions:\n");
+
+		for (GSList *p = expr_error_all; p; p = p->next) {
+			Expr *expr = (Expr *) p->data;
+
+			char txt[1024];
+			VipsBuf buf = VIPS_BUF_STATIC(txt);
+
+			expr_error_print(expr, &buf);
+			fprintf(stderr, "%s", vips_buf_all(&buf));
+		}
+	}
+
     main_shutdown();
     exit(1);
 }
