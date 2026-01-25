@@ -1,56 +1,36 @@
-
-
-
-
-- try
-
-	A1: vips_black [] 10 10
-	A2: Image A1
-
-  A2 blocks on eg. check_args (and many others)
-
-  does check_args neverf get on the recomp list? why hasn't it been cleaned?
-
-  A2 logs:
-
-	links to Image and A1 during compile
-	on recomp, links destroyed,
-
-  are we not adding check_args to the recomp list? do we have something
-  stopping functions going on?
-
-
-
-- we test main_c_stack_base for overflow in several palces, have a funcc for
-  this
-
-  copy_node() should have a test too
-
-  maybe a macro?
-
-- git main benchmark, eager compile, release build (still lots of errors):
-
-	$ time nip4-batch --test
-	real	0m0.766s
-	user	0m0.687s
-	sys	0m0.078s
-
-  deferred compile
-
-	$ time nip4-batch --test
-	real	0m0.570s
-	user	0m0.504s
-	sys	0m0.065s
-
-  25% speedup?
-
-  deferred compile compiles 557 defs on startup, eager compile compiles 1244
-  defs
-
 - try
 
 	$ nip4-batch --test
 	--test: errors found
+
+
+
+
+- we test main_c_stack_base for overflow in several places, have a macro for
+  this
+
+  copy_node() should have a test too
+
+- we heap_copy() the world when we make a row (all funcs copied), is this
+  necessary?
+
+- git main benchmark, release mode:
+
+	$ time nip4-batch --test
+	--test: errors found
+	memory: high-water mark 0 bytes
+	real	0m0.476s
+	user	0m0.431s
+	sys	0m0.044s
+
+  v9.0.15 release mode
+
+	$ time nip4-batch --test
+	real	0m0.395s
+	user	0m0.354s
+	sys	0m0.039s
+
+  haha we are slower
 
 - this fails to compile
 

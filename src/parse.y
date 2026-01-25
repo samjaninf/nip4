@@ -1425,6 +1425,53 @@ parse_access_end(Symbol *sym, Symbol *main)
     return NULL;
 }
 
+/* End of parse for a toplevel. Do any codegen, then link and do
+ * symbol_made() to build the top-level recomp graph.
+ */
+static void *
+parse_toplevel_end(Symbol *sym)
+{
+    if (sym->expr &&
+        sym->expr->compile) {
+        /* Codegen pass for eg. multiple defs
+         */
+        if (compile_map_all(sym->expr->compile,
+            (map_compile_fn) compile_codegen, NULL)) {
+            printf("parse_toplevel_end: codegen failed!\n");
+            return sym;
+        }
+    }
+
+    /* Link all symbols.
+     */
+    compile_resolve_static(sym);
+
+    /* Now everything is linked, we can update the top-level
+     * parent/child graph.
+     */
+    symbol_made(sym);
+
+    return NULL;
+}
+
+static void *
+parse_tool_end(Tool *tool)
+{
+    if (tool->sym &&
+        parse_toplevel_end(tool->sym))
+        return tool;
+
+    return NULL;
+}
+
+/* Scan a toolkit and do any codegen.
+ */
+static void *
+parse_toolkit_end(Toolkit *kit)
+{
+    return toolkit_map(kit, (tool_map_fn) parse_tool_end, NULL, NULL);
+}
+
 /* Interface to parser.
  */
 static gboolean
@@ -1457,11 +1504,11 @@ parse_input(int ch, Symbol *sym, Toolkit *kit, int pos)
     /* Codegen and compile everything.
      */
     if (kit) {
-        if (compile_toolkit(kit))
+        if (parse_toolkit_end(kit))
             return FALSE;
     }
     else if (sym) {
-        if (compile_toplevel(sym))
+        if (parse_toplevel_end(sym))
             return FALSE;
     }
 

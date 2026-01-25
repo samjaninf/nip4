@@ -4,9 +4,9 @@
 - must hold ctrl to drag rows
 - improve empty mainwindow culling
 - fix fwd compatibility of back compat menus
-- rewrite of list comprehensions improves scoping
+- rewrite of list comprehensions fixes scoping
 - lambdas support pattern matching
-- deferred compile and name resolution for 25% faster startup
+- deferred compile helps startup time
 
 ## 9.0.15 2025/11/22
 

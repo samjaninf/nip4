@@ -1863,6 +1863,7 @@ heap_copy(Heap *heap, Compile *compile, PElement *out)
 
 		if (!heap_copy(heap, compile, out))
 			return FALSE;
+
 		break;
 
 	default:

@@ -1699,10 +1699,6 @@ compile_defs_codegen(Compile *compile)
 			this_compile->tree,		// the old RHS the user wrote
 			next_def);
 
-		/* Update recomp links in case this is a top-levelk sym
-		 */
-		symbol_made(sym);
-
 #ifdef DEBUG
 		printf("compile_defs_codegen: generated:\n");
 		if (this_compile->tree)
@@ -1845,15 +1841,6 @@ compile_object(Compile *compile)
 	printf("\n");
 #endif /*DEBUG_COMPILE*/
 
-	/* Link all symbols.
-	 */
-	compile_resolve_static(compile->sym);
-
-	/* Now everything is linked, we can update the top-level
-	 * parent/child graph.
-	 */
-	symbol_made(compile->sym);
-
 	/* Walk this tree of symbols computing the secret lists.
 	 */
 	secret_build(compile);
@@ -1866,74 +1853,39 @@ compile_object(Compile *compile)
 	return NULL;
 }
 
-static void *
-compile_codegen(Compile *compile)
-{
-	Symbol *sym = compile->sym;
-
-	if (sym->needs_codegen) {
-#ifdef DEBUG
-		printf("compile_codegen_sym: codegen for ");
-		symbol_name_print(sym);
-		printf("\n");
-		printf("\tbefore codegen, AST is:\n");
-		dump_compile(compile);
-#endif /*DEBUG*/
-
-		/* For now the only codegen is for multiple defs.
-		 */
-		if (sym->next_def ||
-			!compile->has_default) {
-			if (!compile_defs_check(compile) ||
-				!compile_defs_codegen(compile))
-				return sym;
-		}
-	}
-
-	sym->needs_codegen = FALSE;
-
-	return NULL;
-}
-
-/* Compile a toplevel. Do any codegen, then compile the object.
- */
-void *
-compile_toplevel(Symbol *sym)
-{
-	if (sym->expr &&
-		sym->expr->compile) {
-		if (compile_map_all(sym->expr->compile,
-			(map_compile_fn) compile_codegen, NULL))
-			return sym;
-		if (compile_object(sym->expr->compile))
-			return sym;
-	}
-
-	return NULL;
-}
-
-static void *
-compile_tool(Tool *tool)
-{
-	if (tool->sym &&
-		compile_toplevel(tool->sym))
-		return tool;
-
-	return NULL;
-}
-
-/* Scan a toolkit and do any codegen.
- */
-void *
-compile_toolkit(Toolkit *kit)
-{
-	printf("compile_toolkit: %s\n", IOBJECT(kit)->name);
-
-	return toolkit_map(kit, (tool_map_fn) compile_tool, NULL, NULL);
-}
-
 /* Parse support.
  */
+
+/* End of parse of a top-0level definition.
+ */
+void *
+compile_codegen(Compile *compile)
+{
+    Symbol *sym = compile->sym;
+
+    if (sym->needs_codegen) {
+#ifdef DEBUG
+        printf("compile_codegen_end: codegen for ");
+        symbol_name_print(sym);
+        printf("\n");
+        printf("\tbefore codegen, AST is:\n");
+        dump_compile(compile);
+#endif /*DEBUG*/
+
+        /* For now the only codegen is for multiple defs.
+         */
+        if (sym->next_def ||
+            !compile->has_default) {
+            if (!compile_defs_check(compile) ||
+                !compile_defs_codegen(compile))
+                return sym;
+        }
+    }
+
+    sym->needs_codegen = FALSE;
+
+    return NULL;
+}
 
 static ParseNode *
 compile_check_i18n(Compile *compile, ParseNode *pn)

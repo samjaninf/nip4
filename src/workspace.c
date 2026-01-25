@@ -561,9 +561,10 @@ workspace_add_def(Workspace *ws, const char *str)
 	 *
 	 * Don't set modified on the ws, we might be here from parse.
 	 */
-	if (!sym->expr->row)
+	if (!sym->expr->row) {
 		(void) row_new(col->scol, sym, &sym->expr->root);
-	symbol_made(sym);
+		symbol_made(sym);
+	}
 
 	return sym;
 }

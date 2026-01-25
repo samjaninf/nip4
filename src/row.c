@@ -1485,51 +1485,44 @@ row_regenerate(Row *row)
 	Expr *expr = row->expr;
 	PElement base;
 
-	/* Regenerate any compiled code.
-	 */
 	if (expr->compile) {
 		PEPOINTE(&base, &expr->compile->base);
+		PElement *root = &expr->root;
 
-		if (!PEISNOVAL(&base)) {
-			PElement *root = &expr->root;
-
-			if (row == row->top_row) {
-				/* Recalcing base of tally display ... not a
-				 * class member, must be a sym with a value.
-				 */
-				gboolean res;
-
-				res = reduce_regenerate(expr, root);
-				expr_new_value(expr);
-
-				if (!res)
-					return FALSE;
-			}
-			else {
-				/* Recalcing a member somewhere inside ...
-				 * regen (member this) pair. Get the "this"
-				 * for the enclosing class instance ... the
-				 * top one won't always be right (eg. for
-				 * local classes); the enclosing one should
-				 * be the same as the most enclosing this.
-				 */
-				Subcolumn *scol = row_get_subcolumn(row);
-				Row *this = scol->this;
-				gboolean res;
-
-				res = reduce_regenerate_member(expr, &this->expr->root, root);
-				expr_new_value(expr);
-
-				if (!res)
-					return FALSE;
-			}
-
-			/* We may have made a new class instance ... all our
-			 * children need to update their heap pointers.
+		if (row == row->top_row) {
+			/* Recalcing base of tally display ... not a class member, must
+			 * be a sym with a value.
 			 */
-			if (heapmodel_new_heap(HEAPMODEL(row), root))
+			gboolean res;
+
+			res = reduce_regenerate(expr, root);
+			expr_new_value(expr);
+
+			if (!res)
 				return FALSE;
 		}
+		else {
+			/* Recalcing a member somewhere inside ...  regen (member this)
+			 * pair. Get the "this" for the enclosing class instance ... the
+			 * top one won't always be right (eg. for local classes); the
+			 * enclosing one should be the same as the most enclosing this.
+			 */
+			Subcolumn *scol = row_get_subcolumn(row);
+			Row *this = scol->this;
+			gboolean res;
+
+			res = reduce_regenerate_member(expr, &this->expr->root, root);
+			expr_new_value(expr);
+
+			if (!res)
+				return FALSE;
+		}
+
+		/* We may have made a new class instance ... all our
+		 * children need to update their heap pointers.
+		 */
+		if (heapmodel_new_heap(HEAPMODEL(row), root))
+			return FALSE;
 	}
 
 	return TRUE;
