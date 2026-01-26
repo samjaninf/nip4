@@ -2418,6 +2418,10 @@ compile_move_tree(Compile *fromscope, ParseNode *tree, Compile *toscope)
 	for (GSList *p = copy; p; p = p->next) {
 		Symbol *child = SYMBOL(p->data);
 
+		// set placeholder so that removing this child won't set an undefined
+		// error
+		child->placeholder = TRUE;
+
 		IDESTROY(child);
 	}
 
@@ -2555,7 +2559,8 @@ compile_lcomp(Compile *compile)
 
 #ifdef DEBUG_LCOMP
 	printf("before compile_lcomp: ");
-	dump_compile(compile);
+	int indent = 0;
+	dump_compile(compile, &indent);
 #endif /*DEBUG_LCOMP*/
 
 	/* Find all the elements of the lcomp: generators, filters, patterns
@@ -2720,7 +2725,7 @@ compile_lcomp(Compile *compile)
 
 #ifdef DEBUG_LCOMP
 	printf("after compile_lcomp: ");
-	dump_compile(compile);
+	dump_compile(compile, &indent);
 #endif /*DEBUG_LCOMP*/
 }
 
