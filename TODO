@@ -16,7 +16,6 @@
 
   missing a symbol_made() at the end of workspace load? or just prefs load?
 
-
 - also see:
 
 	error in "$$list327": symbol measure_sample.cods.$$list327.$$list331 is not defined
@@ -37,7 +36,9 @@
 
 
 
+- workspace error tooltips don't show the error message correctly
 
+- Magick_annotate_item seems to he broken in ~/pics/annotate2.ws
 
 - we test main_c_stack_base for overflow in several places, have a macro for
   this
