@@ -97,11 +97,19 @@ action_boperror(Reduce *rc, Compile *compile, const char *str,
 	itext_value_ev(rc, &buf, a);
 	itext_value_ev(rc, &buf2, b);
 	if (compile) {
+		Symbol *sym = compile->sym;
+
 		/* Expands to eg. 'bad args to "+", called from "fred"'
 		 */
 		vips_buf_appends(&buf3, _("called from"));
 		vips_buf_appends(&buf3, " ");
 		compile_name(compile, &buf3);
+
+		if (sym->tool &&
+			sym->tool->kit) {
+			vips_buf_appendf(&buf3, ", %s:%d",
+				FILEMODEL(sym->tool->kit)->filename, sym->tool->lineno);
+		}
 	}
 
 	error_top("%s", top_str);
@@ -181,11 +189,19 @@ action_uoperror(Reduce *rc, Compile *compile,
 	itext_value_ev(rc, &buf, a);
 
 	if (compile) {
+		Symbol *sym = compile->sym;
+
 		/* Expands to eg. 'bad args to "+", called from "fred"'
 		 */
 		vips_buf_appends(&buf2, _("called from"));
 		vips_buf_appends(&buf2, " ");
 		compile_name(compile, &buf2);
+
+		if (sym->tool &&
+			sym->tool->kit) {
+			vips_buf_appendf(&buf2, ", %s:%d",
+				FILEMODEL(sym->tool->kit)->filename, sym->tool->lineno);
+		}
 	}
 
 	error_top("%s", top_str);

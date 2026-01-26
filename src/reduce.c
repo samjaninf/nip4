@@ -1196,13 +1196,21 @@ reduce_start:
 			if (sym->dirty &&
 				compile->base.type != ELEMENT_NOVAL &&
 				compile->nparam + compile->nsecret == 0) {
-				char txt[256];
-				VipsBuf buf = VIPS_BUF_STATIC(txt);
 
-				symbol_qualified_name(sym, &buf);
+				// get the error from the expr, if we can, otherwise fall
+				// back
+				if (sym->expr->err)
+					expr_error_get(sym->expr);
+				else {
+					char txt[256];
+					VipsBuf buf = VIPS_BUF_STATIC(txt);
 
-				error_top(_("No value"));
-				error_sub(_("symbol \"%s\" has no value"), vips_buf_all(&buf));
+					symbol_qualified_name(sym, &buf);
+
+					error_top(_("No value"));
+					error_sub(_("symbol \"%s\" has no value"),
+						vips_buf_all(&buf));
+				}
 
 				reduce_throw(rc);
 			}

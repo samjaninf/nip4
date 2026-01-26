@@ -1,12 +1,6 @@
-- nip4-batch x.def with main contaiing an error prints nothing
-
-	should show error message
-
-	should show all errors with --verbose
-
-- workspace error tooltips don't show the error message correctly
-
 - Magick_annotate_item seems to he broken in ~/pics/annotate2.ws
+
+	pics/annotate2.ws
 
 - we test main_c_stack_base for overflow in several places, have a macro for
   this
