@@ -364,6 +364,10 @@ main_startup(int argc, char **argv)
 #endif /*DEBUG*/
 	(void) path_map(PATH_START, "*.def", (path_map_fn) main_load_def, NULL);
 
+	/* Build all the base defs before we load the prefs workspace.
+	 */
+	symbol_recalculate_all_force(TRUE);
+
 #ifdef DEBUG
 	printf("ws init\n");
 #endif /*DEBUG*/

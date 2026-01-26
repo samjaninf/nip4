@@ -89,9 +89,7 @@ main_error_exit(const char *fmt, ...)
     }
 
 	if (main_option_verbose &&
-		expr_error_all) {
-        fprintf(stderr, "errors found in the following expressions:\n");
-
+		expr_error_all)
 		for (GSList *p = expr_error_all; p; p = p->next) {
 			Expr *expr = (Expr *) p->data;
 
@@ -101,9 +99,9 @@ main_error_exit(const char *fmt, ...)
 			expr_error_print(expr, &buf);
 			fprintf(stderr, "%s", vips_buf_all(&buf));
 		}
-	}
 
     main_shutdown();
+
     exit(1);
 }
 
