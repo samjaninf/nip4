@@ -42,8 +42,8 @@
  */
 
 /* Show symbols as we recalc
-#define DEBUG_RECALC
  */
+#define DEBUG_RECALC
 
 /* If DEBUG is on, make sure other debugs are on too.
  */
@@ -1112,9 +1112,9 @@ symbol_recalculate_leaf_sub(Symbol *sym)
 	 *
 	 * Test 2 will fail for mutual top-level recursion.
 	 *
+	 */
 	g_assert(!sym->dirty || symbol_is_leafable(sym));
 	g_assert(symbol_ndirty(sym) == 0);
-	 */
 #endif /*DEBUG_RECALC*/
 
 	error_clear();
@@ -1174,7 +1174,7 @@ symbol_recalculate_leaf_sub(Symbol *sym)
 
 #ifdef DEBUG_RECALC
 			printf("\tsuccess: ");
-			graph_pointer(&sym->expr->root);
+			//graph_pointer(&sym->expr->root);
 #endif /*DEBUG_RECALC*/
 		}
 	}
@@ -1182,7 +1182,7 @@ symbol_recalculate_leaf_sub(Symbol *sym)
 	else {
 		printf("\t(found dirty children)\n");
 		int indent = 0;
-		dump_symbol(sym, &indent);
+		//dump_symbol(sym, &indent);
 	}
 #endif /*DEBUG_RECALC*/
 
@@ -1203,11 +1203,11 @@ symbol_recalculate_leaf(void)
 	 */
 	classmodel_dirty_updated();
 
-#ifdef DEBUG
+#ifdef DEBUG_RECALC
 	printf("symbol_recalculate_leaves: Leaf set: ");
 	slist_map(symbol_leaf_set, (SListMapFn) dump_tiny, NULL);
 	printf("\n");
-#endif /*DEBUG*/
+#endif /*DEBUG_RECALC*/
 
 	/* Grab stuff off the leaf set.
 	 */

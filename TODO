@@ -2,6 +2,8 @@
 
 	pics/annotate2.ws
 
+  not setting error for novalue in reduce?
+
 - we test main_c_stack_base for overflow in several places, have a macro for
   this
 

@@ -1602,7 +1602,8 @@ compile_defs_codegen_default(Compile *compile)
 
 #ifdef DEBUG
 	printf("compile_defs_codegen_default: generated ");
-	dump_compile(def->expr->compile);
+	int indent = 0;
+	dump_compile(def->expr->compile, &indent);
 #endif /*DEBUG*/
 
 	return TRUE;
@@ -1869,7 +1870,8 @@ compile_codegen(Compile *compile)
         symbol_name_print(sym);
         printf("\n");
         printf("\tbefore codegen, AST is:\n");
-        dump_compile(compile);
+		int indent = 0;
+        dump_compile(compile, &indent);
 #endif /*DEBUG*/
 
         /* For now the only codegen is for multiple defs.
@@ -3072,7 +3074,8 @@ compile_pattern_match(Compile *compile, Symbol *value, ParseNode *pattern)
 
 #ifdef DEBUG
 	printf("compile_pattern_match: generated ");
-	dump_compile(match->expr->compile);
+	int indent = 0;
+	dump_compile(match->expr->compile, &indent);
 #endif /*DEBUG*/
 
 	return match;
