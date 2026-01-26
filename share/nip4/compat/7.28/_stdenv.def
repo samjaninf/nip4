@@ -926,7 +926,7 @@ extract_row y obj
 extract_column x obj
 	= oo_unary_function extract_column_op obj, is_class obj
 	= extract_area x' 0 1 height obj, is_image obj
-	= map (\row -> [row?x']) obj, is_matrix obj
+	= map (\row [row?x']) obj, is_matrix obj
 	= error (_ "bad arguments to " ++ "extract_column")
 {
 	x' = to_real x;
@@ -1791,9 +1791,9 @@ print_base base in
 		= "0", in < 0 || chars == []
 		= reverse chars
 	{
-		digits = map (\x -> x % base)
+		digits = map (\x x % base)
 			(takewhile (not_equal 0)
-				(iterate (\x -> idivide x base) in));
+				(iterate (\x idivide x base) in));
 		chars = map tohd digits;
 
 		tohd x
@@ -2271,7 +2271,7 @@ point a b
 	= error (_ "bad arguments to " ++ "point")
 {
 	point_op = Operator "point"
-		(\a b -> Vector (point a b)) Operator_type.COMPOUND false;
+		(\a\b Vector (point a b)) Operator_type.COMPOUND false;
 
 	(x, y)
 		= a, is_complex a;

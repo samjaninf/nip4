@@ -14,6 +14,8 @@
 
   load prefs workspace, seems fine
 
+  missing a symbol_made() at the end of workspace load? or just prefs load?
+
 
 - also see:
 
