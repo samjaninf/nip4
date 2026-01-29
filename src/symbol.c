@@ -42,8 +42,8 @@
  */
 
 /* Show symbols as we recalc
- */
 #define DEBUG_RECALC
+ */
 
 /* If DEBUG is on, make sure other debugs are on too.
  */
@@ -481,10 +481,10 @@ void
 symbol_made(Symbol *sym)
 {
 #ifdef DEBUG_MAKE
+#endif /*DEBUG_MAKE*/
 	printf("symbol_made: ");
 	symbol_name_print(sym);
 	printf("\n");
-#endif /*DEBUG_MAKE*/
 
 	if (is_top(sym)) {
 		/* Remake all top-level dependencies.

@@ -1,3 +1,30 @@
+- seems to be related to recomp order problems
+
+	are we calling symbol_made() on workspace rows?
+
+	yes, seem to be
+
+  classes are being symbol_made() twice?
+
+	symbol_made: Arrow
+	symbol_made: Arrow
+	symbol_made: A_whitepoint
+	symbol_made: A_whitepoint
+	symbol_made: Area
+	symbol_made: Area
+
+
+
+
+- we seem to compile many things twice, eg.
+
+	A_whitepoint
+
+  has symbol_made() 4 times, compile_object() twice
+
+
+
+
 - Magick_annotate_item seems to he broken in ~/pics/annotate2.ws
 
 	pics/annotate2.ws
