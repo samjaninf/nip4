@@ -437,7 +437,7 @@ single_param:
         else {
             char name[256];
 
-            g_snprintf(name, 256, "$$arg%d", parse_object_id);
+            g_snprintf(name, 256, "$$arg%d", parse_object_id++);
             Symbol *arg = symbol_new_defining(current_compile, name);
             arg->generated = TRUE;
             (void) symbol_parameter_init(arg);
@@ -448,10 +448,12 @@ single_param:
             GSList *built_syms = compile_pattern(current_compile, arg, $1);
 
             // note the match func for the codegen pass
-            if (built_syms)
+            if (built_syms) {
                 current_compile->matchers =
                     g_slist_prepend(current_compile->matchers,
                         SYMBOL(built_syms->data));
+                current_compile->sym->needs_codegen = TRUE;
+            }
 
             g_slist_free(built_syms);
 

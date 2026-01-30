@@ -840,7 +840,7 @@ symbol_new_defining(Compile *compile, const char *name)
 			char txt[200];
 			VipsBuf buf = VIPS_BUF_STATIC(txt);
 
-			vips_buf_appendf(&buf, _("Can't redefine %s \"%s\""),
+			vips_buf_appendf(&buf, _("can't redefine %s \"%s\""),
 				decode_SymbolType_user(sym->type), name);
 
 			if (sym->tool &&

@@ -1,3 +1,13 @@
+- try:
+
+	main = error "banana";
+
+  see
+
+	Macro error, banana
+
+  can we add "from main, test.def:30"
+
 - add "copy value" to rowview menu ... copy value display text to clipboard
 
 	render more text? truncation could be annoying
@@ -8,11 +18,9 @@
 - git main benchmark, release mode:
 
 	$ time nip4-batch --test
-	--test: errors found
-	memory: high-water mark 0 bytes
-	real	0m0.476s
-	user	0m0.431s
-	sys	0m0.044s
+	real	0m0.509s
+	user	0m0.447s
+	sys	0m0.061s
 
   v9.0.15 release mode
 
@@ -21,18 +29,7 @@
 	user	0m0.354s
 	sys	0m0.039s
 
-  haha we are slower
-
-- this fails to compile
-
-	a 0 [] = true;
-
-  error:
-
-	Error: Parse error
-	Error: Can't redefine parameter "$$arg0".
-
-  does it parse always fail with more than one const param?
+  haha we are slower despite lazy compile
 
 - add lcomp tests to test_snip
 

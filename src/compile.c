@@ -3009,7 +3009,8 @@ compile_pattern_leaf(PatternInfo *info, Symbol *leaf)
 
 #ifdef DEBUG_PATTERN
 	printf("compile_pattern_leaf: generated ");
-	dump_compile(compile);
+	int indent = 0;
+	dump_compile(compile, &indent);
 #endif /*DEBUG_PATTERN*/
 }
 
