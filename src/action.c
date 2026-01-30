@@ -99,9 +99,9 @@ action_boperror(Reduce *rc, Compile *compile, const char *str,
 	if (compile) {
 		Symbol *sym = compile->sym;
 
-		/* Expands to eg. 'bad args to "+", called from "fred"'
+		/* Expands to eg. 'bad args to "+", in "fred"'
 		 */
-		vips_buf_appends(&buf3, _("called from"));
+		vips_buf_appends(&buf3, _("in"));
 		vips_buf_appends(&buf3, " ");
 		compile_name(compile, &buf3);
 
@@ -191,9 +191,9 @@ action_uoperror(Reduce *rc, Compile *compile,
 	if (compile) {
 		Symbol *sym = compile->sym;
 
-		/* Expands to eg. 'bad args to "+", called from "fred"'
+		/* Expands to eg. 'bad args to "+", in "fred"'
 		 */
-		vips_buf_appends(&buf2, _("called from"));
+		vips_buf_appends(&buf2, _("in"));
 		vips_buf_appends(&buf2, " ");
 		compile_name(compile, &buf2);
 

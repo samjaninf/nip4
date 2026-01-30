@@ -1,13 +1,3 @@
-- try:
-
-	main = error "banana";
-
-  see
-
-	Macro error, banana
-
-  can we add "from main, test.def:30"
-
 - add "copy value" to rowview menu ... copy value display text to clipboard
 
 	render more text? truncation could be annoying
