@@ -36,8 +36,6 @@ Symbol *main_symbol_root = NULL;			/* Root of symtable */
 Watchgroup *main_watchgroup = NULL;			/* All of the watches */
 Imageinfogroup *main_imageinfogroup = NULL; /* All of the images */
 
-void *main_c_stack_base = NULL; /* Base of C stack */
-
 /* Other parts of nip4 need these to link, but we don't use them here ... see
  * main-batch.c
  */
@@ -51,6 +49,7 @@ const char *main_argv0 = NULL; /* argv[0] */
 
 static char prefix_buffer[VIPS_PATH_MAX];
 static gboolean prefix_valid = FALSE;
+static void *main_c_stack_base = NULL;		/* Base of C stack */
 
 /* Override the install guess from vips. Handy for testing.
  */
@@ -167,6 +166,25 @@ main_log_null(const char *log_domain, GLogLevelFlags log_level,
 }
 #endif /*G_OS_WIN32*/
 #endif /*!DEBUG_FATAL*/
+
+/* We set the C stack to 2mb during startup (if we can).
+ */
+gboolean
+main_is_stack_full(void)
+{
+	int x = 0;
+
+    if ((char *) main_c_stack_base - (char *) &x > 2000000) {
+		printf("HELP!! stack overflow\n");
+
+        error_top(_("Overflow error"));
+        error_sub(_("C stack overflow, expression too complex"));
+
+		return TRUE;
+	}
+
+	return FALSE;
+}
 
 /* Common startup, shared between gui and batch modes.
  */

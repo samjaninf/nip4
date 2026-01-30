@@ -2,11 +2,6 @@
 
 	render more text? truncation could be annoying
 
-- we test main_c_stack_base for overflow in several places, have a macro for
-  this
-
-  copy_node() should have a test too
-
 - we heap_copy() the world when we make a row (all funcs copied), is this
   necessary?
 

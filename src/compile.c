@@ -1842,6 +1842,11 @@ compile_object(Compile *compile)
 	printf("\n");
 #endif /*DEBUG_COMPILE*/
 
+	/* We can be called from inside the reduction engine.
+	 */
+	if (main_is_stack_full())
+		return compile;
+
 	/* Walk this tree of symbols computing the secret lists.
 	 */
 	secret_build(compile);

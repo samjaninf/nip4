@@ -1078,11 +1078,8 @@ reduce_spine(Reduce *rc, PElement *out)
 	/* Check for possible C stack overflow ... can't go over 2M on most
 	 * systems if we're using (or any of our libs are using) threads.
 	 */
-	if ((char *) main_c_stack_base - (char *) &rc > 2000000) {
-		error_top(_("Overflow error"));
-		error_sub(_("C stack overflow, expression too complex"));
+	if (main_is_stack_full())
 		reduce_throw(rc);
-	}
 
 	/* Point node pointer at reduction start.
 	 */

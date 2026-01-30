@@ -1725,6 +1725,11 @@ copy_node(Heap *heap, HeapNode *ri[], HeapNode *hn, PElement *out)
 	PElement pleft, pright;
 	int i;
 
+	/* This can potentially recurse a lot.
+	 */
+	if (main_is_stack_full())
+		return FALSE;
+
 	/* Look for relocation nodes.
 	 */
 	if (hn->type == TAG_SHARED) {
