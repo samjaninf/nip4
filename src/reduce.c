@@ -1188,15 +1188,10 @@ reduce_start:
 		case SYM_VALUE: {
 			Compile *compile = sym->expr->compile;
 
-			/* If it's been compiled, has zero args, but it's still dirty,
-			 * something must have gone wrong in dependency discovery.
-			 *
-			 * This can happen with dynamic deps.
+			/* If it's dirty, something has gone wrong and we'll need to
+			 * backtrack. This can happen with dynamic deps.
 			 */
-			if (sym->dirty &&
-				compile->base.type != ELEMENT_NOVAL &&
-				compile->nparam + compile->nsecret == 0) {
-
+			if (sym->dirty) {
 				// get the error from the expr, if we can, otherwise fall
 				// back
 				if (sym->expr->err)
@@ -1253,9 +1248,6 @@ reduce_start:
 		case SYM_PARAM:
 			/* All params should be taken out by var abstract.
 			 */
-			printf("sym-param found, argh: ");
-			symbol_name_print(sym);
-			printf("\n");
 			g_assert(FALSE);
 			break;
 

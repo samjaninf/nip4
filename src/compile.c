@@ -53,8 +53,8 @@
  */
 
 /* Trace objects as they are compiled
- */
 #define DEBUG_COMPILE
+ */
 
 /*
 #define DEBUG
@@ -1840,9 +1840,6 @@ compile_object(Compile *compile)
 	printf("compile_object: ");
 	symbol_name_print(compile->sym);
 	printf("\n");
-
-	if (g_str_equal("A1", IOBJECT(compile->sym)->name))
-		printf("argh!!\n");
 #endif /*DEBUG_COMPILE*/
 
 	/* Walk this tree of symbols computing the secret lists.

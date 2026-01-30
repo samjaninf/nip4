@@ -1,10 +1,4 @@
-- seems to be related to recomp order problems
-
-	are we calling symbol_made() on workspace rows?
-
-	yes, seem to be
-
-  classes are being symbol_made() twice?
+- classes are being symbol_made() twice?
 
 	symbol_made: Arrow
 	symbol_made: Arrow
@@ -13,23 +7,9 @@
 	symbol_made: Area
 	symbol_made: Area
 
+- add "copy value" to rowview menu ... copy value display text to clipboard
 
-
-
-- we seem to compile many things twice, eg.
-
-	A_whitepoint
-
-  has symbol_made() 4 times, compile_object() twice
-
-
-
-
-- Magick_annotate_item seems to he broken in ~/pics/annotate2.ws
-
-	pics/annotate2.ws
-
-  not setting error for novalue in reduce?
+	render more text? truncation could be annoying
 
 - we test main_c_stack_base for overflow in several places, have a macro for
   this
