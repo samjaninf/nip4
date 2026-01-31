@@ -1939,34 +1939,6 @@ compile_check_i18n(Compile *compile, ParseNode *pn)
 	return NULL;
 }
 
-static ParseNode *
-compile_check_more(Compile *compile, ParseNode *pn)
-{
-	switch (pn->type) {
-	case NODE_BINOP:
-		switch (pn->biop) {
-		case BI_MORE:
-			pn->biop = BI_LESS;
-			SWAPP(pn->arg1, pn->arg2);
-			break;
-
-		case BI_MOREEQ:
-			pn->biop = BI_LESSEQ;
-			SWAPP(pn->arg1, pn->arg2);
-			break;
-
-		default:
-			break;
-		}
-		break;
-
-	default:
-		break;
-	}
-
-	return NULL;
-}
-
 /* Do end-of-parse checks. Called after every 'A = ...' style definition (not
  * just top-level syms). Used to do lots of checks, not much left now.
  */
@@ -2000,12 +1972,6 @@ compile_check(Compile *compile)
 #endif /*DEBUG*/
 	(void) tree_map(compile,
 		(tree_map_fn) compile_check_i18n, compile->tree, NULL, NULL);
-
-	/* Swap MORE and MOREEQ for LESS and LESSEQ. Reduces the number of
-	 * cases for the compiler.
-	 */
-	(void) tree_map(compile,
-		(tree_map_fn) compile_check_more, compile->tree, NULL, NULL);
 
 	return TRUE;
 }

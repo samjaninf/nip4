@@ -1,3 +1,7 @@
+- "nip4 try.def x.ws" ought to work
+
+	only images and workspaces as CLI args right now
+
 - add "copy value" to rowview menu ... copy value display text to clipboard
 
 	render more text? truncation could be annoying
