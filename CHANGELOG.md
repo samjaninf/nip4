@@ -9,6 +9,7 @@
 - deferred compile helps startup time
 - rename nip4-batch as "snip"
 - better mark drag
+- no VIPSHOME env var in flatpak
 
 ## 9.0.15 2025/11/22
 

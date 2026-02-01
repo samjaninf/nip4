@@ -35,6 +35,10 @@ if get_option('optimization') not in ['0', 'g']
   add_project_arguments('-DRELEASE', language: ['cpp', 'c'])
 endif
 
+if get_option('flatpak')
+  add_project_arguments('-DFLATPAK', language: ['cpp', 'c'])
+endif
+
 # we should probably have more flexibility here
 lex = find_program('flex')
 yacc = find_program('bison')

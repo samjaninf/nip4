@@ -1,11 +1,10 @@
+
 - better start dir for file dialogs
 
 	should be cwd
 
 	a bit random right now, eg. mainwindow open and toolkit open start in
 	different places
-
-- flatpak n4 should disable VIPSHOME env var
 
 - "nip4 try.def x.ws" ought to work
 
@@ -14,6 +13,10 @@
 - add "copy value" to rowview menu ... copy value display text to clipboard
 
 	render more text? truncation could be annoying
+
+- add IM to flatpak build
+
+- improve row layout (see notebook)
 
 - we heap_copy() the world when we make a row (all funcs copied), is this
   necessary?
@@ -45,7 +48,7 @@
 	edit to "99", return
 	click again, a trailing semicolon has appeared
 
-  do we use differnent parse_*() calls for the column new item line and
+  do we use different parse_*() calls for the column new item line and
   editing a formula
 
 - try
