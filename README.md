@@ -168,8 +168,6 @@ flatpak uninstall nip4
 
 - niftiio is annoying to build, skip it.
 
-- we skip imagemagick as well, too huge
-
 ## Packaging for flathub
 
 Install the appdata checker:
