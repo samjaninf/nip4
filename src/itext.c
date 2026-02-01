@@ -607,7 +607,13 @@ itext_update_model(Heapmodel *heapmodel)
 
 		VIPS_SETSTR(itext->formula_default, new_formula);
 
-		/* Don't use itext_set_formula(), as we don't want to set
+		/* Remove any trailing ';' left by the parser.
+		 */
+		char *p = (char *) my_strrspn(itext->formula_default, " ;\n\t");
+		if (p)
+			*p = '\0';
+
+		/* Don't use itext_set_formula() as we don't want to set
 		 * _modified or recomp.
 		 */
 		VIPS_SETSTR(itext->formula, itext->formula_default);

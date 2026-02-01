@@ -14,42 +14,16 @@
 
 	render more text? truncation could be annoying
 
-- add IM to flatpak build
-
 - improve row layout (see notebook)
 
 - we heap_copy() the world when we make a row (all funcs copied), is this
   necessary?
-
-- 9.0.16 benchmark, release mode:
-
-	$ time snip --test
-	real	0m0.328s
-	user	0m0.290s
-	sys	0m0.037s
-
-  v9.0.15 release mode
-
-	$ time nip4-batch --test
-	real	0m0.347s
-	user	0m0.308s
-	sys	0m0.038s
 
 - linear match
 
 	allow refine tie points + no-resize atr the same time
 
 	show computed transform
-
-- try
-
-	A1: 12
-	click on A1, no terminating semicolon
-	edit to "99", return
-	click again, a trailing semicolon has appeared
-
-  do we use different parse_*() calls for the column new item line and
-  editing a formula
 
 - try
 
