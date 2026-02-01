@@ -16,14 +16,14 @@
     "cleanup" : [
         "/include",
 
-        "/lib/libheif",
-        "/lib/girepository-1.0",
-        "/lib/pkgconfig",
-        "/lib/cmake",
-        "/lib/openjpeg-*",
         "/lib/*.a",
         "/lib/ImageMagick-*",
+        "/lib/cmake",
+        "/lib/girepository-1.0",
         "/lib/libMagick++-7*",
+        "/lib/libheif",
+        "/lib/openjpeg-*",
+        "/lib/pkgconfig",
 
         "/man",
 
@@ -75,6 +75,7 @@
         "/bin/opj_dump",
         "/bin/slidetool",
 
+        "/bin/Magick*",
         "/bin/animate",
         "/bin/compare",
         "/bin/composite",
@@ -86,11 +87,11 @@
         "/bin/mogrify",
         "/bin/montage",
         "/bin/stream",
-        "/bin/Magick*",
 
         "/bin/fpack",
         "/bin/funpack",
         "/bin/smem",
+        "/bin/snip",
         "/bin/speed",
         "/bin/vips",
         "/bin/vipsedit",
