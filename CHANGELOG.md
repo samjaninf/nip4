@@ -8,6 +8,7 @@
 - lambdas support pattern matching
 - deferred compile helps startup time
 - rename nip4-batch as "snip"
+- better mark drag
 
 ## 9.0.15 2025/11/22
 

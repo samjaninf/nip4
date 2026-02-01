@@ -1,3 +1,10 @@
+- better start dir for file dialogs
+
+	should be cwd
+
+	a bit random right now, eg. mainwindow open and toolkit open start in
+	different places
+
 - flatpak n4 should disable VIPSHOME env var
 
 - "nip4 try.def x.ws" ought to work
@@ -13,7 +20,7 @@
 
 - 9.0.16 benchmark, release mode:
 
-	$ time nip4-batch --test
+	$ time snip --test
 	real	0m0.328s
 	user	0m0.290s
 	sys	0m0.037s
@@ -21,13 +28,9 @@
   v9.0.15 release mode
 
 	$ time nip4-batch --test
-	real	0m0.395s
-	user	0m0.354s
-	sys	0m0.039s
-
-- when dragging a mark on the cross you can only go up and left
-
-  also, add drag on hguide/vguide line to move guide
+	real	0m0.347s
+	user	0m0.308s
+	sys	0m0.038s
 
 - linear match
 
