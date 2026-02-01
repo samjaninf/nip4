@@ -1,4 +1,4 @@
-## master
+## 9.0.16 2026/2/xx
 
 - add multiple defs support to program window
 - must hold ctrl to drag rows
@@ -7,6 +7,7 @@
 - rewrite of list comprehensions fixes scoping
 - lambdas support pattern matching
 - deferred compile helps startup time
+- rename nip4-batch as "snip"
 
 ## 9.0.15 2025/11/22
 
