@@ -15,13 +15,18 @@
     ],
     "cleanup" : [
         "/include",
+
         "/lib/libheif",
         "/lib/girepository-1.0",
         "/lib/pkgconfig",
         "/lib/cmake",
         "/lib/openjpeg-*",
         "/lib/*.a",
+        "/lib/ImageMagick-*",
+        "/lib/libMagick++-7*",
+
         "/man",
+
         "/share/aclocal",
         "/share/doc",
         "/share/gir-1.0",
@@ -69,6 +74,19 @@
         "/bin/opj_decompress",
         "/bin/opj_dump",
         "/bin/slidetool",
+
+        "/bin/animate",
+        "/bin/compare",
+        "/bin/composite",
+        "/bin/conjure",
+        "/bin/display",
+        "/bin/identify",
+        "/bin/import",
+        "/bin/magick-script",
+        "/bin/mogrify",
+        "/bin/montage",
+        "/bin/stream",
+        "/bin/Magick*",
 
         "/bin/fpack",
         "/bin/funpack",
@@ -208,24 +226,6 @@
                     "type" : "git",
                     "url" : "https://github.com/randy408/libspng.git",
                     "tag" : "v0.7.4"
-                }
-            ]
-        },
-
-        {
-            "name" : "libarchive",
-            "builddir" : true,
-            "buildsystem" : "cmake-ninja",
-            "build-options" : {
-                "config-opts" : [
-                    "-DCMAKE_INSTALL_LIBDIR=lib"
-                ]
-            },
-            "sources" : [
-                {
-                    "type" : "git",
-                    "url" : "https://github.com/libarchive/libarchive.git",
-                    "tag" : "v3.8.1"
                 }
             ]
         },
@@ -462,7 +462,20 @@
                 {
                     "type" : "git",
                     "url" : "https://github.com/google/libultrahdr.git",
-                    "tag" : "v1.4.0"
+                    "commit" : "8cbc983d2f6c2171af5cbcdb8801102f83fe92ab"
+                }
+            ]
+        },
+
+        {
+            "name" : "imagemagick",
+            "builddir" : true,
+            "buildsystem" : "autotools",
+            "sources" : [
+                {
+                    "type" : "git",
+                    "url" : "https://github.com/ImageMagick/ImageMagick",
+                    "tag" : "7.1.2-13"
                 }
             ]
         },
@@ -506,13 +519,13 @@
             "builddir" : true,
             "buildsystem" : "meson",
             "config-opts" : [
-                "-Dflatpak=true",
-            },
+                "-Dflatpak=true"
+            ],
             "sources" : [
                 {
                     "type" : "git",
                     "url" : "https://github.com/jcupitt/nip4.git",
-                    "commit" : "fb6371083bbbfe0e7147ceea238fca3c00d6e15f"
+                    "commit" : "83e51fb138b1eea46f5ee0cf39799343759526fb"
                 }
             ]
         }

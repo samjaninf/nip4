@@ -10,6 +10,7 @@
 - rename nip4-batch as "snip"
 - better mark drag
 - no VIPSHOME env var in flatpak
+- flatpak build includes IM and "snip" executable
 
 ## 9.0.15 2025/11/22
 
