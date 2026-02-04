@@ -1,3 +1,7 @@
+- support BMP drag/drop to help windows
+
+- scroll is very slow in macOS, so navigating the Magick menu with no
+  scrollbar is painful
 
 - better start dir for file dialogs
 

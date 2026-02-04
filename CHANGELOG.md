@@ -1,6 +1,6 @@
 ## main
 
-- better worksapce error state handling
+- better workspace error state handling
 
 ## 9.0.16 2026/02/01
 
