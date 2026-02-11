@@ -1,3 +1,10 @@
+- try
+
+    A1: scale
+    A2: [A1.value]
+
+  drag scale, A2 does not update
+
 - support BMP drag/drop to help windows
 
 - scroll is very slow in macOS, so navigating the Magick menu with no
