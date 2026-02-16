@@ -1,12 +1,15 @@
 #!/usr/bin/env snip
 
-sample_image = image_new [] 1 1;
+image = image_new [] 1 1;
+image_lab = colour_transform_to Interpretation.LAB image;
 
 main = unit_test [
     [point (256, 256) (lab_slice 513 54) == [54, 0, 0], "lab_slice"],
+    [image_white image == Vector [255], "image_white"],
+    [image_white image_lab == Colour "LAB" [100, 0, 0], "image_white LAB"],
 
-    [get_width sample_image == 1 &&
-        get_height sample_image == 1 &&
-	    mean sample_image == 0, "image_new"]
+    [get_width image == 1 &&
+        get_height image == 1 &&
+	    mean image == 0, "image_new"]
 
 ];

@@ -646,7 +646,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
 				_result {
 				_vislevel = 3;
 
-				start = Colour_picker "Lab" [50,0,0];
+				start = Colour_picker "LAB" [50,0,0];
 				nstep = Expression "Number of steps" 9;
 				ssize = Expression "Step size" 10;
 				psize = Expression "Patch size" 32;

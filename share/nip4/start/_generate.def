@@ -86,18 +86,18 @@ lab_slice size l
  * for that image type.
  */
 image_white im
-    = colour_transform_to type white_lab,
-        bands == 3 && coding == Coding.NOCODING &&
-        colour_spaces.present 1 type
+    = colour_transform_to interpretation white_lab,
+        bands == 3 &&
+        coding == Coding.NOCODING &&
+        Interpretation_3ary.has_value interpretation
     = white_lab,
         coding == Coding.LABPACK
     = Vector (replicate bands (Format._maxval.lookup 0 1 format))
 {
-    bands = im.bands;
-    type = im.type;
-    format = im.format;
-    coding = im.coding;
-    colour_spaces = Interpretation_3ary.keys;
+    bands = get_bands im;
+    interpretation = get_interpretation im;
+    format = get_format im;
+    coding = get_coding im;
 
     // white as LAB
     white_lab = Colour "LAB" [100, 0, 0];
@@ -121,7 +121,7 @@ gaussmat options sigma min_amp
  */
 colour_from_temp T
     = error (_ "T out of range"), T < 1667 || T > 25000
-    = Colour "Yxy" [50, x, y]
+    = Colour "YXY" [50, x, y]
 {
     // Kim et all approximation
     // see eg. http://en.wikipedia.org/wiki/Planckian_locus#Approximation
