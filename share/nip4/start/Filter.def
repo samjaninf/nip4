@@ -133,7 +133,10 @@ Kirk
 				{
 					mask
 						= matrix_blur r.value, shape.value == 0
-						= matrix_gaussian_blur r.value;
+						= gaussmat [
+                            $precision => "integer",
+                            $seperable => true
+                          ] r;
 					blur = [convsep, convsepf, aconvsep layers]?prec mask in;
 					proc
 						= in + fac * (in - blur), type == 1
