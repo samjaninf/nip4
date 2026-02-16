@@ -1,12 +1,13 @@
+
 - snip removes flags, so scripts can't look for eg "--verbose"
 
 - libvips bug:
 
-	$ vipsheader x.v
-	x.v: 1x1 double, 3 bands, multiband
-	$ vips colourspace x.v x2.v srgb
-	$ vipsheader x2.v
-	x2.v: 1x1 uchar, 3 bands, multiband
+    $ vipsheader x.v
+    x.v: 1x1 double, 3 bands, multiband
+    $ vips colourspace x.v x2.v srgb
+    $ vipsheader x2.v
+    x2.v: 1x1 uchar, 3 bands, multiband
 
   should change the interpretation (probably?)
 
@@ -29,11 +30,11 @@
 
 - Image caption has an extra space
 
-	"k2.jpg,  1450x2048 uchar, ..."
+    "k2.jpg,  1450x2048 uchar, ..."
 
 - don't use Option_enum directly, instead use eg.
 
-	Interpretation_3ary.picker "sRGB"
+    Interpretation_3ary.picker "sRGB"
 
 - remove Table?
 
@@ -101,10 +102,9 @@
     _predicate.def      done
     _stdenv.def         done
     _Object.def         done
-    _types.def		done
-    _generate.def
+    _types.def          done
+    _generate.def       done
     _convert.def
-
 
 - do we need vips_header_int as a builtin? we can define as
 
