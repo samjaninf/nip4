@@ -1939,7 +1939,8 @@ map_binaryl fn a b = map_nary_list (list_2ary fn) [a, b];
 /* Remove features smaller than x pixels across from an image. This used to be
  * rather complex ... convsep is now good enough to use.
  */
-smooth x image = convsep (matrix_gaussian_blur (to_real x * 2)) image;
+smooth x image
+    = convsep (gaussmat [$precision => "integer", $seperable => true] x) image;
 
 /* Chop up an image into a list of lists of smaller images. Pad edges with
  * black.

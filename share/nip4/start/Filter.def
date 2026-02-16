@@ -132,7 +132,7 @@ Kirk
 					= cast blur.format proc
 				{
 					mask
-						= matrix_blur r.value, shape.value == 0
+						= matrix_blur r, shape.value == 0
 						= gaussmat [
                             $precision => "integer",
                             $seperable => true
@@ -1486,7 +1486,11 @@ Filter_diffuse_glow_item = class
 					Interpretation.B_W image);
 				thresh = hist_thresh (highlights.value / 100) mono;
 				mask = mono > thresh;
-				blur = convsep (matrix_gaussian_blur r.value) mask;
+                gmat = gaussmat [
+                    $precision => "integer",
+                    $seperable => true
+                  ] (to_real r / 3);
+				blur = convsep gmat mask;
 				colour' = colour_transform_to image.type colour;
 				image' = image + colour' * glow * (blur / 255);
 			}
@@ -1514,10 +1518,11 @@ Filter_drop_shadow_item = class
             shadow image
             	= Image final
             {
-                blur_size = ss.value * 2 + 1;
-
                 // matrix we blur with to soften shadows
-                blur_matrix = matrix_gaussian_blur blur_size;
+                blur_matrix = gaussmat [
+                    $precision => "integer",
+                    $seperable => true
+                  ] blur_size;
                 matrix_size = blur_matrix.width;
                 matrix_radius = (int) (matrix_size / 2) + 1;
 

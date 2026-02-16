@@ -103,20 +103,13 @@ image_white im
     white_lab = Colour "LAB" [100, 0, 0];
 }
 
-/* Make a seperable int gaussian mask.
- */
-matrix_gaussian_blur radius
-    = im_gauss_imask_sep (radius / 3) 0.2;
-
-/* Make a seperable square mask.
+/* Make a separable square mask.
  */
 matrix_blur radius
     = Matrix_con (sum mask_sq_line) 0 [mask_sq_line]
 {
-    mask_sq_line = replicate (2 * radius - 1) 1;
+    mask_sq_line = replicate (2 * (to_real radius) - 1) 1;
 }
-
-remove the two above
 
 gaussmat options sigma min_amp
     = vips_matrix_from_image matrix
