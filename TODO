@@ -1,14 +1,36 @@
-- try
+
+- snip removes flags, so scripts can't look for eg "--verbose"
+
+- libvips bug:
+
+    $ vipsheader x.v
+    x.v: 1x1 double, 3 bands, multiband
+    $ vips colourspace x.v x2.v srgb
+    $ vipsheader x2.v
+    x2.v: 1x1 uchar, 3 bands, multiband
+
+  should change the interpretation (probably?)
+
+  vipsdisp gets confused by x.v, though nip4 seems fine
+
+- try:
 
     A1: scale
     A2: [A1.value]
 
   drag scale, A2 does not update
 
+  we have a local of a top-level making the dependency ... when we do the
+  top level resolve outwards we should make the top links
+
 - support BMP drag/drop to help windows
 
 - scroll is very slow in macOS, so navigating the Magick menu with no
   scrollbar is painful
+
+- Image caption has an extra space
+
+    "k2.jpg,  1450x2048 uchar, ..."
 
 - better start dir for file dialogs
 
