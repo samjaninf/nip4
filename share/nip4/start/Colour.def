@@ -64,15 +64,13 @@ Colour_to_colour_item = class
 
 Colour_convert_item = class
 	Menupullright (_ "_Colourspace") (_ "convert to various colour spaces") {
-	paces = Interpretation_nary.keys;
-
 	conv dest x = class
 		_result {
 		_vislevel = 3;
 
-		to = Option_enum (_ "Convert to") spaces (spaces.get_name dest);
+		to = Interpretation_nary.picker (Interpretation.get_key dest);
 
-		_result = map_unary (colour_transform_to to.value_thing) x;
+		_result = map_unary (colour_transform_to to.value_key) x;
 	}
 
 	Mono_item = class

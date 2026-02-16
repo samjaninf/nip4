@@ -37,8 +37,7 @@ main = unit_test [
 
     [(Vector [1, 2, 3]).value == [1, 2, 3], "Vector construct"],
     [(Vector [1, 2, 3] + 1).value == [2, 3, 4], "Vector add"],
-    [(Vector [1, 2, 3] + 1 == Vector [2, 3, 4]).value == [255, 255, 255],
-        "Vector equal"],
+    [Vector [1, 2, 3] + 1 == Vector [2, 3, 4], "Vector equal"],
     [mean(sample_image + Vector [1, 2, 3]) == mean (Vector [2, 4, 6]),
         "image + Vector"],
 

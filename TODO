@@ -1,15 +1,4 @@
-- add $verbose option to test_unit
-
-	displays eg.
-
-		image_new: PASS
-		image_xyz: FAIL
-
-		summary: 1 pass, 1 fail
-
-	need argv defined in GUI mode
-
-	need getopt style arg parser?
+- snip removes flags, so scripts can't look for eg "--verbose"
 
 - libvips bug:
 
@@ -41,10 +30,6 @@
 - Image caption has an extra space
 
 	"k2.jpg,  1450x2048 uchar, ..."
-
-- reached Image in _types
-
-	maybe enough
 
 - don't use Option_enum directly, instead use eg.
 

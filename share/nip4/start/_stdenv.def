@@ -2535,10 +2535,12 @@ grey options width height
  *
  */
 unit_test test_list
-    = (map (const '.') pass) ++
-      "\n" ++
+    = concat (map print_verbose test_list), verbose
+    = (map (const '.') pass) ++ "\n" ++
       (joinsep "\n" (map print_fail fail))
 {
+    verbose = any (map (member ["--verbose", "-V"]) argv);
+
     split fn l
         = foldr split_item [[], []] l
     {
@@ -2556,6 +2558,14 @@ unit_test test_list
 
     [pass, fail] = split (extract 0) test_list;
     print_fail [pass, fail] = "FAIL: " ++ fail;
+
+    print_verbose [test, name]
+        = label ++ ": " ++ name ++ "\n"
+    {
+        label
+            = "pass", test
+            = "FAIL";
+    }
 }
 
 colourspace options to in
