@@ -1,3 +1,15 @@
+- add $verbose option to test_unit
+
+	displays eg.
+
+		image_new: PASS
+		image_xyz: FAIL
+
+		summary: 1 pass, 1 fail
+
+	need argv defined in GUI mode
+
+	need getopt style arg parser?
 
 - libvips bug:
 

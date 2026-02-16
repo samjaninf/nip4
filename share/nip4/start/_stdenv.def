@@ -2519,6 +2519,12 @@ linearu a b x
 sdf options width height shape
     = vips_sdf options (to_real width) (to_real height) shape;
 
+xyz options width height
+    = vips_xyz options (to_real width) (to_real height);
+
+grey options width height
+    = vips_grey options (to_real width) (to_real height);
+
 /* simple unit tester ... use with eg.
  *
  * main = unit_test [

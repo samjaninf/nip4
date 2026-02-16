@@ -1,0 +1,12 @@
+#!/usr/bin/env snip
+
+sample_image = image_new [] 1 1;
+
+main = unit_test [
+    [point (256, 256) (lab_slice 513 54) == [54, 0, 0], "lab_slice"],
+
+    [get_width sample_image == 1 &&
+        get_height sample_image == 1 &&
+	    mean sample_image == 0, "image_new"]
+
+];

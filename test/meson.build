@@ -32,12 +32,14 @@ demos = [
 
 # scripting language tests
 snip_tests = [
-  'test_snip.def',
+  'test_generate.def',
   'test_list.def',
-  'test_predicate.def',
   'test_object.def',
+  'test_predicate.def',
+  'test_snip.def',
   'test_stdenv.def',
   'test_types.def',
+
 ]
 
 foreach name : should_pass_tests

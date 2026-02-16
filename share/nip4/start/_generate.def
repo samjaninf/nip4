@@ -1,7 +1,3 @@
-/* make an image of size x by y whose pixels are their coordinates.
- */
-makexy x y = vips_xyz [] (to_real x) (to_real y);
-
 /* make an image with the specified properties ... pixel is (eg.)
  * Vector [0, 0, 0], or 12. If coding == labq, we ignore bands, format and
  * type, generate a 3 band float image, and lab2labq it before handing it
@@ -76,11 +72,11 @@ lab_slice size l
 {
     L = image_new [
         $format => Format.FLOAT,
-        $interpretation => Image_type.B_W,
+        $interpretation => Interpretation.B_W,
         $pixel => l
     ] size size;
 
-    A1 = vips_grey [] (to_real size) (to_real size);
+    A1 = grey [] size size;
     A2 = A1 * 256 - 128;
     A3 = rot90 A2;
     im = copy [$xoffset => size / 2, $yoffset => size / 2] (L ++ A2 ++ A3);
@@ -101,7 +97,7 @@ image_white im
     type = im.type;
     format = im.format;
     coding = im.coding;
-    colour_spaces = Image_type.colour_spaces;
+    colour_spaces = Interpretation_3ary.keys;
 
     // white as LAB
     white_lab = Colour "Lab" [100, 0, 0];
@@ -146,7 +142,7 @@ colour_from_temp T
 temp_from_colour z
     = T
 {
-    c = colour_transform_to Image_type.YXY (to_colour z);
+    c = colour_transform_to Interpretation.YXY (to_colour z);
     x = c.value?1;
     y = c.value?2;
 

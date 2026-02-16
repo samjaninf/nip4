@@ -1,7 +1,7 @@
 #!/bin/bash
 
 for test in *.def; do
-  echo testing $test ...
+  echo -n "$test: "
   snip --test $test
 done
 
