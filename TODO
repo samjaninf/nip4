@@ -1,6 +1,4 @@
 
-- snip removes flags, so scripts can't look for eg "--verbose"
-
 - libvips bug:
 
     $ vipsheader x.v

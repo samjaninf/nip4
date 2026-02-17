@@ -359,20 +359,13 @@ main(int argc, char **argv)
     g_option_group_set_translation_domain(main_group, GETTEXT_PACKAGE);
     g_option_context_set_main_group(context, main_group);
 
-    GError *error = NULL;
+	/* Don't look for errors, we pass arg processing on to .defs.
+	 */
 #ifdef G_OS_WIN32
-    if (!g_option_context_parse_strv(context, &argv, &error))
+    (void) g_option_context_parse_strv(context, &argv, NULL);
 #else  /*!G_OS_WIN32*/
-    if (!g_option_context_parse(context, &argc, &argv, &error))
+    (void) g_option_context_parse(context, &argc, &argv, NULL);
 #endif /*G_OS_WIN32*/
-    {
-        if (error) {
-            fprintf(stderr, "%s\n", error->message);
-            g_error_free(error);
-        }
-
-        vips_error_exit("try \"%s --help\"", g_get_prgname());
-    }
 
     g_option_context_free(context);
 
