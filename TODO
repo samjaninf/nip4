@@ -18,10 +18,20 @@
 
 - better start dir for file dialogs
 
-	should be cwd
+	should always be pwd, unless it's "replace" eg. in imagewindow, in
+	which case it should be the dir of the filemodel we are replacing
 
-	a bit random right now, eg. mainwindow open and toolkit open start in
-	different places
+		flatpak sets pwd correctly
+
+	right now:
+
+		- nip4, then ^O, get pwd
+		- nip4 ~/pics/k2.jpg, then ^O, get ~/pics
+		- nip4 ~/pics/x.ws, ^O, get pwd
+		- nip4 ~/pics/k2.jpg, program window, ^O, get pwd
+
+
+
 
 - "nip4 try.def x.ws" ought to work
 
