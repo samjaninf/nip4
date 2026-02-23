@@ -560,7 +560,8 @@ icontainer_info(iObject *iobject, VipsBuf *buf, int indent)
 {
 	iContainer *icontainer = ICONTAINER(iobject);
 
-	vips_buf_appendf(buf, "%*cpos = \"%d\"\n", indent, ' ', icontainer->pos);
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "pos = \"%d\"\n", icontainer->pos);
 
 	IOBJECT_CLASS(icontainer_parent_class)->info(iobject, buf, indent);
 }

@@ -764,6 +764,15 @@ queue_length(Queue *q)
 	return q->length;
 }
 
+/* Add n spaces (handy for indent).
+ */
+void
+vips_buf_space(VipsBuf *buf, int n)
+{
+	if (n > 0)
+		vips_buf_appendf(buf, "%*c", n - 1, ' ');
+}
+
 /* Make an info string about an image.
  */
 void
@@ -784,8 +793,7 @@ vips_buf_appendi(VipsBuf *buf, VipsImage *im)
 	 * "2000x3000 128-bit complex, 3 bands, Lab"
 	 */
 	vips_buf_appendf(buf,
-		ngettext("%dx%d %s, %d band, %s",
-			"%dx%d %s, %d bands, %s", im->Bands),
+		ngettext("%dx%d %s, %d band, %s", "%dx%d %s, %d bands, %s", im->Bands),
 		im->Xsize, im->Ysize,
 		vips_enum_nick(VIPS_TYPE_BAND_FORMAT, im->BandFmt),
 		im->Bands,

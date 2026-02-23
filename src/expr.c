@@ -337,9 +337,9 @@ expr_info(iObject *iobject, VipsBuf *buf, int indent)
 	Expr *expr = EXPR(iobject);
 
 	if (expr->err) {
-		vips_buf_appendf(buf, "%*c%s", indent, ' ', _("Error"));
-		vips_buf_appendf(buf, ": %s\n%s\n",
-			expr->error_top, expr->error_sub);
+		vips_buf_space(buf, indent);
+		vips_buf_appendf(buf, "%s", _("Error"));
+		vips_buf_appendf(buf, ": %s\n%s\n", expr->error_top, expr->error_sub);
 	}
 }
 

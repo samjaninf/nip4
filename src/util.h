@@ -143,6 +143,7 @@ void queue_add(Queue *queue, void *data);
 gboolean queue_remove(Queue *q, void *data);
 int queue_length(Queue *q);
 
+void vips_buf_space(VipsBuf *buf, int n);
 void vips_buf_appendi(VipsBuf *buf, VipsImage *im);
 gboolean vips_buf_appendsc(VipsBuf *buf, gboolean quote, const char *str);
 

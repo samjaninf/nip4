@@ -61,8 +61,8 @@ toolkit_info(iObject *iobject, VipsBuf *buf, int indent)
 
 	IOBJECT_CLASS(toolkit_parent_class)->info(iobject, buf, indent);
 
-	vips_buf_appendf(buf, "%*cgroup = \"%s\"\n", indent, ' ',
-		IOBJECT(kit->kitg)->name);
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "group = \"%s\"\n", IOBJECT(kit->kitg)->name);
 }
 
 static View *

@@ -370,7 +370,7 @@ imageinfo_info(iObject *iobject, VipsBuf *buf, int indent)
 {
 	Imageinfo *imageinfo = IMAGEINFO(iobject);
 
-	vips_buf_appendf(buf, "%*c", indent, ' ');
+	vips_buf_space(buf, indent);
 	vips_buf_appendi(buf, imageinfo->image);
 
 	/* Don't chain up to parent->info(), we don't want all the other

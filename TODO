@@ -16,10 +16,6 @@
 - scroll is very slow in macOS, so navigating the Magick menu with no
   scrollbar is painful
 
-- Image caption has an extra space
-
-    "k2.jpg,  1450x2048 uchar, ..."
-
 - better start dir for file dialogs
 
 	should be cwd
@@ -39,6 +35,8 @@
 
 - we heap_copy() the world when we make a row (all funcs copied), is this
   necessary?
+
+	should be able to link functions, I'd think?
 
 - linear match
 

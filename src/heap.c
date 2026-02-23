@@ -280,7 +280,8 @@ heap_info(iObject *iobject, VipsBuf *buf, int indent)
 {
 	Heap *heap = HEAP(iobject);
 
-	vips_buf_appendf(buf, "%*cheap->compile = ", indent, ' ');
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "heap->compile = ");
 	if (heap->compile)
 		if (heap->compile->sym) {
 			symbol_qualified_name(heap->compile->sym, buf);
@@ -289,26 +290,28 @@ heap_info(iObject *iobject, VipsBuf *buf, int indent)
 		else
 			vips_buf_appendf(buf, "(compile, but no sym)\n");
 	else
-		vips_buf_appendf(buf, "%*c(no compile)\n", indent, ' ');
+		vips_buf_appendf(buf, "(no compile)\n");
 
 	indent += 2;
-	vips_buf_appendf(buf, "%*cmxb (max blocks) = %d\n", indent, ' ',
-		heap->mxb);
-	vips_buf_appendf(buf, "%*crsz (nodes per block) = %d\n", indent, ' ',
-		heap->rsz);
-	vips_buf_appendf(buf, "%*cnb (number of blocks) = %d\n", indent, ' ',
-		heap->nb);
-	vips_buf_appendf(buf, "%*cemark = %d pointers\n",indent, ' ',
+
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "mxb (max blocks) = %d\n", heap->mxb);
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "rsz (nodes per block) = %d\n", heap->rsz);
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "nb (number of blocks) = %d\n", heap->nb);
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "emark = %d pointers\n",
 		g_hash_table_size(heap->emark));
-	vips_buf_appendf(buf, "%*crmark = %d pointers\n",indent, ' ',
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "rmark = %d pointers\n",
 		g_hash_table_size(heap->rmark));
-	vips_buf_appendf(buf, "%*cncells (cells allocated) = %d\n", indent, ' ',
-		heap->ncells);
-	vips_buf_appendf(buf, "%*cnfree (cells free at last GC) = %d\n",
-		indent, ' ',
-		heap->nfree);
-	vips_buf_appendf(buf, "%*cmtable (Managed blocks) = %d pointers\n",
-		indent, ' ',
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "ncells (cells allocated) = %d\n", heap->ncells);
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "nfree (cells free at last GC) = %d\n", heap->nfree);
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "mtable (Managed blocks) = %d pointers\n",
 		g_hash_table_size(heap->mtable));
 
 	IOBJECT_CLASS(parent_class)->info(iobject, buf, indent);
@@ -2167,14 +2170,13 @@ lisp_symval(VipsBuf *buf, PElement *base,
 
 			PEPOINTLEFT(hn2, &pe);
 			if (!error && PEISSYMREF(&pe)) {
-				vips_buf_appendf(buf, "\n%*c", indent, ' ');
-				symbol_qualified_name(
-					PEGETSYMREF(&pe), buf);
+				vips_buf_appendf(buf, "\n");
+				vips_buf_space(buf, indent);
+				symbol_qualified_name(PEGETSYMREF(&pe), buf);
 				vips_buf_appendf(buf, " = ");
 
 				PEPOINTRIGHT(hn2, &pe);
-				lisp_pelement(buf, &pe,
-					back, fn, indent + TAB);
+				lisp_pelement(buf, &pe, back, fn, indent + TAB);
 
 				PEPOINTRIGHT(hn, &pe);
 				lisp_symval(buf, &pe, back, fn, indent, stop);
@@ -2188,8 +2190,11 @@ lisp_symval(VipsBuf *buf, PElement *base,
 	else if (!PEISELIST(base))
 		error = TRUE;
 
-	if (error)
-		vips_buf_appendf(buf, "\n%*c<*** malformed symval list>", indent, ' ');
+	if (error) {
+		vips_buf_appendf(buf, "\n");
+		vips_buf_space(buf, indent);
+		vips_buf_appendf(buf, "<*** malformed symval list>");
+	}
 }
 
 /* Print a [*] ... our caller has printed the enclosing [ ] and the first
@@ -2351,7 +2356,8 @@ lisp_node(VipsBuf *buf, HeapNode *hn, GSList **back, gboolean fn, int indent)
 
 	case TAG_CLASS:
 		if (fn) {
-			vips_buf_appendf(buf, "\n%*c", indent, ' ');
+			vips_buf_appendf(buf, "\n");
+			vips_buf_space(buf, indent);
 			vips_buf_appendf(buf, _("class (%p)"), hn);
 			vips_buf_appendf(buf, " ");
 		}
@@ -2362,21 +2368,26 @@ lisp_node(VipsBuf *buf, HeapNode *hn, GSList **back, gboolean fn, int indent)
 		if (fn) {
 			hn = GETRIGHT(hn);
 
-			vips_buf_appendf(buf, "\n%*c", indent + TAB, ' ');
+			vips_buf_appendf(buf, "\n");
+			vips_buf_space(buf, indent + TAB);
 			vips_buf_appendf(buf, _("members"));
 			vips_buf_appendf(buf, " = { ");
 			PEPOINTRIGHT(hn, &p1);
-			lisp_symval(buf, &p1,
-				back, fn, indent + TAB * 2, NULL);
-			vips_buf_appendf(buf, "\n%*c}", indent + TAB, ' ');
+			lisp_symval(buf, &p1, back, fn, indent + TAB * 2, NULL);
+			vips_buf_appendf(buf, "\n");
+			vips_buf_space(buf, indent + TAB);
+			vips_buf_appendf(buf, "}");
 
 			PEPOINTLEFT(hn, &p2);
 			if (*p1.type != *p2.type || *p1.ele != *p2.ele) {
-				vips_buf_appendf(buf, "\n%*c", indent + TAB, ' ');
+				vips_buf_appendf(buf, "\n");
+				vips_buf_space(buf, indent + TAB);
 				vips_buf_appendf(buf, _("secret"));
 				vips_buf_appendf(buf, " = { ");
 				lisp_symval(buf, &p2, back, fn, indent + TAB * 2, &p1);
-				vips_buf_appendf(buf, "\n%*c} ", indent + TAB, ' ');
+				vips_buf_appendf(buf, "\n");
+				vips_buf_space(buf, indent + TAB);
+				vips_buf_appendf(buf, "}");
 			}
 		}
 

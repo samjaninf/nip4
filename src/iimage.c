@@ -111,7 +111,7 @@ iimage_info(iObject *iobject, VipsBuf *buf, int indent)
 
 		if (vips_image_get_typeof(image, ORIGINAL_FILENAME) != 0) {
 			if (!vips_image_get_string(image, ORIGINAL_FILENAME, &filename)) {
-				vips_buf_appendf(buf, "%*c", indent, ' ');
+				vips_buf_space(buf, indent);
 				vips_buf_appends(buf, _("Original filename"));
 				vips_buf_appendf(buf, ": %s\n", filename);
 			}
