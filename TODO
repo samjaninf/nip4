@@ -11,16 +11,6 @@
 
   vipsdisp gets confused by x.v, though nip4 seems fine
 
-- try:
-
-    A1: scale
-    A2: [A1.value]
-
-  drag scale, A2 does not update
-
-  we have a local of a top-level making the dependency ... when we do the
-  top level resolve outwards we should make the top links
-
 - support BMP drag/drop to help windows
 
 - scroll is very slow in macOS, so navigating the Magick menu with no
