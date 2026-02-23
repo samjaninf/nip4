@@ -1,5 +1,7 @@
 ## main
 
+## 9.0.17 2026/02/25
+
 - better workspace error state handling
 - fix recomp of implicit local definitions
 - "snip" supports user argument parsing

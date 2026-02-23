@@ -27,11 +27,11 @@
 
 		- nip4, then ^O, get pwd
 		- nip4 ~/pics/k2.jpg, then ^O, get ~/pics
-		- nip4 ~/pics/x.ws, ^O, get pwd
+		- nip4 ~/pics/x.ws, ^O, get pwd, ^S, get $HOME
 		- nip4 ~/pics/k2.jpg, program window, ^O, get pwd
 
-
-
+	trying to have a directory for each model, so one for pics, one for
+	defs etc., with filesel directory navigation updating it
 
 - "nip4 try.def x.ws" ought to work
 
@@ -193,10 +193,6 @@
 
 - could use file chooser widget in bm-workspaces, what would it look like?
 
-- check all batch mode flags
-
-    see eg. vips-bench nip4 benchmark
-
 - try to save and restore image view scale and position
 
     this failed last time I tried :(
@@ -272,10 +268,6 @@
 
 ## program window
 
-- get rid of
-
-     TOOL_DIA, TOOL_SEP
-
 - for a click on a computed tool, could scroll to or highlight the text?
 
 - find and find all could be in a "uses" pane on the right?
@@ -318,75 +310,6 @@
 
     could use this to make parent/child colour change only show after a
     while ... might look better
-
-- this fails:
-
-    im_insertset main sub x y
-        = foldr add_another main (zip2 x y)
-    {
-        add_another [x, y] im = insert x y sub im;
-    }
-
-  you have to do:
-
-        add_another pos im
-            = insert x y sub im
-        {
-            x = pos?0;
-            y = pos?1;
-        }
-
-  strange!
-
-- in a workspace do:
-
-    x = [1, 2, 3]
-
-  now ZF expressions which use x will stop working, eg.:
-
-    [x * 2 :: x <- [1..]]
-
-- syntax error in startup .def stops nip4 loading
-
-- should we support
-
-    A1.value + [1, 2, 3]
-
-  ought to be easy and safe, though it's a lot of copy-paste
-
-    maybe we can common-up some more code to make it easier?
-
-  nip2 does it in the vector class, eg.
-
-    A1 + Vector [10, 20, 30]
-
-- should we wrap all vips8 operators? eg. could make
-
-    vips_add a b = vips_call "add" [a, b] []
-
-  as we do for vips7
-
-      not very useful? we'd lose optional args
-
-  maybe:
-
-    vips_add options a b = vips_call "add" [a, b] options
-
-    x = vips_add [$uchar => true] y z
-
-## plotting
-
-- in plotdisplay_build_kplot()
-
-    set ksmthtype to smooth a series (PLOT_STYLE_SPLINE) see
-    kplot_attach_smooth()
-
-        not really a spline, more like a blur, this would be better in
-        libvips
-
-    maybe use error bars plus thickness to draw a bar?
-
-    leave it for now, not very important
 
 ## vips8
 
