@@ -13,6 +13,18 @@
 
 - support BMP drag/drop to help windows
 
+	a gtk problem, gdk_texture_new_from_bytes() handles this and has no
+	BMP support, only TIFF, PNG, JPG
+
+	maybe win11 has PNG clipboard support?
+
+- should support texture paste in main window
+
+	right now you need to make an image, then paste into that
+
+  if you define a paste action in mainwindow_entries[] it breaks ^V in
+  text entries, eg. bottom of column
+
 - scroll is very slow in macOS, so navigating the Magick menu with no
   scrollbar is painful
 

@@ -5,6 +5,7 @@
 - better workspace error state handling
 - fix recomp of implicit local definitions
 - "snip" supports user argument parsing
+- lots of work in new-menus branch
 
 ## 9.0.16 2026/02/01
 
