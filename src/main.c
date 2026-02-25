@@ -200,6 +200,9 @@ main_startup(int argc, char **argv)
     vips_leak_set(TRUE);
 #endif /*DEBUG*/
 
+	// disable DoS limits on libvips 8.19+
+    g_setenv("VIPS_UNLIMITED", "1", TRUE);
+
 #ifdef DEBUG_FATAL
     /* Set masks for debugging ... stop on any problem.
      */

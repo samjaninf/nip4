@@ -1,5 +1,7 @@
 ## main
 
+- disable libvips DoS limits on file load for libvips 8.19+
+
 ## 9.0.17 2026/02/25
 
 - better workspace error state handling

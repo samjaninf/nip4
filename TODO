@@ -11,6 +11,14 @@
 
   vipsdisp gets confused by x.v, though nip4 seems fine
 
+- try
+
+    nip4 ~/pics/Image_01.tif
+
+  load fails, but there's no visible error message
+
+  vipsdisp displays the error correctly
+
 - support BMP drag/drop to help windows
 
 	a gtk problem, gdk_texture_new_from_bytes() handles this and has no
