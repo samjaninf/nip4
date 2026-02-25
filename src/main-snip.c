@@ -341,6 +341,9 @@ main(int argc, char **argv)
 	g_unsetenv("VIPSHOME");
 #endif /*FLATPAK*/
 
+	// disable DoS limits on libvips 8.19+
+    g_setenv("VIPS_UNLIMITED", "1", TRUE);
+
 	if (VIPS_INIT(argv[0]))
 		vips_error_exit("unable to start libvips");
 
