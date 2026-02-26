@@ -1,3 +1,36 @@
+- try:
+
+	#!/usr/bin/env snip
+	main = print [x + y :: [x, y] <- zip2 [1..10] [11..20]];
+
+  see:
+
+	 $ ./try.def
+	12141618202224262830$
+
+  this would be much better:
+
+	$ ./try.def
+	[12, 14, 16, 18, 20, 22, 24, 26, 28, 30]
+	$
+
+  ie. use `print` output, add terminating \n
+
+  new rules:
+
+	- is a list and the first element is char?
+
+		reduce and display exactly, snip programmer is responsible
+		for formatting, no trailing \n
+
+		can remove shell-print code?
+
+	- otherwise
+
+		reduce and pretty-print, add terminating \n
+
+
+
 
 - libvips bug:
 

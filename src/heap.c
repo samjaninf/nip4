@@ -2723,6 +2723,11 @@ graph_value(PElement *root)
 
 	heap_clear(rc->heap, FLAG_PRINT);
 
+	if (reduce_is_string(rc, root)) {
+	}
+	else {
+	}
+
 	if (!reduce_pelement(rc, reduce_spine, root))
 		return FALSE;
 
