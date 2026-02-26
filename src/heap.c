@@ -2596,38 +2596,64 @@ graph_pointer(PElement *root)
 	printf("%s\n", vips_buf_all(&buf));
 }
 
-static gboolean pretty_pelement(Reduce *rc, PElement *base);
+static gboolean pretty_pelement(Reduce *rc, PElement *base, int indent);
 
-/* Print a graph shell-style. FALSE for compute error.
- */
 static gboolean
-pretty_node(Reduce *rc, HeapNode *hn)
+pretty_list(Reduce *rc, HeapNode *hn, int indent)
 {
 	PElement p1, p2;
 
-	/* Have we printed this node before?
-	 */
-	if (hn->flgs & FLAG_PRINT) {
-		printf("<circular>");
-		return TRUE;
-	}
-	hn->flgs |= FLAG_PRINT;
+	printf("[");
 
-	switch (hn->type) {
-	case TAG_CLASS:
-	case TAG_APPL:
-	case TAG_REFERENCE:
-	case TAG_SHARED:
-	case TAG_GEN:
-		break;
-
-	case TAG_CONS:
-		printf("[");
+	PEPOINTLEFT(hn, &p1);
+	gboolean is_list;
+	if (!heap_is_list(&p1, &is_list))
+		return FALSE;
+	if (is_list) {
+		// the first element of this list is a list ... print vertically
+		indent += 1;
 
 		for (;;) {
 			PEPOINTLEFT(hn, &p1);
 			if (!reduce_pelement(rc, reduce_spine, &p1) ||
-				!pretty_pelement(rc, &p1))
+				!pretty_pelement(rc, &p1, indent))
+				return FALSE;
+
+			PEPOINTRIGHT(hn, &p2);
+			if (!reduce_pelement(rc, reduce_spine, &p2))
+				return FALSE;
+			if (PEISMANAGEDSTRING(&p2)) {
+				for(const char *p = PEGETMANAGEDSTRING(&p2)->string; *p; p++) {
+					printf("'%c'", *p);
+					if (p[1]) {
+						printf(",\n");
+						printf("%*c", indent - 1, ' ');
+					}
+				}
+
+				break;
+            }
+            else if (PEISELIST(&p2))
+                break;
+            else if (PEISNODE(&p2)) {
+				printf(",\n");
+				printf("%*c", indent - 1, ' ');
+                hn = PEGETVAL(&p2);
+			}
+            else
+				// could raise an error? shouldn't happen
+                break;
+
+			// print output as we go
+			fflush(stdout);
+		}
+	}
+	else {
+		// the first element of this list is not a list ... print horizontally
+		for (;;) {
+			PEPOINTLEFT(hn, &p1);
+			if (!reduce_pelement(rc, reduce_spine, &p1) ||
+				!pretty_pelement(rc, &p1, indent))
 				return FALSE;
 
 			PEPOINTRIGHT(hn, &p2);
@@ -2655,9 +2681,37 @@ pretty_node(Reduce *rc, HeapNode *hn)
 			// print output as we go
 			fflush(stdout);
 		}
+	}
 
-		printf("]");
+	printf("]");
 
+	return TRUE;
+}
+
+/* Print a graph shell-style. FALSE for compute error.
+ */
+static gboolean
+pretty_node(Reduce *rc, HeapNode *hn, int indent)
+{
+	/* Have we printed this node before?
+	 */
+	if (hn->flgs & FLAG_PRINT) {
+		printf("<circular>");
+		return TRUE;
+	}
+	hn->flgs |= FLAG_PRINT;
+
+	switch (hn->type) {
+	case TAG_CLASS:
+	case TAG_APPL:
+	case TAG_REFERENCE:
+	case TAG_SHARED:
+	case TAG_GEN:
+		break;
+
+	case TAG_CONS:
+		if (!pretty_list(rc, hn, indent))
+			return FALSE;
 		break;
 
 	case TAG_DOUBLE:
@@ -2680,7 +2734,7 @@ pretty_node(Reduce *rc, HeapNode *hn)
 /* Lazy pretty print of a pelement. FALSE for runtime error.
  */
 static gboolean
-pretty_pelement(Reduce *rc, PElement *base)
+pretty_pelement(Reduce *rc, PElement *base, int indent)
 {
 	switch (PEGETTYPE(base)) {
 	case ELEMENT_SYMREF:
@@ -2696,7 +2750,7 @@ pretty_pelement(Reduce *rc, PElement *base)
 		break;
 
 	case ELEMENT_NODE:
-		if (!pretty_node(rc, PEGETVAL(base)))
+		if (!pretty_node(rc, PEGETVAL(base), indent))
 			return FALSE;
 		break;
 
@@ -2785,7 +2839,7 @@ string_node(Reduce *rc, HeapNode *hn)
 
 	default:
 		// fall back to prettyprint
-		if (!pretty_node(rc, hn))
+		if (!pretty_node(rc, hn, 0))
 			return FALSE;
 	}
 
@@ -2812,14 +2866,14 @@ string_pelement(Reduce *rc, PElement *base)
 			printf("%s", PEGETMANAGEDSTRING(base)->string);
 		else {
 			// fall back to prettyprint
-			if (!pretty_pelement(rc, base))
+			if (!pretty_pelement(rc, base, 0))
 				return FALSE;
 		}
 		break;
 
 	default:
 		// fall back to prettyprint
-		if (!pretty_pelement(rc, base))
+		if (!pretty_pelement(rc, base, 0))
 			return FALSE;
 	}
 
@@ -2843,7 +2897,7 @@ graph_value(PElement *root)
 			return FALSE;
 	}
 	else {
-		if (!pretty_pelement(rc, root))
+		if (!pretty_pelement(rc, root, 0))
 			return FALSE;
 		printf("\n");
 	}
