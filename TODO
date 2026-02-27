@@ -1,13 +1,32 @@
-- try:
+- prettyprint of classes? images?
 
-    main = [[[1, 2, 3], [4, 5, 6]]];
+	main = Matrix [[1, 2, 3], [4, 5, 6]];
 
-  prints as:
+  look at itext.c
 
-    [[[1, 2, 3],
-     [4, 5, 6]]]
+	itext_add_element()
 
-  second line should be indented one more space?
+  should be
+
+	Matrix [[1, 2, 3],
+		[4, 5, 6]]
+
+  maybe:
+
+	Matrix
+	 [[1, 2, 3],
+	  [4, 5, 6]]
+
+  Matrix_vips [[1, 2, 3], [4, 5, 6]] 8 0 "fred.mat" 2
+
+	Matrix [[1, 2, 3],
+		[4, 5, 6]] 8 0 "fred.mat" 2
+
+  Image (A1 + 2)
+
+	Image <256x256 rgb>
+
+	etc.
 
 - libvips bug:
 

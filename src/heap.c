@@ -2596,20 +2596,34 @@ graph_pointer(PElement *root)
 	printf("%s\n", vips_buf_all(&buf));
 }
 
+// output " as \", newline as \n, etc.
+static void
+pretty_char(int ch)
+{
+	char buffer2[10];
+	char buffer[10] = { ch, 0 };
+	my_strecpy(buffer2, buffer, TRUE);
+
+	printf("'%s'", buffer2);
+}
+
 static gboolean pretty_pelement(Reduce *rc, PElement *base, int indent);
 
+// @list points to a cons node
 static gboolean
-pretty_list(Reduce *rc, HeapNode *hn, int indent)
+pretty_list(Reduce *rc, PElement *list, int indent)
 {
+	HeapNode *hn;
 	PElement p1, p2;
 
 	printf("[");
 
+	hn = PEGETVAL(list);
 	PEPOINTLEFT(hn, &p1);
-	gboolean is_list;
-	if (!heap_is_list(&p1, &is_list))
+	gboolean is_list_of_lists;
+	if (!heap_is_list(&p1, &is_list_of_lists))
 		return FALSE;
-	if (is_list) {
+	if (is_list_of_lists) {
 		// the first element of this list is a list ... print vertically
 		indent += 1;
 
@@ -2624,7 +2638,7 @@ pretty_list(Reduce *rc, HeapNode *hn, int indent)
 				return FALSE;
 			if (PEISMANAGEDSTRING(&p2)) {
 				for(const char *p = PEGETMANAGEDSTRING(&p2)->string; *p; p++) {
-					printf("'%c'", *p);
+					pretty_char(*p);
 					if (p[1]) {
 						printf(",\n");
 						printf("%*c", indent - 1, ' ');
@@ -2661,7 +2675,7 @@ pretty_list(Reduce *rc, HeapNode *hn, int indent)
 				return FALSE;
 			if (PEISMANAGEDSTRING(&p2)) {
 				for(const char *p = PEGETMANAGEDSTRING(&p2)->string; *p; p++) {
-					printf("'%c'", *p);
+					pretty_char(*p);
 					if (p[1])
 						printf(", ");
 				}
@@ -2688,162 +2702,117 @@ pretty_list(Reduce *rc, HeapNode *hn, int indent)
 	return TRUE;
 }
 
-/* Print a graph shell-style. FALSE for compute error.
- */
-static gboolean
-pretty_node(Reduce *rc, HeapNode *hn, int indent)
-{
-	/* Have we printed this node before?
-	 */
-	if (hn->flgs & FLAG_PRINT) {
-		printf("<circular>");
-		return TRUE;
-	}
-	hn->flgs |= FLAG_PRINT;
-
-	switch (hn->type) {
-	case TAG_CLASS:
-	case TAG_APPL:
-	case TAG_REFERENCE:
-	case TAG_SHARED:
-	case TAG_GEN:
-		break;
-
-	case TAG_CONS:
-		if (!pretty_list(rc, hn, indent))
-			return FALSE;
-		break;
-
-	case TAG_DOUBLE:
-		printf("%g", hn->body.num);
-		break;
-
-	case TAG_COMPLEX:
-		printf("(%g,  %g)",
-			GETLEFT(hn)->body.num, GETRIGHT(hn)->body.num);
-		break;
-
-	case TAG_FREE:
-	default:
-		g_assert(FALSE);
-	}
-
-	return TRUE;
-}
-
 /* Lazy pretty print of a pelement. FALSE for runtime error.
  */
 static gboolean
 pretty_pelement(Reduce *rc, PElement *base, int indent)
 {
-	switch (PEGETTYPE(base)) {
-	case ELEMENT_SYMREF:
-	case ELEMENT_COMPILEREF:
-	case ELEMENT_CONSTRUCTOR:
-	case ELEMENT_BINOP:
-	case ELEMENT_UNOP:
-	case ELEMENT_COMB:
-	case ELEMENT_TAG:
-	case ELEMENT_SYMBOL:
-	case ELEMENT_NOVAL:
-		printf("<function>");
-		break;
+	char txt[100];
+	VipsBuf buf = VIPS_BUF_STATIC(txt);
 
-	case ELEMENT_NODE:
-		if (!pretty_node(rc, PEGETVAL(base), indent))
-			return FALSE;
-		break;
+	if (!reduce_pelement(rc, reduce_spine, base))
+		return FALSE;
 
-	case ELEMENT_CHAR:
-		printf("'");
-
-		// output " as \", newline as \n, etc.
-		char buffer[VIPS_PATH_MAX];
-		char buffer2[VIPS_PATH_MAX];
-		buffer[0] = PEGETCHAR(base);
-		buffer[1] = '\0';
-		my_strecpy(buffer2, buffer, TRUE);
-		printf("%s", buffer2);
-
-		printf("'");
-		break;
-
-	case ELEMENT_BOOL:
+	if (PEISNOVAL(base))
+		printf("<no value>");
+	else if (PEISREAL(base))
+		printf("%.7g", PEGETREAL(base));
+	else if (PEISBOOL(base))
 		printf("%s", bool_to_char(PEGETBOOL(base)));
-		break;
+	else if (PEISCHAR(base))
+		pretty_char(PEGETCHAR(base));
+	else if (PEISCOMPLEX(base))
+		printf("(%.12g, %.12g)", PEGETREALPART(base), PEGETIMAGPART(base));
+	else if (PEISMANAGEDSTRING(base)) {
+		printf("[");
 
-	case ELEMENT_ELIST:
-		printf("[]");
-		break;
+		for(const char *p = PEGETMANAGEDSTRING(base)->string; *p; p++) {
+			pretty_char(*p);
+			if (p[1])
+				printf(", ");
+		}
 
-	case ELEMENT_MANAGED:
-		if (PEISIMAGE(base))
-			printf("%s", PEGETIMAGE(base)->filename);
-		else if (PEISMANAGEDSTRING(base))
-			printf("\"%s\"", PEGETMANAGEDSTRING(base)->string);
-		break;
-
-	default:
-		g_assert(FALSE);
+		printf("]");
 	}
+	else if (PEISELIST(base)) {
+		printf("[]");
+	}
+	else if (PEISLIST(base)) {
+		if (!pretty_list(rc, base, indent))
+			return FALSE;
+	}
+	else if (PEISIMAGE(base)) {
+		vips_buf_appendi(&buf, PEGETIMAGE(base));
+		printf("<%s>", vips_buf_all(&buf));
+	}
+	else if (PEISMANAGED(base)) {
+		iobject_info(IOBJECT(PEGETMANAGED(base)), &buf, 0);
+		printf("<%s>", vips_buf_all(&buf));
+	}
+	else if (PEISCLASS(base)) {
+		Compile *compile = PEGETCLASSCOMPILE(base);
+		PElement params;
 
-	// print output as we go
-	fflush(stdout);
+		/* Name.
+		 */
+		symbol_qualified_name(compile->sym, &buf);
+		printf("%s", vips_buf_all(&buf));
+
+
+		/* Skip over the secrets, then value-ize all the args.
+		 */
+		PEGETCLASSSECRET(&params, base);
+		for (int i = 0; i < compile->nsecret; i++) {
+			HeapNode *hn = PEGETVAL(&params);
+
+			PEPOINTRIGHT(hn, &params);
+		}
+
+		for (int i = 0; i < compile->nparam; i++) {
+			HeapNode *hn = PEGETVAL(&params);
+			HeapNode *sv = GETLEFT(hn);
+			PElement value;
+
+			printf("\n%*c", indent + 1, ' ');
+			PEPOINTRIGHT(sv, &value);
+			if (!pretty_pelement(rc, &value, indent + 2))
+				return FALSE;
+
+			PEPOINTRIGHT(hn, &params);
+		}
+	}
+	else if (PEISSYMREF(base)) {
+		Symbol *sym = PEGETSYMREF(base);
+
+		symbol_qualified_name(sym, &buf);
+		if (is_scope(sym))
+			printf("<scope '%s'>", vips_buf_all(&buf));
+		else
+			printf("<reference to symbol '%s'>", vips_buf_all(&buf));
+	}
+	else if (PEISTAG(base))
+		printf(".%s", PEGETTAG(base));
+	else
+		printf("<function>");
 
 	return TRUE;
 }
 
-static gboolean string_pelement(Reduce *rc, PElement *base);
-
-static gboolean
-string_node(Reduce *rc, HeapNode *hn)
+static void *
+string_pelement_char(PElement *base, void *a, void *b)
 {
-	PElement p1, p2;
+	Reduce *rc = reduce_context;
 
-	/* Have we printed this node before?
+	/* Reduce the head, and print.
 	 */
-	if (hn->flgs & FLAG_PRINT) {
-		printf("<circular>");
-		return TRUE;
-	}
-	hn->flgs |= FLAG_PRINT;
+	if (!reduce_pelement(rc, reduce_spine, base))
+		return base;
+	if (PEISCHAR(base))
+		printf("%c", PEGETCHAR(base));
+	else
+		return base;
 
-	switch (hn->type) {
-	case TAG_CONS:
-		for (;;) {
-			PEPOINTLEFT(hn, &p1);
-			if (!reduce_pelement(rc, reduce_spine, &p1) ||
-				!string_pelement(rc, &p1))
-				return FALSE;
-
-			PEPOINTRIGHT(hn, &p2);
-			if (!reduce_pelement(rc, reduce_spine, &p2))
-				return FALSE;
-			if (PEISMANAGEDSTRING(&p2)) {
-				printf("%s", PEGETMANAGEDSTRING(&p2)->string);
-				break;
-            }
-            else if (PEISELIST(&p2))
-                break;
-            else if (PEISNODE(&p2)) {
-                hn = PEGETVAL(&p2);
-			}
-            else
-				// could raise an error? shouldn't happen
-                break;
-
-			// print output as we go
-			fflush(stdout);
-		}
-		break;
-
-	default:
-		// fall back to prettyprint
-		if (!pretty_node(rc, hn, 0))
-			return FALSE;
-	}
-
-	return TRUE;
+	return NULL;
 }
 
 /* Lazy print of a pelement which should be a [char]. FALSE for runtime error.
@@ -2851,34 +2820,25 @@ string_node(Reduce *rc, HeapNode *hn)
 static gboolean
 string_pelement(Reduce *rc, PElement *base)
 {
-	switch (PEGETTYPE(base)) {
-	case ELEMENT_NODE:
-		if (!string_node(rc, PEGETVAL(base)))
-			return FALSE;
-		break;
+	if (!reduce_pelement(rc, reduce_spine, base))
+		return FALSE;
 
-	case ELEMENT_CHAR:
-		printf("%c", (int) PEGETCHAR(base));
-		break;
-
-	case ELEMENT_MANAGED:
-		if (PEISMANAGEDSTRING(base))
-			printf("%s", PEGETMANAGEDSTRING(base)->string);
-		else {
-			// fall back to prettyprint
-			if (!pretty_pelement(rc, base, 0))
+	if (PEISMANAGEDSTRING(base))
+		printf("%s", PEGETMANAGEDSTRING(base)->string);
+	else if (PEISLIST(base)) {
+		if (heap_map_list(base,
+				(heap_map_list_fn) string_pelement_char, NULL, NULL)) {
+			// might be an eval error, might be not [char] fall back to
+			// pretty printing and let them handle it
+			if (!pretty_pelement(rc, base, 1))
 				return FALSE;
 		}
-		break;
-
-	default:
-		// fall back to prettyprint
-		if (!pretty_pelement(rc, base, 0))
+	}
+	else {
+		// fall back to pretty printing
+		if (!pretty_pelement(rc, base, 1))
 			return FALSE;
 	}
-
-	// print output as we go
-	fflush(stdout);
 
 	return TRUE;
 }
@@ -2897,7 +2857,7 @@ graph_value(PElement *root)
 			return FALSE;
 	}
 	else {
-		if (!pretty_pelement(rc, root, 0))
+		if (!pretty_pelement(rc, root, 1))
 			return FALSE;
 		printf("\n");
 	}
