@@ -691,6 +691,7 @@ static GActionEntry mainwindow_entries[] = {
 	{ "row-duplicate", mainwindow_view_action },
 	{ "row-saveas", mainwindow_view_action },
 	{ "row-ungroup", mainwindow_view_action },
+	{ "row-copy-value", mainwindow_view_action },
 	{ "row-replace", mainwindow_view_action },
 	{ "row-recalculate", mainwindow_view_action },
 	{ "row-reset", mainwindow_view_action },

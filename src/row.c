@@ -2061,3 +2061,11 @@ row_parse_name(Symbol *context, const char *path)
 
 	return row_parse_name(sym, tail);
 }
+
+/* Get the row value as a atring.
+ */
+gboolean
+row_copy_value(Row *row, VipsBuf *buf)
+{
+	return row->expr && itext_value(reduce_context, buf, &row->expr->root);
+}

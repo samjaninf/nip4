@@ -377,6 +377,21 @@ rowview_ungroup(Rowview *rview)
 }
 
 static void
+rowview_copy_value(Rowview *rview)
+{
+	Row *row = ROW(VOBJECT(rview)->iobject);
+
+	char txt[100];
+	VipsBuf buf = VIPS_BUF_STATIC(txt);
+	if (row_copy_value(row, &buf)) {
+		GtkWindow *window = view_get_window(VIEW(rview));
+		GdkClipboard *clipboard = gtk_widget_get_clipboard(GTK_WIDGET(window));
+
+		gdk_clipboard_set(clipboard, G_TYPE_STRING, vips_buf_all(&buf));
+	}
+}
+
+static void
 rowview_recalc(Rowview *rview)
 {
 	Row *row = ROW(VOBJECT(rview)->iobject);
@@ -430,6 +445,8 @@ rowview_action(GSimpleAction *action, GVariant *parameter, View *view)
 		classmodel_graphic_replace(CLASSMODEL(graphic), window);
 	else if (g_str_equal(name, "row-ungroup"))
 		rowview_ungroup(rview);
+	else if (g_str_equal(name, "row-copy-value"))
+		rowview_copy_value(rview);
 	else if (g_str_equal(name, "row-recalc"))
 		rowview_recalc(rview);
 	else if (g_str_equal(name, "row-reset"))
