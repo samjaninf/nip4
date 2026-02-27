@@ -1,6 +1,15 @@
 ## main
 
+- disable libvips DoS limits on file load for libvips 8.19+
+- add lazy pretty-print and string print of main
+- add "Copy value" to row menu
+
+## 9.0.17 2026/02/25
+
 - better workspace error state handling
+- fix recomp of implicit local definitions
+- "snip" supports user argument parsing
+- lots of work in new-menus branch
 
 ### New menus
 

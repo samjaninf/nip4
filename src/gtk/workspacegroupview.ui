@@ -51,6 +51,10 @@
         <attribute name='label' translatable='yes'>Ungroup</attribute>
         <attribute name='action'>win.row-ungroup</attribute>
       </item>
+      <item>
+        <attribute name='label' translatable='yes'>Copy value</attribute>
+        <attribute name='action'>win.row-copy-value</attribute>
+      </item>
     </section>
 
     <section>

@@ -147,15 +147,18 @@ iobject_real_changed(iObject *iobject)
 static void
 iobject_real_info(iObject *iobject, VipsBuf *buf, int indent)
 {
-	if (iobject->name)
-		vips_buf_appendf(buf, "%*cname = \"%s\"\n",  indent, ' ',
-			iobject->name);
-	if (iobject->caption)
-		vips_buf_appendf(buf, "%*ccaption = \"%s\"\n",  indent, ' ',
-			iobject->caption);
-	vips_buf_appendf(buf, "%*ciObject :: \"%s\"\n",
-		indent, ' ',
-		G_OBJECT_TYPE_NAME(iobject));
+	if (iobject->name) {
+		vips_buf_space(buf, indent);
+		vips_buf_appendf(buf, "name = \"%s\"\n", iobject->name);
+	}
+
+	if (iobject->caption) {
+		vips_buf_space(buf, indent);
+		vips_buf_appendf(buf, "caption = \"%s\"\n", iobject->caption);
+	}
+
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "iObject :: \"%s\"\n", G_OBJECT_TYPE_NAME(iobject));
 }
 
 static void

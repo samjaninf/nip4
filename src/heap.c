@@ -280,7 +280,8 @@ heap_info(iObject *iobject, VipsBuf *buf, int indent)
 {
 	Heap *heap = HEAP(iobject);
 
-	vips_buf_appendf(buf, "%*cheap->compile = ", indent, ' ');
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "heap->compile = ");
 	if (heap->compile)
 		if (heap->compile->sym) {
 			symbol_qualified_name(heap->compile->sym, buf);
@@ -289,26 +290,28 @@ heap_info(iObject *iobject, VipsBuf *buf, int indent)
 		else
 			vips_buf_appendf(buf, "(compile, but no sym)\n");
 	else
-		vips_buf_appendf(buf, "%*c(no compile)\n", indent, ' ');
+		vips_buf_appendf(buf, "(no compile)\n");
 
 	indent += 2;
-	vips_buf_appendf(buf, "%*cmxb (max blocks) = %d\n", indent, ' ',
-		heap->mxb);
-	vips_buf_appendf(buf, "%*crsz (nodes per block) = %d\n", indent, ' ',
-		heap->rsz);
-	vips_buf_appendf(buf, "%*cnb (number of blocks) = %d\n", indent, ' ',
-		heap->nb);
-	vips_buf_appendf(buf, "%*cemark = %d pointers\n",indent, ' ',
+
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "mxb (max blocks) = %d\n", heap->mxb);
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "rsz (nodes per block) = %d\n", heap->rsz);
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "nb (number of blocks) = %d\n", heap->nb);
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "emark = %d pointers\n",
 		g_hash_table_size(heap->emark));
-	vips_buf_appendf(buf, "%*crmark = %d pointers\n",indent, ' ',
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "rmark = %d pointers\n",
 		g_hash_table_size(heap->rmark));
-	vips_buf_appendf(buf, "%*cncells (cells allocated) = %d\n", indent, ' ',
-		heap->ncells);
-	vips_buf_appendf(buf, "%*cnfree (cells free at last GC) = %d\n",
-		indent, ' ',
-		heap->nfree);
-	vips_buf_appendf(buf, "%*cmtable (Managed blocks) = %d pointers\n",
-		indent, ' ',
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "ncells (cells allocated) = %d\n", heap->ncells);
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "nfree (cells free at last GC) = %d\n", heap->nfree);
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "mtable (Managed blocks) = %d pointers\n",
 		g_hash_table_size(heap->mtable));
 
 	IOBJECT_CLASS(parent_class)->info(iobject, buf, indent);
@@ -2167,14 +2170,13 @@ lisp_symval(VipsBuf *buf, PElement *base,
 
 			PEPOINTLEFT(hn2, &pe);
 			if (!error && PEISSYMREF(&pe)) {
-				vips_buf_appendf(buf, "\n%*c", indent, ' ');
-				symbol_qualified_name(
-					PEGETSYMREF(&pe), buf);
+				vips_buf_appendf(buf, "\n");
+				vips_buf_space(buf, indent);
+				symbol_qualified_name(PEGETSYMREF(&pe), buf);
 				vips_buf_appendf(buf, " = ");
 
 				PEPOINTRIGHT(hn2, &pe);
-				lisp_pelement(buf, &pe,
-					back, fn, indent + TAB);
+				lisp_pelement(buf, &pe, back, fn, indent + TAB);
 
 				PEPOINTRIGHT(hn, &pe);
 				lisp_symval(buf, &pe, back, fn, indent, stop);
@@ -2188,8 +2190,11 @@ lisp_symval(VipsBuf *buf, PElement *base,
 	else if (!PEISELIST(base))
 		error = TRUE;
 
-	if (error)
-		vips_buf_appendf(buf, "\n%*c<*** malformed symval list>", indent, ' ');
+	if (error) {
+		vips_buf_appendf(buf, "\n");
+		vips_buf_space(buf, indent);
+		vips_buf_appendf(buf, "<*** malformed symval list>");
+	}
 }
 
 /* Print a [*] ... our caller has printed the enclosing [ ] and the first
@@ -2351,7 +2356,8 @@ lisp_node(VipsBuf *buf, HeapNode *hn, GSList **back, gboolean fn, int indent)
 
 	case TAG_CLASS:
 		if (fn) {
-			vips_buf_appendf(buf, "\n%*c", indent, ' ');
+			vips_buf_appendf(buf, "\n");
+			vips_buf_space(buf, indent);
 			vips_buf_appendf(buf, _("class (%p)"), hn);
 			vips_buf_appendf(buf, " ");
 		}
@@ -2362,21 +2368,26 @@ lisp_node(VipsBuf *buf, HeapNode *hn, GSList **back, gboolean fn, int indent)
 		if (fn) {
 			hn = GETRIGHT(hn);
 
-			vips_buf_appendf(buf, "\n%*c", indent + TAB, ' ');
+			vips_buf_appendf(buf, "\n");
+			vips_buf_space(buf, indent + TAB);
 			vips_buf_appendf(buf, _("members"));
 			vips_buf_appendf(buf, " = { ");
 			PEPOINTRIGHT(hn, &p1);
-			lisp_symval(buf, &p1,
-				back, fn, indent + TAB * 2, NULL);
-			vips_buf_appendf(buf, "\n%*c}", indent + TAB, ' ');
+			lisp_symval(buf, &p1, back, fn, indent + TAB * 2, NULL);
+			vips_buf_appendf(buf, "\n");
+			vips_buf_space(buf, indent + TAB);
+			vips_buf_appendf(buf, "}");
 
 			PEPOINTLEFT(hn, &p2);
 			if (*p1.type != *p2.type || *p1.ele != *p2.ele) {
-				vips_buf_appendf(buf, "\n%*c", indent + TAB, ' ');
+				vips_buf_appendf(buf, "\n");
+				vips_buf_space(buf, indent + TAB);
 				vips_buf_appendf(buf, _("secret"));
 				vips_buf_appendf(buf, " = { ");
 				lisp_symval(buf, &p2, back, fn, indent + TAB * 2, &p1);
-				vips_buf_appendf(buf, "\n%*c} ", indent + TAB, ' ');
+				vips_buf_appendf(buf, "\n");
+				vips_buf_space(buf, indent + TAB);
+				vips_buf_appendf(buf, "}");
 			}
 		}
 
@@ -2585,120 +2596,270 @@ graph_pointer(PElement *root)
 	printf("%s\n", vips_buf_all(&buf));
 }
 
-/* Fwd ref.
- */
-static gboolean shell_pelement(Reduce *rc, PElement *base);
-
-/* Print a graph shell-style. FALSE for compute error.
- */
-static gboolean
-shell_node(Reduce *rc, HeapNode *hn)
+// output a char, with " as \", newline as \n, etc.
+static void
+pretty_char(int ch)
 {
-	PElement p1, p2;
+	char buffer2[10];
+	char buffer[10] = { ch, 0 };
+	my_strecpy(buffer2, buffer, TRUE);
 
-	/* Have we printed this node before?
+	printf("'%s'", buffer2);
+}
+
+// same, but a char in a string display
+static void
+pretty_char_str(int ch)
+{
+	char buffer2[10];
+	char buffer[10] = { ch, 0 };
+	my_strecpy(buffer2, buffer, TRUE);
+
+	printf("%s", buffer2);
+}
+
+static gboolean pretty_pelement(Reduce *rc,
+	PElement *base, int indent, gboolean force_horizontal);
+
+static void *
+pretty_string_char(PElement *base, void *a, void *b)
+{
+	Reduce *rc = reduce_context;
+
+	/* Reduce the head, and print.
 	 */
-	if (hn->flgs & FLAG_PRINT) {
-		printf("<circular>");
-		return TRUE;
-	}
-	hn->flgs |= FLAG_PRINT;
+	if (!reduce_pelement(rc, reduce_spine, base))
+		return base;
+	if (PEISCHAR(base))
+		pretty_char_str(PEGETCHAR(base));
+	else
+		return base;
 
-	switch (hn->type) {
-	case TAG_CLASS:
-	case TAG_APPL:
-	case TAG_REFERENCE:
-	case TAG_SHARED:
-	case TAG_GEN:
-		break;
+	return NULL;
+}
 
-	case TAG_CONS:
-		for (;;) {
-			PEPOINTLEFT(hn, &p1);
-			if (!reduce_pelement(rc, reduce_spine, &p1) ||
-				!shell_pelement(rc, &p1))
-				return FALSE;
+// @list points to a cons node
+static gboolean
+pretty_string(Reduce *rc, PElement *list, int indent, gboolean force_horizontal)
+{
+	printf("\"");
 
-			PEPOINTRIGHT(hn, &p2);
-			if (!reduce_pelement(rc, reduce_spine, &p2))
-				return FALSE;
-			if (PEISMANAGEDSTRING(&p2)) {
-				printf("%s\n", PEGETMANAGEDSTRING(&p2)->string);
-				break;
-			}
-			else if (PEISELIST(&p2))
-				break;
-			else if (PEISNODE(&p2))
-				hn = PEGETVAL(&p2);
-			else
-				break;
-		}
-		break;
+	if (heap_map_list(list,
+			(heap_map_list_fn) pretty_string_char, NULL, NULL))
+		// might be an eval error, might be not [char] fall back to
+		// pretty printing and let them handle it
+		return pretty_pelement(rc, list, indent, force_horizontal);
 
-	case TAG_DOUBLE:
-		printf("%g", hn->body.num);
-		break;
-
-	case TAG_COMPLEX:
-		printf("%g %g",
-			GETLEFT(hn)->body.num, GETRIGHT(hn)->body.num);
-		break;
-
-	case TAG_FREE:
-	default:
-		g_assert(FALSE);
-	}
+	printf("\"");
 
 	return TRUE;
 }
 
-/* Lazy print of a pelement, shell-style. Return FALSE for runtime error.
- */
+// should this list be displayed vertically?
 static gboolean
-shell_pelement(Reduce *rc, PElement *base)
+pretty_vertical(Reduce *rc, PElement *list)
 {
-	switch (PEGETTYPE(base)) {
-	case ELEMENT_SYMREF:
-	case ELEMENT_COMPILEREF:
-	case ELEMENT_CONSTRUCTOR:
-	case ELEMENT_BINOP:
-	case ELEMENT_UNOP:
-	case ELEMENT_COMB:
-	case ELEMENT_TAG:
-	case ELEMENT_SYMBOL:
-	case ELEMENT_NOVAL:
-		printf("<function>");
-		break;
+	HeapNode *hn;
+	PElement p1;
 
-	case ELEMENT_NODE:
-		if (!shell_node(rc, PEGETVAL(base)))
+	// point at hd, reduce
+	hn = PEGETVAL(list);
+	PEPOINTLEFT(hn, &p1);
+	if (!reduce_pelement(rc, reduce_spine, &p1))
+		return FALSE;
+
+	// list of lists, or list of classes
+	return PEISLIST(&p1) || PEISCLASS(&p1);
+}
+
+// @list points to a cons node
+static gboolean
+pretty_list(Reduce *rc, PElement *list, int indent, gboolean force_horizontal)
+{
+	gboolean horizontal = force_horizontal || !pretty_vertical(rc, list);
+
+	HeapNode *hn;
+	PElement p1, p2;
+
+	printf("[");
+	if (!horizontal)
+		indent += 1;
+
+	hn = PEGETVAL(list);
+	for (;;) {
+		PEPOINTLEFT(hn, &p1);
+		if (!reduce_pelement(rc, reduce_spine, &p1) ||
+			!pretty_pelement(rc, &p1, indent, force_horizontal))
 			return FALSE;
-		break;
 
-	case ELEMENT_CHAR:
-		printf("%c", (int) PEGETCHAR(base));
-		break;
+		PEPOINTRIGHT(hn, &p2);
+		if (!reduce_pelement(rc, reduce_spine, &p2))
+			return FALSE;
+		if (PEISMANAGEDSTRING(&p2)) {
+			for(const char *p = PEGETMANAGEDSTRING(&p2)->string; *p; p++) {
+				pretty_char(*p);
+				if (p[1]) {
+					printf(", ");
+					if (!horizontal)
+						printf("\n%*c", indent - 1, ' ');
+				}
+			}
 
-	case ELEMENT_BOOL:
-		printf("%s", bool_to_char(PEGETBOOL(base)));
-		break;
+			break;
+		}
+		else if (PEISELIST(&p2))
+			break;
+		else if (PEISNODE(&p2)) {
+			printf(", ");
+			if (!horizontal)
+				printf("\n%*c", indent - 1, ' ');
+			hn = PEGETVAL(&p2);
+		}
+		else
+			// could raise an error? shouldn't happen
+			break;
 
-	case ELEMENT_ELIST:
-		break;
-
-	case ELEMENT_MANAGED:
-		if (PEISIMAGE(base))
-			printf("%s", PEGETIMAGE(base)->filename);
-		else if (PEISMANAGEDSTRING(base))
-			printf("%s", PEGETMANAGEDSTRING(base)->string);
-		break;
-
-	default:
-		g_assert(FALSE);
+		// print output as we go
+		fflush(stdout);
 	}
 
-	// print output as we go
-	fflush(stdout);
+	printf("]");
+
+	return TRUE;
+}
+
+/* Lazy pretty print of a pelement. FALSE for runtime error.
+ */
+static gboolean
+pretty_pelement(Reduce *rc,
+	PElement *base, int indent, gboolean force_horizontal)
+{
+	char txt[100];
+	VipsBuf buf = VIPS_BUF_STATIC(txt);
+
+	if (!reduce_pelement(rc, reduce_spine, base))
+		return FALSE;
+
+	if (PEISNOVAL(base))
+		printf("<no value>");
+	else if (PEISREAL(base))
+		printf("%.7g", PEGETREAL(base));
+	else if (PEISBOOL(base))
+		printf("%s", bool_to_char(PEGETBOOL(base)));
+	else if (PEISCHAR(base))
+		pretty_char(PEGETCHAR(base));
+	else if (PEISCOMPLEX(base))
+		printf("(%.12g, %.12g)", PEGETREALPART(base), PEGETIMAGPART(base));
+	else if (PEISELIST(base))
+		printf("[]");
+	else if (PEISLIST(base)) {
+		if (reduce_is_string(rc, base)) {
+			// handles MANAGEDSTRING too
+			if (!pretty_string(rc, base, indent, force_horizontal))
+				return FALSE;
+		}
+		else {
+			if (!pretty_list(rc, base, indent, force_horizontal))
+				return FALSE;
+		}
+	}
+	else if (PEISIMAGE(base)) {
+		vips_buf_appendi(&buf, PEGETIMAGE(base));
+		printf("<%s>", vips_buf_all(&buf));
+	}
+	else if (PEISMANAGED(base)) {
+		iobject_info(IOBJECT(PEGETMANAGED(base)), &buf, 0);
+		printf("<%s>", vips_buf_all(&buf));
+	}
+	else if (PEISCLASS(base)) {
+		Compile *compile = PEGETCLASSCOMPILE(base);
+		PElement params;
+
+		/* Name.
+		 */
+		symbol_qualified_name(compile->sym, &buf);
+		printf("%s", vips_buf_all(&buf));
+
+		/* Skip over the secrets, then value-ize all the args.
+		 */
+		PEGETCLASSSECRET(&params, base);
+		for (int i = 0; i < compile->nsecret; i++) {
+			HeapNode *hn = PEGETVAL(&params);
+
+			PEPOINTRIGHT(hn, &params);
+		}
+
+		for (int i = 0; i < compile->nparam; i++) {
+			HeapNode *hn = PEGETVAL(&params);
+			HeapNode *sv = GETLEFT(hn);
+			PElement value;
+
+			printf(" ");
+			PEPOINTRIGHT(sv, &value);
+			if (!pretty_pelement(rc, &value, indent + 2, TRUE))
+				return FALSE;
+
+			PEPOINTRIGHT(hn, &params);
+		}
+	}
+	else if (PEISSYMREF(base)) {
+		Symbol *sym = PEGETSYMREF(base);
+
+		symbol_qualified_name(sym, &buf);
+		if (is_scope(sym))
+			printf("<scope '%s'>", vips_buf_all(&buf));
+		else
+			printf("<reference to symbol '%s'>", vips_buf_all(&buf));
+	}
+	else if (PEISTAG(base))
+		printf(".%s", PEGETTAG(base));
+	else
+		printf("<function>");
+
+	return TRUE;
+}
+
+static void *
+string_pelement_char(PElement *base, void *a, void *b)
+{
+	Reduce *rc = reduce_context;
+
+	/* Reduce the head, and print.
+	 */
+	if (!reduce_pelement(rc, reduce_spine, base))
+		return base;
+	if (PEISCHAR(base))
+		printf("%c", PEGETCHAR(base));
+	else
+		return base;
+
+	return NULL;
+}
+
+/* Lazy print of a pelement which should be a [char]. FALSE for runtime error.
+ */
+static gboolean
+string_pelement(Reduce *rc, PElement *base)
+{
+	if (!reduce_pelement(rc, reduce_spine, base))
+		return FALSE;
+
+	if (PEISMANAGEDSTRING(base))
+		printf("%s", PEGETMANAGEDSTRING(base)->string);
+	else if (PEISLIST(base)) {
+		if (heap_map_list(base,
+				(heap_map_list_fn) string_pelement_char, NULL, NULL)) {
+			// might be an eval error, might be not [char] fall back to
+			// pretty printing and let them handle it
+			if (!pretty_pelement(rc, base, 1, FALSE))
+				return FALSE;
+		}
+	}
+	else {
+		// fall back to pretty printing
+		if (!pretty_pelement(rc, base, 1, FALSE))
+			return FALSE;
+	}
 
 	return TRUE;
 }
@@ -2712,8 +2873,15 @@ graph_value(PElement *root)
 
 	heap_clear(rc->heap, FLAG_PRINT);
 
-	if (!reduce_pelement(rc, reduce_spine, root))
-		return FALSE;
+	if (reduce_is_string(rc, root)) {
+		if (!string_pelement(rc, root))
+			return FALSE;
+	}
+	else {
+		if (!pretty_pelement(rc, root, 1, FALSE))
+			return FALSE;
+		printf("\n");
+	}
 
-	return shell_pelement(rc, root);
+	return TRUE;
 }

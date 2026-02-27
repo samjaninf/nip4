@@ -1207,13 +1207,15 @@ reduce_start:
 				reduce_throw(rc);
 			}
 
-			/* We copy code, but link to values. We have to take a
-			 * fresh copy of code as (together with any args our
-			 * context might supply) it will expand to a value,
-			 * which we might then edit in a row. We want to make
-			 * sure any edits do not zap the original code.
+			/* We link to symbols with rows or to top-level values, but we
+			 * copy everything else (code, local defs like $$listN, etc.).
+			 *
+			 * We have top copy code and locals since they will reduce to a
+			 * value which we might then edit. We don't want to destroy the
+			 * original value.
 			 */
-			if (compile->nparam + compile->nsecret == 0) {
+			if (sym->expr->row ||
+				(is_top(sym) && compile->nparam == 0)) {
 				/* Make sure the value has copied to the main
 				 * heap.
 				 */

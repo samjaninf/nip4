@@ -80,8 +80,8 @@ managedstring_info(iObject *iobject, VipsBuf *buf, int indent)
 {
 	Managedstring *managedstring = MANAGEDSTRING(iobject);
 
-	vips_buf_appendf(buf, "%*cmanagedstring->string = \"%s\"\n",
-		indent, ' ',
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "managedstring->string = \"%s\"\n",
 		managedstring->string);
 
 	IOBJECT_CLASS(managedstring_parent_class)->info(iobject, buf, indent);

@@ -203,13 +203,17 @@ filemodel_info(iObject *iobject, VipsBuf *buf, int indent)
 
 	IOBJECT_CLASS(filemodel_parent_class)->info(iobject, buf, indent);
 
-	vips_buf_appendf(buf, "%*cfilename = \"%s\"\n", indent, ' ',
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "filename = \"%s\"\n",
 		filemodel->filename);
-	vips_buf_appendf(buf, "%*cmodified = \"%s\"\n", indent, ' ',
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "modified = \"%s\"\n",
 		bool_to_char(filemodel->modified));
-	vips_buf_appendf(buf, "%*cregistered = \"%s\"\n", indent, ' ',
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "registered = \"%s\"\n",
 		bool_to_char(filemodel->registered));
-	vips_buf_appendf(buf, "%*cauto_load = \"%s\"\n", indent, ' ',
+	vips_buf_space(buf, indent);
+	vips_buf_appendf(buf, "auto_load = \"%s\"\n",
 		bool_to_char(filemodel->auto_load));
 }
 
