@@ -14,7 +14,7 @@
 ### New menus
 
 - Colour now supports == and != -> bool
-- support mixed spaces in Colour arithmetic
+- add OKLAB and OKLCh colourspaces
 - Rect is smaller, has overloads for union, intersection, contains
 - lots of small bugfixes
 

@@ -877,14 +877,17 @@ Format = class Enum {
 
 // interpretations which are 3-ary colorimetric spaces
 Interpretation_3ary = class Enum {
-    XYZ = 12;
-    LAB = 13;
-    UCS = 18;
-    LCH = 19;
+    // aim for a logical order
     sRGB = 22;
-    YXY = 23;
     scRGB = 28;
     HSV = 29;
+    XYZ = 12;
+    YXY = 23;
+    LAB = 13;
+    OKLAB = 30;
+    LCH = 19;
+    OKLCH = 31;
+    UCS = 18;
 
     _description = [
         [XYZ, _ "XYZ"],
@@ -894,7 +897,9 @@ Interpretation_3ary = class Enum {
         [sRGB, _ "sRGB"],
         [YXY, _ "XYZ"],
         [scRGB, _ "scRGB"],
-        [HSV, _ "HSV"]
+        [HSV, _ "HSV"],
+        [OKLAB, _ "OKLab"],
+        [OKLCH, _ "OKLCh"]
     ];
 
     // name for pickers
