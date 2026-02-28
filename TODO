@@ -1,3 +1,5 @@
+- _convert.def next?
+
 - try to reproduce that macOS crash
 
 - "nip4 for nerds" page
@@ -10,6 +12,7 @@
 	BMP support, only TIFF, PNG, JPG
 
 	maybe win11 has PNG clipboard support?
+
 - libvips bug:
 
     $ vipsheader x.v

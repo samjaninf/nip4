@@ -17,7 +17,7 @@ to_matrix x
         = error (_ "bad arguments to " ++ "to_matrix");
 
     itom i
-        = (im_vips2mask ((double) i)).value, is_image i
+        = (vips_matrix_from_image ((double) i)).value, is_image i
         = error (_ "not image");
 }
 
@@ -43,7 +43,7 @@ to_vector x
         = v, is_image i
         = error (_ "not image")
     {
-        m = im_vips2mask ((double) i);
+        m = vips_matrix_from_image ((double) i);
         v
             = m.value?0, m.height == 1
             = (transpose m.value)?0, m.width == 1
@@ -60,8 +60,8 @@ to_image x
     = Image x.value, is_Plot x
     = x, is_Image x
     = Image (set_header $interpretation
-            (Interpretation.get_value x.colour_space)
-            (mtoi [x.value])),
+             (Interpretation.get_value x.colour_space)
+             (mtoi [x.value])),
         is_Colour x
     = oo_unary_function to_image_op x, is_class x
     = toi x
@@ -152,7 +152,7 @@ to_colour x
         = Interpretation_3ary.get_key interp,
             Interpretation_3ary.has_value interp
         = error (_ "unable to make Colour from " ++
-                    Interpretation.get_name interp _ " image");
+                    Interpretation.get_name interp ++ _ " image");
 }
 
 /* Try to make a real. (not a Real!)

@@ -142,7 +142,7 @@ test_concat = [
 ];
 
 main
-    = map unit_test [
+    = concat (map unit_test [
 	    test_binary "add" add,
 	    test_binary "subtract" subtract,
 	    test_binary "multiply" multiply,
@@ -159,7 +159,7 @@ main
 	    test_multidef,
 	    test_lcomp,
         test_concat
-	]
+    ])
 {
     // libvips image divide sets 0 for divide by zero
     test_div a b
