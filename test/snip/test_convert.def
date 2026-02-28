@@ -11,9 +11,16 @@ sample_mono = Image (image_new [
 ] 1 1);
 
 main = unit_test [
-    [to_matrix [1, 2, 3] == Matrix [[1, 2, 3]], "to_matrix on vector"],
-    [to_matrix [[1]] == Matrix [[1]], "to_matrix on matrix"].
-    // [to_matrix sample_mono == Matrix [[1]], "to_matrix on mono image"],
 
-    [to_matrix 1 == Matrix [[1]], "to_matrix on scalar"]
+    [to_vector 1 == Vector [1], "to_vector on scalar"],
+    [to_vector [1] == Vector [1], "to_vector on vector"],
+    [to_vector [[1]] == Vector [1], "to_vector on matrix"],
+    [to_vector sample_mono == Vector [0], "to_vector on mono"],
+    [to_vector sample_rgb == Vector [1, 2, 3], "to_vector on rgb"],
+
+    [to_matrix 1 == Matrix [[1]], "to_matrix on scalar"],
+    [to_matrix [1, 2, 3] == Matrix [[1, 2, 3]], "to_matrix on vector"],
+    [to_matrix [[1]] == Matrix [[1]], "to_matrix on matrix"],
+    [to_matrix sample_mono == Matrix [[1]], "to_matrix on mono image"],
+    [to_matrix sample_rgb == Matrix [[1, 2, 3]], "to_matrix on rgb image"]
 ];

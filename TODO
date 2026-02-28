@@ -1,9 +1,4 @@
-
 - _convert.def next?
-
-    to_matrix sample_mono  == Matrix [[1]]
-
-        makes reduce.c panic
 
     /* FIXME .. remove these and use colourspace directly.
      */
