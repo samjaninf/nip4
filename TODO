@@ -1,5 +1,7 @@
 - _convert.def next?
 
+	up to to_colour
+
     /* FIXME .. remove these and use colourspace directly.
      */
     colour_transform from to in = colourspace [$source_space => from] to in;

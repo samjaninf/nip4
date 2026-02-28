@@ -929,14 +929,14 @@ Interpretation = class Interpretation_nary {
     HISTOGRAM = 10;
     CMYK = 15;
     FOURIER = 24;
-    ARRAY = 27;
+    MATRIX = 27;
 
     _description = [
         [MULTIBAND, _ "Multiband"],
         [HISTOGRAM, _ "Histogram"],
         [CMYK, _ "CMYK"],
         [FOURIER, _ "Fourier"],
-        [ARRAY, _ "Array"]
+        [MATRIX, _ "Matrix"]
     ];
 }
 

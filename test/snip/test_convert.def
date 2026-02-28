@@ -15,12 +15,35 @@ main = unit_test [
     [to_vector 1 == Vector [1], "to_vector on scalar"],
     [to_vector [1] == Vector [1], "to_vector on vector"],
     [to_vector [[1]] == Vector [1], "to_vector on matrix"],
-    [to_vector sample_mono == Vector [0], "to_vector on mono"],
+    [to_vector sample_mono == Vector [1], "to_vector on mono"],
     [to_vector sample_rgb == Vector [1, 2, 3], "to_vector on rgb"],
 
     [to_matrix 1 == Matrix [[1]], "to_matrix on scalar"],
     [to_matrix [1, 2, 3] == Matrix [[1, 2, 3]], "to_matrix on vector"],
     [to_matrix [[1]] == Matrix [[1]], "to_matrix on matrix"],
     [to_matrix sample_mono == Matrix [[1]], "to_matrix on mono image"],
-    [to_matrix sample_rgb == Matrix [[1, 2, 3]], "to_matrix on rgb image"]
+    [to_matrix sample_rgb == Matrix [[1, 2, 3]], "to_matrix on rgb image"],
+
+    [is_Image (to_image 1), "to_image makes image from scalar"],
+    [mean (to_image 1) == 1, "to_image makes image value 1 from scalar"],
+    [(to_image 1).width == 1 && (to_image 1).height == 1,
+        "to_image makes 1x1 image from scalar"],
+    [(to_image 1).interpretation == Interpretation.MATRIX,
+        "to_image makes MATRIX image from scalar"],
+    [is_Image (to_image [1, 2]), "to_image makes image from vector"],
+    [(to_image [1, 2]).width == 2, "to_image makes wide image from vector"],
+    [(to_image [1, 2]).bands == 1, "to_image makes mono image from vector"],
+    [(to_image [1, 2, 3]).bands == 3, "to_image makes rgb image from vector"],
+    [(to_image [1, 2, 3]).interpretation == Interpretation.sRGB,
+        "to_image makes rgb image from 3-ary vector"],
+    [(to_image [1, 2, 3]).width == 1 && (to_image [1, 2, 3]).height == 1,
+        "to_image makes 1x1 rgb image from 3-ary vector"],
+    [(to_image [[1, 2], [3, 4]]).interpretation == Interpretation.MATRIX,
+        "to_image makes MATRIX image from matrix"],
+    [(to_image [[1, 2, 3], [4, 5, 6]]).interpretation == Interpretation.sRGB,
+        "to_image makes sRGB image from 3 column matrix"],
+
+    [to_matrix (to_image (to_vector 1)) == Matrix [[1]],
+        "to_matrix @ to_image @ to_vector"]
+
 ];
