@@ -152,10 +152,10 @@ to_colour x
         = Interpretation_3ary.get_key interp,
             Interpretation_3ary.has_value interp
         = error (_ "unable to make Colour from " ++
-                    Interpretation.get_name interp ++ _ " image");
+            Interpretation.get_name interp ++ _ " image");
 }
 
-/* Try to make a real. (not a Real!)
+/* Try to make a real (not a Real!).
  */
 to_real x
     = to_real x.expr, is_Expression x
@@ -249,15 +249,6 @@ parse_float l
 }
 
 /* Parse a time in "hh:mm:ss" into seconds.
-
-We could do this in one line :)
-
-    = (sum @ map2 multiply (iterate (multiply 60) 1) @ reverse @ map
-    parse_pint @ map (subscript (splitpl [is_digit, equal ':', is_digit,
-    equal ':', is_digit] l))) [0,2,4];
-
-but it's totally unreadable.
-
  */
 parse_time l
     = error (_ "badly formed time"), !is_list_len 5 parts
@@ -269,28 +260,17 @@ parse_time l
     s = parse_int parts?4;
 }
 
-D93_whitepoint = Vector [89.7400, 100, 130.7700];
-D75_whitepoint = Vector [94.9682, 100, 122.5710];
-D65_whitepoint = Vector [95.0470, 100, 108.8827];
-D55_whitepoint = Vector [95.6831, 100, 92.0871];
-D50_whitepoint = Vector [96.4250, 100, 82.4680];
-A_whitepoint = Vector [109.8503, 100, 35.5849];     // 2856K
-B_whitepoint = Vector [99.0720, 100, 85.2230];      // 4874K
-C_whitepoint = Vector [98.0700, 100, 118.2300];     // 6774K
-E_whitepoint = Vector [100, 100, 100];          // ill. free
-D3250_whitepoint = Vector [105.6590, 100, 45.8501];
-
 Whitepoints = class Enum {
-    D93 = D93_whitepoint;
-    D75 = D75_whitepoint;
-    D65 = D65_whitepoint;
-    D55 = D55_whitepoint;
-    D50 = D50_whitepoint;
-    A = A_whitepoint;
-    B = B_whitepoint;
-    C = C_whitepoint;
-    E = E_whitepoint;
-    D3250 = D3250_whitepoint;
+    D93 = Vector [89.7400, 100, 130.7700];
+    D75 = Vector [94.9682, 100, 122.5710];
+    D65 = Vector [95.0470, 100, 108.8827];
+    D55 = Vector [95.6831, 100, 92.0871];
+    D50 = Vector [96.4250, 100, 82.4680];
+    A = Vector [109.8503, 100, 35.5849];        // 2856K
+    B = Vector [99.0720, 100, 85.2230];         // 4874K
+    C = Vector [98.0700, 100, 118.2300];        // 6774K
+    E = Vector [100, 100, 100];                 // ill. free
+    D3250 = Vector [105.6590, 100, 45.8501];
 
     _description = [
         [A, _"CIE A (2850K)"],
@@ -300,20 +280,11 @@ Whitepoints = class Enum {
     ];
 };
 
-/* FIXME .. remove these and use colourspace directly.
- */
-colour_transform from to in = colourspace [$source_space => from] to in;
-colour_transform_to to in = colourspace [] to in;
-
-/* String for path separator on this platform.
- */
-path_separator = expand "$SEP";
-
 /* Form a relative pathname.
  *  path_relative ["home", "john"] == "home/john"
  *  path_relative [] == ""
  */
-path_relative l = joinsep path_separator l;
+path_relative l = joinsep "/" l;
 
 /* Form an absolute pathname.
  *  path_absolute ["home", "john"] == "/home/john"
@@ -323,14 +294,14 @@ path_relative l = joinsep path_separator l;
 path_absolute l
     = path_relative l,
         len l?0 > 1 && is_letter l?0?0 && l?0?1 == ':'
-    = path_separator ++ path_relative l;
+    = "/" ++ path_relative l;
 
 /* Parse a pathname.
  *  path_parse "/home/john" == ["home", "john"]
  *  path_parse "home/john" == ["home", "john"]
  */
 path_parse str
-    = split (equal path_separator?0) str;
+    = split (equal '/') str;
 
 /* Return $PATH, reformatted as [["comp1", "comp2"], ["comp1", "comp2"] ..]
  */

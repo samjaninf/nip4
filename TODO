@@ -1,4 +1,14 @@
+
 - _convert.def next?
+
+    to_matrix sample_mono  == Matrix [[1]]
+
+        makes reduce.c panic
+
+    /* FIXME .. remove these and use colourspace directly.
+     */
+    colour_transform from to in = colourspace [$source_space => from] to in;
+    colour_transform_to to in = colourspace [] to in;
 
 - try to reproduce that macOS crash
 

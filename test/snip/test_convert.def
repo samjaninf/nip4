@@ -1,0 +1,19 @@
+#!/usr/bin/env snip
+
+sample_rgb = Image (image_new [
+    $pixel => Vector [1, 2, 3],
+    $interpretation => Interpretation.sRGB
+] 1 1);
+
+sample_mono = Image (image_new [
+    $pixel => 1,
+    $interpretation => Interpretation.B_W
+] 1 1);
+
+main = unit_test [
+    [to_matrix [1, 2, 3] == Matrix [[1, 2, 3]], "to_matrix on vector"],
+    [to_matrix [[1]] == Matrix [[1]], "to_matrix on matrix"].
+    // [to_matrix sample_mono == Matrix [[1]], "to_matrix on mono image"],
+
+    [to_matrix 1 == Matrix [[1]], "to_matrix on scalar"]
+];

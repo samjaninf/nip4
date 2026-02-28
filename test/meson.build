@@ -32,6 +32,7 @@ demos = [
 
 # scripting language tests
 snip_tests = [
+  'test_convert.def',
   'test_generate.def',
   'test_list.def',
   'test_object.def',
