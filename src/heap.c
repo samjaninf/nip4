@@ -2635,6 +2635,8 @@ pretty_string_char(PElement *base, void *a, void *b)
 	else
 		return base;
 
+	fflush(stdout);
+
 	return NULL;
 }
 
@@ -2719,7 +2721,6 @@ pretty_list(Reduce *rc, PElement *list, int indent, gboolean force_horizontal)
 			// could raise an error? shouldn't happen
 			break;
 
-		// print output as we go
 		fflush(stdout);
 	}
 
@@ -2816,6 +2817,8 @@ pretty_pelement(Reduce *rc,
 	else
 		printf("<function>");
 
+	fflush(stdout);
+
 	return TRUE;
 }
 
@@ -2832,6 +2835,8 @@ string_pelement_char(PElement *base, void *a, void *b)
 		printf("%c", PEGETCHAR(base));
 	else
 		return base;
+
+	fflush(stdout);
 
 	return NULL;
 }
@@ -2860,6 +2865,8 @@ string_pelement(Reduce *rc, PElement *base)
 		if (!pretty_pelement(rc, base, 1, FALSE))
 			return FALSE;
 	}
+
+	fflush(stdout);
 
 	return TRUE;
 }
