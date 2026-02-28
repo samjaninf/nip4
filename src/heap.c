@@ -2621,42 +2621,6 @@ pretty_char_str(int ch)
 static gboolean pretty_pelement(Reduce *rc,
 	PElement *base, int indent, gboolean force_horizontal);
 
-static void *
-pretty_string_char(PElement *base, void *a, void *b)
-{
-	Reduce *rc = reduce_context;
-
-	/* Reduce the head, and print.
-	 */
-	if (!reduce_pelement(rc, reduce_spine, base))
-		return base;
-	if (PEISCHAR(base))
-		pretty_char_str(PEGETCHAR(base));
-	else
-		return base;
-
-	fflush(stdout);
-
-	return NULL;
-}
-
-// @list points to a cons node
-static gboolean
-pretty_string(Reduce *rc, PElement *list, int indent, gboolean force_horizontal)
-{
-	printf("\"");
-
-	if (heap_map_list(list,
-			(heap_map_list_fn) pretty_string_char, NULL, NULL))
-		// might be an eval error, might be not [char] fall back to
-		// pretty printing and let them handle it
-		return pretty_pelement(rc, list, indent, force_horizontal);
-
-	printf("\"");
-
-	return TRUE;
-}
-
 // should this list be displayed vertically?
 static gboolean
 pretty_vertical(Reduce *rc, PElement *list)
@@ -2729,6 +2693,50 @@ pretty_list(Reduce *rc, PElement *list, int indent, gboolean force_horizontal)
 	return TRUE;
 }
 
+// @list points to a cons node
+static gboolean
+pretty_string(Reduce *rc, PElement *list, int indent, gboolean force_horizontal)
+{
+	PElement e = *list;
+
+	g_assert(PEISLIST(&e));
+
+	printf("\"");
+
+	while (PEISFLIST(&e) && !PEISMANAGEDSTRING(&e)) {
+		PElement head;
+		PEGETHD(&head, &e);
+		if (!reduce_pelement(rc, reduce_spine, &head))
+			return FALSE;
+		if (PEISCHAR(&head))
+			pretty_char_str(PEGETCHAR(&head));
+		else {
+			// no longer a [char] ... fall back to pretty_list
+			printf("\" ++ ");
+			return pretty_list(rc, &e, indent, force_horizontal);
+		}
+
+		PEGETTL(&e, &e);
+		if (!reduce_pelement(rc, reduce_spine, &e))
+			return FALSE;
+
+		g_assert(PEISLIST(&e));
+
+		fflush(stdout);
+	}
+
+	if (PEISMANAGEDSTRING(&e)) {
+		for(const char *p = PEGETMANAGEDSTRING(&e)->string; *p; p++)
+			pretty_char(*p);
+	}
+
+	printf("\"");
+
+	fflush(stdout);
+
+	return TRUE;
+}
+
 /* Lazy pretty print of a pelement. FALSE for runtime error.
  */
 static gboolean
@@ -2754,7 +2762,8 @@ pretty_pelement(Reduce *rc,
 	else if (PEISELIST(base))
 		printf("[]");
 	else if (PEISLIST(base)) {
-		if (reduce_is_string(rc, base)) {
+		gboolean is_string;
+		if (heap_is_string(base, &is_string) && is_string) {
 			// handles MANAGEDSTRING too
 			if (!pretty_string(rc, base, indent, force_horizontal))
 				return FALSE;
@@ -2822,48 +2831,45 @@ pretty_pelement(Reduce *rc,
 	return TRUE;
 }
 
-static void *
-string_pelement_char(PElement *base, void *a, void *b)
-{
-	Reduce *rc = reduce_context;
-
-	/* Reduce the head, and print.
-	 */
-	if (!reduce_pelement(rc, reduce_spine, base))
-		return base;
-	if (PEISCHAR(base))
-		printf("%c", PEGETCHAR(base));
-	else
-		return base;
-
-	fflush(stdout);
-
-	return NULL;
-}
-
-/* Lazy print of a pelement which should be a [char]. FALSE for runtime error.
- */
+// @list points to a cons node
 static gboolean
-string_pelement(Reduce *rc, PElement *base)
+string_pelement(Reduce *rc, PElement *list)
 {
-	if (!reduce_pelement(rc, reduce_spine, base))
-		return FALSE;
+	PElement e = *list;
 
-	if (PEISMANAGEDSTRING(base))
-		printf("%s", PEGETMANAGEDSTRING(base)->string);
-	else if (PEISLIST(base)) {
-		if (heap_map_list(base,
-				(heap_map_list_fn) string_pelement_char, NULL, NULL)) {
-			// might be an eval error, might be not [char] fall back to
-			// pretty printing and let them handle it
-			if (!pretty_pelement(rc, base, 1, FALSE))
-				return FALSE;
-		}
-	}
-	else {
-		// fall back to pretty printing
-		if (!pretty_pelement(rc, base, 1, FALSE))
+	g_assert(PEISLIST(&e));
+
+	while (PEISFLIST(&e) && !PEISMANAGEDSTRING(&e)) {
+		PElement head;
+		PEGETHD(&head, &e);
+		if (!reduce_pelement(rc, reduce_spine, &head))
 			return FALSE;
+		if (PEISCHAR(&head))
+			printf("%c", PEGETCHAR(&head));
+		else {
+			// no longer a [char] ... fall back to pretty_list
+			printf(" ++ ");
+			if (!pretty_list(rc, &e, 1, FALSE))
+				return FALSE;
+
+			// pretty_list does not add the final \n
+			printf("\n");
+
+			return TRUE;
+		}
+
+		PEGETTL(&e, &e);
+		if (!reduce_pelement(rc, reduce_spine, &e))
+			return FALSE;
+
+		g_assert(PEISLIST(&e));
+
+		fflush(stdout);
+	}
+
+	if (PEISMANAGEDSTRING(&e)) {
+		for(const char *p = PEGETMANAGEDSTRING(&e)->string; *p; p++)
+			pretty_char(*p);
 	}
 
 	fflush(stdout);
@@ -2880,7 +2886,8 @@ graph_value(PElement *root)
 
 	heap_clear(rc->heap, FLAG_PRINT);
 
-	if (reduce_is_string(rc, root)) {
+	gboolean is_string;
+	if (heap_is_string(root, &is_string) && is_string) {
 		if (!string_pelement(rc, root))
 			return FALSE;
 	}
