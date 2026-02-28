@@ -1,3 +1,16 @@
+- try:
+
+	main = 12;
+	main = 43;
+
+  see
+
+	parse_toplevel_end: codegen failed!
+	Default case already defined, $HOME/pics/x/try.def:66
+	definition 2 of "main" is a second default case
+
+  not a very helpful message
+
 - try to reproduce that macOS crash
 
 - "nip4 for nerds" page
