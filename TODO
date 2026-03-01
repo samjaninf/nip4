@@ -1,9 +1,9 @@
-- _convert.def next?
+- _magick.def next
 
-	up to to_colour
+	add magick7 support
 
-    /* FIXME .. remove these and use colourspace directly.
-     */
+- _convert.def changes
+
     colour_transform from to in = colourspace [$source_space => from] to in;
     colour_transform_to to in = colourspace [] to in;
 
@@ -118,7 +118,7 @@
     _Object.def         done
     _types.def          done
     _generate.def       done
-    _convert.def
+    _convert.def	done
 
 - do we need vips_header_int as a builtin? we can define as
 
@@ -199,16 +199,13 @@
 
 - can we improve Group[]?
 
-- add magick7 support to _magick.def
-
 - better start dir for file dialogs
 
-<<<<<<< HEAD
     should be cwd
 
     a bit random right now, eg. mainwindow open and toolkit open start in
     different places
-=======
+
 	should always be pwd, unless it's "replace" eg. in imagewindow, in
 	which case it should be the dir of the filemodel we are replacing
 
@@ -223,19 +220,11 @@
 
 	trying to have a directory for each model, so one for pics, one for
 	defs etc., with filesel directory navigation updating it
->>>>>>> main
 
 - "nip4 try.def x.ws" ought to work
 
     only images and workspaces as CLI args right now
 
-<<<<<<< HEAD
-- add "copy value" to rowview menu ... copy value display text to clipboard
-
-    render more text? truncation could be annoying
-
-=======
->>>>>>> main
 - improve row layout (see notebook)
 
 - we heap_copy() the world when we make a row (all funcs copied), is this
@@ -364,8 +353,6 @@
 - program: add delete tool / toolkit?
 
 - program: needs "find"?
-
-- add magick7 support to _magick.def
 
 - get judder with rotate and images smaller than the window
 

@@ -86,7 +86,7 @@ lab_slice size l
  * for that image type.
  */
 image_white im
-    = colour_transform_to interpretation white_lab,
+    = colourspace [] interpretation white_lab,
         bands == 3 &&
         coding == Coding.NOCODING &&
         Interpretation_3ary.has_value interpretation
@@ -143,7 +143,7 @@ colour_from_temp T
 temp_from_colour z
     = T
 {
-    c = colour_transform_to Interpretation.YXY (to_colour z);
+    c = colourspace [] Interpretation.YXY (to_colour z);
     x = c.value?1;
     y = c.value?2;
 

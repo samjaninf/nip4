@@ -136,16 +136,27 @@ to_colour x
             has_image x
         = Colour "sRGB" [x, x, x], is_real x    // since Colour can't do mono
         = Colour "sRGB" x, is_real_list x && is_list_len 3 x
-        = map toc x, is_matrix x
+        = mtoc3 x, is_matrix x && (is_list_len 3 x?0 || is_list_len 1 x?0)
         = error (_ "bad arguments to " ++ "to_colour")
     {
         x'
             = x,
                 Interpretation_3ary.has_value (get_interpretation x)
-            = colour_transform_to Interpretation.sRGB x;
+            = colourspace [] Interpretation.sRGB x;
         x''
             = extract_bands 0 3 x', get_bands x' > 3
             = x';
+
+        // matrix to colour ... average the rows
+        mtoc3 x
+            = Colour "sRGB" value
+        {
+            sums = map sum (transpose x);
+            avgs = map (converse divide (len x)) sums;
+            value
+                = avgs, len avgs == 3
+                = [avgs?0, avgs?0, avgs?0];
+        }
     }
 
     colour_space interp

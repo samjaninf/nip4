@@ -1,13 +1,13 @@
 #!/usr/bin/env snip
 
-sample_rgb = Image (image_new [
-    $pixel => Vector [1, 2, 3],
-    $interpretation => Interpretation.sRGB
-] 1 1);
-
 sample_mono = Image (image_new [
     $pixel => 1,
     $interpretation => Interpretation.B_W
+] 1 1);
+
+sample_rgb = Image (image_new [
+    $pixel => Vector [1, 2, 3],
+    $interpretation => Interpretation.sRGB
 ] 1 1);
 
 main = unit_test [
@@ -43,7 +43,26 @@ main = unit_test [
     [(to_image [[1, 2, 3], [4, 5, 6]]).interpretation == Interpretation.sRGB,
         "to_image makes sRGB image from 3 column matrix"],
 
-    [to_matrix (to_image (to_vector 1)) == Matrix [[1]],
-        "to_matrix @ to_image @ to_vector"]
+    [to_colour 1 == Colour "sRGB" [1, 1, 1], "to_colour on scalar"],
+    [to_colour [1, 2, 3] == Colour "sRGB" [1, 2, 3], "to_colour on vector"],
+    [to_colour [[1, 2, 3], [4, 5, 6]] == Colour "sRGB" [2.5, 3.5, 4.5],
+        "to_colour on matrix"],
+    [to_colour sample_mono == Colour "sRGB" [1, 1, 1], "to_colour on mono"],
+    [to_colour sample_rgb == Colour "sRGB" [1, 2, 3], "to_colour on rgb"],
+    [(to_colour @ to_matrix @ to_image @ to_vector) 1 ==
+        Colour "sRGB" [1, 1, 1],
+            "to_colour @ to_matrix @ to_image @ to_vector"],
+
+    [parse_pint "123" == 123, "parse_pint"],
+
+    [parse_int "+123" == 123, "parse_int positive"],
+    [parse_int "-123" == -123, "parse_int negative"],
+
+    [parse_float "123" == 123, "parse_float int"],
+    [parse_float "-123" == -123, "parse_float neg int"],
+    [parse_float "-123.4" == -123.4, "parse_float neg float"],
+    [parse_float "-123.4e12" == -123.4e12, "parse_float neg float exp"],
+
+    [parse_time "1:1:1" == 3661, "parse_time"]
 
 ];

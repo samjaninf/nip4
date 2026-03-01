@@ -1,7 +1,7 @@
 #!/usr/bin/env snip
 
 image = image_new [] 1 1;
-image_lab = colour_transform_to Interpretation.LAB image;
+image_lab = colourspace [] Interpretation.LAB image;
 
 main = unit_test [
     [point (256, 256) (lab_slice 513 54) == [54, 0, 0], "lab_slice"],
