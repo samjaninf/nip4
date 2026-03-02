@@ -296,7 +296,9 @@ Whitepoints = class Enum {
  *  form_path ["/", "home", "john"] == "/home/john"
  *  form_path ["c:", "home", "john"] == "c:/home/john"
  */
-form_path l = joinsep "/" l;
+form_path l
+	= "/" ++ joinsep "/" (tl l), len l > 0 && l?0 == "/"
+	= joinsep "/" l;
 
 /* Parse a pathname.
  *  parse_path "/home/john" == ["/", "home", "john"]
@@ -337,8 +339,7 @@ search_for name
     = ""
 {
     exe_name = name ++ expand "$EXEEXT";
-    form_path p = path_absolute (p ++ [exe_name]);
-    paths = map form_path system_search_path;
+    paths = map (\p form_path (p ++ [exe_name])) system_search_path;
     hits = dropwhile (equal []) (map search paths);
 }
 

@@ -27,9 +27,9 @@
      Automatically fall back to gm if we can't find convert
    17-July-2014
      better GM support
+   2-mar-26
+     updated for IM7, new language features, new stdenv
 
-
-   Last update: 17-July-2014.
 
    For details of ImageMagick operations, see http://www.imagemagick.org/script/command-line-options.php etc.
 
