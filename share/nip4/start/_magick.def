@@ -49,7 +49,7 @@ Magick = class {
     }
 
     // Are we in GM or IM mode?
-    use_gm = is_prefix "gm" (last (path_parse command_path));
+    use_gm = is_prefix "gm" (last (parse_path command_path));
 
     // try to get the version as eg. [6, 7, 7, 10]
     // GM versions are smaller, typically [1, 3, 18]

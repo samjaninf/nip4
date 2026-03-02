@@ -811,20 +811,20 @@
       <Subcolumn vislevel="2">
         <Row popup="false" name="D2">
           <Rhs vislevel="1" flags="1">
-            <iText formula="Expression &quot;Data path&quot; [path_relative [&quot;$SAVEDIR&quot;, &quot;data&quot;], path_relative [&quot;$VIPSHOME&quot;, &quot;share&quot;, &quot;$PACKAGE&quot;, &quot;data&quot;], &quot;.&quot;]"/>
+            <iText formula="Expression &quot;Data path&quot; [form_path [&quot;$SAVEDIR&quot;, &quot;data&quot;], form_path [&quot;$VIPSHOME&quot;, &quot;share&quot;, &quot;$PACKAGE&quot;, &quot;data&quot;], &quot;.&quot;]"/>
             <Expression caption="Data path"/>
             <Subcolumn vislevel="0"/>
           </Rhs>
         </Row>
         <Row popup="false" name="D4">
           <Rhs vislevel="1" flags="4">
-            <iText formula="String &quot;Temporary files&quot; (path_relative [&quot;$SAVEDIR&quot;, &quot;tmp&quot;])"/>
+            <iText formula="String &quot;Temporary files&quot; (form_path [&quot;$SAVEDIR&quot;, &quot;tmp&quot;])"/>
             <Subcolumn vislevel="0"/>
           </Rhs>
         </Row>
         <Row popup="false" name="D25">
           <Rhs vislevel="1" flags="1">
-            <iText formula="Expression &quot;Start path&quot; [path_relative [&quot;$SAVEDIR&quot;, &quot;start&quot;], path_relative [&quot;$VIPSHOME&quot;, &quot;share&quot;, &quot;$PACKAGE&quot;, &quot;start&quot;]]"/>
+            <iText formula="Expression &quot;Start path&quot; [form_path [&quot;$SAVEDIR&quot;, &quot;start&quot;], form_path [&quot;$VIPSHOME&quot;, &quot;share&quot;, &quot;$PACKAGE&quot;, &quot;start&quot;]]"/>
             <Expression caption="Start path"/>
             <Subcolumn vislevel="0"/>
           </Rhs>

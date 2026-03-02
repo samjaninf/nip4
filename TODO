@@ -1,6 +1,23 @@
 - _magick.def next
 
-- check _convert ... can we use new language features?
+	try putting magick first on the search list
+
+- try:
+
+	parse_path "c:\\home\\john"
+
+  get
+
+	["c:\home\john"]
+
+	- \ should be displayed as \\ by itext
+	- parse_path should allow \ as a dir sep
+
+- on nip4 stgartup, focus should be in column entry widget
+
+- check _convert ... can we use any new language features?
+
+	_magick as well
 
 - _convert.def changes
 

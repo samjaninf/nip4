@@ -291,39 +291,39 @@ Whitepoints = class Enum {
     ];
 };
 
-/* Form a relative pathname.
- *  path_relative ["home", "john"] == "home/john"
- *  path_relative [] == ""
+/* Form a pathname.
+ *  form_path ["home", "john"] == "home/john"
+ *  form_path ["/", "home", "john"] == "/home/john"
+ *  form_path ["c:", "home", "john"] == "c:/home/john"
  */
-path_relative l = joinsep "/" l;
-
-/* Form an absolute pathname.
- *  path_absolute ["home", "john"] == "/home/john"
- *  path_absolute [] == "/"
- * If the first component looks like 'A:', don't add an initial separator.
- */
-path_absolute l
-    = path_relative l,
-        len l?0 > 1 && is_letter l?0?0 && l?0?1 == ':'
-    = "/" ++ path_relative l;
+form_path l = joinsep "/" l;
 
 /* Parse a pathname.
- *  path_parse "/home/john" == ["home", "john"]
- *  path_parse "home/john" == ["home", "john"]
+ *  parse_path "/home/john" == ["/", "home", "john"]
+ *  parse_path "///home//////john" == ["/", "home", "john"]
+ *  parse_path "home/john" == ["home", "john"]
+ *  parse_path "c:\\home\\john" == ["c:", "home", "john"]
  */
-path_parse str
-    = split (equal '/') str;
+parse_path str
+    = ["/"] ++ components, is_absolute
+    = components
+{
+    components = split (member "/\\") str;
+
+    // does str have a leading '/'? this is an absolute path
+    is_absolute = len str > 0 && str?0 == '/';
+}
 
 /* Return $PATH, reformatted as [["comp1", "comp2"], ["comp1", "comp2"] ..]
  */
 system_search_path
     = [vipsbin] ++
-        map path_parse (split (equal path_sep) (expand "$PATH"))
+        map parse_path (split (equal path_sep) (expand "$PATH"))
 {
     /* On some platforms we ship vips with a few extra progs. Search
      * $VIPSHOME/bin first.
      */
-    vipsbin = path_parse (expand "$VIPSHOME") ++ ["bin"];
+    vipsbin = parse_path (expand "$VIPSHOME") ++ ["bin"];
 
     path_sep
         = ':', expand "$SEP" == "/"
