@@ -1,6 +1,6 @@
 - _magick.def next
 
-	add magick7 support
+- check _convert ... can we use new language features?
 
 - _convert.def changes
 

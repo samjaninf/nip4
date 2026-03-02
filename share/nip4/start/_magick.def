@@ -39,38 +39,17 @@
  */
 
 Magick = class {
-
-	// first gm on path, or ""
-	gm_path = search_for "gm";
-
-	// first convert on $PATH, or ""
-	// we check for the convert we ship first
-	convert_path
-		= vips_convert, vips_convert != ""
-		= search_for "convert"
-	{
-		// the convert we ship with the vips binary on some platforms, or ""
-		vips_convert
-			= search (path_absolute convert)
-		{
-			vipshome = path_parse (expand "$VIPSHOME");
-			convert = vipshome ++ ["bin", "convert" ++ expand "$EXEEXT"];
-		}
-	}
-
-	use_gm_pref = Workspaces.Preferences.USE_GRAPHICSMAGICK;
+    // look for the exe ... search for these in order
+    command_path
+        = command_path_list?0, len command_path_list > 0
+		= error "no magick executable found";
+    {
+        command_path_list =
+            filter (not_equal "") (map search_for ["gm", "magick", "convert"]);
+    }
 
 	// Are we in GM or IM mode?
-	use_gm
-		= true, use_gm_pref && gm_path != ""
-		= false, !use_gm_pref && convert_path != ""
-		= false, convert_path != ""
-		= true, gm_path != ""
-		= error "neither IM nor GM executable found";
-
-	command_path
-		= gm_path, use_gm
-		= convert_path;
+	use_gm = is_prefix "gm" (last (path_parse command_path));
 
 	// try to get the version as eg. [6, 7, 7, 10]
 	// GM versions are smaller, typically [1, 3, 18]
@@ -80,9 +59,14 @@ Magick = class {
 		output = vips_system [
 			$log => true
 		] ("'" ++ command_path ++ "' -version");
-		version_string
-			= (split (equal ' ') output)?1, use_gm
-			= (split (equal ' ') output)?2;
+
+        column
+			= 1, use_gm
+			= 2;
+
+        // the im's have "Version: ImageMagick 7.1.2 Q16 ..."
+        // the gm's have "GraphcsMagick 1.4 Q16 ..."
+		version_string = (split (equal ' ') output)?column;
 	}
 
 	// make a command-line ... args is a [str] we join with spaces
@@ -90,6 +74,7 @@ Magick = class {
 		= "'" ++ command_path ++ "' " ++ joinsep " " args'
 	{
 		args'
+            // gm needs an extra "convert"
 			= ["convert"] ++ args, use_gm
 			= args;
 	}
@@ -155,7 +140,8 @@ Magick = class {
 
 		isNone = Toggle "None (transparent black)" false;
 
-		_flag = "-background " ++ if isNone then "None" else print_colour triple;
+		_flag = "-background " ++
+            if isNone then "None" else print_colour triple;
 
 		Colour_edit space triple = this.Background triple;
 	}
@@ -247,11 +233,11 @@ Magick = class {
 	}
 	builtin_widget = Builtin "rose:";
 
-
 	channels_widget = class {
 		// FIXME? Can we grey-out alpha when we have no alpha channel,
 		//        show CMY(K) instead of RGB(K) etc?
-		// Yes, perhaps we can create different widgets for RGB, RGBA, CMY, CMYK, CMYA, CMYKA.
+		// Yes, perhaps we can create different widgets for RGB, RGBA, CMY,
+        // CMYK, CMYA, CMYKA.
 		ChanR valueR = class
 			Toggle "Red" valueR {
 
@@ -454,9 +440,11 @@ Magick = class {
 		Option_edit caption labels value = this.Compose labels?value;
 	}
 	compose_widget = Compose "Over";
-	// FIXME: Some compose mehods (Displace, Distort, Mathematics) need a string.
+	// FIXME: Some compose mehods (Displace, Distort, Mathematics) need a
+    // string.
 
-	// FIXME: we could use a class that does both -compose and -intensity, for methods LightenIntensity, DarkenIntensity, CopyOpacity, CopyBlack
+	// FIXME: we could use a class that does both -compose and -intensity,
+    // for methods LightenIntensity, DarkenIntensity, CopyOpacity, CopyBlack
 
 	coordinate_widget = class {
 		_vislevel = 3;
@@ -951,10 +939,11 @@ Magick = class {
 	VirtualPixel_widget = VirtualPixel "Edge";
 
 	VirtualPixelBack_widget = class {
-		virtpix = Magick.VirtualPixel_widget;
+        virtpix = Magick.VirtualPixel_widget;
 		background = Magick.background_widget;
-		_flag = (if virtpix._isBackground then (background._flag ++ " ") else "")
-			++ virtpix._flag;
+		_flag =
+            (if virtpix._isBackground then (background._flag ++ " ") else "") ++
+            virtpix._flag;
 	}
 
 	Geometry_widget = class {
