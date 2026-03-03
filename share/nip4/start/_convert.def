@@ -4,12 +4,12 @@
 to_matrix x
     = to_matrix x.expr, is_Expression x
     = x, is_Matrix x
-    = oo_unary_function to_matrix_op x, is_class x
     = tom x
 {
     to_matrix_op = Operator "to_matrix" tom Operator_type.COMPOUND false;
 
     tom x
+        = oo_unary_function to_matrix_op x, is_class x
         = Matrix (itom x), is_image x
         = Matrix [[x]], is_real x
         = Matrix [x], is_real_list x
@@ -26,12 +26,12 @@ to_matrix x
 to_vector x
     = to_vector x.expr, is_Expression x
     = x, is_Vector x
-    = oo_unary_function to_vector_op x, is_class x
     = tov x
 {
     to_vector_op = Operator "to_vector" tov Operator_type.COMPOUND false;
 
     tov x
+        = oo_unary_function to_vector_op x, is_class x
         = Vector (itov x), is_image x
         = Vector [x], is_real x
         = Vector x, is_real_list x
@@ -63,12 +63,12 @@ to_image x
              (Interpretation.get_value x.colour_space)
              (mtoi [x.value])),
         is_Colour x
-    = oo_unary_function to_image_op x, is_class x
     = toi x
 {
     to_image_op = Operator "to_image" toi Operator_type.COMPOUND false;
 
     toi x
+        = oo_unary_function to_image_op x, is_class x
         = Image x, is_image x
         = Image (mtoi [[x]]), is_real x
         = Image (mtoi [x]), is_real_list x
@@ -125,12 +125,12 @@ to_colour x
     = to_colour x.expr, is_Expression x
     = x, is_Colour x
     = to_colour (crop x.left x.top 1 1 x.image), is_Mark x
-    = oo_unary_function to_colour_op x, is_class x
     = toc x
 {
     to_colour_op = Operator "to_colour" toc Operator_type.COMPOUND false;
 
     toc x
+        = oo_unary_function to_colour_op x, is_class x
         = Colour (colour_space (get_interpretation x''))
             (map mean (bandsplit (get_image x''))),
             has_image x
@@ -170,12 +170,12 @@ to_colour x
  */
 to_real x
     = to_real x.expr, is_Expression x
-    = oo_unary_function to_real_op x, is_class x
     = tor x
 {
     to_real_op = Operator "to_real" tor Operator_type.COMPOUND false;
 
     tor x
+        = oo_unary_function to_real_op x, is_class x
         = x, is_real x
         = abs x, is_complex x
         = 1, is_bool x && x

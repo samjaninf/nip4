@@ -10,7 +10,7 @@ Colour_new_item = class
 
     LAB_colour = class
         Menuaction (_ "CIE Lab _Picker") (_ "pick colour in CIE Lab space") {
-        action = widget "Lab" [50, 0, 0];
+        action = widget "LAB" [50, 0, 0];
 
         // ab_slice size
         size = 512;

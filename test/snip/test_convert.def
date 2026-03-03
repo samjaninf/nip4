@@ -66,7 +66,7 @@ main = unit_test [
     [parse_time "1:1:1" == 3661, "parse_time"],
 
     [form_path ["home", "john"] == "home/john", "form_path relative"],
-    [form_path ["/", "home", "john"] == "//home/john", "form_path absolute"],
+    [form_path ["/", "home", "john"] == "/home/john", "form_path absolute"],
     [form_path [] == "", "form_path empty"],
     [form_path ["/"] == "/", "form_path absolute empty"],
 

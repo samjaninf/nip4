@@ -1,3 +1,8 @@
+- rename UCS as CMC
+
+	since libvips calls it cmc(l:c) now
+
+
 - Colour
 
 	- add uhdr stuff ... get and apply gainmap
@@ -227,6 +232,7 @@
 		- nip4 ~/pics/k2.jpg, then ^O, get ~/pics
 		- nip4 ~/pics/x.ws, ^O, get pwd, ^S, get $HOME
 		- nip4 ~/pics/k2.jpg, program window, ^O, get pwd
+		- nip4 ~/pics/k2.jpg, ^S, get $HOME
 
 	trying to have a directory for each model, so one for pics, one for
 	defs etc., with filesel directory navigation updating it

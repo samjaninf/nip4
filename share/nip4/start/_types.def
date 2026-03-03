@@ -895,7 +895,7 @@ Interpretation_3ary = class Enum {
         [UCS, _ "UCS"],
         [LCH, _ "LCh"],
         [sRGB, _ "sRGB"],
-        [YXY, _ "XYZ"],
+        [YXY, _ "Yxy"],
         [scRGB, _ "scRGB"],
         [HSV, _ "HSV"],
         [OKLAB, _ "OKLab"],
