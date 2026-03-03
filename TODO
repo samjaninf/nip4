@@ -1,3 +1,9 @@
+-  load test_colour2.ws
+
+	ERROR:../src/reduce.c:959:reduce_list_index: assertion failed: (PEISFLIST(&p))
+
+- load test_colour2.ws, row B52 has a mysterious error
+
 - Colour
 
 	- add uhdr stuff ... get and apply gainmap

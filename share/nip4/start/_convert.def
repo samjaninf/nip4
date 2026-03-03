@@ -200,6 +200,82 @@ to_group x
     = Group (map to_group x.value), is_Group x
     = x;
 
+Whitepoint = class Enum {
+    D93 = Vector [89.7400, 100, 130.7700];
+    D75 = Vector [94.9682, 100, 122.5710];
+    D65 = Vector [95.0470, 100, 108.8827];
+    D55 = Vector [95.6831, 100, 92.0871];
+    D50 = Vector [96.4250, 100, 82.4680];
+    A = Vector [109.8503, 100, 35.5849];        // 2856K
+    B = Vector [99.0720, 100, 85.2230];         // 4874K
+    C = Vector [98.0700, 100, 118.2300];        // 6774K
+    E = Vector [100, 100, 100];                 // ill. free
+    D3250 = Vector [105.6590, 100, 45.8501];
+
+    _description = [
+        [A, _"CIE A (2850K)"],
+        [B, _"CIE B (4874K)"],
+        [C, _"CIE C (6774K)"],
+        [E, _"CIE E (illuminant free)"]
+    ];
+};
+
+/* matrix to convert D65 XYZ to D50 XYZ ... direct conversion, found by
+ * measuring a macbeth chart in D50 and D65 and doing a LMS to get a matrix
+ */
+D652D50_direct = Matrix
+	[[ 1.13529, -0.0604663, -0.0606321 ],
+	 [ 0.0975399, 0.935024, -0.0256156 ],
+	 [ -0.0336428, 0.0414702, 0.994135 ]];
+
+D502D65_direct = D652D50_direct ** -1;
+
+/* Convert normalised XYZ to Bradford RGB.
+ */
+XYZ2RGBbrad = Matrix
+	[[0.8951,  0.2664, -0.1614],
+	 [-0.7502,  1.7135,  0.0367],
+	 [0.0389, -0.0685,  1.0296]];
+
+/* Convert bradford RGB to normalised XYZ.
+ */
+RGBbrad2XYZ = XYZ2RGBbrad ** -1;
+
+/* Convert D50 XYZ to D65 using the bradford chromatic adaptation approx.
+ */
+D502D65brad xyz
+	= xyz'''
+{
+	xyz' = xyz / Whitepoint.D50;
+
+	rgb = recomb XYZ2RGBbrad xyz';
+
+	// move white in bradford RGB
+	rgb' = rgb / Vector [0.94, 1.02, 1.33];
+
+	xyz'' = recomb RGBbrad2XYZ rgb';
+
+	// back to D65
+	xyz''' = xyz'' * Whitepoint.D65;
+}
+
+/* Convert D65 XYZ to D50 using the bradford approx.
+ */
+D652D50brad xyz
+	= xyz'''
+{
+	xyz' = xyz / Whitepoint.D65;
+
+	rgb = recomb XYZ2RGBbrad xyz';
+
+	// move white in bradford RGB
+	rgb' = rgb * Vector [0.94, 1.02, 1.33];
+
+	xyz'' = recomb RGBbrad2XYZ rgb';
+
+	xyz''' = xyz'' * Whitepoint.D50;
+}
+
 /* Parse a positive integer.
  */
 parse_pint l
@@ -270,26 +346,6 @@ parse_time l
     m = parse_int parts?2;
     s = parse_int parts?4;
 }
-
-Whitepoints = class Enum {
-    D93 = Vector [89.7400, 100, 130.7700];
-    D75 = Vector [94.9682, 100, 122.5710];
-    D65 = Vector [95.0470, 100, 108.8827];
-    D55 = Vector [95.6831, 100, 92.0871];
-    D50 = Vector [96.4250, 100, 82.4680];
-    A = Vector [109.8503, 100, 35.5849];        // 2856K
-    B = Vector [99.0720, 100, 85.2230];         // 4874K
-    C = Vector [98.0700, 100, 118.2300];        // 6774K
-    E = Vector [100, 100, 100];                 // ill. free
-    D3250 = Vector [105.6590, 100, 45.8501];
-
-    _description = [
-        [A, _"CIE A (2850K)"],
-        [B, _"CIE B (4874K)"],
-        [C, _"CIE C (6774K)"],
-        [E, _"CIE E (illuminant free)"]
-    ];
-};
 
 /* Form a pathname.
  *  form_path ["home", "john"] == "home/john"

@@ -249,24 +249,22 @@ Colour_temperature_item = class
     Menupullright (_ "Te_mperature")
         (_ "colour temperature conversions") {
     Whitepoint_item = class
-        Menuaction (_ "_Move Whitepoint") (_ "change whitepoint") {
+        Menuaction (_ "_Move Whitepoint") (_ "simple ratio move") {
         action x = class
             _result {
             _vislevel = 3;
 
-            old_white = Whitepoints.picker "D65";
-            new_white = Whitepoints.picker "D50";
+            from = Whitepoint.picker "D65";
+            to = Whitepoint.picker "D50";
 
             _result
                 = map_unary process x
             {
                 process im
-                    = im'''
+                    = im''
                 {
                     im' = colourspace [] Interpretation.XYZ im;
-                    im'' = im' *
-                        (new_white.value_key / old_white.value_key);
-                    im''' = colourspace [] (get_type im) im'';
+                    im'' = im' * (to.value_key / from.value_key);
                 }
             }
         }
@@ -281,11 +279,10 @@ Colour_temperature_item = class
                 = map_unary process x
             {
                 process im
-                    = im'''
+                    = im''
                 {
                     im' = colourspace [] Interpretation.XYZ im;
                     im'' = recomb D652D50_direct im';
-                    im''' = colourspace [] (get_type im) im'';
                 }
             }
         }
@@ -296,11 +293,10 @@ Colour_temperature_item = class
                 = map_unary process x
             {
                 process im
-                    = im'''
+                    = im''
                 {
                     im' = colourspace [] Interpretation.XYZ im;
-                    im'' = im_D652D50 im';
-                    im''' = colourspace [] (get_type im) im'';
+                    im'' = D652D50brad im';
                 }
             }
         }
@@ -315,11 +311,10 @@ Colour_temperature_item = class
                 = map_unary process x
             {
                 process im
-                    = im'''
+                    = im''
                 {
                     im' = colourspace [] Interpretation.XYZ im;
                     im'' = recomb D502D65_direct im';
-                    im''' = colourspace [] (get_type im) im'';
                 }
             }
         }
@@ -330,11 +325,10 @@ Colour_temperature_item = class
                 = map_unary process x
             {
                 process im
-                    = im'''
+                    = im''
                 {
                     im' = colourspace [] Interpretation.XYZ im;
-                    im'' = im_D502D65 im';
-                    im''' = colourspace [] (get_type im) im'';
+                    im'' = D502D65brad im';
                 }
             }
         }
