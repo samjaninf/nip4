@@ -129,7 +129,7 @@
           <Rhs vislevel="2" flags="5">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Image_file &quot;../images/slanted_oval_vase2.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/images/slanted_oval_vase2.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="B6">
@@ -204,13 +204,13 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1107" y="5" open="true" selected="true" sform="false" next="17" name="C" caption="Colour / Colourspace">
+    <Column x="1053" y="5" open="true" selected="true" sform="false" next="18" name="C" caption="Colour / Colourspace">
       <Subcolumn vislevel="3">
         <Row popup="false" name="C1">
           <Rhs vislevel="2" flags="5">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Image_file &quot;../images/slanted_oval_vase2.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/images/slanted_oval_vase2.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="C2">
@@ -311,11 +311,11 @@
             <iText formula="Colour_convert_item.OKLCh_item.action C14"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="C16">
+        <Row popup="false" name="C17">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
-            <iText formula="Colour_convert_item.UCS_item.action C15"/>
+            <iText formula="Colour_convert_item.CMC_item.action C15"/>
           </Rhs>
         </Row>
       </Subcolumn>

@@ -143,9 +143,9 @@ Colour_convert_item = class
         action x = conv Interpretation.OKLCH x;
     }
 
-    UCS_item = class
-        Menuaction (_ "_UCS") (_ "convert to UCS colourspace") {
-        action x = conv Interpretation.UCS x;
+    CMC_item = class
+        Menuaction (_ "_CMC") (_ "convert to CMC(l:c) colourspace") {
+        action x = conv Interpretation.CMC x;
     }
 }
 
@@ -239,9 +239,9 @@ Colour_tag_item = class
         action x = tag Interpretation.OKLCH x;
     }
 
-    UCS_item = class
-        Menuaction (_ "_UCS") (_ "tag as being in UCS colourspace") {
-        action x = tag Interpretation.UCS x;
+    CMC_item = class
+        Menuaction (_ "_CMC") (_ "tag as being in CMC(l:c) colourspace") {
+        action x = tag Interpretation.CMC x;
     }
 }
 
@@ -500,12 +500,12 @@ Colour_dE_item = class
      */
     lab_cvt = colourspace [] Interpretation.LAB;
 
-    /* Converter to UCS ... plain UCS is Ch form, so we go LAB again after
+    /* Converter to CMC ... plain CMC is Ch form, so we go LAB again after
      * to make sure we get a rectangular coord system.
      */
-    ucs_cvt
+    cmc_cvt
         = colourspace [$source_space => Interpretation.LCH] Interpretation.LAB @
-          colourspace [] Interpretation.UCS;
+          colourspace [] Interpretation.CMC;
 
     CIEdE76_item = class
         Menuaction (_ "CIE dE _76")
@@ -520,9 +520,9 @@ Colour_dE_item = class
             (colour_binary (_ "im_dE00_fromLab") im_dE00_fromLab) a b;
     }
 
-    UCS_item = class
-        Menuaction (_ "_CMC(l:l)") (_ "calculate CMC(l:l) for two objects") {
-        action a b = map_binary (diff ucs_cvt) a b;
+    CMC_item = class
+        Menuaction (_ "_CMC(l:c)") (_ "calculate CMC(l:c) for two objects") {
+        action a b = map_binary (diff cmc_cvt) a b;
     }
 }
 

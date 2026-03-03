@@ -887,12 +887,12 @@ Interpretation_3ary = class Enum {
     OKLAB = 30;
     LCH = 19;
     OKLCH = 31;
-    UCS = 18;
+    CMC = 18;
 
     _description = [
         [XYZ, _ "XYZ"],
         [LAB, _ "Lab"],
-        [UCS, _ "UCS"],
+        [CMC, _ "CMC"],
         [LCH, _ "LCh"],
         [sRGB, _ "sRGB"],
         [YXY, _ "Yxy"],
