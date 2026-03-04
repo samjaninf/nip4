@@ -87,7 +87,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="449" y="5" open="true" selected="false" sform="false" next="62" name="B" caption="Colour / Convert to colour">
+    <Column x="443" y="5" open="true" selected="false" sform="false" next="62" name="B" caption="Colour / Convert to colour">
       <Subcolumn vislevel="3">
         <Row popup="false" name="B1">
           <Rhs vislevel="1" flags="4">
@@ -204,7 +204,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1053" y="5" open="true" selected="false" sform="false" next="18" name="C" caption="Colour / Colourspace">
+    <Column x="1098" y="5" open="true" selected="false" sform="false" next="18" name="C" caption="Colour / Colourspace">
       <Subcolumn vislevel="3">
         <Row popup="false" name="C1">
           <Rhs vislevel="2" flags="5">
@@ -320,7 +320,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1605" y="5" open="true" selected="false" sform="false" next="17" name="D" caption="Colour / Tag as">
+    <Column x="1645" y="5" open="true" selected="false" sform="false" next="17" name="D" caption="Colour / Tag as">
       <Subcolumn vislevel="3">
         <Row popup="false" name="D1">
           <Rhs vislevel="2" flags="5">
@@ -436,7 +436,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2157" y="5" open="true" selected="true" sform="false" next="15" name="E" caption="Colour / Temperature">
+    <Column x="2192" y="5" open="true" selected="true" sform="false" next="17" name="E" caption="Colour / Temperature">
       <Subcolumn vislevel="3">
         <Row popup="false" name="E5">
           <Rhs vislevel="2" flags="5">
@@ -466,11 +466,18 @@
             <iText formula="Colour_temperature_item.D65_to_D50_item.Bradford_item.action D5"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="E13">
-          <Rhs vislevel="1" flags="1">
+        <Row popup="false" name="E15">
+          <Rhs vislevel="2" flags="5">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Colour_temperature_item.D50_to_D65_item.XYZ_minimal_item.action E12"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="E16">
+          <Rhs vislevel="2" flags="5">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Colour_temperature_item.D50_to_D65_item.Bradford_item.action E15"/>
           </Rhs>
         </Row>
       </Subcolumn>
