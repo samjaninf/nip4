@@ -138,6 +138,10 @@
  */
 #define MAX_LINELENGTH (120)
 
+/* Sanity-check all nodes all the time, very slow!
+#define DEBUG_HEAP
+ */
+
 // various forward typdefs
 
 typedef struct _BuiltinInfo BuiltinInfo;

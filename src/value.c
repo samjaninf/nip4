@@ -62,7 +62,26 @@ static const char *
 value_generate_caption(iObject *iobject)
 {
 	Value *value = VALUE(iobject);
+
+	return vips_buf_all(&value->caption_buffer);
+}
+
+static void *
+value_update_model(Heapmodel *heapmodel)
+{
+	Classmodel *classmodel = CLASSMODEL(heapmodel);
+	Value *value = VALUE(heapmodel);
 	ValueClass *value_class = VALUE_GET_CLASS(value);
+
+#ifdef DEBUG
+	printf("value_update_model: ");
+	row_name_print(heapmodel->row);
+	printf("\n");
+#endif /*DEBUG*/
+
+	// update the caption ... we must do this from reduce, not during
+	// generate_caption above, or we could trigger reduce during a simple
+	// view refresh
 	VipsBuf *buf = &value->caption_buffer;
 
 	vips_buf_rewind(buf);
@@ -74,7 +93,7 @@ value_generate_caption(iObject *iobject)
 	vips_buf_appends(buf, " ");
 	heapmodel_value(HEAPMODEL(value), buf);
 
-	return vips_buf_all(buf);
+	return HEAPMODEL_CLASS(value_parent_class)->update_model(heapmodel);
 }
 
 static View *
@@ -89,6 +108,7 @@ value_class_init(ValueClass *class)
 	GObjectClass *gobject_class = (GObjectClass *) class;
 	iObjectClass *iobject_class = (iObjectClass *) class;
 	ModelClass *model_class = (ModelClass *) class;
+	HeapmodelClass *heapmodel_class = (HeapmodelClass *) class;
 
 	/* Create signals.
 	 */
@@ -98,6 +118,8 @@ value_class_init(ValueClass *class)
 	iobject_class->generate_caption = value_generate_caption;
 
 	model_class->view_new = value_view_new;
+
+	heapmodel_class->update_model = value_update_model;
 }
 
 static void
