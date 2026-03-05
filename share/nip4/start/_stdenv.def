@@ -2231,6 +2231,15 @@ rad2float image
         Operator_type.COMPOUND_REWRAP false;
 }
 
+uhdr2scRGB image
+    = oo_unary_function uhdr2scRGB_op image, is_class image
+    = vips_uhdr2scRGB [] image, is_image image
+    = error (_ "bad arguments to " ++ "uhdr2scRGB")
+{
+    uhdr2scRGB_op = Operator "uhdr2scRGB" uhdr2scRGB
+        Operator_type.COMPOUND_REWRAP false;
+}
+
 float2rad image
     = oo_unary_function float2rad_op image, is_class image
     = vips_float2rad [] image, is_image image

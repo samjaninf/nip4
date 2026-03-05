@@ -439,7 +439,8 @@ Colour_icc_item = class
 }
 
 Colour_rad_item = class
-    Menupullright (_ "Radiance") (_ "convert to and from Radiance packed format") {
+    Menupullright (_ "Radiance")
+        (_ "convert to and from Radiance packed format") {
     Unpack_item = class
         Menuaction (_ "Unpack")
             (_ "unpack Radiance format to float") {
@@ -451,6 +452,23 @@ Colour_rad_item = class
             (_ "pack 3-band float to Radiance format") {
         action x = map_unary float2rad x;
     }
+}
+
+Colour_uhdr_item = class
+    Menupullright (_ "UHDR")
+        (_ "convert to and from UHDR format") {
+    Get_gainmap_item = class
+        Menuaction (_ "Get embedded gainmap")
+            (_ "get gainmap from image") {
+        action x = map_unary uhdr2scRGB x;
+    }
+
+    Apply_gainmap_item = class
+        Menuaction (_ "Apply embedded gainmap")
+            (_ "apply gainmap to image") {
+        action x = map_unary uhdr2scRGB x;
+    }
+
 }
 
 #separator
