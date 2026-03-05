@@ -1,5 +1,11 @@
 - test_colour2.ws .. just done temperature
 
+    de00 isn't working
+
+    need self-tests and "ok!" results
+
+- don't render Value caption in batch mode
+
 - Colour
 
 	- add uhdr stuff ... get and apply gainmap
@@ -30,6 +36,19 @@
 
     colour_transform from to in = colourspace [$source_space => from] to in;
     colour_transform_to to in = colourspace [] to in;
+
+- try:
+
+	main = 12;
+	main = 43;
+
+  see
+
+	parse_toplevel_end: codegen failed!
+	Default case already defined, $HOME/pics/x/try.def:66
+	definition 2 of "main" is a second default case
+
+  not a very helpful message
 
 - try to reproduce that macOS crash
 

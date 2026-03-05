@@ -28,7 +28,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
 				= image_new [
                     $bands => to_real nbands,
                     $format => to_real format_option,
-                    $interpretation => interpretation_option.value_thing,
+                    $interpretation => interpretation_option.value_key,
                     $pixel => pixel.expr
                 ] (to_real nwidth) (to_real nheight);
 		}
@@ -1821,7 +1821,7 @@ Image_alpha_item = class
 				= Image output
 			{
 				output = vips_composite [
-					$compositing_space => compositing_space.value_thing,
+					$compositing_space => compositing_space.value_key,
 					$premultiplied => premultiplied.value
 				] [z.value, y.value, x.value] [blend1.value, blend2.value];
 			}

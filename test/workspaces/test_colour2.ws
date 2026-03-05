@@ -436,7 +436,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2192" y="5" open="true" selected="true" sform="false" next="17" name="E" caption="Colour / Temperature">
+    <Column x="2192" y="5" open="true" selected="false" sform="false" next="21" name="E" caption="Colour / Temperature">
       <Subcolumn vislevel="3">
         <Row popup="false" name="E5">
           <Rhs vislevel="2" flags="5">
@@ -478,6 +478,129 @@
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Colour_temperature_item.D50_to_D65_item.Bradford_item.action E15"/>
+          </Rhs>
+        </Row>
+      </Subcolumn>
+    </Column>
+    <Column x="2799" y="5" open="true" selected="false" sform="false" next="1" name="F" caption="Colour / ICC">
+      <Subcolumn vislevel="3">
+        <Row popup="false" name="F1">
+          <Rhs vislevel="2" flags="5">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/images/slanted_oval_vase2.jpg&quot;"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="F7">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="1">
+              <Row name="x">
+                <Rhs vislevel="0" flags="4">
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="super">
+                <Rhs vislevel="0" flags="4">
+                  <iImage show_status="false" show_convert="false"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="embedded">
+                <Rhs vislevel="1" flags="1">
+                  <Toggle caption="Use embedded profile if possible" value="false"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="profile">
+                <Rhs vislevel="1" flags="1">
+                  <Pathname/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="intent">
+                <Rhs vislevel="1" flags="1">
+                  <Option caption="Intent" labelsn="5" labels0="Perceptual" labels1="Relative" labels2="Saturation" labels3="Absolute" labels4="Auto" value="3"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+            </Subcolumn>
+            <iText formula="Colour_icc_item.Import_item.action F1"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="F8">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Colour_icc_item.Export_item.action F7"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="F9">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Colour_icc_item.Transform_item.action F1"/>
+          </Rhs>
+        </Row>
+      </Subcolumn>
+    </Column>
+    <Column x="3346" y="5" open="true" selected="false" sform="false" next="5" name="G" caption="Colour / Radiance">
+      <Subcolumn vislevel="3">
+        <Row popup="false" name="G2">
+          <Rhs vislevel="1" flags="1">
+            <iImage show_status="false" show_convert="false" scale="0.062889984922387107" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Image_file &quot;/home/john/GIT/nip4/test/images/sample.hdr&quot;"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="G3">
+          <Rhs vislevel="1" flags="1">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Colour_rad_item.Unpack_item.action G2"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="G4">
+          <Rhs vislevel="1" flags="1">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Colour_rad_item.Pack_item.action G3"/>
+          </Rhs>
+        </Row>
+      </Subcolumn>
+    </Column>
+    <Column x="3700" y="5" open="true" selected="true" sform="false" next="7" name="H">
+      <Subcolumn vislevel="3">
+        <Row popup="false" name="H1">
+          <Rhs vislevel="2" flags="5">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/images/slanted_oval_vase2.jpg&quot;"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="H3">
+          <Rhs vislevel="1" flags="1">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="H1 + Vector [0, 10, 0]"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="H4">
+          <Rhs vislevel="2" flags="5">
+            <iImage show_status="false" show_convert="false" scale="15.322951526408438" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Colour_dE_item.CIEdE76_item.action H1 H3"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="H6">
+          <Rhs vislevel="2" flags="5">
+            <iImage show_status="false" show_convert="false" scale="7.0862162384381664" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Colour_dE_item.CMC_item.action H1 H3"/>
           </Rhs>
         </Row>
       </Subcolumn>

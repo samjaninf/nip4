@@ -1208,7 +1208,7 @@ Interpolate = class Enum {
     _new options type = vips_object_new Interpolate._to_vips?type?1 [] options;
 }
 
-Intent = class {
+Intent = class Enum {
     PERCEPTUAL = 0;
     RELATIVE = 1;
     SATURATION = 2;
@@ -1219,8 +1219,8 @@ Intent = class {
         [PERCEPTUAL, _ "Perceptual"],
         [RELATIVE, _ "Relative"],
         [SATURATION, _ "Saturation"],
-        [ABSOLUTE _ "Absolute"]
-        [AUTO _ "Auto"]
+        [ABSOLUTE, _ "Absolute"],
+        [AUTO, _ "Auto"]
     ];
 }
 

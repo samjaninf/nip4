@@ -260,6 +260,7 @@ tilesource_render_notify_idle(void *user_data)
 
 	/* Matches the g_new() in tilesource_render_notify().
 	 */
+	VIPS_UNREF(update->tilesource);
 	g_free(update);
 
 	return FALSE;
@@ -286,6 +287,10 @@ tilesource_render_notify(VipsImage *image, VipsRect *rect, void *client)
 	new_update->rect.top = rect->top << update->z;
 	new_update->rect.width = rect->width << update->z;
 	new_update->rect.height = rect->height << update->z;
+
+	/* Make sure the tilesource stays until this update is processed.
+	 */
+	g_object_ref(new_update->tilesource);
 
 	g_idle_add(tilesource_render_notify_idle, new_update);
 }

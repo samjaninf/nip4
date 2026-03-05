@@ -62,19 +62,43 @@ static const char *
 value_generate_caption(iObject *iobject)
 {
 	Value *value = VALUE(iobject);
+
+	return vips_buf_all(&value->caption_buffer);
+}
+
+static void *
+value_update_model(Heapmodel *heapmodel)
+{
+	Classmodel *classmodel = CLASSMODEL(heapmodel);
+	Value *value = VALUE(heapmodel);
 	ValueClass *value_class = VALUE_GET_CLASS(value);
-	VipsBuf *buf = &value->caption_buffer;
 
-	vips_buf_rewind(buf);
-	if (IOBJECT(value)->name)
-		vips_buf_appends(buf, IOBJECT(value)->name);
-	else if (!heapmodel_name(HEAPMODEL(value), buf))
-		vips_buf_appends(buf, G_OBJECT_CLASS_NAME(value_class));
+#ifdef DEBUG
+	printf("value_update_model: ");
+	row_name_print(heapmodel->row);
+	printf("\n");
+#endif /*DEBUG*/
 
-	vips_buf_appends(buf, " ");
-	heapmodel_value(HEAPMODEL(value), buf);
+	/* Update the caption ... we must do this from reduce, not during
+	 * generate_caption above, or we could trigger reduce during a simple
+	 * view refresh.
+	 *
+	 * No need to render the caption in batch mode.
+	 */
+	if (!main_option_batch) {
+		VipsBuf *buf = &value->caption_buffer;
 
-	return vips_buf_all(buf);
+		vips_buf_rewind(buf);
+		if (IOBJECT(value)->name)
+			vips_buf_appends(buf, IOBJECT(value)->name);
+		else if (!heapmodel_name(HEAPMODEL(value), buf))
+			vips_buf_appends(buf, G_OBJECT_CLASS_NAME(value_class));
+
+		vips_buf_appends(buf, " ");
+		heapmodel_value(HEAPMODEL(value), buf);
+	}
+
+	return HEAPMODEL_CLASS(value_parent_class)->update_model(heapmodel);
 }
 
 static View *
@@ -89,6 +113,7 @@ value_class_init(ValueClass *class)
 	GObjectClass *gobject_class = (GObjectClass *) class;
 	iObjectClass *iobject_class = (iObjectClass *) class;
 	ModelClass *model_class = (ModelClass *) class;
+	HeapmodelClass *heapmodel_class = (HeapmodelClass *) class;
 
 	/* Create signals.
 	 */
@@ -98,6 +123,8 @@ value_class_init(ValueClass *class)
 	iobject_class->generate_caption = value_generate_caption;
 
 	model_class->view_new = value_view_new;
+
+	heapmodel_class->update_model = value_update_model;
 }
 
 static void

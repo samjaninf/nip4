@@ -31,7 +31,7 @@
 #define DEBUG
  */
 
-/* GC on every alloc too! Extraordinarily slow. Turn on DEBUG_HEAP in ip.h
+/* GC on every alloc too! Extraordinarily slow. Turn on DEBUG_HEAP in nip4.h
  * first. Good for spotting heap pointer errors.
 #define DEBUG_HEAP_GC
  */

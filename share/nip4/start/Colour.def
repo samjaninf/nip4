@@ -365,8 +365,8 @@ Colour_icc_item = class
         "$VIPSHOME/share/$PACKAGE/data/sRGB.icm";
     guess_profile image
         = print_profile,
-            has_type image &&
-            get_type image == Interpretation.CMYK &&
+            has_interpretation image &&
+            get_interpretation image == Interpretation.CMYK &&
             has_bands image &&
             get_bands image >= 4
         = monitor_profile;
@@ -387,7 +387,7 @@ Colour_icc_item = class
             {
                 process image
                     = icc_export [8, 16]?depth profile.value
-                        intent.value_thing lab
+                        intent.value_key lab
                 {
                     lab = colourspace [] Interpretation.LABQ image;
                 }
@@ -409,10 +409,10 @@ Colour_icc_item = class
                 = map_unary process x
             {
                 process image
-                    = icc_import_embedded intent.value_thing image,
+                    = icc_import_embedded intent.value_key image,
                         get_header_type "icc-profile-data" image != 0 &&
                         embedded
-                    = icc_import profile.value intent.value_thing image;
+                    = icc_import profile.value intent.value_key image;
             }
         }
     }
@@ -432,28 +432,7 @@ Colour_icc_item = class
             {
                 process image
                     = icc_transform in_profile.value out_profile.value
-                        intent.value_thing image;
-            }
-        }
-    }
-
-    AC2RC_item = class
-        Menuaction (_ "_Absolute to Relative")
-            (_ "absolute to relative colorimetry using device profile") {
-        action x = class
-            _result {
-            _vislevel = 3;
-
-            profile = Pathname (_ "Pick a profile") (guess_profile x);
-
-            _result
-                = map_unary process x
-            {
-                process image
-                    = icc_ac2rc profile.value lab
-                {
-                    lab = colourspace [] Interpretation.LAB image;
-                }
+                        intent.value_key image;
             }
         }
     }
@@ -559,7 +538,7 @@ Colour_adjust_item = class
                 = map_unary adjust_cast x
             {
                 adjust_cast in
-                    = colourspace [] (get_type in) in''
+                    = colourspace [] (get_interpretation in) in''
                 {
                     in' = colourspace [] Interpretation.LAB in;
                     in'' = in' +
@@ -583,7 +562,7 @@ Colour_adjust_item = class
                 = map_unary adjust_hsb x
             {
                 adjust_hsb in
-                    = colourspace [] (get_type in) in''
+                    = colourspace [] (get_interpretation in) in''
                 {
                     in' = colourspace [] Interpretation.LCH in;
                     in'' = in' * Vector [b.value, s.value, 1] +

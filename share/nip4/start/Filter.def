@@ -1269,7 +1269,7 @@ Filter_blend_item = class
 				merged_alpha = get_alpha bg | get_alpha fg';
 
 				// blend together
-				blended = (actions.lookup 0 1 method.value_thing)
+				blended = (actions.lookup 0 1 method.value_key)
 					(get_alpha fg') opacity.value fg'' bg';
 			}
 		}
