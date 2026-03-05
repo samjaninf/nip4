@@ -1,21 +1,23 @@
 - test_colour2.ws
 
-    measure colour chart needs fixing
+	add uhdr stuff ... get and apply gainmap
 
-    need self-tests and "ok!" results
+	should conversion to scRGB apply gainmap? maybe better at the
+	libvips level?
 
-    rename menu items in lowercase eg.
+	we have more built-in profiles now, does this help?
 
-        Measure colour chart
+- test_object.def fails
 
-- don't render Value caption in batch mode
+    because it can't find the test image
 
-- Colour
+        Not found, file "../images/slanted_oval_vase2.jpg" not found on path
 
-	- add uhdr stuff ... get and apply gainmap
-	- should conversion to scRGB apply gainmap? maybe better at the
-	  libvips level?
-	- we have more built-in profiles now, does this help?
+    script argv[0] is
+
+        /home/john/GIT/nip4/build/../test/snip/test_object.def
+
+    Image_file in snips should be relative to the script directory?
 
 - add to_enum
 

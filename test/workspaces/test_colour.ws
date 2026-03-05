@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.0.17">
-  <Workspace view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// local definitions for this tab&#10;" name="tab2" filename="$HOME/GIT/nip4/test/workspaces/test_colour2.ws" major="9" minor="0">
-    <Column x="10" y="5" open="true" selected="false" sform="false" next="5" name="A" caption="Colour / New">
+  <Workspace view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// local definitions for this tab&#10;" name="tab2" filename="$HOME/GIT/nip4/test/workspaces/test_colour.ws" major="9" minor="0">
+    <Column x="10" y="5" open="true" selected="false" sform="false" next="8" name="A" caption="Colour / New">
       <Subcolumn vislevel="3">
         <Row popup="false" name="A1">
           <Rhs vislevel="3" flags="7">
@@ -10,7 +10,7 @@
             <iText formula="Colour_new_item.Widget_colour_item.action"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="A4">
+        <Row popup="false" name="A6">
           <Rhs vislevel="3" flags="7">
             <Colour/>
             <Subcolumn vislevel="1">
@@ -33,21 +33,21 @@
               </Row>
               <Row name="L">
                 <Rhs vislevel="1" flags="1">
-                  <Slider caption="Lightness" from="0" to="100" value="38"/>
+                  <Slider caption="Lightness" from="0" to="100" value="50"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
               </Row>
               <Row name="ab_slice">
                 <Rhs vislevel="1" flags="1">
-                  <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
               </Row>
               <Row name="point">
                 <Rhs vislevel="1" flags="1">
-                  <iArrow left="107" top="161" width="0" height="0">
+                  <iArrow>
                     <iRegiongroup/>
                   </iArrow>
                   <Subcolumn vislevel="0"/>
@@ -85,9 +85,14 @@
             <iText formula="Colour_new_item.CCT_colour.action"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="A7">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if A1.value != A6.value then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
       </Subcolumn>
     </Column>
-    <Column x="449" y="5" open="true" selected="false" sform="false" next="62" name="B" caption="Colour / Convert to colour">
+    <Column x="449" y="5" open="true" selected="false" sform="false" next="64" name="B" caption="Colour / Convert to colour">
       <Subcolumn vislevel="3">
         <Row popup="false" name="B1">
           <Rhs vislevel="1" flags="4">
@@ -202,9 +207,14 @@
             <iText formula="B52.value?7"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="B62">
+          <Rhs vislevel="2" flags="4">
+            <iText formula="if mean (B60 - Vector [143, 136, 136]) &gt; 0.05 then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
       </Subcolumn>
     </Column>
-    <Column x="1107" y="5" open="true" selected="false" sform="false" next="18" name="C" caption="Colour / Colourspace">
+    <Column x="1107" y="5" open="true" selected="false" sform="false" next="21" name="C" caption="Colour / Colourspace">
       <Subcolumn vislevel="3">
         <Row popup="false" name="C1">
           <Rhs vislevel="1" flags="1">
@@ -318,9 +328,21 @@
             <iText formula="Colour_convert_item.CMC_item.action C15"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="C18">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Colour_convert_item.sRGB_item.action C17"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="C19">
+          <Rhs vislevel="2" flags="4">
+            <iText formula="if max (abs (C18 - C1)) &gt; 5 then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
       </Subcolumn>
     </Column>
-    <Column x="1538" y="5" open="true" selected="false" sform="false" next="17" name="D" caption="Colour / Tag as">
+    <Column x="1538" y="5" open="true" selected="false" sform="false" next="19" name="D" caption="Colour / Tag as">
       <Subcolumn vislevel="3">
         <Row popup="false" name="D1">
           <Rhs vislevel="1" flags="1">
@@ -434,9 +456,21 @@
             <iText formula="Colour_tag_item.CMC_item.action D15"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="D17">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Colour_tag_item.sRGB_item.action D16"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="D18">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if max (abs (D17 - D1)) &gt; 0 then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
       </Subcolumn>
     </Column>
-    <Column x="1969" y="5" open="true" selected="false" sform="false" next="21" name="E" caption="Colour / Temperature">
+    <Column x="1969" y="5" open="true" selected="false" sform="false" next="28" name="E" caption="Colour / Temperature">
       <Subcolumn vislevel="3">
         <Row popup="false" name="E5">
           <Rhs vislevel="1" flags="1">
@@ -452,48 +486,106 @@
             <iText formula="Colour_temperature_item.Whitepoint_item.action E5"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="E21">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="1">
+              <Row name="x">
+                <Rhs vislevel="0" flags="4">
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="super">
+                <Rhs vislevel="0" flags="4">
+                  <iImage show_status="false" show_convert="false"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="from">
+                <Rhs vislevel="1" flags="1">
+                  <Option caption="Whitepoint" labelsn="10" labels0="D93" labels1="D75" labels2="D65" labels3="D55" labels4="D50" labels5="CIE A (2850K)" labels6="CIE B (4874K)" labels7="CIE C (6774K)" labels8="CIE E (illuminant free)" labels9="D3250" value="4"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="to">
+                <Rhs vislevel="1" flags="1">
+                  <Option caption="Whitepoint" labelsn="10" labels0="D93" labels1="D75" labels2="D65" labels3="D55" labels4="D50" labels5="CIE A (2850K)" labels6="CIE B (4874K)" labels7="CIE C (6774K)" labels8="CIE E (illuminant free)" labels9="D3250" value="2"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+            </Subcolumn>
+            <iText formula="Colour_temperature_item.Whitepoint_item.action E3"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="E25">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Colour_convert_item.sRGB_item.action E21"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="E24">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if max (abs (E5 - E25)) &gt; 0 then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
         <Row popup="false" name="E10">
           <Rhs vislevel="2" flags="5">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Colour_temperature_item.D65_to_D50_item.XYZ_minimal_item.action D5"/>
-          </Rhs>
-        </Row>
-        <Row popup="false" name="E12">
-          <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
-            <Subcolumn vislevel="0"/>
-            <iText formula="Colour_temperature_item.D65_to_D50_item.Bradford_item.action D5"/>
+            <iText formula="Colour_temperature_item.D65_to_D50_item.XYZ_minimal_item.action E5"/>
           </Rhs>
         </Row>
         <Row popup="false" name="E15">
           <Rhs vislevel="2" flags="5">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Colour_temperature_item.D50_to_D65_item.XYZ_minimal_item.action E12"/>
+            <iText formula="Colour_temperature_item.D50_to_D65_item.XYZ_minimal_item.action E10"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="E12">
+          <Rhs vislevel="2" flags="5">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Colour_temperature_item.D65_to_D50_item.Bradford_item.action E15"/>
           </Rhs>
         </Row>
         <Row popup="false" name="E16">
           <Rhs vislevel="2" flags="5">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Colour_temperature_item.D50_to_D65_item.Bradford_item.action E15"/>
+            <iText formula="Colour_temperature_item.D50_to_D65_item.Bradford_item.action E12"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="E1">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Colour_convert_item.sRGB_item.action E16"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="E27">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if max (abs (E5 - E1)) &gt; 0 then error &quot;fail&quot; else &quot;ok!&quot;"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2577" y="5" open="true" selected="false" sform="false" next="1" name="F" caption="Colour / ICC">
+    <Column x="2579" y="5" open="true" selected="false" sform="false" next="4" name="F" caption="Colour / ICC">
       <Subcolumn vislevel="3">
         <Row popup="false" name="F1">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_file &quot;$HOME/GIT/nip4/test/images/slanted_oval_vase2.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="F7">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -535,20 +627,98 @@
         <Row popup="false" name="F8">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
-            <Subcolumn vislevel="1"/>
+            <Subcolumn vislevel="1">
+              <Row name="x">
+                <Rhs vislevel="3" flags="4">
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="super">
+                <Rhs vislevel="0" flags="4">
+                  <iImage show_status="false" show_convert="false"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="profile">
+                <Rhs vislevel="1" flags="1">
+                  <Pathname caption="Output profile" value="/home/john/vips/share/nip4/data/sRGB.icm"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="intent">
+                <Rhs vislevel="1" flags="1">
+                  <Option/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="depth">
+                <Rhs vislevel="1" flags="1">
+                  <Option/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+            </Subcolumn>
             <iText formula="Colour_icc_item.Export_item.action F7"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="F2">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if max (abs (F1 - F8)) &gt; 0 then error &quot;fail&quot; else &quot;ok!&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="F9">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
-            <Subcolumn vislevel="1"/>
+            <Subcolumn vislevel="1">
+              <Row name="x">
+                <Rhs vislevel="0" flags="4">
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="super">
+                <Rhs vislevel="0" flags="4">
+                  <iImage show_status="false" show_convert="false"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="in_profile">
+                <Rhs vislevel="1" flags="1">
+                  <Pathname/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="out_profile">
+                <Rhs vislevel="1" flags="1">
+                  <Pathname caption="Output profile" value="/home/john/vips/share/nip4/data/sRGB.icm"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="intent">
+                <Rhs vislevel="1" flags="1">
+                  <Option/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+            </Subcolumn>
             <iText formula="Colour_icc_item.Transform_item.action F1"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="F3">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if max (abs (F1 - F9)) &gt; 0 then error &quot;fail&quot; else &quot;ok!&quot;"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="3051" y="5" open="true" selected="false" sform="false" next="5" name="G" caption="Colour / Radiance">
+    <Column x="3053" y="5" open="true" selected="false" sform="false" next="9" name="G" caption="Colour / Radiance">
       <Subcolumn vislevel="3">
         <Row popup="false" name="G2">
           <Rhs vislevel="1" flags="1">
@@ -559,21 +729,33 @@
         </Row>
         <Row popup="false" name="G3">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Colour_rad_item.Unpack_item.action G2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="G4">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Colour_rad_item.Pack_item.action G3"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="G7">
+          <Rhs vislevel="1" flags="1">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Colour_rad_item.Unpack_item.action G4"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="G8">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if  max (abs (G7 - G3)) &gt; 0 then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
       </Subcolumn>
     </Column>
-    <Column x="3432" y="5" open="true" selected="false" sform="false" next="8" name="H" caption="Colour / Difference">
+    <Column x="3434" y="5" open="true" selected="false" sform="false" next="13" name="H" caption="Colour / Difference">
       <Subcolumn vislevel="3">
         <Row popup="false" name="H1">
           <Rhs vislevel="1" flags="1">
@@ -610,9 +792,14 @@
             <iText formula="Colour_dE_item.CMC_item.action H1 H3"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="H9">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if abs (mean [mean H4, mean H7, mean H6] - 8) &gt; 1 then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
       </Subcolumn>
     </Column>
-    <Column x="3838" y="5" open="true" selected="false" sform="false" next="7" name="I" caption="Colour / Adjust">
+    <Column x="3840" y="5" open="true" selected="false" sform="false" next="7" name="I" caption="Colour / Adjust">
       <Subcolumn vislevel="3">
         <Row popup="false" name="I2">
           <Rhs vislevel="1" flags="1">
@@ -725,7 +912,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="4496" y="5" open="true" selected="false" sform="false" next="4" name="J" caption="Colour / Similar">
+    <Column x="4498" y="5" open="true" selected="false" sform="false" next="4" name="J" caption="Colour / Similar">
       <Subcolumn vislevel="3">
         <Row popup="false" name="J1">
           <Rhs vislevel="1" flags="1">
@@ -811,7 +998,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="5064" y="5" open="true" selected="false" sform="false" next="5" name="K" caption="Colour / Measure colour chart">
+    <Column x="5066" y="5" open="true" selected="false" sform="false" next="5" name="K" caption="Colour / Measure colour chart">
       <Subcolumn vislevel="3">
         <Row popup="false" name="K1">
           <Rhs vislevel="1" flags="1">
@@ -822,7 +1009,7 @@
         </Row>
         <Row popup="false" name="K2">
           <Rhs vislevel="1" flags="1">
-            <iRegion show_status="false" show_convert="false" left="0" top="0" width="549" height="369">
+            <iRegion show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage" left="0" top="0" width="549" height="369">
               <iRegiongroup/>
             </iRegion>
             <Subcolumn vislevel="0"/>
@@ -838,7 +1025,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="5577" y="5" open="true" selected="false" sform="false" next="5" name="L" caption="Colour / Make synthetic colour chart">
+    <Column x="5579" y="5" open="true" selected="true" sform="false" next="8" name="L" caption="Colour / Make synthetic colour chart">
       <Subcolumn vislevel="3">
         <Row popup="false" name="L1">
           <Rhs vislevel="1" flags="1">
@@ -856,14 +1043,26 @@
         </Row>
         <Row popup="false" name="L4">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Colour_tag_item.Lab_item.action L3"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="L5">
+          <Rhs vislevel="3" flags="7">
+            <Matrix/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Colour_chart_to_matrix_item.action L4"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="L7">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if max (abs (L5 - K4)) &gt; 1 then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
       </Subcolumn>
     </Column>
-    <Column x="6024" y="5" open="true" selected="true" sform="false" next="3" name="M" caption="Colour / Plot ab scatter">
+    <Column x="6092" y="5" open="true" selected="false" sform="false" next="3" name="M" caption="Colour / Plot ab scatter">
       <Subcolumn vislevel="3">
         <Row popup="false" name="M1">
           <Rhs vislevel="1" flags="1">
