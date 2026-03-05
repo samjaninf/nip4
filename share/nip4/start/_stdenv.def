@@ -2576,3 +2576,30 @@ colourspace options to in
     colourspace_op = Operator "colourspace" (colourspace options to)
         Operator_type.COMPOUND_REWRAP false;
 }
+
+dE76 a b
+    = oo_binary_function dE76_op a b, is_class a
+    = oo_binary'_function dE76_op a b, is_class b
+    = vips_dE76 [] a b, is_image a && is_image b
+    = error (_ "bad arguments to " ++ "dE76")
+{
+    dE76_op = Operator "dE76" dE76 Operator_type.COMPOUND_REWRAP false;
+}
+
+dE00 a b
+    = oo_binary_function dE00_op a b, is_class a
+    = oo_binary'_function dE00_op a b, is_class b
+    = vips_dE00 [] a b, is_image a && is_image b
+    = error (_ "bad arguments to " ++ "dE00")
+{
+    dE00_op = Operator "dE00" dE00 Operator_type.COMPOUND_REWRAP false;
+}
+
+dECMC a b
+    = oo_binary_function dECMC_op a b, is_class a
+    = oo_binary'_function dECMC_op a b, is_class b
+    = vips_dECMC [] a b, is_image a && is_image b
+    = error (_ "bad arguments to " ++ "dECMC")
+{
+    dECMC_op = Operator "dECMC" dECMC Operator_type.COMPOUND_REWRAP false;
+}

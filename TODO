@@ -1,6 +1,6 @@
-- test_colour2.ws .. just done temperature
+- test_colour2.ws
 
-    de00 isn't working
+    measure colour chart needs fixing
 
     need self-tests and "ok!" results
 
@@ -12,7 +12,6 @@
 	- should conversion to scRGB apply gainmap? maybe better at the
 	  libvips level?
 	- we have more built-in profiles now, does this help?
-	- update test workspace
 
 - add to_enum
 

@@ -457,45 +457,21 @@ Colour_rad_item = class
 
 Colour_dE_item = class
     Menupullright (_ "_Difference") (_ "calculate colour difference") {
-    /* Apply a converter to an object ... convert image or colour (since
-     * we can guess the colour space we're converting from), don't convert
-     * matrix or vector (since we can't tell ... assume it's in the right
-     * space already).
-     */
-    apply_cvt cvt x
-        = cvt x,
-            is_Image x || is_Colour x || is_image x
-        = x;
-
-    diff cvt in1 in2 = abs_vec (apply_cvt cvt in1 - apply_cvt cvt in2);
-
-    /* Converter to LAB.
-     */
-    lab_cvt = colourspace [] Interpretation.LAB;
-
-    /* Converter to CMC ... plain CMC is Ch form, so we go LAB again after
-     * to make sure we get a rectangular coord system.
-     */
-    cmc_cvt
-        = colourspace [$source_space => Interpretation.LCH] Interpretation.LAB @
-          colourspace [] Interpretation.CMC;
-
     CIEdE76_item = class
-        Menuaction (_ "CIE dE _76")
+        Menuaction (_ "CIE dE 1976")
             (_ "calculate CIE dE 1976 for two objects") {
-        action a b = map_binary (diff lab_cvt) a b;
+        action a b = map_binary dE76 a b;
     }
 
     CIEdE00_item = class
-        Menuaction (_ "CIE dE _00")
+        Menuaction (_ "CIE dE 2000")
             (_ "calculate CIE dE 2000 for two objects") {
-        action a b = map_binary
-            (colour_binary (_ "im_dE00_fromLab") im_dE00_fromLab) a b;
+        action a b = map_binary dE00 a b;
     }
 
     CMC_item = class
         Menuaction (_ "_CMC(l:c)") (_ "calculate CMC(l:c) for two objects") {
-        action a b = map_binary (diff cmc_cvt) a b;
+        action a b = map_binary dECMC a b;
     }
 }
 
@@ -579,7 +555,7 @@ Colour_similar_item = class
         _result {
         _vislevel = 3;
 
-        target_colour = Colour_picker "Lab" [50, 0, 0];
+        target_colour = Colour_new_item.LAB_colour.action;
         t = Scale "dE threshold" 0 100 10;
 
         _result
