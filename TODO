@@ -4,6 +4,10 @@
 
     need self-tests and "ok!" results
 
+    rename menu items in lowercase eg.
+
+        Measure colour chart
+
 - don't render Value caption in batch mode
 
 - Colour

@@ -997,8 +997,8 @@ decode im
         Operator_type.COMPOUND_REWRAP false;
 
     decode_im im
-        = vips_LabQ2Lab [] im, get_coding im == Image_coding.LABPACK
-        = vips_rad2float [] im, get_coding im == Image_coding.RAD
+        = vips_LabQ2Lab [] im, get_coding im == Coding.LABPACK
+        = vips_rad2float [] im, get_coding im == Coding.RAD
         = im;
 }
 
@@ -1032,7 +1032,7 @@ measure_draw across down measure image
     insertset main sub x y
           = foldr add_another main (zip2 x y)
      {
-          add_another (x, y) im = insert x y sub im;
+          add_another [x, y] im = insert x y sub im;
      }
 }
 
