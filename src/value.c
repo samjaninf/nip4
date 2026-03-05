@@ -79,19 +79,24 @@ value_update_model(Heapmodel *heapmodel)
 	printf("\n");
 #endif /*DEBUG*/
 
-	// update the caption ... we must do this from reduce, not during
-	// generate_caption above, or we could trigger reduce during a simple
-	// view refresh
-	VipsBuf *buf = &value->caption_buffer;
+	/* Update the caption ... we must do this from reduce, not during
+	 * generate_caption above, or we could trigger reduce during a simple
+	 * view refresh.
+	 *
+	 * No need to render the caption in batch mode.
+	 */
+	if (!main_option_batch) {
+		VipsBuf *buf = &value->caption_buffer;
 
-	vips_buf_rewind(buf);
-	if (IOBJECT(value)->name)
-		vips_buf_appends(buf, IOBJECT(value)->name);
-	else if (!heapmodel_name(HEAPMODEL(value), buf))
-		vips_buf_appends(buf, G_OBJECT_CLASS_NAME(value_class));
+		vips_buf_rewind(buf);
+		if (IOBJECT(value)->name)
+			vips_buf_appends(buf, IOBJECT(value)->name);
+		else if (!heapmodel_name(HEAPMODEL(value), buf))
+			vips_buf_appends(buf, G_OBJECT_CLASS_NAME(value_class));
 
-	vips_buf_appends(buf, " ");
-	heapmodel_value(HEAPMODEL(value), buf);
+		vips_buf_appends(buf, " ");
+		heapmodel_value(HEAPMODEL(value), buf);
+	}
 
 	return HEAPMODEL_CLASS(value_parent_class)->update_model(heapmodel);
 }
