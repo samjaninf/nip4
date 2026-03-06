@@ -6,6 +6,7 @@
 - ref tilesource during update to prevent occasional read of freed mem
 - fix a race when Value caption updates during GUI refresh
 - add an object registry for testing pointer validity
+- load gainmaps on UHDR images
 
 ## 9.0.17 2026/02/25
 

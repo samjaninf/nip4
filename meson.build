@@ -102,7 +102,7 @@ nip4_deps += declare_dependency(
 )
 
 # need vips_thread_execute()
-nip4_deps += dependency('vips', version: '>=8.16')
+nip4_deps += dependency('vips', version: '>=8.18')
 nip4_deps += gtk_dep
 nip4_deps += dependency('gsl')
 nip4_deps += dependency('libxml-2.0')
