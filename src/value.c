@@ -69,7 +69,6 @@ value_generate_caption(iObject *iobject)
 static void *
 value_update_model(Heapmodel *heapmodel)
 {
-	Classmodel *classmodel = CLASSMODEL(heapmodel);
 	Value *value = VALUE(heapmodel);
 	ValueClass *value_class = VALUE_GET_CLASS(value);
 

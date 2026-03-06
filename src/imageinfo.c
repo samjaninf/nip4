@@ -642,6 +642,39 @@ typedef struct _ImageinfoOpen {
 	GtkWindow *window;
 } ImageinfoOpen;
 
+/* Load the gainmap, if any.
+ */
+VipsImage *
+imageinfo_attach_gainmap(VipsImage *image)
+{
+	VipsImage *gainmap;
+
+	if ((gainmap = vips_image_get_gainmap(image))) {
+		VipsImage *x;
+
+		if (vips_copy(image, &x, NULL)) {
+			VIPS_UNREF(gainmap);
+
+			return NULL;
+		}
+		VIPS_UNREF(image);
+		image = x;
+
+		// attach the gainmap as metadata
+		printf("imageinfo_attach_gainmap: attaching gainmap ...\n");
+		vips_image_set_image(image, "gainmap", gainmap);
+
+		VIPS_UNREF(gainmap);
+	}
+	else
+		g_object_ref(image);
+
+	printf("imageinfo_attach_gainmap:\n");
+	vips_object_print_dump(VIPS_OBJECT(image));
+
+	return image;
+}
+
 /* Open for read ... returns a non-heap pointer, destroy if it goes in the
  * heap.
  */
@@ -658,6 +691,31 @@ imageinfo_open_image_input(const char *filename, ImageinfoOpen *open)
 			return NULL;
 	}
 
+#ifdef DEBUG_OPEN
+	printf("imageinfo_open_image_input: opened VIPS \"%s\"\n", filename);
+#endif /*DEBUG_OPEN*/
+
+	/* Load the gainmap, if any.
+	 */
+	VipsImage *gainmap;
+	if ((gainmap = vips_image_get_gainmap(image))) {
+		VipsImage *x;
+
+		if (vips_copy(image, &x, NULL)) {
+			VIPS_UNREF(gainmap);
+			VIPS_UNREF(image);
+
+			return NULL;
+		}
+		VIPS_UNREF(image);
+		image = x;
+
+		// attach the gainmap as metadata
+		vips_image_set_image(image, "gainmap", gainmap);
+
+		VIPS_UNREF(gainmap);
+	}
+
 	if (!(imageinfo = imageinfo_new(open->imageinfogroup,
 			  open->heap, image, open->filename))) {
 		VIPS_UNREF(image);
@@ -665,10 +723,6 @@ imageinfo_open_image_input(const char *filename, ImageinfoOpen *open)
 	}
 	MANAGED_REF(imageinfo);
 	imageinfo->from_file = TRUE;
-
-#ifdef DEBUG_OPEN
-	printf("imageinfo_open_image_input: opened VIPS \"%s\"\n", filename);
-#endif /*DEBUG_OPEN*/
 
 	/* The rewind will have removed everything from the VipsImage. Reattach
 	 * progress.
