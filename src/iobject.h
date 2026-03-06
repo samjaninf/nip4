@@ -95,6 +95,8 @@ typedef struct _iObjectClass {
 #define IOBJECT_GET_CLASS_NAME(obj) \
 	((G_TYPE_INSTANCE_GET_CLASS((obj), IOBJECT_TYPE, iObjectClass))->user_name)
 
+gboolean iobject_valid(void *pointer);
+
 void *iobject_destroy(iObject *iobject);
 void *iobject_changed(iObject *iobject);
 void *iobject_info(iObject *iobject, VipsBuf *buf, int indent);
