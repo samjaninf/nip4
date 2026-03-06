@@ -2257,7 +2257,7 @@ segment x
     segment_op = Operator "segment" segment Operator_type.COMPOUND_REWRAP false;
 
     [image, nsegs] = vips_labelregions [$segments => true] x;
-    image' = vips_copy_set_meta image "n-segments" nsegs;
+    image' = set_header "n-segments" nsegs image;
 }
 
 point a b

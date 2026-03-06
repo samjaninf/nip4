@@ -1,36 +1,8 @@
+
 - test_colour2.ws
 
-	add uhdr stuff ... get and apply gainmap
+    get uhdr metadata does not recompute properly after an edit
 
-        get_gainmap will need vips_image_get_gainmap() ... returns image,
-        but with a new gainmap metadata item
-
-	call vips_image_get_gainmap() on all image loads? we'd be sure to
-	always have a gainmap image then
-
-        use (get_header "gainmap-data" A2) in nip4 to get the VipsImage for
-        the gainmap
-
-        right now you get "can't convert VipsBlob to nip type"
-
-        or maybe look for a gainmap item, if there return it, if not there,
-        copy, call vips_image_get_gainmap() and return it
-
-    add
-
-        add gainmap (set gainmap?)
-        get UHDR metadata as a set of name-value pairs
-        set UHDR metadata?
-
-        maybe need something to display an enum nicely for that? or display
-        as a class?
-
-	should conversion to scRGB apply gainmap? maybe better at the
-	libvips level?
-
-        make it explicit
-
-	we have more built-in profiles now, does this help?
 
 - test_object.def fails
 

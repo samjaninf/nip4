@@ -457,16 +457,74 @@ Colour_rad_item = class
 Colour_uhdr_item = class
     Menupullright (_ "UHDR")
         (_ "convert to and from UHDR format") {
-    Get_gainmap_item = class
-        Menuaction (_ "Get embedded gainmap")
-            (_ "get gainmap from image") {
+
+    Apply_gainmap_item = class
+        Menuaction (_ "Apply embedded gainmap") (_ "apply gainmap to image") {
         action x = map_unary uhdr2scRGB x;
     }
 
-    Apply_gainmap_item = class
-        Menuaction (_ "Apply embedded gainmap")
-            (_ "apply gainmap to image") {
-        action x = map_unary uhdr2scRGB x;
+    Get_gainmap_item = class
+        Menuaction (_ "Get embedded gainmap") (_ "get gainmap from image") {
+        action x = map_unary (get_header "gainmap") x;
+    }
+
+    sep1 = Menuseparator;
+
+    Get_uhdr_metadata_item = class
+        Menuaction (_ "Get UHDR metadata") (_ "get UHDR metadata from image") {
+        action image = class {
+            _vislevel = 2;
+
+            gainmap_max_content_boost
+                = get_header "gainmap-max-content-boost" image;
+            gainmap_min_content_boost
+                = get_header "gainmap-min-content-boost" image;
+            gainmap_gamma
+                = get_header "gainmap-gamma" image;
+            gainmap_offset_sdr
+                = get_header "gainmap-offset-sdr" image;
+            gainmap_offset_hdr
+                = get_header "gainmap-offset-hdr" image;
+            gainmap_hdr_capacity_min
+                = get_header "gainmap-hdr-capacity-min" image;
+            gainmap_hdr_capacity_max
+                = get_header "gainmap-hdr-capacity-max" image;
+            gainmap_use_base_cg
+                = get_header "gainmap-use-base-cg" image;
+            gainmap_scale_factor
+                = get_header "gainmap-scale-factor" image;
+
+        }
+    }
+
+    Set_uhdr_metadata_item = class
+        Menuaction (_ "Set UHDR metadata") (_ "set UHDR metadata from image") {
+        action x y = class _result {
+            _vislevel = 3;
+
+            _result
+                = foldr set image (zip2 fields names)
+            {
+                [meta, image] = sortc (const is_Image) [x, y];
+
+                set [field, name] = set_header field  meta.(name);
+
+                fields = [
+                    "gainmap-max-content-boost",
+                    "gainmap-min-content-boost",
+                    "gainmap-gamma",
+                    "gainmap-offset-sdr",
+                    "gainmap-offset-hdr",
+                    "gainmap-hdr-capacity-min",
+                    "gainmap-hdr-capacity-max",
+                    "gainmap-use-base-cg",
+                    "gainmap-scale-factor"
+                ];
+
+                // swap to '_' for nip names
+                names = map (map (\c if c == '-' then '_' else c)) fields;
+            }
+        }
     }
 
 }
