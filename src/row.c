@@ -220,22 +220,18 @@ static void *
 row_dirty_set_sub(Model *model, gboolean clear_error)
 {
 	Row *row;
-	Rhs *rhs;
 
-	// child_rhs can be garbage during recomp :(
 	if (IS_ROW(model) &&
-		(row = ROW(model)) &&
-		row->child_rhs &&
-		IS_RHS(row->child_rhs) &&
-		(rhs = row->child_rhs)) {
-		if (rhs &&
-			rhs->itext &&
-			ITEXT(rhs->itext)->edited)
-			row_dirty_set_single(row, clear_error);
-		else if (rhs &&
-			rhs->graphic &&
-			CLASSMODEL(rhs->graphic)->edited)
-			row_dirty_set_single(row, clear_error);
+		(row = ROW(model))) {
+
+		// rhs can be invalid during recomp
+		if (iobject_valid(row->child_rhs)) {
+			Rhs *rhs = row->child_rhs;
+
+			if ((rhs->itext && ITEXT(rhs->itext)->edited) ||
+				(rhs->graphic && CLASSMODEL(rhs->graphic)->edited))
+				row_dirty_set_single(row, clear_error);
+		}
 	}
 
 	return NULL;
