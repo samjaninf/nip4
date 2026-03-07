@@ -352,11 +352,23 @@ get_header_type field x
         Operator_type.COMPOUND false;
 }
 
+// set core header values, eg. "interpretation" ... strings are allowed for
+// enums, eg. $interpretation $lab
 set_header field value x
+    = oo_unary_function set_header_op x, is_class x
+    = copy [field => value] x, is_image x
+    = error (_ "bad arguments to " ++ "set_header")
+{
+    set_header_op = Operator "set_header" (set_header field value)
+        Operator_type.COMPOUND false;
+}
+
+// set metadata, eg. "banana" ... can't set core fields, no strings for enums
+set_meta field value x
     = oo_unary_function set_header_op x, is_class x
     = vips_copy_set_meta x field value, is_image x
     = error (_ "bad arguments to " ++ "set_header")
 {
-    set_header_op = Operator "set_header" (set_header field value)
+    set_header_op = Operator "set_meta" (set_meta field value)
         Operator_type.COMPOUND false;
 }

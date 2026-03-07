@@ -54,21 +54,25 @@ image_new_from_image options image
     // earlier options override later options, so we just append the image
     // properties to the option set
     options' = options ++ [
-            $bands => get_bands image,
-            $format => get_format image,
-            $coding => get_coding image,
-            $interpretation => get_interpretation image,
-            $xoffset => get_xoffset image,
-            $yoffset => get_yoffset image,
-            $xres => get_xres image,
-            $yres => get_yres image
+        $bands => get_bands image,
+        $format => get_format image,
+        $coding => get_coding image,
+        $interpretation => get_interpretation image,
+        $xoffset => get_xoffset image,
+        $yoffset => get_yoffset image,
+        $xres => get_xres image,
+        $yres => get_yres image
     ];
 }
 
 /* generate a slice of LAB space size x size pixels for L* == l
  */
 lab_slice size l
-    = set_header $interpretation $lab im
+    = copy [
+        $interpretation => "lab",
+        $xoffset => size / 2,
+        $yoffset => size / 2
+    ] (L ++ a ++ b)
 {
     L = image_new [
         $format => Format.FLOAT,
@@ -76,10 +80,9 @@ lab_slice size l
         $pixel => l
     ] size size;
 
-    A1 = grey [] size size;
-    A2 = A1 * 256 - 128;
-    A3 = rot90 A2;
-    im = copy [$xoffset => size / 2, $yoffset => size / 2] (L ++ A2 ++ A3);
+    ramp = grey [] size size;
+    a = ramp * 256 - 128;
+    b = rot90 a;
 }
 
 /* Look at Image, try to make a Colour (failing that, a Vector) which is white

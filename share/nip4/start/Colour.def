@@ -463,36 +463,50 @@ Colour_uhdr_item = class
         action x = map_unary uhdr2scRGB x;
     }
 
+    sep1 = Menuseparator;
+
     Get_gainmap_item = class
         Menuaction (_ "Get embedded gainmap") (_ "get gainmap from image") {
         action x = map_unary (get_header "gainmap") x;
     }
 
-    sep1 = Menuseparator;
+    Set_gainmap_item = class
+        Menuaction (_ "Set embedded gainmap") (_ "set gainmap on image") {
+        action x y
+            = result
+        {
+            result = map_binary (set_meta "gainmap") x' y';
+
+            // get the wider (probably the main one) image second
+            [x', y'] = sortc (\i\j get_width i <= get_width j) [x, y];
+        }
+    }
+
+    sep2 = Menuseparator;
 
     Get_uhdr_metadata_item = class
         Menuaction (_ "Get UHDR metadata") (_ "get UHDR metadata from image") {
-        action image = class {
+        action x = class {
             _vislevel = 2;
 
-            gainmap_max_content_boost
-                = get_header "gainmap-max-content-boost" image;
-            gainmap_min_content_boost
-                = get_header "gainmap-min-content-boost" image;
-            gainmap_gamma
-                = get_header "gainmap-gamma" image;
-            gainmap_offset_sdr
-                = get_header "gainmap-offset-sdr" image;
-            gainmap_offset_hdr
-                = get_header "gainmap-offset-hdr" image;
-            gainmap_hdr_capacity_min
-                = get_header "gainmap-hdr-capacity-min" image;
-            gainmap_hdr_capacity_max
-                = get_header "gainmap-hdr-capacity-max" image;
-            gainmap_use_base_cg
-                = get_header "gainmap-use-base-cg" image;
-            gainmap_scale_factor
-                = get_header "gainmap-scale-factor" image;
+            mincb = Expression "Max content boost"
+                (get_header "gainmap-max-content-boost" x);
+            maxcb = Expression "Min content boost"
+                (get_header "gainmap-min-content-boost" x);
+            gamma = Expression "Gamma"
+                (get_header "gainmap-gamma" x);
+            offsetsdr = Expression "Offset SDR"
+                (get_header "gainmap-offset-sdr" x);
+            offsethdr = Expression "Offset HDR"
+                (get_header "gainmap-offset-hdr" x);
+            hdrcapmin = Expression "HDR capacity min"
+                (get_header "gainmap-hdr-capacity-min" x);
+            hdrcapmax = Expression "HDR capacity max"
+                (get_header "gainmap-hdr-capacity-max" x);
+            basecg = Expression "Use base cg"
+                (get_header "gainmap-use-base-cg" x);
+            sf = Expression "Scale factor"
+                (get_header "gainmap-scale-factor" x);
 
         }
     }
@@ -503,30 +517,26 @@ Colour_uhdr_item = class
             _vislevel = 3;
 
             _result
-                = foldr set image (zip2 fields names)
+                = foldr set image fields
             {
                 [meta, image] = sortc (const is_Image) [x, y];
 
-                set [field, name] = set_header field  meta.(name);
+                set [member, field] = set_meta field meta.(member).expr;
 
                 fields = [
-                    "gainmap-max-content-boost",
-                    "gainmap-min-content-boost",
-                    "gainmap-gamma",
-                    "gainmap-offset-sdr",
-                    "gainmap-offset-hdr",
-                    "gainmap-hdr-capacity-min",
-                    "gainmap-hdr-capacity-max",
-                    "gainmap-use-base-cg",
-                    "gainmap-scale-factor"
+                    $mincb => "gainmap-max-content-boost",
+                    $maxcb => "gainmap-min-content-boost",
+                    $gamma => "gainmap-gamma",
+                    $offsetsdr => "gainmap-offset-sdr",
+                    $offsethdr => "gainmap-offset-hdr",
+                    $hdrcapmin => "gainmap-hdr-capacity-min",
+                    $hdrcapmax => "gainmap-hdr-capacity-max",
+                    $basecg => "gainmap-use-base-cg",
+                    $sf => "gainmap-scale-factor"
                 ];
-
-                // swap to '_' for nip names
-                names = map (map (\c if c == '-' then '_' else c)) fields;
             }
         }
     }
-
 }
 
 #separator

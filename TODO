@@ -1,8 +1,23 @@
 
 - test_colour2.ws
 
-    get uhdr metadata does not recompute properly after an edit
+    has_header does not work for metadata?
 
+        has_header "gainmap-gamma" is always false
+
+- try
+
+    ws defs
+    enter "f a b = a + b;"
+    press |> a few times
+    ststua bar changes between "0 defs" and "1 defs" crazilly
+
+- try:
+
+    ws defs
+    press tab
+    get 8 spaces!
+    what does the program window do?
 
 - test_object.def fails
 

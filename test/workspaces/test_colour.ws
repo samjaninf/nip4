@@ -92,7 +92,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="449" y="5" open="true" selected="false" sform="false" next="64" name="B" caption="Colour / Convert to colour">
+    <Column x="443" y="5" open="true" selected="false" sform="false" next="64" name="B" caption="Colour / Convert to colour">
       <Subcolumn vislevel="3">
         <Row popup="false" name="B1">
           <Rhs vislevel="1" flags="4">
@@ -214,7 +214,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1107" y="5" open="true" selected="false" sform="false" next="21" name="C" caption="Colour / Colourspace">
+    <Column x="1098" y="5" open="true" selected="false" sform="false" next="21" name="C" caption="Colour / Colourspace">
       <Subcolumn vislevel="3">
         <Row popup="false" name="C1">
           <Rhs vislevel="1" flags="1">
@@ -342,7 +342,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1538" y="5" open="true" selected="false" sform="false" next="19" name="D" caption="Colour / Tag as">
+    <Column x="1522" y="5" open="true" selected="false" sform="false" next="19" name="D" caption="Colour / Tag as">
       <Subcolumn vislevel="3">
         <Row popup="false" name="D1">
           <Rhs vislevel="1" flags="1">
@@ -470,7 +470,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1969" y="5" open="true" selected="false" sform="false" next="28" name="E" caption="Colour / Temperature">
+    <Column x="1946" y="5" open="true" selected="false" sform="false" next="28" name="E" caption="Colour / Temperature">
       <Subcolumn vislevel="3">
         <Row popup="false" name="E5">
           <Rhs vislevel="1" flags="1">
@@ -574,7 +574,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2579" y="5" open="true" selected="false" sform="false" next="4" name="F" caption="Colour / ICC">
+    <Column x="2553" y="5" open="true" selected="false" sform="false" next="4" name="F" caption="Colour / ICC">
       <Subcolumn vislevel="3">
         <Row popup="false" name="F1">
           <Rhs vislevel="1" flags="1">
@@ -718,7 +718,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="3053" y="5" open="true" selected="false" sform="false" next="9" name="G" caption="Colour / Radiance">
+    <Column x="3030" y="5" open="true" selected="false" sform="false" next="9" name="G" caption="Colour / Radiance">
       <Subcolumn vislevel="3">
         <Row popup="false" name="G2">
           <Rhs vislevel="1" flags="1">
@@ -755,7 +755,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="3434" y="5" open="true" selected="false" sform="false" next="13" name="H" caption="Colour / Difference">
+    <Column x="3980" y="5" open="true" selected="false" sform="false" next="13" name="H" caption="Colour / Difference">
       <Subcolumn vislevel="3">
         <Row popup="false" name="H1">
           <Rhs vislevel="1" flags="1">
@@ -799,7 +799,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="3840" y="5" open="true" selected="false" sform="false" next="7" name="I" caption="Colour / Adjust">
+    <Column x="4380" y="5" open="true" selected="false" sform="false" next="7" name="I" caption="Colour / Adjust">
       <Subcolumn vislevel="3">
         <Row popup="false" name="I2">
           <Rhs vislevel="1" flags="1">
@@ -912,7 +912,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="4498" y="5" open="true" selected="false" sform="false" next="4" name="J" caption="Colour / Similar">
+    <Column x="5031" y="5" open="true" selected="false" sform="false" next="4" name="J" caption="Colour / Similar">
       <Subcolumn vislevel="3">
         <Row popup="false" name="J1">
           <Rhs vislevel="1" flags="1">
@@ -998,7 +998,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="5066" y="5" open="true" selected="false" sform="false" next="5" name="K" caption="Colour / Measure colour chart">
+    <Column x="5597" y="5" open="true" selected="false" sform="false" next="5" name="K" caption="Colour / Measure colour chart">
       <Subcolumn vislevel="3">
         <Row popup="false" name="K1">
           <Rhs vislevel="1" flags="1">
@@ -1025,7 +1025,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="5579" y="5" open="true" selected="true" sform="false" next="8" name="L" caption="Colour / Make synthetic colour chart">
+    <Column x="6106" y="5" open="true" selected="false" sform="false" next="8" name="L" caption="Colour / Make synthetic colour chart">
       <Subcolumn vislevel="3">
         <Row popup="false" name="L1">
           <Rhs vislevel="1" flags="1">
@@ -1062,7 +1062,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="6092" y="5" open="true" selected="false" sform="false" next="3" name="M" caption="Colour / Plot ab scatter">
+    <Column x="6615" y="5" open="true" selected="false" sform="false" next="3" name="M" caption="Colour / Plot ab scatter">
       <Subcolumn vislevel="3">
         <Row popup="false" name="M1">
           <Rhs vislevel="1" flags="1">
@@ -1113,6 +1113,177 @@
               </Row>
             </Subcolumn>
             <iText formula="Colour_plot_ab_scatter_item.action M1"/>
+          </Rhs>
+        </Row>
+      </Subcolumn>
+    </Column>
+    <Column x="3407" y="5" open="true" selected="true" sform="false" next="21" name="N" caption="Colour / UHDR">
+      <Subcolumn vislevel="3">
+        <Row popup="false" name="N1">
+          <Rhs vislevel="1" flags="1">
+            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/images/ultra-hdr.jpg&quot;"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="N2">
+          <Rhs vislevel="1" flags="1">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Colour_uhdr_item.Apply_gainmap_item.action N1"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="N3">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if  max N2 &lt; 1 then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="N4">
+          <Rhs vislevel="1" flags="1">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Colour_uhdr_item.Get_gainmap_item.action N1"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="N5">
+          <Rhs vislevel="2" flags="5">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="(unsigned char) (N4 + 10)"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="N11">
+          <Rhs vislevel="1" flags="1">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Colour_uhdr_item.Set_gainmap_item.action N5 N1"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="N13">
+          <Rhs vislevel="1" flags="1">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Colour_uhdr_item.Apply_gainmap_item.action N11"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="N14">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if max N13 &lt; max N2 then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="N15">
+          <Rhs vislevel="2" flags="6">
+            <Subcolumn vislevel="1">
+              <Row name="x">
+                <Rhs vislevel="0" flags="4">
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="super">
+                <Rhs vislevel="0" flags="4">
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="mincb">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Max content boost"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="maxcb">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Min content boost"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="gamma">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Gamma"/>
+                  <Subcolumn vislevel="0">
+                    <Row name="caption">
+                      <Rhs vislevel="0" flags="4">
+                        <iText/>
+                      </Rhs>
+                    </Row>
+                    <Row name="expr">
+                      <Rhs vislevel="0" flags="4">
+                        <iText formula="12"/>
+                      </Rhs>
+                    </Row>
+                    <Row name="super">
+                      <Rhs vislevel="1" flags="4">
+                        <Subcolumn vislevel="0"/>
+                        <iText/>
+                      </Rhs>
+                    </Row>
+                  </Subcolumn>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="offsetsdr">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Offset SDR"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="offsethdr">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Offset HDR"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="hdrcapmin">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="HDR capacity min"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="hdrcapmax">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="HDR capacity max"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="basecg">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Use base cg"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="sf">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Scale factor"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+            </Subcolumn>
+            <iText formula="Colour_uhdr_item.Get_uhdr_metadata_item.action N1"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="N16">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Colour_uhdr_item.Set_uhdr_metadata_item.action N15 N1"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="N17">
+          <Rhs vislevel="2" flags="6">
+            <Subcolumn vislevel="1"/>
+            <iText formula="Colour_uhdr_item.Get_uhdr_metadata_item.action N16"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="N20">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if N17.gamma.expr != 12 then error &quot;fail&quot; else &quot;ok!&quot;"/>
           </Rhs>
         </Row>
       </Subcolumn>
