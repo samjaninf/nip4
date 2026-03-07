@@ -1097,8 +1097,8 @@ rotate interp angle x
 joinlr a b
     = oo_binary_function joinlr_op a b, is_class a
     = oo_binary'_function joinlr_op a b, is_class b
-    = join_im a b, is_image a && is_image b
-    = apply_matim_binary join_im a b, is_matrix_image a && is_matrix_image b
+    = joinlr_im a b, is_image a && is_image b
+    = apply_matim_binary joinlr_im a b, is_matrix_image a && is_matrix_image b
     = error (_ "bad arguments to " ++ "joinlr")
 {
     joinlr_op = Operator "joinlr" joinlr Operator_type.COMPOUND_REWRAP false;
