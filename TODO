@@ -1,11 +1,4 @@
-
-- test_colour2.ws
-
-    has_header does not work for metadata?
-
-        has_header "gainmap-gamma" is always false
-
-  can we make test_colour.ws work without libultrahdr?
+- Matrix.def next
 
 - try
 
@@ -39,7 +32,7 @@
 
 - menus next!
 
-	Colour.def
+	Colour.def	done
 	Matrix.def
 	Filter.def
 	Object.def
