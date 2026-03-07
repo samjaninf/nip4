@@ -1117,13 +1117,18 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="3407" y="5" open="true" selected="true" sform="false" next="21" name="N" caption="Colour / UHDR">
+    <Column x="3407" y="5" open="true" selected="true" sform="false" next="24" name="N" caption="Colour / UHDR">
       <Subcolumn vislevel="3">
         <Row popup="false" name="N1">
           <Rhs vislevel="1" flags="1">
             <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_file &quot;$HOME/GIT/nip4/test/images/ultra-hdr.jpg&quot;"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="N23">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="&quot; &quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="N2">

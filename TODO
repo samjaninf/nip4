@@ -5,12 +5,14 @@
 
         has_header "gainmap-gamma" is always false
 
+  can we make test_colour.ws work without libultrahdr?
+
 - try
 
     ws defs
     enter "f a b = a + b;"
     press |> a few times
-    ststua bar changes between "0 defs" and "1 defs" crazilly
+    ststus bar changes between "0 defs" and "1 defs" crazilly
 
 - try:
 

@@ -228,6 +228,7 @@ get_interpretation x
 }
 
 has_image x = is_image x || is_Image x || is_Arrow x;
+
 get_image x
     = x.value, is_Image x
     = x.image.value, is_Arrow x
@@ -240,7 +241,15 @@ get_image x
 }
 
 has_header field x
-    = has_member field x || is_Arrow x || is_image x || is_Colour x;
+    = true, is_class x && has_member field x
+    = oo_unary_function has_header_op x, is_class x
+    = get_header_type field x != 0, is_image x
+    = false
+{
+    has_header_op = Operator "has_header" (has_header field)
+        Operator_type.COMPOUND false;
+}
+
 get_header field x
     = get_member field x, has_member field x
     = oo_unary_function get_header_op x, is_class x
@@ -253,9 +262,11 @@ get_header field x
 }
 
 has_format = has_header "format";
+
 get_format = get_header "format";
 
 has_bands x = is_image x || has_member "bands" x || is_Arrow x;
+
 get_bands x
     = x.bands, has_member "bands" x
     = get_header "bands" (get_image x), has_image x
@@ -269,36 +280,47 @@ get_bands x
 }
 
 has_coding = has_header "coding";
+
 get_coding = get_header "coding";
 
 has_xres = has_header "xres";
+
 get_xres = get_header "xres";
 
 has_yres = has_header "yres";
+
 get_yres = get_header "yres";
 
 has_xoffset = has_header "xoffset";
+
 get_xoffset = get_header "xoffset";
 
 has_yoffset = has_header "yoffset";
+
 get_yoffset = get_header "yoffset";
 
 has_left = has_header "left";
+
 get_left = get_header "left";
 
 has_top = has_header "top";
+
 get_top = get_header "top";
 
 has_width = has_header "width";
+
 get_width = get_header "width";
 
 has_height = has_header "height";
+
 get_height = get_header "height";
 
 has_value = has_member "value";
+
 get_value = get_header "value";
 
 has_number x = is_number x || is_Real x;
+
 get_number x
     = x.value, is_Real x
     = x, is_number x
@@ -310,6 +332,7 @@ get_number x
 }
 
 has_real x = is_real x || is_Real x;
+
 get_real x
     = x.value, is_Real x
     = x, is_real x
