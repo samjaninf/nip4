@@ -861,7 +861,7 @@ Format = class Enum {
         [UCHAR, _ "8-bit unsigned integer"]
     ];
 
-    _maxval = Table [
+    _maxval = (Table [
         [DPCOMPLEX, 255],
         [DOUBLE, 255],
         [COMPLEX, 255],
@@ -872,7 +872,7 @@ Format = class Enum {
         [USHORT, 65535],
         [CHAR, 127],
         [UCHAR, 255]
-    ];
+    ]).lookup 0 1;
 }
 
 // interpretations which are 3-ary colorimetric spaces
@@ -968,7 +968,7 @@ Image value = class
         [wrap join_result_image,
             (has_real x || is_Vector x) &&
             (op.op_name == "join" || op.op_name == "join'")],
-        [wrap ite_result_image,
+            [wrap ite_result_image,
             op.op_name == "if_then_else"],
         [wrap (op.fn this.value (get_image x)),
             has_image x],
@@ -1221,6 +1221,18 @@ Intent = class Enum {
         [SATURATION, _ "Saturation"],
         [ABSOLUTE, _ "Absolute"],
         [AUTO, _ "Auto"]
+    ];
+}
+
+Precision = class Enum {
+    INTEGER = 0;
+    FLOAT = 1;
+    APPROX = 2;
+
+    _description = [
+        [INTEGER, _ "Integer"],
+        [FLOAT, _ "Float"],
+        [APPROX, _ "Approximate"]
     ];
 }
 

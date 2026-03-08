@@ -12,12 +12,12 @@ Filter_conv_item = class
 
 	Blur_item = class
 		Menuaction "_Blur" "3x3 blur of image" {
-		action x = map_unary (conv filter_blur) x;
+		action x = map_unary (conv [$precision => "integer"] filter_blur) x;
 	}
 
 	Sharpen_item = class
 		Menuaction "_Sharpen" "3x3 sharpen of image" {
-		action x = map_unary (conv filter_sharp) x;
+		action x = map_unary (conv [$precision => "integer"] filter_sharp) x;
 	}
 
 	Usharp_item = class
@@ -47,9 +47,9 @@ Filter_conv_item = class
 				process in
 					= Image in'''
 				{
-					in' = colour_transform_to Interpretation.LABS in.value;
+					in' = colourspace [] Interpretation.LABS in.value;
 					in'' = sharpen [3, 5, 7, 9, 11, 51]?size st bm dm fs js in';
-					in''' = colour_transform_to (get_type in) in'';
+					in''' = colourspace [] (get_interpretation in) in'';
 				}
 			}
 		}
@@ -57,12 +57,13 @@ Filter_conv_item = class
 
 	Emboss_item = class
 		Menuaction "_Emboss" "1 pixel displace emboss" {
-		action x = map_unary (conv filter_emboss) x;
+		action x = map_unary (conv [$precision => "integer"] filter_emboss) x;
 	}
 
 	Laplacian_item = class
 		Menuaction "_Laplacian" "3x3 laplacian edge detect" {
-		action x = map_unary (conv filter_laplacian) x;
+		action x
+            = map_unary (conv [$precision => "integer"] filter_laplacian) x;
 	}
 
 	Sobel_item = class
@@ -83,7 +84,8 @@ Kirk
 				= foldr1 maxpair images
 			{
 				masks = take 4 (iterate rot45 filter_lindet);
-				images = map (converse conv im) masks;
+				images
+                    = map (converse (conv [$precision => "integer"]) im) masks;
 			}
 		}
 	}
@@ -95,13 +97,13 @@ Kirk
 			_vislevel = 3;
 
 			sigma = Scale "Sigma" 0.1 10 2;
-			prec = Option "Precision" ["Int", "Float", "Approximate"] 1;
+			prec = Precision.picker $INTEGER;
 
 			_result
 				= map_unary process x
 			{
 				process in
-					= canny sigma prec.value in;
+					= canny sigma prec.value_key in;
 			}
 		}
 	}
@@ -123,7 +125,7 @@ Kirk
 				"Square",
 				"Gaussian"
 			] 0;
-			prec = Option "Precision" ["Int", "Float", "Approximate"] 0;
+			prec = Precision.picker $INTEGER;
 
 			_result
 				= map_unary process x
@@ -134,10 +136,15 @@ Kirk
 					mask
 						= matrix_blur r, shape.value == 0
 						= gaussmat [
-                            $precision => "integer",
-                            $seperable => true
-                          ] r;
-					blur = [convsep, convsepf, aconvsep layers]?prec mask in;
+                            $precision => prec.value_key,
+                            $separable => true
+                          ] (r / 2) 0.1;
+
+					blur = convsep [
+                        $precision => prec.value_key,
+                        $layers => layers.value
+                    ] mask in;
+
 					proc
 						= in + fac * (in - blur), type == 1
 						= blur * fac + in * (1 - fac);
@@ -579,7 +586,7 @@ Filter_enhance_item = class
 				process im
 					= falsecolour mono''
 				{
-					mono = colour_transform_to Interpretation.B_W im;
+					mono = colourspace [] Interpretation.B_W im;
 					mono' = mono + o;
 					mono''
 						= (unsigned char) mono', clip
@@ -609,7 +616,7 @@ Filter_enhance_item = class
 				process in
 					= Image in''
 				{
-					in' = colour_transform_to Interpretation.B_W in.value;
+					in' = colourspace [] Interpretation.B_W in.value;
 					fn
 						= im_stdif, border
 						= im_stdif_raw;
@@ -739,7 +746,7 @@ Filter_coordinate_item = class
 			_result {
 			_vislevel = 3;
 
-			interp = Interpolate_picker Interpolate_type.BILINEAR;
+			interp = Interpolate.picker $BILINEAR;
 
 			_result
 				= map_unary to_polar a
@@ -768,7 +775,7 @@ Filter_coordinate_item = class
 			_result {
 			_vislevel = 3;
 
-			interp = Interpolate_picker Interpolate_type.BILINEAR;
+			interp = Interpolate.picker $BILINEAR;
 
 			_result
 				= map_unary to_rect a
@@ -1027,7 +1034,7 @@ Filter_blend_item = class
 			= (unsigned char) (to_real opacity / 255 * im);
 
 		// to mono
-		intensity = colour_transform_to Interpretation.B_W;
+		intensity = colourspace [] Interpretation.B_W;
 
 		// All the blend functions
 		// I am grateful to this page
@@ -1262,8 +1269,8 @@ Filter_blend_item = class
 				fg' = moveit (put_alpha fg) bg hmove vmove;
 
 				// transform to sRGB
-				fg'' = colour_transform_to Interpretation.sRGB (lose_alpha fg');
-				bg' = colour_transform_to Interpretation.sRGB (lose_alpha bg);
+				fg'' = colourspace [] Interpretation.sRGB (lose_alpha fg');
+				bg' = colourspace [] Interpretation.sRGB (lose_alpha bg);
 
 				// alphas merged
 				merged_alpha = get_alpha bg | get_alpha fg';
@@ -1304,8 +1311,8 @@ Filter_overlay_header_item = class
 						(0 ++ a' ++ b'),
 						(0 ++ b' ++ a')]?colour
 			{
-				a' = colour_transform_to Interpretation.B_W a;
-				b' = colour_transform_to Interpretation.B_W b;
+				a' = colourspace [] Interpretation.B_W a;
+				b' = colourspace [] Interpretation.B_W b;
 			}
 		}
 	}
@@ -1323,14 +1330,18 @@ Filter_colourize_item = class
 			= map_binary tintit a b
 		{
 			tintit a b
-				= colour_transform_to (get_type colour) colourized'
+				= colourspace [] (get_interpretation colour) colourized'
 			{
 				// get the mono thing first
-				[mono, colour] =
-					sortc (const (is_colour_type @ get_type)) [a, b];
+				[mono, colour]
+                    = sortc (const is_colour_interpretation) [a, b]
+                {
+                    is_colour_interpretation x
+                        = Interpretation_3ary.has_value (get_interpretation x);
+                }
 
-				colour' = tint * colour_transform_to Interpretation.LAB colour;
-				mono' = colour_transform_to Interpretation.B_W mono;
+				colour' = tint * colourspace [] Interpretation.LAB colour;
+				mono' = colourspace [] Interpretation.B_W mono;
 				colourized = (mono' / 2.55) ++ colour'?1 ++ colour'?2;
 				colourized' = set_header $interpretation $lab colourized;
 			}
@@ -1419,9 +1430,9 @@ Filter_negative_item = class
 		= map_unary invert x
 	{
 		invert in
-			= cast in.format (colour_transform_to (get_type in) rgb')
+			= cast in.format (colourspace [] (get_interpretation in) rgb')
 		{
-			rgb = colour_transform_to Interpretation.sRGB in;
+			rgb = colourspace [] Interpretation.sRGB in;
 			rgb' = 255 - rgb;
 		}
 	}
@@ -1442,7 +1453,7 @@ Filter_solarize_item = class
 				= hist_map tab'''' image
 			{
 				// max pixel value for this format
-				mx = Format.maxval image.format;
+				mx = Format._maxval image.format;
 
 				// make a LUT ... just 8 and 16 bit
 				tab
@@ -1482,16 +1493,16 @@ Filter_diffuse_glow_item = class
 			process image
 				= image'
 			{
-				mono = (unsigned char) (colour_transform_to
+				mono = (unsigned char) (colourspace []
 					Interpretation.B_W image);
 				thresh = hist_thresh (highlights.value / 100) mono;
 				mask = mono > thresh;
                 gmat = gaussmat [
                     $precision => "integer",
-                    $seperable => true
+                    $separable => true
                   ] (to_real r / 3);
 				blur = convsep gmat mask;
-				colour' = colour_transform_to image.type colour;
+				colour' = colourspace [] image.type colour;
 				image' = image + colour' * glow * (blur / 255);
 			}
 		}
@@ -1521,7 +1532,7 @@ Filter_drop_shadow_item = class
                 // matrix we blur with to soften shadows
                 blur_matrix = gaussmat [
                     $precision => "integer",
-                    $seperable => true
+                    $separable => true
                   ] blur_size;
                 matrix_size = blur_matrix.width;
                 matrix_radius = (int) (matrix_size / 2) + 1;

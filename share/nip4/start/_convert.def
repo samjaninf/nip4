@@ -108,15 +108,14 @@ to_image x
 to_image_size width height bands format x
     = x, is_image x
     = x.value, is_Image x
-    = image_new [
+    = image_new ([
         $bands => bands,
-        $format => format',
         $pixel => x
-    ] width height
+    ] ++ format_option) width height
 {
-    format'
-        = get_format x, format == NULL
-        = format;
+    format_option
+        = [$format => format], format != NULL
+        = [];
 }
 
 /* Try to make a Colour.

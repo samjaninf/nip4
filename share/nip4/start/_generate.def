@@ -95,7 +95,7 @@ image_white im
         Interpretation_3ary.has_value interpretation
     = white_lab,
         coding == Coding.LABPACK
-    = Vector (replicate bands (Format._maxval.lookup 0 1 format))
+    = Vector (replicate bands (Format._maxval format))
 {
     bands = get_bands im;
     interpretation = get_interpretation im;

@@ -300,7 +300,7 @@ Tasks_capture_item = class
 			] 0;
 
 			// get max of input image
-			_max_value = Format.maxval image.format;
+			_max_value = Format._maxval image.format;
 
 			// measure chart image
 			_camera = measure_sample 6 4 (to_real measure) image;
@@ -899,7 +899,7 @@ Manual_balance_item = class
                 // Used to select the area to be replaced.
                 sc = Scale "Scale cutoff" 0.01 mx (mx / 2)
                 {
-                    mx = Format.maxval im1.format;
+                    mx = Format._maxval im1.format;
                 }
 
                 // Allows replacement with scale&offset balanced gaussian noise.

@@ -1133,7 +1133,7 @@ conj x
 
 cast format x
     = oo_unary_function cast_op x, is_class x
-    = vips_cast [] image (to_real format), is_image x
+    = vips_cast [] x (to_real format), is_image x
     = cast_real (to_real format) x, is_real x
     = error (_ "bad arguments to " ++ "cast")
 {
@@ -1224,52 +1224,22 @@ erode mask image
         = erode mask x;
 }
 
-conv mask image
+conv options mask image
     = oo_unary_function conv_op image, is_class image
-    = vips_conv [$precision => "integer"] image (to_matrix mask), is_image image
+    = vips_conv options image (to_matrix mask), is_image image
     = error (_ "bad arguments to " ++ "conv" ++ ": " ++
         "conv (" ++ print mask ++ ") (" ++ print image ++ ")")
 {
-    conv_op = Operator "conv" (conv mask)
+    conv_op = Operator "conv" (conv options mask)
         Operator_type.COMPOUND_REWRAP false;
 }
 
-convf mask image
-    = oo_unary_function convf_op image, is_class image
-    = vips_conv [$precision => "float"] image (to_matrix mask), is_image image
-    = error (_ "bad arguments to " ++ "convf" ++ ": " ++
-        "convf (" ++ print mask ++ ") (" ++ print image ++ ")")
-{
-    convf_op = Operator "convf" (convf mask)
-        Operator_type.COMPOUND_REWRAP false;
-}
-
-convsep mask image
+convsep options mask image
     = oo_unary_function convsep_op image, is_class image
-    = vips_convsep [$precision => "int"] image (to_matrix mask), is_image image
+    = vips_convsep options image (to_matrix mask), is_image image
     = error (_ "bad arguments to " ++ "convsep")
 {
-    convsep_op = Operator "convsep" (convsep mask)
-        Operator_type.COMPOUND_REWRAP false;
-}
-
-aconvsep layers mask image
-    = oo_unary_function aconvsep_op image, is_class image
-    = vips_convsep [$precision => "approximate"]
-        image (to_matrix mask) (to_real layers), is_image image
-    = error (_ "bad arguments to " ++ "aconvsep")
-{
-    aconvsep_op = Operator "aconvsep" (aconvsep layers mask)
-        Operator_type.COMPOUND_REWRAP false;
-}
-
-convsepf mask image
-    = oo_unary_function convsepf_op image, is_class image
-    = vips_convsep [$precision => "float"] image (to_matrix mask),
-        is_image image
-    = error (_ "bad arguments to " ++ "convsepf")
-{
-    convsepf_op = Operator "convsepf" (convsepf mask)
+    convsep_op = Operator "convsep" (convsep options mask)
         Operator_type.COMPOUND_REWRAP false;
 }
 
@@ -1598,7 +1568,7 @@ tone_build fmt b w s m h sa ma ha
             (to_real s) (to_real m) (to_real h)
             (to_real sa) (to_real ma) (to_real ha))
 {
-    mx = Format.maxval fmt;
+    mx = Format._maxval fmt;
 
     tone_build_im in_max out_max Lb Lw Ps Pm Ph S M H
         = vips_tonelut [
@@ -1940,7 +1910,7 @@ map_binaryl fn a b = map_nary_list (list_2ary fn) [a, b];
  * rather complex ... convsep is now good enough to use.
  */
 smooth x image
-    = convsep (gaussmat [$precision => "integer", $seperable => true] x) image;
+    = convsep (gaussmat [$precision => "integer", $separable => true] x) image;
 
 /* Chop up an image into a list of lists of smaller images. Pad edges with
  * black.
