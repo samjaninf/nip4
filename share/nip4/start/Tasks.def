@@ -339,7 +339,7 @@ Tasks_capture_item = class
 
 			// map an image though the lineariser
 			linear x
-				= hist_map linearising_lut.value x, mode == 0 || mode == 1
+				= maplut [] linearising_lut.value x, mode == 0 || mode == 1
 				= x;
 
 			// map the chart measurements though the lineariser

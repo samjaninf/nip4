@@ -114,7 +114,7 @@ Hist_map_item = class
 		= map_binary map x y
 	{
 		map a b
-			= hist_map hist im
+			= maplut [] hist im
 		{
 			[im, hist] = sortc (const is_hist) [a, b];
 		}

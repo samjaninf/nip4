@@ -1,9 +1,9 @@
 #!/usr/bin/env snip
 
-sample_image = Image (image_new [
+sample_image = image_new [
     $pixel => Vector [1, 2, 3],
     $interpretation => Interpretation.sRGB
-] 1 1);
+] 1 1;
 
 Base_enum = class Enum {
     A = 1;
@@ -38,8 +38,13 @@ main = unit_test [
     [(Vector [1, 2, 3]).value == [1, 2, 3], "Vector construct"],
     [(Vector [1, 2, 3] + 1).value == [2, 3, 4], "Vector add"],
     [Vector [1, 2, 3] + 1 == Vector [2, 3, 4], "Vector equal"],
+    [is_image (sample_image + Vector [1, 2, 3]), "image + Vector is image"],
+    [is_Image (Image sample_image + Vector [1, 2, 3]),
+        "Image + Vector is Image"],
     [mean(sample_image + Vector [1, 2, 3]) == mean (Vector [2, 4, 6]),
         "image + Vector"],
+    [mean(Image sample_image + Vector [1, 2, 3]) == mean (Vector [2, 4, 6]),
+        "Image + Vector"],
 
     [Base_enum.keys == ["A", "B"], "base enum keys"],
     [Base_enum.values == [1, 2], "base enum keys"],
@@ -71,9 +76,13 @@ main = unit_test [
     [Colour "sRGB" [255, 255, 255] - Colour "sRGB" [1, 2, 3] ==
         Colour "sRGB" [254, 253, 252],
             "equal Colour Colour"],
+    [is_Image (Image sample_image + Colour "sRGB" [10, 0, 0]),
+        "add Colour Image is Image"],
+    [is_image (sample_image + Colour "sRGB" [10, 0, 0]),
+        "add Colour image is image"],
     [to_colour (sample_image + Colour "sRGB" [10, 0, 0])
-	== Colour "sRGB" [11, 2, 3],
-            "add Colour Image, mixed spaces"],
+        == Colour "sRGB" [11, 2, 3],
+            "add Colour Image"],
 
     [!(Rect 10 20 30 40).is_empty, "Rect construct"],
     [Rect 10 20 30 40 == Rect 10 20 30 40, "Rect equal"],

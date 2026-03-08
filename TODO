@@ -1,21 +1,11 @@
 - Filter.def next
 
-  this works:
+  reached "diffuse glow"
 
-	image_new [$pixel => Vector [1, 2, 3]] 10 10
+    bad arguments to to_matrix
 
-  thisa does not
 
-	image_new [$pixel => Colour "sRGB" [1, 2, 3]] 10 10
 
-	A1: image_new [] 10 10
-	A2: A1 + Colour "sRGB" [1, 2, 3]
-
-  try
-
-	vips_black [] 1 1 + Colour "sRGB" [1, 2, 3]
-
-  works, but makes a Colour (n4 makes an image)
 
 - try
 

@@ -448,7 +448,7 @@ gravity x
         // matching identity
         i
             = vips_identity [$ushort => true] w, w <= 2 ** 16 - 1
-            = make_xy w 1 ? 0;
+            = xyz [] w 1 ? 0;
 
         // weight identity and sum
         s = mean (i * h') * w;
@@ -1341,14 +1341,14 @@ hist_entropy x
     entropy x = vips_hist_entropy [] x;
 }
 
-hist_map hist image
-    = oo_binary_function hist_map_op hist image, is_class hist
-    = oo_binary'_function hist_map_op hist image, is_class image
-    = vips_maplut [] image hist, is_image hist && is_image image
-    = error (_ "bad arguments to " ++ "hist_map")
+maplut options hist image
+    = oo_binary_function maplut_op hist image, is_class hist
+    = oo_binary'_function maplut_op hist image, is_class image
+    = vips_maplut options image hist, is_image hist && is_image image
+    = error (_ "bad arguments to " ++ "maplut")
 {
     // can't use rewrap, as we want to always wrap as image
-    hist_map_op = Operator "hist_map" (compose (compose Image) hist_map)
+    maplut_op = Operator "maplut" (compose (compose Image) (maplut options))
         Operator_type.COMPOUND false;
 }
 
@@ -1415,7 +1415,7 @@ hist_inv hist
 
         // add an index column on the left
         // again, must be in 0-1
-        y = ((make_xy 1 len)?1) / len;
+        y = ((xyz [] 1 len)?1) / len;
         im''' = y ++ im'';
     }
 }
@@ -1433,7 +1433,7 @@ hist_match in ref
 	ref' = (hist_norm @ hist_cum) ref;
 }
 
-hist_equalize x = hist_map ((hist_norm @ hist_cum @ hist_find) x) x;
+hist_equalize x = maplut [] ((hist_norm @ hist_cum @ hist_find) x) x;
 
 hist_equalize_local w h l image
     = oo_unary_function hist_equalize_local_op image, is_class image
@@ -1465,7 +1465,7 @@ hist_thresh percent image
 
     // threshold that, then use profile to search for the x position in the
     // histogram
-    x = mean (vips_profile (h > percent))?1;
+    x = mean (vips_profile [] (h > percent))?1;
 }
 
 /* Sometimes useful, despite plotting now being built in, for making
@@ -1910,7 +1910,8 @@ map_binaryl fn a b = map_nary_list (list_2ary fn) [a, b];
  * rather complex ... convsep is now good enough to use.
  */
 smooth x image
-    = convsep (gaussmat [$precision => "integer", $separable => true] x) image;
+    = convsep [$precision => "integer"]
+        (gaussmat [$precision => "integer", $separable => true] x) image;
 
 /* Chop up an image into a list of lists of smaller images. Pad edges with
  * black.
@@ -2581,4 +2582,14 @@ dECMC a b
     = error (_ "bad arguments to " ++ "dECMC")
 {
     dECMC_op = Operator "dECMC" dECMC Operator_type.COMPOUND_REWRAP false;
+}
+
+composite options mode a b
+    = oo_binary_function composite_op a b, is_class a
+    = oo_binary'_function composite_op a b, is_class b
+    = vips_composite2 options a b mode, is_image a && is_image b
+    = error (_ "bad arguments to " ++ "composite")
+{
+    composite_op = Operator "composite" (composite options mode)
+        Operator_type.COMPOUND_REWRAP false;
 }

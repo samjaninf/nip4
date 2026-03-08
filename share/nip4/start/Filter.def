@@ -756,7 +756,7 @@ Filter_coordinate_item = class
 				{
 					// xy image, origin in the centre, scaled to fit image to
 					// a circle
-					xy = make_xy im.width im.height;
+					xy = xyz [] im.width im.height;
 					xy' = xy - Vector [im.width / 2, im.height / 2];
 					scale = min [im.width, im.height] / im.width;
 					xy'' = 2 * xy' / scale;
@@ -784,7 +784,7 @@ Filter_coordinate_item = class
 					= mapim interp.value map'' im
 				{
 					// xy image, vertical scaled to 360 degrees
-					xy = make_xy im.width im.height;
+					xy = xyz [] im.width im.height;
 					xy' = xy * Vector [1, 360 / im.height];
 
 					// to rect, scale to image rect
@@ -1009,7 +1009,7 @@ Filter_blend_item = class
 						= floor (range * blend_width.value);
                    	start = blend_position' - blend_width' / 2;
 
-					background = (make_xy output_width output_height) >=
+					background = (xyz [] output_width output_height) >=
 						blend_position';
                    	ramp
 						= im_grey blend_width' output_height, orientation == 0
@@ -1019,265 +1019,6 @@ Filter_blend_item = class
 							orientation == 0
 						= insert_noexpand 0 start ramp background?1;
                	}
-			}
-		}
-	}
-
-	Blend_alpha_item = class
-		Menuaction "Blend _Alpha" "blend images with optional alpha channels" {
-		// usage: layerit foreground background
-		// input images must be either 1 or 3 bands, optionally + 1 band
-		// which is used as the alpha channel
-		// rich lott
-
-		scale_mask im opacity
-			= (unsigned char) (to_real opacity / 255 * im);
-
-		// to mono
-		intensity = colourspace [] Interpretation.B_W;
-
-		// All the blend functions
-		// I am grateful to this page
-		// http://www.pegtop.net/delphi/blendmodes/
-		// for most of the formulae.
-
-		blend_normal mask opacity fg bg
-			= blend (scale_mask mask opacity) fg bg;
-
-		blend_iflighter mask opacity fg bg
-			= blend (if fg' > bg' then mask' else 0) fg bg
-		{
-			fg' = intensity fg;
-			bg' = intensity bg;
-			mask' = scale_mask mask opacity ;
-		}
-
-		blend_ifdarker mask opacity fg bg
-			= blend (if fg' < bg' then mask' else 0) fg bg
-		{
-			fg' = intensity fg ;
-			bg' = intensity bg ;
-			mask' = scale_mask mask opacity ;
-		}
-
-		blend_multiply mask opacity fg bg
-			= blend (scale_mask mask opacity) fg' bg
-		{
-			fg' = fg / 255 * bg;
-		}
-
-		blend_add mask opacity fg bg
-			= blend mask fg' bg
-		{
-			fg' = opacity / 255 * fg + bg;
-		}
-
-		blend_subtract mask opacity fg bg
-			= blend mask fg' bg
-		{
-			fg' = bg - opacity / 255 * fg;
-		}
-
-		blend_screen mask opacity fg bg
-			= blend mask fg' bg
-		{
-			fg' = 255 - (255 - bg) * (255 - (opacity / 255 * fg)) / 255;
-		}
-
-		blend_burn mask opacity fg bg
-			= blend mask fg'' bg
-		{
-			// fades to white which has no effect.
-			fg' = (255 - opacity) + opacity * fg / 255;
-			fg'' = 255 - 255 * (255 - bg) / fg';
-		}
-
-		blend_softlight mask opacity fg bg
-			= blend mask' fg' bg
-		{
-			mask' = scale_mask mask opacity;
-			fg' = (2 * bg * fg + bg * bg * (1 - 2 * fg / 255)) / 255;
-		}
-
-		blend_hardlight mask opacity fg bg
-			= blend mask' fg' bg
-		{
-			mask' = scale_mask mask opacity;
-			fg'
-				= 2 / 255 * fg * bg, bg < 129
-				= 255 - 2 * (255 - bg) * (255 - fg) / 255;
-		}
-
-		blend_lighten mask opacity fg bg
-			= blend mask' fg' bg
-		{
-			mask' = scale_mask mask opacity;
-			fg' = if bg < fg then fg else bg;
-		}
-
-		blend_darken mask opacity fg bg
-			= blend mask' fg' bg
-		{
-			mask' = scale_mask mask opacity;
-			fg' = if bg > fg then fg else bg;
-		}
-
-		blend_dodge mask opacity fg bg
-			= blend mask fg'' bg
-		{
-			// one added to avoid divide by zero
-			fg' = 1 + 255 - (opacity / 255 * fg);
-			fg'' = bg * 255 / fg';
-		}
-
-		blend_reflect mask opacity fg bg
-			= blend mask' fg' bg
-		{
-			mask' = scale_mask mask opacity;
-			fg' = bg * bg / (255 - fg);
-		}
-
-		blend_freeze mask opacity fg bg
-			= blend mask' fg' bg
-		{
-			mask' = scale_mask mask opacity;
-			fg' = 255 - (255 - bg) * (255 - bg) / (1 + fg);
-		}
-
-		blend_or mask opacity fg bg
-			= bg | (unsigned char) fg'
-		{
-			mask' = scale_mask mask opacity;
-			fg' = fg * mask' / 255;
-		}
-
-		blend_and mask opacity fg bg
-			= bg & (unsigned char) fg'
-		{
-			mask' = scale_mask mask opacity;
-			fg' = fg * mask' / 255;
-		}
-
-		// blend types
-		NORMAL = 0;
-		IFLIGHTER = 1;
-		IFDARKER = 2;
-		MULTIPLY = 3;
-		ADD = 4;
-		SUBTRACT = 5;
-		SCREEN = 6;
-		BURN = 7;
-		DODGE = 8;
-		HARDLIGHT = 9;
-		SOFTLIGHT = 10;
-		LIGHTEN = 11;
-		DARKEN = 12;
-		REFLECT = 13;
-		FREEZE = 14;
-		OR = 15;
-		AND = 16;
-
-		// names we show the user for blend types
-		names = Enum [
-			_ "Normal" => NORMAL,
-			_ "If Lighter" => IFLIGHTER,
-			_ "If Darker" => IFDARKER,
-			_ "Multiply" => MULTIPLY,
-			_ "Add" => ADD,
-			_ "Subtract" => SUBTRACT,
-			_ "Screen" => SCREEN,
-			_ "Burn" => BURN,
-			_ "Soft Light" => SOFTLIGHT,
-			_ "Hard Light" => HARDLIGHT,
-			_ "Lighten" => LIGHTEN,
-			_ "Darken" => DARKEN,
-			_ "Dodge" => DODGE,
-			_ "Reflect" => REFLECT,
-			_ "Freeze" => FREEZE,
-			_ "Bitwise OR" => OR,
-			_ "Bitwise AND" => AND
-		];
-
-		// functions we call for each blend type
-		actions = Table [
-			[NORMAL, blend_normal],
-			[IFLIGHTER, blend_iflighter],
-			[IFDARKER, blend_ifdarker],
-			[MULTIPLY, blend_multiply],
-			[ADD, blend_add],
-			[SUBTRACT, blend_subtract],
-			[SCREEN, blend_screen],
-			[BURN, blend_burn],
-			[SOFTLIGHT, blend_softlight],
-			[HARDLIGHT, blend_hardlight],
-			[LIGHTEN, blend_lighten],
-			[DARKEN, blend_darken],
-			[DODGE, blend_dodge],
-			[REFLECT, blend_reflect],
-			[FREEZE, blend_freeze],
-			[OR, blend_or],
-			[AND, blend_and]
-		];
-
-		// make sure im has an alpha channel (set opaque if it hasn't)
-		put_alpha im
-			= im, im.bands == 4 || im.bands == 2
-			= im ++ 255;
-
-		// make sure im has no alpha channel
-		lose_alpha im
-			= extract_bands 0 3 im, im.bands == 4
-			= im?0, im.bands == 2
-			= im;
-
-		// does im have al alpha channel?
-		has_alpha im = im.bands == 2 || im.bands == 4;
-
-		// get the alpha (set opaque if no alpha)
-		get_alpha img
-			= img'?3, img.bands == 4
-			= img'?1
-		{
-			img' = put_alpha img;
-		}
-
-		// add an alpha ... cast the alpha image to match the main image
-		append_alpha im alpha
-			= im ++ cast im.format alpha;
-
-		// makes fg the same size as bg, displaced with u, v pixel offset
-		moveit fg bg u v
-			= insert_noexpand u v fg bg'
-		{
-			bg' = image_new_from_image [] fg bg.width bg.height;
-		}
-
-		action bg fg = class
-			_value {
-			_vislevel = 3;
-
-			method = Option_enum "Blend mode" names "Normal";
-			opacity = Scale "Opacity" 0 255 255;
-			hmove = Scale "Horizontal move by" (-bg.width) (bg.width) 0;
-			vmove = Scale "Vertical move by" (-bg.height) (bg.height) 0;
-
-			_value
-				= append_alpha blended merged_alpha, has_alpha bg
-				= blended
-			{
-				// displace and resize fg (need to displace alpha too)
-				fg' = moveit (put_alpha fg) bg hmove vmove;
-
-				// transform to sRGB
-				fg'' = colourspace [] Interpretation.sRGB (lose_alpha fg');
-				bg' = colourspace [] Interpretation.sRGB (lose_alpha bg);
-
-				// alphas merged
-				merged_alpha = get_alpha bg | get_alpha fg';
-
-				// blend together
-				blended = (actions.lookup 0 1 method.value_key)
-					(get_alpha fg') opacity.value fg'' bg';
 			}
 		}
 	}
@@ -1404,9 +1145,11 @@ Filter_browse_multiband_item = class
         	bit
 				= Islider "Bit" 0 (nbits - 1) (nbits - 1)
 			{
-				nbits
-					= x.bits, is_Image x
-					= 8;
+                nbits
+                    = log ((Format._maxval (get_format x)) + 1) / log 2,
+                        has_format x
+                    = 8;
+
 				Islider c f t v = class
 					scope.Scale c f t ((int) v) {
 					Scale = Islider;
@@ -1450,27 +1193,27 @@ Filter_solarize_item = class
 			= map_unary process x
 		{
 			process image
-				= hist_map tab'''' image
+				= maplut [] tab''' image
 			{
 				// max pixel value for this format
 				mx = Format._maxval image.format;
 
 				// make a LUT ... just 8 and 16 bit
-				tab
-					= im_identity_ushort image.bands mx,
-						image.format == Format.USHORT
-					= im_identity image.bands;
-				tab' = Image tab;
+				tab = Image (vips_identity [
+                    $bands => image.bands,
+                    $ushort => image.format == Format.USHORT,
+                    $size => mx
+                ]);
 
 				// make basic ^ shape
-				tab''
-					= tab' * (1 / kink), tab' < mx * kink
-					= (mx - tab') / (1 - kink);
-				tab''' = cast image.format tab'';
+				tab'
+					= tab * (1 / kink), tab < mx * kink
+					= (mx - tab) / (1 - kink);
+				tab'' = cast image.format tab';
 
 				// smooth a bit
-				mask = matrix_blur (tab'''.width / 8);
-				tab'''' = convsep mask tab''';
+				mask = matrix_blur (tab''.width / 8);
+				tab''' = convsep [] mask tab'';
 			}
 		}
 	}
@@ -1501,7 +1244,7 @@ Filter_diffuse_glow_item = class
                     $precision => "integer",
                     $separable => true
                   ] (to_real r / 3);
-				blur = convsep gmat mask;
+				blur = convsep [] gmat mask;
 				colour' = colourspace [] image.type colour;
 				image' = image + colour' * glow * (blur / 255);
 			}

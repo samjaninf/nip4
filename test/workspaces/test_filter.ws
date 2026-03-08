@@ -1,71 +1,71 @@
 <?xml version="1.0"?>
-<root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.0.0">
-  <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" lpane_position="400" lpane_open="false" rpane_position="100" rpane_open="false" local_defs="// private definitions for this workspace&#10;" name="test_filter" filename="$HOME/GIT/nip4/test/workspaces/test_filter.ws" major="9" minor="0">
-    <Column x="5" y="5" open="true" selected="false" sform="false" next="17" name="B" caption="Colour / Colourspace">
+<root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.0.17">
+  <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// private definitions for this workspace&#10;" name="test_filter" filename="$HOME/GIT/nip4/test/workspaces/test_filter.ws" major="9" minor="0">
+    <Column x="10" y="5" open="true" selected="false" sform="false" next="22" name="B" caption="Colour / Colourspace">
       <Subcolumn vislevel="3">
         <Row popup="false" name="B1">
           <Rhs vislevel="1" flags="1">
-            <iImage window_x="0" window_y="30" window_width="512" window_height="729" image_left="229" image_top="309" image_mag="1" show_status="true" show_paintbox="false" show_convert="true" show_rulers="true" scale="1" offset="0" falsecolour="false" type="true"/>
+            <iImage window_x="0" window_y="30" window_width="512" window_height="729" show_status="true" show_convert="true"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_file &quot;$VIPSHOME/share/nip4/data/examples/businesscard/slanted_oval_vase2.jpg&quot;"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="432" y="5" open="true" selected="false" sform="false" next="18" name="H" caption="Filter / Convolution">
+    <Column x="390" y="5" open="true" selected="false" sform="false" next="18" name="H" caption="Filter / Convolution">
       <Subcolumn vislevel="3">
         <Row popup="false" name="H1">
           <Rhs vislevel="0" flags="4">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="H9">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_conv_item.Blur_item.action H1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="H10">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_conv_item.Sharpen_item.action H1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="H11">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_conv_item.Emboss_item.action H1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="H12">
           <Rhs vislevel="1" flags="1">
-            <iImage window_x="0" window_y="30" window_width="512" window_height="729" image_left="240" image_top="318" image_mag="1" show_status="true" show_paintbox="false" show_convert="false" show_rulers="false" scale="1" offset="0" falsecolour="false" type="true"/>
+            <iImage window_x="0" window_y="30" window_width="512" window_height="729" show_status="true" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_conv_item.Laplacian_item.action H1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="H13">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_conv_item.Sobel_item.action H1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="H14">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_conv_item.Linedet_item.action H1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="H15">
           <Rhs vislevel="3" flags="7">
-            <iImage window_x="0" window_y="30" window_width="512" window_height="729" image_left="240" image_top="318" image_mag="1" show_status="true" show_paintbox="false" show_convert="false" show_rulers="false" scale="1" offset="0" falsecolour="false" type="true"/>
+            <iImage window_x="0" window_y="30" window_width="512" window_height="729" show_status="true" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -74,7 +74,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -127,7 +127,7 @@
         </Row>
         <Row popup="false" name="H16">
           <Rhs vislevel="3" flags="7">
-            <iImage window_x="0" window_y="30" window_width="512" window_height="729" image_left="240" image_top="318" image_mag="1" show_status="true" show_paintbox="false" show_convert="false" show_rulers="false" scale="1" offset="0" falsecolour="false" type="true"/>
+            <iImage window_x="0" window_y="30" window_width="512" window_height="729" show_status="true" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -136,7 +136,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -189,144 +189,145 @@
         </Row>
         <Row popup="false" name="H17">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Filter_conv_item.Custom_conv_item.action H1"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="949" y="5" open="true" selected="false" sform="false" next="6" name="K" caption="Filter / Rank">
+    <Column x="1064" y="5" open="true" selected="false" sform="false" next="6" name="K" caption="Filter / Rank">
       <Subcolumn vislevel="3">
         <Row popup="false" name="K1">
           <Rhs vislevel="0" flags="4">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="K2">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_rank_item.Median_item.action K1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="K3">
-          <Rhs vislevel="1" flags="4">
+          <Rhs vislevel="1" flags="1">
             <Subcolumn vislevel="0"/>
             <iText formula="Group [K1,K2]"/>
+            <Group/>
           </Rhs>
         </Row>
         <Row popup="false" name="K4">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Filter_rank_item.Image_rank_item.action K3"/>
           </Rhs>
         </Row>
         <Row popup="false" name="K5">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Filter_rank_item.Custom_rank_item.action K1"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1361" y="5" open="true" selected="false" sform="false" next="12" name="M" caption="Filter / Morphology">
+    <Column x="1798" y="5" open="true" selected="false" sform="false" next="12" name="M" caption="Filter / Morphology">
       <Subcolumn vislevel="3">
         <Row popup="false" name="M1">
           <Rhs vislevel="0" flags="4">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="M2">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_select_item.Threshold_item.action M1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="M3">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_morphology_item.Dilate_item.Dilate8_item.action M2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="M4">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_morphology_item.Dilate_item.Dilate4_item.action M2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="M5">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_morphology_item.Erode_item.Erode8_item.action M2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="M6">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_morphology_item.Erode_item.Erode4_item.action M2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="M7">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Filter_morphology_item.Custom_morph_item.action M2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="M8">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_morphology_item.Open_item.action M2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="M9">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_morphology_item.Close_item.action M2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="M10">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_morphology_item.Clean_item.action M2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="M11">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_morphology_item.Thin_item.action M2"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1856" y="5" open="true" selected="false" sform="false" next="6" name="N" caption="Filter / Fourier / Ideal">
+    <Column x="2301" y="5" open="true" selected="false" sform="false" next="6" name="N" caption="Filter / Fourier / Ideal">
       <Subcolumn vislevel="3">
         <Row popup="false" name="N1">
           <Rhs vislevel="0" flags="4">
-            <iImage window_x="0" window_y="30" window_width="512" window_height="729" image_left="240" image_top="318" image_mag="1" show_status="true" show_paintbox="false" show_convert="false" show_rulers="false" scale="1" offset="0" falsecolour="false" type="true"/>
+            <iImage window_x="0" window_y="30" window_width="512" window_height="729" show_status="true" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="N2">
           <Rhs vislevel="1" flags="1">
-            <iRegion image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true" left="187" top="158" width="256" height="256">
+            <iRegion show_status="false" show_convert="false" left="187" top="158" width="256" height="256">
               <iRegiongroup/>
             </iRegion>
             <Subcolumn vislevel="0"/>
@@ -335,7 +336,7 @@
         </Row>
         <Row popup="false" name="N3">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -344,7 +345,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -358,7 +359,7 @@
               </Row>
               <Row name="visualize_mask">
                 <Rhs vislevel="1" flags="1">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -376,14 +377,14 @@
         </Row>
         <Row popup="false" name="N4">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Filter_fourier_item.New_ideal_item.Ring_item.action N2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="N5">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -392,7 +393,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -413,7 +414,7 @@
               </Row>
               <Row name="visualize_mask">
                 <Rhs vislevel="1" flags="1">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -438,18 +439,18 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2473" y="5" open="true" selected="false" sform="false" next="9" name="O" caption="Filter / Fourier / Gaussian">
+    <Column x="2900" y="5" open="true" selected="false" sform="false" next="9" name="O" caption="Filter / Fourier / Gaussian">
       <Subcolumn vislevel="3">
         <Row popup="false" name="O1">
           <Rhs vislevel="0" flags="4">
-            <iImage window_x="0" window_y="30" window_width="512" window_height="729" image_left="240" image_top="318" image_mag="1" show_status="true" show_paintbox="false" show_convert="false" show_rulers="false" scale="1" offset="0" falsecolour="false" type="true"/>
+            <iImage window_x="0" window_y="30" window_width="512" window_height="729" show_status="true" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="O2">
           <Rhs vislevel="1" flags="1">
-            <iRegion image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true" left="113" top="79" width="256" height="256">
+            <iRegion show_status="false" show_convert="false" left="113" top="79" width="256" height="256">
               <iRegiongroup/>
             </iRegion>
             <Subcolumn vislevel="0"/>
@@ -458,7 +459,7 @@
         </Row>
         <Row popup="false" name="O6">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -467,7 +468,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -481,7 +482,7 @@
               </Row>
               <Row name="visualize_mask">
                 <Rhs vislevel="1" flags="1">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -506,32 +507,32 @@
         </Row>
         <Row popup="false" name="O7">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Filter_fourier_item.New_gaussian_item.Ring_item.action O2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="O8">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Filter_fourier_item.New_gaussian_item.Band_item.action O2"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="3071" y="5" open="true" selected="false" sform="false" next="9" name="P" caption="Filter / Fourier / Butterworth">
+    <Column x="3499" y="5" open="true" selected="false" sform="false" next="9" name="P" caption="Filter / Fourier / Butterworth">
       <Subcolumn vislevel="3">
         <Row popup="false" name="P1">
           <Rhs vislevel="0" flags="4">
-            <iImage window_x="0" window_y="30" window_width="512" window_height="729" image_left="240" image_top="318" image_mag="1" show_status="true" show_paintbox="false" show_convert="false" show_rulers="false" scale="1" offset="0" falsecolour="false" type="true"/>
+            <iImage window_x="0" window_y="30" window_width="512" window_height="729" show_status="true" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="P2">
           <Rhs vislevel="1" flags="1">
-            <iRegion image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true" left="113" top="79" width="256" height="256">
+            <iRegion show_status="false" show_convert="false" left="113" top="79" width="256" height="256">
               <iRegiongroup/>
             </iRegion>
             <Subcolumn vislevel="0"/>
@@ -540,7 +541,7 @@
         </Row>
         <Row popup="false" name="P6">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -549,7 +550,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -563,7 +564,7 @@
               </Row>
               <Row name="visualize_mask">
                 <Rhs vislevel="1" flags="1">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -595,78 +596,78 @@
         </Row>
         <Row popup="false" name="P7">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Filter_fourier_item.New_butterworth_item.Ring_item.action P2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="P8">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Filter_fourier_item.New_butterworth_item.Band_item.action P2"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="3669" y="5" open="true" selected="false" sform="false" next="7" name="Q" caption="Filter / Enhance">
+    <Column x="4098" y="5" open="true" selected="false" sform="false" next="7" name="Q" caption="Filter / Enhance">
       <Subcolumn vislevel="3">
         <Row popup="false" name="Q1">
           <Rhs vislevel="0" flags="4">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="Q2">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Q1?1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="Q3">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Filter_enhance_item.Falsecolour_item.action Q2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="Q4">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Filter_enhance_item.Statistical_diff_item.action Q1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="Q5">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_enhance_item.Hist_equal_item.Global_item.action Q1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="Q6">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Filter_enhance_item.Hist_equal_item.Local_item.action Q1"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="4552" y="5" open="true" selected="false" sform="false" next="7" name="R" caption="Filter / Tilt Brightness">
+    <Column x="4945" y="5" open="true" selected="false" sform="false" next="7" name="R" caption="Filter / Tilt Brightness">
       <Subcolumn vislevel="3">
         <Row popup="false" name="R1">
           <Rhs vislevel="0" flags="4">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="R2">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -675,7 +676,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -693,7 +694,7 @@
         </Row>
         <Row popup="false" name="R3">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -702,7 +703,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -720,7 +721,7 @@
         </Row>
         <Row popup="false" name="R4">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -729,7 +730,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -754,7 +755,7 @@
         </Row>
         <Row popup="false" name="R5">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -763,7 +764,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -788,7 +789,7 @@
         </Row>
         <Row popup="false" name="R6">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -797,7 +798,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -829,25 +830,25 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="5031" y="5" open="true" selected="false" sform="false" next="15" name="S" caption="Filter / Blend">
+    <Column x="5432" y="5" open="true" selected="false" sform="false" next="15" name="S" caption="Filter / Blend">
       <Subcolumn vislevel="3">
         <Row popup="false" name="S1">
           <Rhs vislevel="0" flags="4">
-            <iImage window_x="388" window_y="128" window_width="547" window_height="727" image_left="257" image_top="308" image_mag="1" show_status="true" show_paintbox="false" show_convert="true" show_rulers="false" scale="1" offset="0" falsecolour="false" type="true"/>
+            <iImage window_x="388" window_y="128" window_width="547" window_height="727" show_status="true" show_convert="true"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="S2">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Q3"/>
           </Rhs>
         </Row>
         <Row popup="false" name="S3">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="a">
                 <Rhs vislevel="0" flags="4">
@@ -861,7 +862,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -879,14 +880,14 @@
         </Row>
         <Row popup="false" name="S4">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="S3?1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="S9">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_number_format_item.U8_item.action S4"/>
           </Rhs>
@@ -894,91 +895,27 @@
         <Row popup="false" name="S5">
           <Rhs vislevel="3" flags="7">
             <Colour colour_space="sRGB" value0="13" value1="240" value2="65"/>
-            <Subcolumn vislevel="1">
-              <Row name="default_colour">
-                <Rhs vislevel="0" flags="4">
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="default_value">
-                <Rhs vislevel="0" flags="4">
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="super">
-                <Rhs vislevel="0" flags="4">
-                  <Colour/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="space">
-                <Rhs vislevel="1" flags="1">
-                  <Option caption="Colour space" labelsn="7" labels0="sRGB" labels1="scRGB" labels2="Lab" labels3="LCh" labels4="XYZ" labels5="Yxy" labels6="UCS" value="0"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="colour">
-                <Rhs vislevel="1" flags="1">
-                  <Expression caption="Colour value"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-            </Subcolumn>
+            <Subcolumn vislevel="1"/>
             <iText formula="Colour_new_item.Widget_colour_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="S6">
           <Rhs vislevel="3" flags="7">
             <Colour colour_space="sRGB" value0="231" value1="21" value2="13"/>
-            <Subcolumn vislevel="1">
-              <Row name="default_colour">
-                <Rhs vislevel="0" flags="4">
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="default_value">
-                <Rhs vislevel="0" flags="4">
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="super">
-                <Rhs vislevel="0" flags="4">
-                  <Colour/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="space">
-                <Rhs vislevel="1" flags="1">
-                  <Option caption="Colour space" labelsn="7" labels0="sRGB" labels1="scRGB" labels2="Lab" labels3="LCh" labels4="XYZ" labels5="Yxy" labels6="UCS" value="0"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="colour">
-                <Rhs vislevel="1" flags="1">
-                  <Expression caption="Colour value"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-            </Subcolumn>
+            <Subcolumn vislevel="1"/>
             <iText formula="Colour_new_item.Widget_colour_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="S10">
           <Rhs vislevel="1" flags="1">
-            <iImage window_x="0" window_y="30" window_width="512" window_height="729" image_left="240" image_top="370" image_mag="1" show_status="true" show_paintbox="false" show_convert="false" show_rulers="false" scale="1" offset="0" falsecolour="false" type="true"/>
+            <iImage window_x="0" window_y="30" window_width="512" window_height="729" show_status="true" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_blend_item.Image_blend_item.action S9 S5 S6"/>
           </Rhs>
         </Row>
         <Row popup="false" name="S11">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="a">
                 <Rhs vislevel="0" flags="4">
@@ -992,7 +929,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1022,96 +959,34 @@
             <iText formula="Filter_blend_item.Line_blend_item.action S1 S2"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="S13">
-          <Rhs vislevel="1" flags="1">
-            <iRegion image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true" left="113" top="79" width="256" height="256">
-              <iRegiongroup/>
-            </iRegion>
-            <Subcolumn vislevel="0"/>
-            <iText formula="Region N1 74 139 264 242"/>
-          </Rhs>
-        </Row>
-        <Row popup="false" name="S14">
-          <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
-            <Subcolumn vislevel="1">
-              <Row name="bg">
-                <Rhs vislevel="3" flags="4">
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="fg">
-                <Rhs vislevel="0" flags="4">
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="super">
-                <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="method">
-                <Rhs vislevel="1" flags="1">
-                  <Option caption="Blend mode" labelsn="17" labels0="Normal" labels1="If Lighter" labels2="If Darker" labels3="Multiply" labels4="Add" labels5="Subtract" labels6="Screen" labels7="Burn" labels8="Soft Light" labels9="Hard Light" labels10="Lighten" labels11="Darken" labels12="Dodge" labels13="Reflect" labels14="Freeze" labels15="Bitwise OR" labels16="Bitwise AND" value="14"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="opacity">
-                <Rhs vislevel="1" flags="1">
-                  <Slider caption="Opacity" from="0" to="255" value="86.470588235294116"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="hmove">
-                <Rhs vislevel="1" flags="1">
-                  <Slider caption="Horizontal move by" from="-256" to="256" value="25.688581314878888"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="vmove">
-                <Rhs vislevel="1" flags="1">
-                  <Slider caption="Vertical move by" from="-256" to="256" value="50.491349480968836"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-            </Subcolumn>
-            <iText formula="Filter_blend_item.Blend_alpha_item.action N2 S13"/>
-          </Rhs>
-        </Row>
       </Subcolumn>
     </Column>
-    <Column x="5640" y="5" open="true" selected="false" sform="false" next="5" name="T" caption="Filter / Overlay">
+    <Column x="5946" y="5" open="true" selected="false" sform="false" next="5" name="T" caption="Filter / Overlay">
       <Subcolumn vislevel="3">
         <Row popup="false" name="T1">
           <Rhs vislevel="0" flags="4">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="T2">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="T1?0"/>
           </Rhs>
         </Row>
         <Row popup="false" name="T3">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="T1?1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="T4">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="a">
                 <Rhs vislevel="0" flags="4">
@@ -1125,7 +1000,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1143,50 +1018,82 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="6096" y="5" open="true" selected="false" sform="false" next="5" name="U" caption="Filter / Colorize">
+    <Column x="6408" y="5" open="true" selected="false" sform="false" next="7" name="U" caption="Filter / Colorize">
       <Subcolumn vislevel="3">
         <Row popup="false" name="U1">
           <Rhs vislevel="0" flags="4">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="U2">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="U1?0"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="U3">
+        <Row popup="false" name="U5">
           <Rhs vislevel="3" flags="7">
-            <Colour colour_space="Lab" value0="61.977499999999999" value1="-8.8122199999999999" value2="59.229700000000001"/>
-            <Subcolumn vislevel="1"/>
+            <Colour colour_space="LAB" value0="71.953727722167969" value1="12.948423385620117" value2="74.347236633300781"/>
+            <Subcolumn vislevel="1">
+              <Row name="default_colour">
+                <Rhs vislevel="0" flags="4">
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="default_value">
+                <Rhs vislevel="0" flags="4">
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="super">
+                <Rhs vislevel="0" flags="4">
+                  <Colour/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="interp">
+                <Rhs vislevel="1" flags="1">
+                  <Option caption="Interpretation" labelsn="10" labels0="sRGB" labels1="scRGB" labels2="HSV" labels3="XYZ" labels4="Yxy" labels5="Lab" labels6="OKLab" labels7="LCh" labels8="OKLCh" labels9="CMC" value="5"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="colour">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Value"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+            </Subcolumn>
             <iText formula="Colour_new_item.Widget_colour_item.action"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="U4">
+        <Row popup="false" name="U6">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
-            <iText formula="Filter_colourize_item.action U2 U3"/>
+            <iText formula="Filter_colourize_item.action U2 U5"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="6579" y="5" open="true" selected="false" sform="false" next="4" name="V" caption="Filter / Browse">
+    <Column x="6921" y="5" open="true" selected="false" sform="false" next="4" name="V" caption="Filter / Browse">
       <Subcolumn vislevel="3">
         <Row popup="false" name="V1">
           <Rhs vislevel="0" flags="4">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="V2">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="image">
                 <Rhs vislevel="0" flags="4">
@@ -1195,7 +1102,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1220,7 +1127,7 @@
         </Row>
         <Row popup="false" name="V3">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -1229,7 +1136,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1247,26 +1154,26 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="7063" y="5" open="true" selected="true" sform="false" next="9" name="W" caption="Filter / Photographic">
+    <Column x="7405" y="5" open="true" selected="false" sform="false" next="9" name="W" caption="Filter / Photographic">
       <Subcolumn vislevel="3">
         <Row popup="false" name="W1">
           <Rhs vislevel="0" flags="4">
-            <iImage window_x="965" window_y="75" window_width="547" window_height="727" image_left="257" image_top="308" image_mag="1" show_status="true" show_paintbox="false" show_convert="true" show_rulers="false" scale="1" offset="0" falsecolour="false" type="true"/>
+            <iImage window_x="965" window_y="75" window_width="547" window_height="727" show_status="true" show_convert="true"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="W2">
           <Rhs vislevel="1" flags="1">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+            <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_negative_item.action W1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="W3">
           <Rhs vislevel="3" flags="7">
-            <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
-            <Subcolumn vislevel="1">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
                   <iText/>
@@ -1274,7 +1181,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1292,7 +1199,7 @@
         </Row>
         <Row popup="false" name="W4">
           <Rhs vislevel="3" flags="7">
-            <iImage window_x="4" window_y="53" window_width="512" window_height="729" image_left="249" image_top="345" image_mag="1" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="1" offset="0" falsecolour="false" type="true"/>
+            <iImage window_x="4" window_y="53" window_width="512" window_height="729" show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -1301,7 +1208,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1372,18 +1279,18 @@
         </Row>
         <Row popup="false" name="W5">
           <Rhs vislevel="3" flags="7">
-            <iImage window_x="4" window_y="53" window_width="570" window_height="750" image_left="269" image_top="319" image_mag="1" show_status="true" show_paintbox="false" show_convert="true" show_rulers="false" scale="1" offset="0" falsecolour="false" type="true"/>
-            <Subcolumn vislevel="1"/>
+            <iImage window_x="4" window_y="53" window_width="570" window_height="750" show_status="true" show_convert="true"/>
+            <Subcolumn vislevel="0"/>
             <iText formula="Filter_drop_shadow_item.action W1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="W6">
           <Rhs vislevel="3" flags="7">
-            <iImage window_x="8" window_y="76" window_width="636" window_height="729" image_left="302" image_top="309" image_mag="1" show_status="true" show_paintbox="false" show_convert="true" show_rulers="false" scale="1" offset="0" falsecolour="false" type="true"/>
-            <Subcolumn vislevel="0">
+            <iImage window_x="8" window_y="76" window_width="636" window_height="729" show_status="true" show_convert="true"/>
+            <Subcolumn vislevel="1">
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true"/>
+                  <iImage show_status="false" show_convert="false"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1392,12 +1299,14 @@
                 <Rhs vislevel="1" flags="1">
                   <Subcolumn vislevel="0"/>
                   <iText/>
+                  <String/>
                 </Rhs>
               </Row>
               <Row name="font">
                 <Rhs vislevel="1" flags="1">
                   <Subcolumn vislevel="0"/>
                   <iText/>
+                  <Fontname/>
                 </Rhs>
               </Row>
               <Row name="align">
@@ -1440,7 +1349,7 @@
               </Row>
               <Row name="place">
                 <Rhs vislevel="1" flags="1">
-                  <iRegion image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true">
+                  <iRegion show_status="false" show_convert="false">
                     <iRegiongroup/>
                   </iRegion>
                   <Subcolumn vislevel="0"/>
@@ -1453,25 +1362,25 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="4215" y="5" open="true" selected="false" sform="false" next="8" name="A" caption="Spatial Correlation">
+    <Column x="4645" y="5" open="true" selected="false" sform="false" next="8" name="A" caption="Spatial Correlation">
       <Subcolumn vislevel="3">
         <Row popup="false" name="A1">
           <Rhs vislevel="0" flags="4">
-            <iImage window_x="1082" window_y="29" window_width="547" window_height="1161" image_left="266" image_top="525" image_mag="1" show_status="true" show_paintbox="false" show_convert="true" show_rulers="false" scale="1" offset="0" falsecolour="false" type="true"/>
+            <iImage window_x="1082" window_y="29" window_width="547" window_height="1161" show_status="true" show_convert="true"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A4">
           <Rhs vislevel="1" flags="1">
-            <iImage window_x="1406" window_y="463" window_width="510" window_height="727" image_left="239" image_top="299" image_mag="1" show_status="true" show_paintbox="false" show_convert="true" show_rulers="false" scale="1" offset="0" falsecolour="false" type="true"/>
+            <iImage window_x="1406" window_y="463" window_width="510" window_height="727" show_status="true" show_convert="true"/>
             <Subcolumn vislevel="0"/>
             <iText formula="A1?1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A5">
           <Rhs vislevel="1" flags="1">
-            <iRegion image_left="0" image_top="0" image_mag="0" show_status="false" show_paintbox="false" show_convert="false" show_rulers="false" scale="0" offset="0" falsecolour="false" type="true">
+            <iRegion show_status="false" show_convert="false">
               <iRegiongroup/>
             </iRegion>
             <Subcolumn vislevel="0"/>
@@ -1480,14 +1389,14 @@
         </Row>
         <Row popup="false" name="A6">
           <Rhs vislevel="1" flags="1">
-            <iImage window_x="477" window_y="232" window_width="510" window_height="727" image_left="239" image_top="299" image_mag="1" show_status="true" show_paintbox="false" show_convert="true" show_rulers="false" scale="255.00000000000043" offset="0" falsecolour="false" type="true"/>
+            <iImage window_x="477" window_y="232" window_width="510" window_height="727" show_status="true" show_convert="true"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_correlate_item.Correlate_item.action A4 A5"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A7">
           <Rhs vislevel="1" flags="1">
-            <iImage window_x="867" window_y="355" window_width="510" window_height="727" image_left="239" image_top="299" image_mag="1" show_status="true" show_paintbox="false" show_convert="true" show_rulers="false" scale="3.0430978191621576e-06" offset="-0" falsecolour="false" type="true"/>
+            <iImage window_x="867" window_y="355" window_width="510" window_height="727" show_status="true" show_convert="true"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_correlate_item.Correlate_fast_item.action A4 A5"/>
           </Rhs>

@@ -431,7 +431,7 @@ select_ellipse line width = mask
 	im = Image (get_image line);
 
 	//Make a 2 band image whose value equals its coordinates.
-	im_coor = Image (make_xy im.width im.height);
+	im_coor = Image (xyz [] im.width im.height);
 
 	//Adjust the values to center tham on (line.left, line.top)
 	im_cent = im_coor - Vector [line.left,line.top];
@@ -473,7 +473,7 @@ select_tetragon p1 p2 p3 p4 = mask
     	[ pt_list?3, pt_list?0 ] ];
 
 	//Make xy image the same size as p1.image;
-   	im_xy = Image (make_xy p1.image.width p1.image.height);
+   	im_xy = Image (xyz [] p1.image.width p1.image.height);
 	white = Image (image_new [$pixel => 255] p1.image.width p1.image.height);
 	mask = foldl process white pair_list;
 
@@ -519,7 +519,7 @@ select_polygon pt_list = mask
 		 = pt_list;
 
 	im = Image (get_image (pt_l?0));
-	im_xy = Image (make_xy im.width im.height);
+	im_xy = Image (xyz [] im.width im.height);
 	black = Image (image_new [] im_xy.width im_xy.height);
 
 	x = im_xy?0;

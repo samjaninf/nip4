@@ -571,14 +571,15 @@ Colour colour_space value = class
     oo_binary_table op x = [
         // for (op Colour Image), transform this to a large image
         [op.fn this_image x,
-            is_Image x],
+            is_Image x || is_image x],
 
         // everything else (op Colour thing) becomes a 1x1 pixel image and
         // gets rewrapped
         [itoc (op.fn
             ((float) (to_image this).value)
             ((float) (to_image x).value)),
-            op.type == Operator_type.ARITHMETIC ||
+            // here REWRAP means go via image
+            // for eg. ARITHMETIC, such as Colour?real, fall back to Vector
             op.type == Operator_type.COMPOUND_REWRAP]
 
     ] ++ super.oo_binary_table op x
@@ -592,7 +593,7 @@ Colour colour_space value = class
             $bands => 3,
             $coding => Coding.NOCODING,
             $pixel => scope.Vector this.value
-        ] x.value x.width x.height;
+        ] (get_image x) (get_width x) (get_height x);
     }
 
     oo_unary_table op = [
@@ -623,7 +624,7 @@ Scale caption from to value = class
         [to, "to", check_real]
     ];
     _check_all = [
-        [from < to, "from < to"]
+        [from <= to, "from <= to"]
     ];
 
     Real x = this.Scale caption from to x;
@@ -837,41 +838,41 @@ Coding = class Enum {
 /* Values for format field in image.
  */
 Format = class Enum {
-    DPCOMPLEX = 9;
-    DOUBLE = 8;
-    COMPLEX = 7;
-    FLOAT = 6;
-    INT = 5;
-    UINT = 4;
-    SHORT = 3;
-    USHORT = 2;
-    CHAR = 1;
     UCHAR = 0;
+    CHAR = 1;
+    USHORT = 2;
+    SHORT = 3;
+    UINT = 4;
+    INT = 5;
+    FLOAT = 6;
+    COMPLEX = 7;
+    DOUBLE = 8;
+    DPCOMPLEX = 9;
 
     _description = [
-        [DPCOMPLEX, _ "Double-precision complex"],
-        [DOUBLE, _ "Double-precision float"],
-        [COMPLEX, _ "Single-precision complex"],
-        [FLOAT, _ "Single-precision float"],
-        [INT, _ "32-bit signed integer"],
-        [UINT, _ "32-bit unsigned integer"],
-        [SHORT, _ "16-bit signed integer"],
-        [USHORT, _ "16-bit unsigned integer"],
+        [UCHAR, _ "8-bit unsigned integer"],
         [CHAR, _ "8-bit signed integer"],
-        [UCHAR, _ "8-bit unsigned integer"]
+        [USHORT, _ "16-bit unsigned integer"],
+        [SHORT, _ "16-bit signed integer"],
+        [UINT, _ "32-bit unsigned integer"],
+        [INT, _ "32-bit signed integer"],
+        [FLOAT, _ "Single-precision float"],
+        [COMPLEX, _ "Single-precision complex"],
+        [DOUBLE, _ "Double-precision float"],
+        [DPCOMPLEX, _ "Double-precision complex"]
     ];
 
     _maxval = (Table [
-        [DPCOMPLEX, 255],
-        [DOUBLE, 255],
-        [COMPLEX, 255],
-        [FLOAT, 255],
-        [INT, 2147483647],
-        [UINT, 4294967295],
-        [SHORT, 32767],
-        [USHORT, 65535],
+        [UCHAR, 255],
         [CHAR, 127],
-        [UCHAR, 255]
+        [USHORT, 65535],
+        [SHORT, 32767],
+        [UINT, 4294967295],
+        [INT, 2147483647],
+        [FLOAT, 255],
+        [COMPLEX, 255],
+        [DOUBLE, 255],
+        [DPCOMPLEX, 255]
     ]).lookup 0 1;
 }
 
@@ -1236,6 +1237,70 @@ Precision = class Enum {
     ];
 }
 
+Blend = class Enum {
+    CLEAR = 0;
+    SOURCE = 1;
+    OVER = 2;
+    IN = 3;
+    OUT = 4;
+    ATOP = 5;
+    DEST = 6;
+    DEST_OVER = 7;
+    DEST_IN = 8;
+    DEST_OUT = 9;
+    DEST_ATOP = 10;
+    XOR = 11;
+    ADD = 12;
+    SATURATE = 13;
+    MULTIPLY = 14;
+    SCREEN = 15;
+    OVERLAY = 16;
+    DARKEN = 17;
+    LIGHTEN = 18;
+    COLOUR_DODGE = 19;
+    COLOUR_BURN = 20;
+    HARD_LIGHT = 21;
+    SOFT_LIGHT = 22;
+    DIFFERENCE = 23;
+    EXCLUSION = 24;
+    HUE = 25;
+    SATURATION = 26;
+    COLOUR = 27;
+    LUMINOSITY = 28;
+
+    _description = [
+        [CLEAR,  "Clear"],
+        [SOURCE,  "Source"],
+        [OVER,  "Over"],
+        [IN,  "In"],
+        [OUT,  "Out"],
+        [ATOP,  "Atop"],
+        [DEST,  "Dest"],
+        [DEST_OVER,  "Dest over"],
+        [DEST_IN,  "Dest in"],
+        [DEST_OUT,  "Dest out"],
+        [DEST_ATOP,  "Dest atop"],
+        [XOR,  "XOR"],
+        [ADD,  "Add"],
+        [SATURATE,  "Saturate"],
+        [MULTIPLY,  "Multiply"],
+        [SCREEN,  "Screen"],
+        [OVERLAY,  "Overlay"],
+        [DARKEN,  "Darken"],
+        [LIGHTEN,  "Lighten"],
+        [COLOUR_DODGE,  "Colour dodge"],
+        [COLOUR_BURN,  "Colour burn"],
+        [HARD_LIGHT,  "Hard light"],
+        [SOFT_LIGHT,  "Soft light"],
+        [DIFFERENCE,  "Difference"],
+        [EXCLUSION,  "Exclusion"],
+        [HUE,  "Hue"],
+        [SATURATION,  "Saturation"],
+        [COLOUR,  "Colour"],
+        [LUMINOSITY,  "Luminosity"]
+    ];
+}
+
 // abstract base class for toolkit menus
 Menu = class {}
 
@@ -1311,62 +1376,6 @@ NULL = class
             op.type == Operator_type.RELATIONAL &&
             op.op_name == "not_equal"]
     ] ++ super.oo_binary_table op x;
-}
-
-Blend = class Enum {
-    CLEAR = 0;
-    SOURCE = 1;
-    OVER = 2;
-    IN = 3;
-    OUT = 4;
-    ATOP = 5;
-    DEST = 6;
-    DEST_OVER = 7;
-    DEST_IN = 8;
-    DEST_OUT = 9;
-    DEST_ATOP = 10;
-    XOR = 11;
-    ADD = 12;
-    SATURATE = 13;
-    MULTIPLY = 14;
-    SCREEN = 15;
-    OVERLAY = 16;
-    DARKEN = 17;
-    LIGHTEN = 18;
-    COLOUR_DODGE = 19;
-    COLOUR_BURN = 20;
-    HARD_LIGHT = 21;
-    SOFT_LIGHT = 22;
-    DIFFERENCE = 23;
-    EXCLUSION = 24;
-
-    _description = [
-        [CLEAR, _ "Clear"],
-        [SOURCE, _ "Source"],
-        [OVER, _ "Over"],
-        [IN, _ "In"],
-        [OUT, _ "Out"],
-        [ATOP, _ "Atop"],
-        [DEST, _ "Dest"],
-        [DEST_OVER, _ "Dest over"],
-        [DEST_IN, _ "Dest in"],
-        [DEST_OUT, _ "Dest out"],
-        [DEST_ATOP, _ "Dest atop"],
-        [XOR, _ "Xor"],
-        [ADD, _ "Add"],
-        [SATURATE, _ "Saturate"],
-        [MULTIPLY, _ "Multiply"],
-        [SCREEN, _ "Screen"],
-        [OVERLAY, _ "Overlay"],
-        [DARKEN, _ "Darken"],
-        [LIGHTEN, _ "Lighten"],
-        [COLOUR_DODGE, _ "Colour dodge"],
-        [COLOUR_BURN, _ "Colour burn"],
-        [HARD_LIGHT, _ "Hard light"],
-        [SOFT_LIGHT, _ "Soft light"],
-        [DIFFERENCE, _ "Difference"],
-        [EXCLUSION, _ "Exclusion"]
-    ];
 }
 
 Combine = class Enum {
