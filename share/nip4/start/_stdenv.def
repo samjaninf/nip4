@@ -1460,8 +1460,7 @@ hist_thresh percent image
     // normalised cumulative hist
     // we sum the channels before we normalise, because we want to treat them
     // all the same
-    h = (my_hist_norm @ sum @ bandsplit @ hist_cum @ hist_find)
-        image.value;
+    h = (my_hist_norm @ sum @ bandsplit @ hist_cum @ hist_find) image.value;
 
     // threshold that, then use profile to search for the x position in the
     // histogram
@@ -1911,7 +1910,7 @@ map_binaryl fn a b = map_nary_list (list_2ary fn) [a, b];
  */
 smooth x image
     = convsep [$precision => "integer"]
-        (gaussmat [$precision => "integer", $separable => true] x) image;
+        (gaussmat [$precision => "integer", $separable => true] x 0.1) image;
 
 /* Chop up an image into a list of lists of smaller images. Pad edges with
  * black.

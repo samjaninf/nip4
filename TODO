@@ -1,11 +1,6 @@
-- Filter.def next
+- Filter.def
 
-  reached "diffuse glow"
-
-    bad arguments to to_matrix
-
-
-
+    no errors, needs verification and some self-checks
 
 - try
 
@@ -20,6 +15,8 @@
     press tab
     get 8 spaces!
     what does the program window do?
+
+	tab is two spaces
 
 - test_object.def fails
 
