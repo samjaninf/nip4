@@ -344,18 +344,6 @@ Filter_morphology_item = class
 
 }
 
-    Order = class Enum {
-        THRESHOLD = 0;
-        RING = 1;
-        BAND = 2;
-
-        _description = [
-            [THRESHOLD, "Threshold"],
-            [RING, "Ring"],
-            [BAND, "Band"]
-        ];
-    }
-
 Filter_fourier_item = class
     Menupullright "_Fourier" "various Fourier filters" {
     preview_size = 64;
@@ -392,7 +380,7 @@ Filter_fourier_item = class
 
         _description = [
             [PASS, "Pass"],
-            [REJECT, "REJECT"]
+            [REJECT, "Reject"]
         ];
     }
 
@@ -424,7 +412,7 @@ Filter_fourier_item = class
 
         = error "unknown mask type"
     {
-        options = [$reject => sense.value_key == Sense.REJECT];
+        options = [$reject => sense == Sense.REJECT];
     }
 
     filter_image in type order sense p1 p2 p3 p4 p5
@@ -443,25 +431,6 @@ Filter_fourier_item = class
     process fn in
         = (Image @ fn) (filter_image in.value);
 
-    Test_item = class
-        Menuaction "_High or Low Pass" "highpass/lowpass ideal Fourier filter" {
-        action x = class
-            _result {
-            _vislevel = 3;
-
-            sense = Sense.picker $PASS;
-            fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
-
-            // call a freq func with our parameters
-            _params f = f Type.IDEAL Order.THRESHOLD sense.value_key
-                fc.value 0 0 0 0;
-
-            visualize_mask = make_vis _params;
-
-            _result = x;
-        }
-    }
-
     New_ideal_item = class
         Menupullright "_Ideal" "various ideal Fourier filters" {
 
@@ -475,13 +444,32 @@ Filter_fourier_item = class
                 sense = Sense.picker $PASS;
                 fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
 
+                _create_mask width height
+                    = vips_mask_ideal [
+                        $reject => sense.value_key == Sense.REJECT
+                    ] width height fc.value;
+
+                visualize_mask = Image (rotquad (_create_mask 64 64));
+
+                _result = map_unary process x
+                {
+                    process in
+                        = Image (set_header $interpretation interpretation (vips_freqmult [] in mask))
+                    {
+                        width = get_header "width" in;
+                        height = get_header "height" in;
+                        interpretation = get_header "interpretation" in;
+                        mask = _create_mask width height;
+                    }
+                }
+
+		/*
                 // call a freq func with our parameters
                 _params f = f Type.IDEAL Order.THRESHOLD sense.value_key
                     fc.value 0 0 0 0;
-
                 visualize_mask = make_vis _params;
-
                 _result = map_unary (process _params) x;
+		 */
             }
         }
 

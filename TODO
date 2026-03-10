@@ -3,9 +3,16 @@
 
     no errors, needs verification and some self-checks
 
-	    Filter_fourier_item.New_ideal_item.High_low_item.action N2
+    rewriting fourier filtering
 
-	comes out as b-w, not srgb
+
+- try
+
+	vips mask_ideal x.v 64 64 0.5
+	nip4 x.v
+
+  should display as black->white, nip2 does this
+
 
 - n4, recomb, crash
 
@@ -101,6 +108,11 @@
   should change the interpretation (probably?)
 
   vipsdisp gets confused by x.v, though nip4 seems fine
+
+   $ vips freqmult a.jpg mask.v out.jpg
+
+  always writes b-w (should copy interpretation from input)
+
 
 - columns that change width on every update are annoying
 
