@@ -165,7 +165,7 @@ Kirk
                 = Toggle "Seperable convolution" false,
                     matrix.width == 1 || matrix.height == 1
                 = false;
-            type = Option "Convolution type" ["Int", "Float"] 0;
+            prec = Precision.picker $INTEGER;
             rotate = Option "Rotate" [
                 "Don't rotate",
                 "4 x 45 degrees",
@@ -180,14 +180,33 @@ Kirk
                     = in.Image in'
                 {
                     conv_fn
-                        = im_lindetect, !separable && type == 0 && rotate == 1
-                        = im_compass, !separable && type == 0 && rotate == 2
-                        = im_gradient, !separable && type == 0 && rotate == 3
-                        = im_conv, !separable && type == 0
-                        = im_convsep, separable && type == 0
-                        = im_conv_f, !separable && type == 1
-                        = im_convsep_f, separable && type == 1
-                        = error "boink!";
+                        = vips_compass [
+                            $times => 4,
+                            $angle => "d45",
+                            $precision => prec.value_key
+                          ],
+                            !separable && rotate == 1
+                        = vips_compass [
+                            $times => 8,
+                            $angle => "d45",
+                            $precision => prec.value_key
+                          ],
+                            !separable && rotate == 2
+                        = vips_compass [
+                            $times => 2,
+                            $angle => "d90",
+                            $combine => "sum",
+                            $precision => prec.value_key
+                          ],
+                            !separable && rotate == 3
+                        = vips_conv [
+                            $precision => prec.value_key
+                          ],
+                            !separable
+                        = vips_convsep [
+                            $precision => prec.value_key
+                          ];
+
                     in' = conv_fn in.value matrix;
                 }
             }
@@ -303,8 +322,8 @@ Filter_morphology_item = class
                     fatmask = (iterate (dilate mask) mask)?(to_real apply - 1);
 
                     value'
-                        = im_erode image.value fatmask, type.value == 0
-                        = im_dilate image.value fatmask;
+                        = erode fatmask image.value, type.value == 0
+                        = dilate fatmask image.value;
                 }
             }
         }
@@ -620,10 +639,9 @@ Filter_enhance_item = class
 
             wsize = Expression "Window size" 11;
             tmean = Expression "Target mean" 128;
-            mean_weight = Scale "Mean weight" 0 1 0.8;
+            tmean_weight = Scale "Mean weight" 0 1 0.8;
             tdev = Expression "Target deviation" 50;
-            dev_weight = Scale "Deviation weight" 0 1 0.8;
-            border = Toggle "Output image matches input image in size" true;
+            tdev_weight = Scale "Deviation weight" 0 1 0.8;
 
             _result
                 = map_unary process x
@@ -632,13 +650,12 @@ Filter_enhance_item = class
                     = Image in''
                 {
                     in' = colourspace [] Interpretation.B_W in.value;
-                    fn
-                        = im_stdif, border
-                        = im_stdif_raw;
-                    in'' = fn in'
-                        mean_weight.value tmean.expr
-                        dev_weight.value tdev.expr
-                        wsize.expr wsize.expr;
+                    in'' = vips_stdif [
+                        $s0 => to_real tdev,
+                        $b => to_real tdev_weight,
+                        $m0 => to_real tmean,
+                        $a => to_real tmean_weight
+                    ] in' wsize.expr wsize.expr;
                 }
             }
         }
@@ -832,7 +849,7 @@ Filter_tilt_item = class
                 tilt_lr image
                     = image * scale
                 {
-                    ramp = im_fgrey image.width image.height;
+                    ramp = grey [] image.width image.height;
                     scale = (ramp - 0.5) * tilt + 1;
                 }
             }
@@ -853,8 +870,7 @@ Filter_tilt_item = class
                 tilt_tb image
                     = image * scale
                 {
-                    ramp = rot90
-                        (im_fgrey image.height image.width);
+                    ramp = rot90 (grey [] image.height image.width);
                     scale = (ramp - 0.5) * tilt + 1;
                 }
             }
@@ -878,8 +894,7 @@ Filter_tilt_item = class
                 tilt_lr image
                     = image * scale
                 {
-                    ramp = im_fgrey image.width image.height - 0.5 -
-                            shift.value;
+                    ramp = grey [] image.width image.height - 0.5 - shift.value;
                     scale = 0.5 * tilt.value * cos (ramp * 180) + 1;
                 }
             }
@@ -901,7 +916,7 @@ Filter_tilt_item = class
                 tilt_tb image
                     = image * scale
                 {
-                    ramp = rot90 (im_fgrey image.height image.width) - 0.5 -
+                    ramp = rot90 (grey [] image.height image.width) - 0.5 -
                             shift.value;
                     scale = 0.5 * tilt.value * cos (ramp * 180) + 1;
                 }
@@ -927,9 +942,9 @@ Filter_tilt_item = class
                 tilt_tb image
                     = image * scale
                 {
-                    hramp = im_fgrey image.width image.height - 0.5 -
+                    hramp = grey [] image.width image.height - 0.5 -
                         hshift.value;
-                    vramp = rot90 (im_fgrey image.height image.width) - 0.5 -
+                    vramp = rot90 (grey [] image.height image.width) - 0.5 -
                         vshift.value;
                     ramp = (hramp ** 2 + vramp ** 2) ** 0.5;
                     scale = 0.5 * tilt.value * cos (ramp * 180) + 1;
@@ -1027,8 +1042,8 @@ Filter_blend_item = class
                     background = (xyz [] output_width output_height) >=
                         blend_position';
                     ramp
-                        = im_grey blend_width' output_height, orientation == 0
-                        = rot90 (im_grey blend_width' output_width);
+                        = grey [] blend_width' output_height, orientation == 0
+                        = rot90 (grey [] blend_width' output_width);
                     condition
                         = insert_noexpand start 0 ramp background?0,
                             orientation == 0
@@ -1358,123 +1373,39 @@ Filter_drop_shadow_item = class
 
 Filter_paint_text_item = class
     Menuaction "_Paint Text" "paint text into an image" {
-    action x
-        = paint_position, is_Group x
-        = paint_area
-    {
-        paint_area = class
-            _result {
-            _check_args = [
-                [x, "x", check_Image]
-            ];
-            _vislevel = 3;
-
-            text = String "Text to paint" "<i>Hello</i> world!";
-            font = Fontname "Use font" Workspaces.Preferences.PAINTBOX_FONT;
-            align = Option "Alignment" ["Left", "Centre", "Right"] 0;
-            dpi = Expression "DPI" 300;
-            colour = Expression "Text colour" 255;
-            place = Region x (x.width / 4) (x.height / 4)
-                (x.width / 2) (x.height / 2);
-
-            _result
-                = insert_noexpand place.left place.top (blend txt' fg place) x
-            {
-                fg = image_new_from_image [
-                    $pixel => colour.expr
-                ] x place.width place.height;
-                txt = Image (im_text text.value font.value
-                    place.width align.value (to_real dpi));
-                bg = im_black place.width place.height 1;
-                txt' = insert_noexpand 0 0 txt bg;
-            }
-        }
-
-        paint_position = class
-            _result {
-            _vislevel = 3;
-
-            text = Pattern_images_item.Text_item.action;
-            colour = Expression "Text colour" 255;
-            position = Option "Position" [
-                _ "North-west",
-                _ "North",
-                _ "North-east",
-                _ "West",
-                _ "Centre",
-                _ "East",
-                _ "South-west",
-                _ "South",
-                _ "South-east",
-                _ "Specify in pixels"
-            ] 4;
-            left = Expression "Pixels from left" 0;
-            top = Expression "Pixels from top" 0;
-
-            _result
-                = map_unary paint x
-            {
-                paint image
-                    = insert_noexpand x' y' place' image
-                {
-                    xr = image.width - text.width;
-                    yr = image.height - text.height;
-                    x
-                        = left.expr, position == 9
-                        = [0, xr / 2, xr]?(position % 3);
-                    y
-                        = top.expr, position == 9
-                        = [0, yr / 2, yr]?(position / 3);
-                    x' = clamp 0 (image.width - 1) x;
-                    y' = clamp 0 (image.height - 1) y;
-                    w' = clamp 1 (image.width - x') text.width;
-                    h' = clamp 1 (image.height - y') text.height;
-
-                    place = crop x' y' w' h' image;
-                    text' = insert_noexpand 0 0 text (im_black w' h' 1);
-                    fg = image_new_from_image [
-                        $pixel => colour.expr
-                    ] image w' h';
-                    place' = blend text' fg place;
-                }
-            }
-        }
-    }
-}
-
-Autotrace_item = class
-    Menuaction "_Trace" "convert a bitmap to an SVG file" {
     action x = class
         _result {
         _vislevel = 3;
 
-        despeckle = Scale "Despeckle level" 1 20 1;
-        line = Scale "Line threshold" 1 20 1;
-        center = Toggle "Trace centreline" false;
-        scale = Scale "SVG scale" 0.1 10 1;
-
-        command
-            = "autotrace '%s' " ++ joinsep " "
-                [ofmt, ofile, desp, lint, cent]
-        {
-            prog = search_for_error "autotrace";
-            ofmt = "-output-format svg";
-            ofile = "-output-file '%s'";
-            desp = "-despeckle-level " ++ print despeckle.value;
-            lint = "-line-threshold " ++ print line.value;
-            cent = if center then "-centerline " else "";
-        }
+        text = String "Text to paint" "<span color='red'>Hello</span> world!";
+        font = Fontname "Use font" Workspaces.Preferences.PAINTBOX_FONT;
+        align = Align.picker $LOW;
+        dpi = Expression "DPI" 500;
+        spacing = Expression "Line spacing" 1;
+        wrap = Toggle "Wrap lines on character boundaries" false;
+        autofit = Toggle "Fit to box" false;
+        justify = Toggle "Justify" false;
+        place = Region x (x.width / 4) (x.height / 4)
+            (x.width / 2) (x.height / 2);
 
         _result
-            = Image output
+            = composite [
+                $x => place.left,
+                $y => place.top
+            ] Blend.OVER x txt
         {
-            output = vips_system [
-                $in => [x.value],
-                $in_format => "%s.ppm",
-                $out => true,
-                $out_format => "%s.svg[scale=" ++ print scale.value ++ "]"
-            ] command;
+            txt = vips_text [
+                $font => font.value,
+                $width => place.width,
+                $height => place.height,
+                $align => align.value_key,
+                $justify => justify.value,
+                $dpi => to_real dpi,
+                $autofit_dpi => autofit.value,
+                $spacing => to_real spacing,
+                $rgba => true,
+                $wrap => wrap.value
+              ] text.value;
         }
     }
 }
-

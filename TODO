@@ -1,4 +1,3 @@
-
 - Filter.def
 
     no errors, needs verification and some self-checks
@@ -9,8 +8,10 @@
 
             seems to be broken in a different way
 
-    check for use of im_xxx funcs in test_filter (and other test workspaces)
 
+- Matrix.def has some im_ funcs in there
+
+	check Colour.def too
 
 - selecting a row (or any interaction with a column?) should also select that
   column
@@ -26,6 +27,7 @@
 	nip4 x.v
 
   should display as black->white, nip2 does this
+
 
 
 - n4, recomb, crash
@@ -127,6 +129,8 @@
 
   always writes b-w (should copy interpretation from input)
 
+  vips_text() ... if width + height are both set and autofit is TRUE, ignore
+  DPI setting
 
 - columns that change width on every update are annoying
 

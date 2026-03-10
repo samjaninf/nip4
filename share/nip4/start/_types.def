@@ -1237,6 +1237,18 @@ Precision = class Enum {
     ];
 }
 
+Align = class Enum {
+    LOW = 0;
+    CENTRE = 1;
+    HIGH = 2;
+
+    _description = [
+        [LOW, _ "Low"],
+        [CENTRE, _ "Centre"],
+        [HIGH, _ "High"]
+    ];
+}
+
 Blend = class Enum {
     CLEAR = 0;
     SOURCE = 1;
