@@ -7,6 +7,7 @@
 - fix a race when Value caption updates during GUI refresh
 - add an object registry for testing pointer validity
 - load gainmaps on UHDR images
+- class.name is just the class name, even for nested classes
 
 ## 9.0.17 2026/02/25
 
