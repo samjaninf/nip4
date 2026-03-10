@@ -348,32 +348,6 @@ Filter_fourier_item = class
     Menupullright "_Fourier" "various Fourier filters" {
     preview_size = 64;
 
-    Type = class Enum {
-        IDEAL = 0;
-        BUTTERWORTH = 1;
-        GAUSSIAN = 2;
-        FRACTAL = 3;
-
-        _description = [
-            [IDEAL, "Ideal"],
-            [BUTTERWORTH, "Butterworth"],
-            [GAUSSIAN, "Gaussian"],
-            [FRACTAL, "Fractal"]
-        ];
-    }
-
-    Order = class Enum {
-        THRESHOLD = 0;
-        RING = 1;
-        BAND = 2;
-
-        _description = [
-            [THRESHOLD, "Threshold"],
-            [RING, "Ring"],
-            [BAND, "Band"]
-        ];
-    }
-
     Sense = class Enum {
         PASS = 0;
         REJECT = 1;
@@ -384,52 +358,19 @@ Filter_fourier_item = class
         ];
     }
 
-    // make the mask
-    create_mask width height type order sense p1 p2 p3 p4 p5
-        = vips_mask_ideal options width height p1,
-            type == Type.IDEAL && order == Order.THRESHOLD
-        = vips_mask_butterworth options width height p1 p2 p3,
-            type == Type.BUTTERWORTH && order == Order.THRESHOLD
-        = vips_mask_gaussian options width height p1 p2,
-            type == Type.GAUSSIAN && order == Order.THRESHOLD
+    make_visualisation gen_mask = Image (rotquad (gen_mask 64 64));
 
-        = vips_mask_ideal_ring options width height p1 p2,
-            type == Type.IDEAL && order == Order.RING
-        = vips_mask_butterworth_ring options width height p1 p2 p3 p4,
-            type == Type.BUTTERWORTH && order == Order.RING
-        = vips_mask_gaussian_ring options width height p1 p2 p3,
-            type == Type.GAUSSIAN && order == Order.RING
+    make_options sense = [$reject => sense == Sense.REJECT];
 
-        = vips_mask_ideal_band options width height p1 p2 p3,
-            type == Type.IDEAL && order == Order.BAND
-        = vips_mask_butterworth_band options width height p1 p2 p3 p4 p5,
-            type == Type.BUTTERWORTH && order == Order.BAND
-        = vips_mask_gaussian_band options width height p1 p2 p3 p4,
-            type == Type.GAUSSIAN && order == Order.BAND
-
-        = vips_mask_fractal [] width height p1,
-            type == Type.FRACTAL
-
-        = error "unknown mask type"
+    process_image gen_mask in
+        = Image (set_header $interpretation interpretation
+            (vips_freqmult [] in mask))
     {
-        options = [$reject => sense == Sense.REJECT];
+        width = get_width in;
+        height = get_height in;
+        interpretation = get_interpretation in;
+        mask = gen_mask width height;
     }
-
-    filter_image in type order sense p1 p2 p3 p4 p5
-        = vips_freqmult [] in mask
-    {
-        width = get_header "width" in;
-        height = get_header "height" in;
-        mask = create_mask width height type order sense p1 p2 p3 p4 p5;
-    }
-
-    // make a visualisation image
-    make_vis fn = (Image @ set_header $interpretation $fourier @ rotquad @ fn)
-        (create_mask preview_size preview_size);
-
-    // make the process function
-    process fn in
-        = (Image @ fn) (filter_image in.value);
 
     New_ideal_item = class
         Menupullright "_Ideal" "various ideal Fourier filters" {
@@ -444,32 +385,13 @@ Filter_fourier_item = class
                 sense = Sense.picker $PASS;
                 fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
 
-                _create_mask width height
-                    = vips_mask_ideal [
-                        $reject => sense.value_key == Sense.REJECT
-                    ] width height fc.value;
+                _gen_mask width height
+                    = vips_mask_ideal (make_options sense) width height
+                        fc.value;
 
-                visualize_mask = Image (rotquad (_create_mask 64 64));
+                visualize_mask = make_visualisation _gen_mask;
 
-                _result = map_unary process x
-                {
-                    process in
-                        = Image (set_header $interpretation interpretation (vips_freqmult [] in mask))
-                    {
-                        width = get_header "width" in;
-                        height = get_header "height" in;
-                        interpretation = get_header "interpretation" in;
-                        mask = _create_mask width height;
-                    }
-                }
-
-		/*
-                // call a freq func with our parameters
-                _params f = f Type.IDEAL Order.THRESHOLD sense.value_key
-                    fc.value 0 0 0 0;
-                visualize_mask = make_vis _params;
-                _result = map_unary (process _params) x;
-		 */
+                _result = map_unary (process_image _gen_mask) x;
             }
         }
 
@@ -484,13 +406,13 @@ Filter_fourier_item = class
                 fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
                 rw = Scale "Ring width" 0.01 0.99 0.5;
 
-                // call a freq func with our parameters
-                _params f = f Type.IDEAL Order.RING sense.value_key
-                    fc.value rw.value 0 0 0;
+                _gen_mask width height
+                    = vips_mask_ideal_ring (make_options sense) width height
+                        fc.value rw.value;
 
-                visualize_mask = make_vis _params;
+                visualize_mask = make_visualisation _gen_mask;
 
-                _result = map_unary (process _params) x;
+                _result = map_unary (process_image _gen_mask) x;
             }
         }
 
@@ -506,13 +428,13 @@ Filter_fourier_item = class
                 fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
                 r = Scale "Radius" 0.01 0.99 0.5;
 
-                // call a freq func with our parameters
-                _params f = f Type.IDEAL Order.BAND sense.value_key
-                    fcx.value fcy.value r.value 0 0;
+                _gen_mask width height
+                    = vips_mask_ideal_band (make_options sense) width height
+                        fcx.value fcy.value r.value;
 
-                visualize_mask = make_vis _params;
+                visualize_mask = make_visualisation _gen_mask;
 
-                _result = map_unary (process _params) x;
+                _result = map_unary (process_image _gen_mask) x;
             }
         }
     }
@@ -530,13 +452,13 @@ Filter_fourier_item = class
                 fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
                 ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
 
-                // call a freq func with our parameters
-                _params f = f Type.GAUSSIAN Order.THRESHOLD sense.value_key
-                    fc.value ac.value 0 0 0;
+                _gen_mask width height
+                    = vips_mask_gaussian (make_options sense) width height
+                        fc.value ac.value;
 
-                visualize_mask = make_vis _params;
+                visualize_mask = make_visualisation _gen_mask;
 
-                _result = map_unary (process _params) x;
+                _result = map_unary (process_image _gen_mask) x;
             }
         }
 
@@ -552,13 +474,13 @@ Filter_fourier_item = class
                 ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
                 rw = Scale "Ring width" 0.01 0.99 0.5;
 
-                // call a freq func with our parameters
-                _params f = f Type.GAUSSIAN Order.RING sense.value_key
-                    fc.value rw.value ac.value 0 0;
+                _gen_mask width height
+                    = vips_mask_gaussian_ring (make_options sense) width height
+                        fc.value rw.value ac.value;
 
-                visualize_mask = make_vis _params;
+                visualize_mask = make_visualisation _gen_mask;
 
-                _result = map_unary (process _params) x;
+                _result = map_unary (process_image _gen_mask) x;
             }
         }
 
@@ -575,13 +497,13 @@ Filter_fourier_item = class
                 r = Scale "Radius" 0.01 0.99 0.5;
                 ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
 
-                // call a freq func with our parameters
-                _params f = f Type.GAUSSIAN Order.BAND sense.value_key
-                    fcx.value fcy.value r.value ac.value 0;
+                _gen_mask width height
+                    = vips_mask_gaussian_band (make_options sense) width height
+                        fcx.value fcy.value r.value ac.value;
 
-                visualize_mask = make_vis _params;
+                visualize_mask = make_visualisation _gen_mask;
 
-                _result = map_unary (process _params) x;
+                _result = map_unary (process_image _gen_mask) x;
             }
         }
     }
@@ -601,13 +523,13 @@ Filter_fourier_item = class
                 ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
                 o = Scale "Order" 1 10 2;
 
-                // call a freq func with our parameters
-                _params f = f Type.BUTTERWORTH Order.IDEAL sense.value_key
-                    o.value fc.value ac.value 0 0;
+                _gen_mask width height
+                    = vips_mask_butterworth (make_options sense) width height
+                        o.value fc.value ac.value;
 
-                visualize_mask = make_vis _params;
+                visualize_mask = make_visualisation _gen_mask;
 
-                _result = map_unary (process _params) x;
+                _result = map_unary (process_image _gen_mask) x;
             }
         }
 
@@ -624,13 +546,14 @@ Filter_fourier_item = class
                 rw = Scale "Ring width" 0.01 0.99 0.5;
                 o = Scale "Order" 1 10 2;
 
-                // call a freq func with our parameters
-                _params f = f Type.BUTTERWORTH Order.RING sense.value_key
-                    o.value fc.value rw.value ac.value 0;
+                _gen_mask width height
+                    = vips_mask_butterworth_ring (make_options sense)
+                        width height
+                        o.value fc.value rw.value ac.value;
 
-                visualize_mask = make_vis _params;
+                visualize_mask = make_visualisation _gen_mask;
 
-                _result = map_unary (process _params) x;
+                _result = map_unary (process_image _gen_mask) x;
             }
         }
 
@@ -648,13 +571,14 @@ Filter_fourier_item = class
                 ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
                 o = Scale "Order" 1 10 2;
 
-                // call a freq func with our parameters
-                _params f = f Type.BUTTERWORTH Order.BAND sense.value_key
-                    o.value fcx.value fcy.value r.value ac.value;
+                _gen_mask width height
+                    = vips_mask_butterworth_band (make_options sense)
+                        width height
+                        o.value fcx.value fcy.value r.value ac.value;
 
-                visualize_mask = make_vis _params;
+                visualize_mask = make_visualisation _gen_mask;
 
-                _result = map_unary (process _params) x;
+                _result = map_unary (process_image _gen_mask) x;
             }
         }
     }

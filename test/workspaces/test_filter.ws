@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.0.17">
   <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// private definitions for this workspace&#10;" name="test_filter" filename="$HOME/GIT/nip4/test/workspaces/test_filter.ws" major="9" minor="0">
-    <Column x="10" y="5" open="true" selected="false" sform="false" next="22" name="B" caption="Colour / Colourspace">
+    <Column x="10" y="5" open="true" selected="false" sform="false" next="23" name="B" caption="Colour / Colourspace">
       <Subcolumn vislevel="3">
         <Row popup="false" name="B1">
           <Rhs vislevel="1" flags="1">
@@ -316,7 +316,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2301" y="5" open="true" selected="false" sform="false" next="6" name="N" caption="Filter / Fourier / Ideal">
+    <Column x="2301" y="5" open="true" selected="false" sform="false" next="16" name="N" caption="Filter / Fourier / Ideal">
       <Subcolumn vislevel="3">
         <Row popup="false" name="N1">
           <Rhs vislevel="0" flags="4">
@@ -334,112 +334,30 @@
             <iText formula="Region N1 74 139 264 242"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="N3">
+        <Row popup="false" name="N6">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
-            <Subcolumn vislevel="1">
-              <Row name="x">
-                <Rhs vislevel="0" flags="4">
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="super">
-                <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="sense">
-                <Rhs vislevel="1" flags="1">
-                  <Option caption="Sense" labelsn="2" labels0="Pass" labels1="Reject" value="1"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="visualize_mask">
-                <Rhs vislevel="1" flags="1">
-                  <iImage show_status="false" show_convert="false"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="fc">
-                <Rhs vislevel="1" flags="1">
-                  <Slider/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-            </Subcolumn>
+            <Subcolumn vislevel="1"/>
             <iText formula="Filter_fourier_item.New_ideal_item.High_low_item.action N2"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="N4">
+        <Row popup="false" name="N13">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Filter_fourier_item.New_ideal_item.Ring_item.action N2"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="N5">
+        <Row popup="false" name="N14">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
-            <Subcolumn vislevel="1">
-              <Row name="x">
-                <Rhs vislevel="0" flags="4">
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="super">
-                <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="sense">
-                <Rhs vislevel="1" flags="1">
-                  <Option/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="r">
-                <Rhs vislevel="1" flags="1">
-                  <Slider caption="Radius" from="0.01" to="0.98999999999999999" value="0.90000000000000002"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="visualize_mask">
-                <Rhs vislevel="1" flags="1">
-                  <iImage show_status="false" show_convert="false"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="fcx">
-                <Rhs vislevel="1" flags="1">
-                  <Slider/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="fcy">
-                <Rhs vislevel="1" flags="1">
-                  <Slider/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-            </Subcolumn>
+            <Subcolumn vislevel="1"/>
             <iText formula="Filter_fourier_item.New_ideal_item.Band_item.action N2"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2900" y="5" open="true" selected="false" sform="false" next="9" name="O" caption="Filter / Fourier / Gaussian">
+    <Column x="2900" y="5" open="true" selected="false" sform="false" next="12" name="O" caption="Filter / Fourier / Gaussian">
       <Subcolumn vislevel="3">
         <Row popup="false" name="O1">
           <Rhs vislevel="0" flags="4">
@@ -457,62 +375,21 @@
             <iText formula="Region O1 74 139 264 242"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="O6">
+        <Row popup="false" name="O9">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
-            <Subcolumn vislevel="1">
-              <Row name="x">
-                <Rhs vislevel="0" flags="4">
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="super">
-                <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="sense">
-                <Rhs vislevel="1" flags="1">
-                  <Option caption="Sense" labelsn="2" labels0="Pass" labels1="Reject" value="1"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="visualize_mask">
-                <Rhs vislevel="1" flags="1">
-                  <iImage show_status="false" show_convert="false"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="fc">
-                <Rhs vislevel="1" flags="1">
-                  <Slider/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="ac">
-                <Rhs vislevel="1" flags="1">
-                  <Slider/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-            </Subcolumn>
+            <Subcolumn vislevel="1"/>
             <iText formula="Filter_fourier_item.New_gaussian_item.High_low_item.action O2"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="O7">
+        <Row popup="false" name="O10">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Filter_fourier_item.New_gaussian_item.Ring_item.action O2"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="O8">
+        <Row popup="false" name="O11">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
@@ -521,7 +398,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="3499" y="5" open="true" selected="false" sform="false" next="9" name="P" caption="Filter / Fourier / Butterworth">
+    <Column x="3499" y="5" open="true" selected="true" sform="false" next="12" name="P" caption="Filter / Fourier / Butterworth">
       <Subcolumn vislevel="3">
         <Row popup="false" name="P1">
           <Rhs vislevel="0" flags="4">
@@ -539,69 +416,21 @@
             <iText formula="Region P1 74 139 264 242"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="P6">
+        <Row popup="false" name="P9">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
-            <Subcolumn vislevel="1">
-              <Row name="x">
-                <Rhs vislevel="0" flags="4">
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="super">
-                <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="sense">
-                <Rhs vislevel="1" flags="1">
-                  <Option caption="Sense" labelsn="2" labels0="Pass" labels1="Reject" value="1"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="visualize_mask">
-                <Rhs vislevel="1" flags="1">
-                  <iImage show_status="false" show_convert="false"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="fc">
-                <Rhs vislevel="1" flags="1">
-                  <Slider/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="ac">
-                <Rhs vislevel="1" flags="1">
-                  <Slider/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="o">
-                <Rhs vislevel="1" flags="1">
-                  <Slider/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-            </Subcolumn>
+            <Subcolumn vislevel="1"/>
             <iText formula="Filter_fourier_item.New_butterworth_item.High_low_item.action P2"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="P7">
+        <Row popup="false" name="P10">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Filter_fourier_item.New_butterworth_item.Ring_item.action P2"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="P8">
+        <Row popup="false" name="P11">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
@@ -1173,7 +1002,7 @@
         <Row popup="false" name="W3">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
-            <Subcolumn vislevel="0">
+            <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
                   <iText/>
@@ -1200,7 +1029,7 @@
         <Row popup="false" name="W4">
           <Rhs vislevel="3" flags="7">
             <iImage window_x="4" window_y="53" window_width="512" window_height="729" show_status="false" show_convert="false"/>
-            <Subcolumn vislevel="0">
+            <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
                   <iText/>
@@ -1237,39 +1066,7 @@
               <Row name="colour">
                 <Rhs vislevel="3" flags="7">
                   <Colour colour_space="sRGB" value0="236" value1="17" value2="22"/>
-                  <Subcolumn vislevel="0">
-                    <Row name="default_colour">
-                      <Rhs vislevel="0" flags="4">
-                        <iText/>
-                      </Rhs>
-                    </Row>
-                    <Row name="default_value">
-                      <Rhs vislevel="0" flags="4">
-                        <iText/>
-                      </Rhs>
-                    </Row>
-                    <Row name="super">
-                      <Rhs vislevel="0" flags="4">
-                        <Colour/>
-                        <Subcolumn vislevel="0"/>
-                        <iText/>
-                      </Rhs>
-                    </Row>
-                    <Row name="space">
-                      <Rhs vislevel="1" flags="1">
-                        <Option caption="Colour space" labelsn="6" labels0="sRGB" labels1="Lab" labels2="LCh" labels3="XYZ" labels4="Yxy" labels5="UCS" value="0"/>
-                        <Subcolumn vislevel="0"/>
-                        <iText/>
-                      </Rhs>
-                    </Row>
-                    <Row name="colour">
-                      <Rhs vislevel="1" flags="1">
-                        <Expression caption="Colour value"/>
-                        <Subcolumn vislevel="0"/>
-                        <iText/>
-                      </Rhs>
-                    </Row>
-                  </Subcolumn>
+                  <Subcolumn vislevel="1"/>
                   <iText/>
                 </Rhs>
               </Row>
@@ -1280,7 +1077,7 @@
         <Row popup="false" name="W5">
           <Rhs vislevel="3" flags="7">
             <iImage window_x="4" window_y="53" window_width="570" window_height="750" show_status="true" show_convert="true"/>
-            <Subcolumn vislevel="0"/>
+            <Subcolumn vislevel="1"/>
             <iText formula="Filter_drop_shadow_item.action W1"/>
           </Rhs>
         </Row>
