@@ -1066,8 +1066,8 @@ workspaceview_drag_begin(GtkEventControllerMotion *self,
 		if (title) {
 			wview->drag_cview = title;
 			wview->state = WVIEW_SELECT;
-			wview->obj_x = cview->x;
-			wview->obj_y = cview->y;
+			wview->obj_x = title->x;
+			wview->obj_y = title->y;
 		}
 		else if (cview &&
 			(modifiers & GDK_CONTROL_MASK)) {
