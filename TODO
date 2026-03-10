@@ -3,8 +3,22 @@
 
     no errors, needs verification and some self-checks
 
-    rewriting fourier filtering
+    hough circle looks funky?
 
+        does n4 work?
+
+            seems to be broken in a different way
+
+    check for use of im_xxx funcs in test_filter (and other test workspaces)
+
+
+- selecting a row (or any interaction with a column?) should also select that
+  column
+
+    since you will almost always want the result in the same column
+
+    select dest column just before menu item click to operate into a different
+    column (rare case)
 
 - try
 
