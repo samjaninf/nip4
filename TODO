@@ -1,6 +1,15 @@
+
 - Filter.def
 
     no errors, needs verification and some self-checks
+
+	    Filter_fourier_item.New_ideal_item.High_low_item.action N2
+
+	comes out as b-w, not srgb
+
+- n4, recomb, crash
+
+	when args are reversed
 
 - try
 
@@ -67,6 +76,10 @@
   not a very helpful message
 
 - try to reproduce that macOS crash
+
+  for macOS, see thisa for codesigning tips
+
+	https://www.reddit.com/r/macosprogramming/comments/1rpe0mx/macos_app_development_outside_of_app_store/
 
 - "nip4 for nerds" page
 
