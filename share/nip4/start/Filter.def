@@ -344,25 +344,127 @@ Filter_morphology_item = class
 
 }
 
+    Order = class Enum {
+        THRESHOLD = 0;
+        RING = 1;
+        BAND = 2;
+
+        _description = [
+            [THRESHOLD, "Threshold"],
+            [RING, "Ring"],
+            [BAND, "Band"]
+        ];
+    }
+
 Filter_fourier_item = class
     Menupullright "_Fourier" "various Fourier filters" {
     preview_size = 64;
 
-    sense_option = Option "Sense" [
-        "Pass",
-        "Reject"
-    ] 0;
+    Type = class Enum {
+        IDEAL = 0;
+        BUTTERWORTH = 1;
+        GAUSSIAN = 2;
+        FRACTAL = 3;
+
+        _description = [
+            [IDEAL, "Ideal"],
+            [BUTTERWORTH, "Butterworth"],
+            [GAUSSIAN, "Gaussian"],
+            [FRACTAL, "Fractal"]
+        ];
+    }
+
+    Order = class Enum {
+        THRESHOLD = 0;
+        RING = 1;
+        BAND = 2;
+
+        _description = [
+            [THRESHOLD, "Threshold"],
+            [RING, "Ring"],
+            [BAND, "Band"]
+        ];
+    }
+
+    Sense = class Enum {
+        PASS = 0;
+        REJECT = 1;
+
+        _description = [
+            [PASS, "Pass"],
+            [REJECT, "REJECT"]
+        ];
+    }
+
+    // make the mask
+    create_mask width height type order sense p1 p2 p3 p4 p5
+        = vips_mask_ideal options width height p1,
+            type == Type.IDEAL && order == Order.THRESHOLD
+        = vips_mask_butterworth options width height p1 p2 p3,
+            type == Type.BUTTERWORTH && order == Order.THRESHOLD
+        = vips_mask_gaussian options width height p1 p2,
+            type == Type.GAUSSIAN && order == Order.THRESHOLD
+
+        = vips_mask_ideal_ring options width height p1 p2,
+            type == Type.IDEAL && order == Order.RING
+        = vips_mask_butterworth_ring options width height p1 p2 p3 p4,
+            type == Type.BUTTERWORTH && order == Order.RING
+        = vips_mask_gaussian_ring options width height p1 p2 p3,
+            type == Type.GAUSSIAN && order == Order.RING
+
+        = vips_mask_ideal_band options width height p1 p2 p3,
+            type == Type.IDEAL && order == Order.BAND
+        = vips_mask_butterworth_band options width height p1 p2 p3 p4 p5,
+            type == Type.BUTTERWORTH && order == Order.BAND
+        = vips_mask_gaussian_band options width height p1 p2 p3 p4,
+            type == Type.GAUSSIAN && order == Order.BAND
+
+        = vips_mask_fractal [] width height p1,
+            type == Type.FRACTAL
+
+        = error "unknown mask type"
+    {
+        options = [$reject => sense.value_key == Sense.REJECT];
+    }
+
+    filter_image in type order sense p1 p2 p3 p4 p5
+        = vips_freqmult [] in mask
+    {
+        width = get_header "width" in;
+        height = get_header "height" in;
+        mask = create_mask width height type order sense p1 p2 p3 p4 p5;
+    }
 
     // make a visualisation image
     make_vis fn = (Image @ set_header $interpretation $fourier @ rotquad @ fn)
-        (im_create_fmask preview_size preview_size);
+        (create_mask preview_size preview_size);
 
     // make the process function
     process fn in
-        = (Image @ fn) (im_flt_image_freq in.value);
+        = (Image @ fn) (filter_image in.value);
+
+    Test_item = class
+        Menuaction "_High or Low Pass" "highpass/lowpass ideal Fourier filter" {
+        action x = class
+            _result {
+            _vislevel = 3;
+
+            sense = Sense.picker $PASS;
+            fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
+
+            // call a freq func with our parameters
+            _params f = f Type.IDEAL Order.THRESHOLD sense.value_key
+                fc.value 0 0 0 0;
+
+            visualize_mask = make_vis _params;
+
+            _result = x;
+        }
+    }
 
     New_ideal_item = class
         Menupullright "_Ideal" "various ideal Fourier filters" {
+
         High_low_item = class
             Menuaction "_High or Low Pass"
                 "highpass/lowpass ideal Fourier filter" {
@@ -370,11 +472,12 @@ Filter_fourier_item = class
                 _result {
                 _vislevel = 3;
 
-                sense = sense_option;
+                sense = Sense.picker $PASS;
                 fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
 
                 // call a freq func with our parameters
-                _params f = f sense.value fc.value 0 0 0 0;
+                _params f = f Type.IDEAL Order.THRESHOLD sense.value_key
+                    fc.value 0 0 0 0;
 
                 visualize_mask = make_vis _params;
 
@@ -389,13 +492,13 @@ Filter_fourier_item = class
                 _result {
                 _vislevel = 3;
 
-                sense = sense_option;
+                sense = Sense.picker $PASS;
                 fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
                 rw = Scale "Ring width" 0.01 0.99 0.5;
 
                 // call a freq func with our parameters
-                _params f = f (sense.value + 6) fc.value
-                    rw.value 0 0 0;
+                _params f = f Type.IDEAL Order.RING sense.value_key
+                    fc.value rw.value 0 0 0;
 
                 visualize_mask = make_vis _params;
 
@@ -410,14 +513,14 @@ Filter_fourier_item = class
                 _result {
                 _vislevel = 3;
 
-                sense = sense_option;
+                sense = Sense.picker $PASS;
                 fcx = Scale "Horizontal frequency cutoff" 0.01 0.99 0.5;
                 fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
                 r = Scale "Radius" 0.01 0.99 0.5;
 
                 // call a freq func with our parameters
-                _params f = f (sense.value + 12) fcx.value fcy.value
-                    r.value 0 0;
+                _params f = f Type.IDEAL Order.BAND sense.value_key
+                    fcx.value fcy.value r.value 0 0;
 
                 visualize_mask = make_vis _params;
 
@@ -435,13 +538,13 @@ Filter_fourier_item = class
                 _result {
                 _vislevel = 3;
 
-                sense = sense_option;
+                sense = Sense.picker $PASS;
                 fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
                 ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
 
                 // call a freq func with our parameters
-                _params f = f (sense.value + 4) fc.value
-                    ac.value 0 0 0;
+                _params f = f Type.GAUSSIAN Order.THRESHOLD sense.value_key
+                    fc.value ac.value 0 0 0;
 
                 visualize_mask = make_vis _params;
 
@@ -456,14 +559,14 @@ Filter_fourier_item = class
                 _result {
                 _vislevel = 3;
 
-                sense = sense_option;
+                sense = Sense.picker $PASS;
                 fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
                 ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
                 rw = Scale "Ring width" 0.01 0.99 0.5;
 
                 // call a freq func with our parameters
-                _params f = f (sense.value + 10) fc.value
-                    rw.value ac.value 0 0;
+                _params f = f Type.GAUSSIAN Order.RING sense.value_key
+                    fc.value rw.value ac.value 0 0;
 
                 visualize_mask = make_vis _params;
 
@@ -478,15 +581,15 @@ Filter_fourier_item = class
                 _result {
                 _vislevel = 3;
 
-                sense = sense_option;
+                sense = Sense.picker $PASS;
                 fcx = Scale "Horizontal frequency cutoff" 0.01 0.99 0.5;
                 fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
                 r = Scale "Radius" 0.01 0.99 0.5;
                 ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
 
                 // call a freq func with our parameters
-                _params f = f (sense.value + 16) fcx.value fcy.value
-                    r.value ac.value 0;
+                _params f = f Type.GAUSSIAN Order.BAND sense.value_key
+                    fcx.value fcy.value r.value ac.value 0;
 
                 visualize_mask = make_vis _params;
 
@@ -505,14 +608,14 @@ Filter_fourier_item = class
                 _result {
                 _vislevel = 3;
 
-                sense = sense_option;
+                sense = Sense.picker $PASS;
                 fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
                 ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
                 o = Scale "Order" 1 10 2;
 
                 // call a freq func with our parameters
-                _params f = f (sense.value + 2) o.value fc.value ac.value
-                        0 0;
+                _params f = f Type.BUTTERWORTH Order.IDEAL sense.value_key
+                    o.value fc.value ac.value 0 0;
 
                 visualize_mask = make_vis _params;
 
@@ -527,15 +630,15 @@ Filter_fourier_item = class
                 _result {
                 _vislevel = 3;
 
-                sense = sense_option;
+                sense = Sense.picker $PASS;
                 fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
                 ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
                 rw = Scale "Ring width" 0.01 0.99 0.5;
                 o = Scale "Order" 1 10 2;
 
                 // call a freq func with our parameters
-                _params f = f (sense.value + 8) o.value fc.value rw.value
-                    ac.value 0;
+                _params f = f Type.BUTTERWORTH Order.RING sense.value_key
+                    o.value fc.value rw.value ac.value 0;
 
                 visualize_mask = make_vis _params;
 
@@ -550,7 +653,7 @@ Filter_fourier_item = class
                 _result {
                 _vislevel = 3;
 
-                sense = sense_option;
+                sense = Sense.picker $PASS;
                 fcx = Scale "Horizontal frequency cutoff" 0.01 0.99 0.5;
                 fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
                 r = Scale "Radius" 0.01 0.99 0.5;
@@ -558,8 +661,8 @@ Filter_fourier_item = class
                 o = Scale "Order" 1 10 2;
 
                 // call a freq func with our parameters
-                _params f = f (sense.value + 14) o.value fcx.value fcy.value
-                        r.value ac.value;
+                _params f = f Type.BUTTERWORTH Order.BAND sense.value_key
+                    o.value fcx.value fcy.value r.value ac.value;
 
                 visualize_mask = make_vis _params;
 
