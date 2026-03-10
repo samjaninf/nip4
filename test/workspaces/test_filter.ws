@@ -465,7 +465,62 @@
         <Row popup="false" name="Q4">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
-            <Subcolumn vislevel="1"/>
+            <Subcolumn vislevel="1">
+              <Row name="x">
+                <Rhs vislevel="0" flags="4">
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="super">
+                <Rhs vislevel="0" flags="4">
+                  <iImage show_status="false" show_convert="false"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="wsize">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Window size"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="tmean">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Target mean"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="mean_weight">
+                <Rhs vislevel="1" flags="1">
+                  <Slider caption="Mean weight" from="0" to="1" value="1"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="tdev">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Target deviation"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="dev_weight">
+                <Rhs vislevel="1" flags="1">
+                  <Slider/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="border">
+                <Rhs vislevel="1" flags="1">
+                  <Toggle/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+            </Subcolumn>
             <iText formula="Filter_enhance_item.Statistical_diff_item.action Q1"/>
           </Rhs>
         </Row>
@@ -485,7 +540,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="4945" y="5" open="true" selected="false" sform="false" next="7" name="R" caption="Filter / Tilt Brightness">
+    <Column x="5119" y="5" open="true" selected="false" sform="false" next="7" name="R" caption="Filter / Tilt Brightness">
       <Subcolumn vislevel="3">
         <Row popup="false" name="R1">
           <Rhs vislevel="0" flags="4">
@@ -573,7 +628,7 @@
               </Row>
               <Row name="shift">
                 <Rhs vislevel="1" flags="1">
-                  <Slider caption="Shift by" from="-1" to="1" value="0.60000000000000009"/>
+                  <Slider caption="Shift by" from="-1" to="1" value="-0.56989247311827951"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -600,7 +655,7 @@
               </Row>
               <Row name="tilt">
                 <Rhs vislevel="1" flags="1">
-                  <Slider caption="Top-bottom tilt" from="-1" to="1" value="-0.60000000000000009"/>
+                  <Slider caption="Top-bottom tilt" from="-1" to="1" value="-1"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -634,21 +689,21 @@
               </Row>
               <Row name="tilt">
                 <Rhs vislevel="1" flags="1">
-                  <Slider caption="Tilt" from="-1" to="1" value="0.60000000000000009"/>
+                  <Slider caption="Tilt" from="-1" to="1" value="1"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
               </Row>
               <Row name="hshift">
                 <Rhs vislevel="1" flags="1">
-                  <Slider caption="Horizontal shift by" from="-1" to="1" value="-0.40000000000000002"/>
+                  <Slider caption="Horizontal shift by" from="-1" to="1" value="-0.038644067796610115"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
               </Row>
               <Row name="vshift">
                 <Rhs vislevel="1" flags="1">
-                  <Slider/>
+                  <Slider caption="Vertical shift by" from="-1" to="1" value="0.0057627118644070219"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -659,7 +714,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="5432" y="5" open="true" selected="false" sform="false" next="15" name="S" caption="Filter / Blend">
+    <Column x="5606" y="5" open="true" selected="false" sform="false" next="15" name="S" caption="Filter / Blend">
       <Subcolumn vislevel="3">
         <Row popup="false" name="S1">
           <Rhs vislevel="0" flags="4">
@@ -790,7 +845,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="5946" y="5" open="true" selected="false" sform="false" next="5" name="T" caption="Filter / Overlay">
+    <Column x="6120" y="5" open="true" selected="false" sform="false" next="5" name="T" caption="Filter / Overlay">
       <Subcolumn vislevel="3">
         <Row popup="false" name="T1">
           <Rhs vislevel="0" flags="4">
@@ -847,7 +902,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="6408" y="5" open="true" selected="false" sform="false" next="7" name="U" caption="Filter / Colorize">
+    <Column x="6582" y="5" open="true" selected="false" sform="false" next="7" name="U" caption="Filter / Colorize">
       <Subcolumn vislevel="3">
         <Row popup="false" name="U1">
           <Rhs vislevel="0" flags="4">
@@ -911,7 +966,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="6921" y="5" open="true" selected="false" sform="false" next="4" name="V" caption="Filter / Browse">
+    <Column x="7095" y="5" open="true" selected="false" sform="false" next="4" name="V" caption="Filter / Browse">
       <Subcolumn vislevel="3">
         <Row popup="false" name="V1">
           <Rhs vislevel="0" flags="4">
@@ -983,7 +1038,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="7405" y="5" open="true" selected="false" sform="false" next="9" name="W" caption="Filter / Photographic">
+    <Column x="7579" y="5" open="true" selected="false" sform="false" next="9" name="W" caption="Filter / Photographic">
       <Subcolumn vislevel="3">
         <Row popup="false" name="W1">
           <Rhs vislevel="0" flags="4">
@@ -1028,7 +1083,7 @@
         </Row>
         <Row popup="false" name="W4">
           <Rhs vislevel="3" flags="7">
-            <iImage window_x="4" window_y="53" window_width="512" window_height="729" show_status="false" show_convert="false"/>
+            <iImage window_x="4" window_y="53" window_width="512" window_height="729" show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -1083,7 +1138,7 @@
         </Row>
         <Row popup="false" name="W6">
           <Rhs vislevel="3" flags="7">
-            <iImage window_x="8" window_y="76" window_width="636" window_height="729" show_status="true" show_convert="true"/>
+            <iImage window_x="8" window_y="76" window_width="636" window_height="729" show_status="true" show_convert="true" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
@@ -1185,15 +1240,15 @@
           </Rhs>
         </Row>
         <Row popup="false" name="A6">
-          <Rhs vislevel="1" flags="1">
-            <iImage window_x="477" window_y="232" window_width="510" window_height="727" show_status="true" show_convert="true"/>
+          <Rhs vislevel="2" flags="5">
+            <iImage window_x="477" window_y="232" window_width="510" window_height="727" show_status="true" show_convert="true" scale="255.00000000000043" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_correlate_item.Correlate_item.action A4 A5"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A7">
-          <Rhs vislevel="1" flags="1">
-            <iImage window_x="867" window_y="355" window_width="510" window_height="727" show_status="true" show_convert="true"/>
+          <Rhs vislevel="2" flags="5">
+            <iImage window_x="867" window_y="355" window_width="510" window_height="727" show_status="true" show_convert="true" scale="2.7433436451138365e-06" offset="0.5" page="0" falsecolour="true" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Filter_correlate_item.Correlate_fast_item.action A4 A5"/>
           </Rhs>
