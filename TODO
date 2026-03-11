@@ -7,13 +7,6 @@
 
 - try
 
-    vips mask_ideal x.v 64 64 0.5
-    nip4 x.v
-
-  should display as black->white, nip2 does this
-
-- try
-
     ws defs
     enter "f a b = a + b;"
     press |> a few times

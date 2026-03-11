@@ -11,6 +11,7 @@
 - fix click of non-selected cview
 - selecting a row also selects the enclosing column
 - fix tab size in wsdefs
+- better display of FOURIER images
 
 ## 9.0.17 2026/02/25
 
