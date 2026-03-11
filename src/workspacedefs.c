@@ -223,6 +223,11 @@ workspacedefs_init(Workspacedefs *workspacedefs)
 	gtk_widget_init_template(GTK_WIDGET(workspacedefs));
 
 	gtk_label_set_xalign(GTK_LABEL(workspacedefs->status), 1.0);
+
+    PangoTabArray *tabs = pango_tab_array_new(10, FALSE);
+    for (int i = 0; i < 10; i++)
+        pango_tab_array_set_tab(tabs, i, PANGO_TAB_LEFT, i * 2 * 10 * 1024);
+    gtk_text_view_set_tabs(GTK_TEXT_VIEW(workspacedefs->text), tabs);
 }
 
 Workspacedefs *

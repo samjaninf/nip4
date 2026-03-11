@@ -10,6 +10,7 @@
 - class.name is just the class name, even for nested classes
 - fix click of non-selected cview
 - selecting a row also selects the enclosing column
+- fix tab size in wsdefs
 
 ## 9.0.17 2026/02/25
 

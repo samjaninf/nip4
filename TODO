@@ -12,27 +12,12 @@
 
   should display as black->white, nip2 does this
 
-- n4, recomb, crash
-
-    when args are reversed
-
 - try
 
     ws defs
     enter "f a b = a + b;"
     press |> a few times
     ststus bar changes between "0 defs" and "1 defs" crazilly
-
-- try:
-
-    ws defs
-    press tab
-    get 8 spaces!
-    what does the program window do?
-
-    tab is two spaces
-
-    copy tab code into wsdefs
 
 - test_object.def fails
 
