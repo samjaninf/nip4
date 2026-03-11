@@ -1,22 +1,22 @@
 should_pass_tests = [
   # test workspaces
   'test_colour.ws',
+  'test_filter.ws',
+  'test_matrix.ws',
 
   #'big_and_small_disks.ws',
   #'test_conv.ws',
-  #'test_filter.ws',
   #'test_fourier.ws',
   #'test_histogram.ws',
   #'test_image.ws',
   #'test_math.ws',
-  #'test_matrix.ws',
   #'test_stats.ws',
   #'test_tasks.ws',
   #'test_widgets.ws',
 ]
 
 should_fail_tests = [
-  #'test_fail.ws',
+  'test_fail.ws',
 ]
 
 # all the demo workspaces, except frame and register, since they ise a

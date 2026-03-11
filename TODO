@@ -1,17 +1,3 @@
-- Filter.def
-
-    no errors, needs verification and some self-checks
-
-    hough circle looks funky?
-
-        does n4 work?
-
-            seems to be broken in a different way
-
-
-- Matrix.def has some im_ funcs in there
-
-	check Colour.def too
 
 - selecting a row (or any interaction with a column?) should also select that
   column
@@ -23,16 +9,14 @@
 
 - try
 
-	vips mask_ideal x.v 64 64 0.5
-	nip4 x.v
+    vips mask_ideal x.v 64 64 0.5
+    nip4 x.v
 
   should display as black->white, nip2 does this
 
-
-
 - n4, recomb, crash
 
-	when args are reversed
+    when args are reversed
 
 - try
 
@@ -48,7 +32,7 @@
     get 8 spaces!
     what does the program window do?
 
-	tab is two spaces
+    tab is two spaces
 
 - test_object.def fails
 
@@ -60,58 +44,74 @@
 
         /home/john/GIT/nip4/build/../test/snip/test_object.def
 
-    Image_file in snips should be relative to the script directory?
+    Image_file with a relative path should be relative to the script or
+    workspace directory?
+
+    and in workspaces, should be relative to workspace location?
+
+    kind of is now -- we rewrite paths on load taking into account any
+    changes to workspace location
+
+    have an env var for PROJECT_ROOT?
+
+- try:
+
+    main = 12;
+    main = 43;
+
+  see
+
+    parse_toplevel_end: codegen failed!
+    Default case already defined, $HOME/pics/x/try.def:66
+    definition 2 of "main" is a second default case
+
+  not a very helpful message
+
+- columns that change width on every update are annoying
+
+    relayout on a 0,5s timeout after an update? would make region drag or
+    slider drag look nicer
+
+    likewise, the biutton flashing for dity/clean is annoying, should also
+    be on a 0.5s timeout
 
 - add to_enum
 
-	takes an enum and a string or value (not a key), returns a value
+    takes an enum and a string or value (not a key), returns a value
 
 - menus next!
 
-	Colour.def	done
-	Matrix.def	done
-	Filter.def
-	Object.def
-	Histogram.def
-	Image.def
-	Region.def
-	Magick.def
-	Tasks.def
-	Math.def
-	Widgets.def
+    Colour.def      done
+    Matrix.def      done
+    Filter.def      done
+    Object.def
+    Histogram.def
+    Image.def
+    Region.def
+    Magick.def
+    Tasks.def
+    Math.def
+    Widgets.def
 
 - changes
 
     colour_transform from to in = colourspace [$source_space => from] to in;
     colour_transform_to to in = colourspace [] to in;
 
-- try:
-
-	main = 12;
-	main = 43;
-
-  see
-
-	parse_toplevel_end: codegen failed!
-	Default case already defined, $HOME/pics/x/try.def:66
-	definition 2 of "main" is a second default case
-
-  not a very helpful message
-
 - try to reproduce that macOS crash
 
-  for macOS, see thisa for codesigning tips
+  for macOS, see this for codesigning tips
 
-	https://www.reddit.com/r/macosprogramming/comments/1rpe0mx/macos_app_development_outside_of_app_store/
+    https://www.reddit.com/r/macosprogramming/comments/1rpe0mx/macos_app_development_outside_of_app_store/
 
 - "nip4 for nerds" page
 
 - support BMP drag/drop to help windows
 
-	a gtk problem, gdk_texture_new_from_bytes() handles this and has no
-	BMP support, only TIFF, PNG, JPG
+    a gtk problem, gdk_texture_new_from_bytes() handles this and has no
+    BMP support, only TIFF, PNG, JPG
 
-	maybe win11 has PNG clipboard support?
+    maybe win11 has PNG clipboard support?
 
 - libvips bug:
 
@@ -132,17 +132,9 @@
   vips_text() ... if width + height are both set and autofit is TRUE, ignore
   DPI setting
 
-- columns that change width on every update are annoying
-
-	relayout on a 0,5s timeout after an update? would make region drag or
-	slider drag look nicer
-
-	likewise, the biutton flashing for dity/clean is annoying, should also
-	be on a 0.5s timeout
-
 - should support texture paste in main window
 
-	right now you need to make an image, then paste into that
+    right now you need to make an image, then paste into that
 
   if you define a paste action in mainwindow_entries[] it breaks ^V in
   text entries, eg. bottom of column
@@ -174,33 +166,7 @@
 
   done in lexer, so can be used anywhere
 
-- add gainmap menu
-
-    get gainmap
-    set gainmap
-    remove gainmap
-    edit other gainmap fields?
-    to scrgb
-    view image with gainmap? via conversion to scrgb I guess
-
-- Blend_alpha_item should use composite instead
-
 - infobar in pages-as-bands just shows the first value
-
-- test matmul etc, esp mixed image and matrix
-
-    add to test_snip?
-
-    maybe test_snip should test language features and test_menus should
-    check menu definitions
-
-- we still seem to be leaking a ref in ~/x.ws ... wasn't this fixed?
-
-    using label_regions
-
-- can often use strings, not enums
-
-    though eg. get_coding will return an int
 
 - naming convention
 
@@ -209,8 +175,6 @@
 
         matmul
         matrix_multiply
-
-  make_xy should be makexy?
 
 - vips_object_new has options at the end :(
 
@@ -222,18 +186,6 @@
     {
         value = vips_header_get field image;
     }
-
-- add to_enum
-
-    allows str and real
-
-- try:
-
-        Colour_new_item.CCT_colour.action
-        to_image A1
-        open viewer
-        info bar does not display pixel values correctly
-        mean A2 works
 
 - maxpos, then create mark from coordinate should be two clicks
 
@@ -296,21 +248,21 @@
     a bit random right now, eg. mainwindow open and toolkit open start in
     different places
 
-	should always be pwd, unless it's "replace" eg. in imagewindow, in
-	which case it should be the dir of the filemodel we are replacing
+    should always be pwd, unless it's "replace" eg. in imagewindow, in
+    which case it should be the dir of the filemodel we are replacing
 
-		flatpak sets pwd correctly
+        flatpak sets pwd correctly
 
-	right now:
+    right now:
 
-		- nip4, then ^O, get pwd
-		- nip4 ~/pics/k2.jpg, then ^O, get ~/pics
-		- nip4 ~/pics/x.ws, ^O, get pwd, ^S, get $HOME
-		- nip4 ~/pics/k2.jpg, program window, ^O, get pwd
-		- nip4 ~/pics/k2.jpg, ^S, get $HOME
+        - nip4, then ^O, get pwd
+        - nip4 ~/pics/k2.jpg, then ^O, get ~/pics
+        - nip4 ~/pics/x.ws, ^O, get pwd, ^S, get $HOME
+        - nip4 ~/pics/k2.jpg, program window, ^O, get pwd
+        - nip4 ~/pics/k2.jpg, ^S, get $HOME
 
-	trying to have a directory for each model, so one for pics, one for
-	defs etc., with filesel directory navigation updating it
+    trying to have a directory for each model, so one for pics, one for
+    defs etc., with filesel directory navigation updating it
 
 - "nip4 try.def x.ws" ought to work
 
@@ -321,7 +273,7 @@
 - we heap_copy() the world when we make a row (all funcs copied), is this
   necessary?
 
-	should be able to link functions, I'd think?
+    should be able to link functions, I'd think?
 
 - linear match
 

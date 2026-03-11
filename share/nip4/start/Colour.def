@@ -337,13 +337,26 @@ Colour_temperature_item = class
     Lab_to_D50XYZ_item = class
         Menuaction (_ "Lab to D50 XYZ")
             (_ "Lab to XYZ with a D50 whitepoint") {
-        action x = map_unary (colour_unary im_D50Lab2XYZ) x;
+        action x
+            = map_unary cvt x
+        {
+            // to D65 lab, then to XYZ with D50 whitepoint
+            cvt = Image @
+                vips_Lab2XYZ [$temp => Whitepoint.D50.value] @
+                colourspace [] Interpretation.LAB;
+        }
     }
 
     D50XYZ_to_Lab_item = class
         Menuaction (_ "D50 XYZ to Lab")
             (_ "XYZ to Lab with a D50 whitepoint") {
-        action x = map_unary (colour_unary im_D50XYZ2Lab) x;
+        action x
+            = map_unary cvt x
+        {
+            // from XYZ with D50 whitepoint to Lab (which is always D65 in
+            // libvips)
+            cvt = Image @ vips_XYZ2Lab [$temp => Whitepoint.D50.value];
+        }
     }
 
     sep1 = Menuseparator;
@@ -752,7 +765,8 @@ Colour_plot_ab_scatter_item = class
                 hist = hist_find_nD bins.expr ab;
                 mx = max hist;
                 bg = lab_slice bins.expr 1;
-                blk = 1 + im_black (to_real bins) (to_real bins) 2;
+                blk = 1 +
+                    vips_black [$bands => 2] (to_real bins) (to_real bins);
             }
         }
     }

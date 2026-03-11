@@ -470,7 +470,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1946" y="5" open="true" selected="false" sform="false" next="28" name="E" caption="Colour / Temperature">
+    <Column x="1946" y="5" open="true" selected="true" sform="false" next="37" name="E" caption="Colour / Temperature">
       <Subcolumn vislevel="3">
         <Row popup="false" name="E5">
           <Rhs vislevel="1" flags="1">
@@ -570,6 +570,69 @@
         <Row popup="false" name="E27">
           <Rhs vislevel="1" flags="4">
             <iText formula="if max (abs (E5 - E1)) &gt; 0 then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="E28">
+          <Rhs vislevel="2" flags="5">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Colour_temperature_item.Lab_to_D50XYZ_item.action E5"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="E29">
+          <Rhs vislevel="2" flags="5">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Colour_temperature_item.D50XYZ_to_Lab_item.action E28"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="E33">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Colour_convert_item.sRGB_item.action E29"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="E32">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if max (abs (E5 - E33)) &gt; 0 then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="E34">
+          <Rhs vislevel="3" flags="7">
+            <Colour/>
+            <Subcolumn vislevel="1">
+              <Row name="x">
+                <Rhs vislevel="0" flags="4">
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="super">
+                <Rhs vislevel="0" flags="4">
+                  <Colour/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="T">
+                <Rhs vislevel="1" flags="1">
+                  <Slider caption="CCT" from="1800" to="25000" value="4000"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+            </Subcolumn>
+            <iText formula="Colour_temperature_item.Colour_item.action"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="E35">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="Colour_temperature_item.CCT_item.action E34"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="E36">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if max (abs (E35 - E34.T.value)) &gt; 10 then error &quot;fail&quot; else &quot;ok!&quot;"/>
           </Rhs>
         </Row>
       </Subcolumn>
@@ -1117,7 +1180,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="3407" y="5" open="true" selected="true" sform="false" next="24" name="N" caption="Colour / UHDR">
+    <Column x="3407" y="5" open="true" selected="false" sform="false" next="24" name="N" caption="Colour / UHDR">
       <Subcolumn vislevel="3">
         <Row popup="false" name="N1">
           <Rhs vislevel="1" flags="1">

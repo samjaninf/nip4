@@ -120,6 +120,12 @@ gaussmat options sigma min_amp
     matrix = vips_gaussmat options (to_real sigma) (to_real min_amp);
 }
 
+logmat options sigma min_amp
+    = vips_matrix_from_image matrix
+{
+    matrix = vips_logmat options (to_real sigma) (to_real min_amp);
+}
+
 /* Make a colour from a temperature.
  */
 colour_from_temp T

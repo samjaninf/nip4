@@ -1,34 +1,62 @@
 <?xml version="1.0"?>
 <root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.0.17">
   <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// private definitions for this workspace&#10;" name="test_matrix" filename="$HOME/GIT/nip4/test/workspaces/test_matrix.ws" major="9" minor="0">
-    <Column x="10" y="5" open="true" selected="false" sform="false" next="7" name="TB" caption="Matrix / New">
+    <Column x="10" y="5" open="true" selected="false" sform="false" next="11" name="TB" caption="Matrix / New">
       <Subcolumn vislevel="3">
         <Row popup="false" name="TB1">
-          <Rhs vislevel="1" flags="1">
+          <Rhs vislevel="2" flags="5">
             <Matrix/>
             <Subcolumn vislevel="0"/>
             <iText formula="Matrix_build_item.Plain_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="TB2">
-          <Rhs vislevel="1" flags="1">
+          <Rhs vislevel="2" flags="5">
             <Matrix/>
             <Subcolumn vislevel="0"/>
             <iText formula="Matrix_build_item.Convolution_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="TB3">
-          <Rhs vislevel="1" flags="1">
+          <Rhs vislevel="2" flags="5">
             <Matrix/>
             <Subcolumn vislevel="0"/>
             <iText formula="Matrix_build_item.Recombination_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="TB4">
-          <Rhs vislevel="1" flags="1">
+          <Rhs vislevel="2" flags="5">
             <Matrix/>
             <Subcolumn vislevel="0"/>
             <iText formula="Matrix_build_item.Morphology_item.action"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="TB7">
+          <Rhs vislevel="3" flags="7">
+            <Matrix/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Matrix_build_item.Matrix_identity_item.action"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="TB8">
+          <Rhs vislevel="3" flags="7">
+            <Matrix/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Matrix_build_item.Matrix_series_item.action"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="TB9">
+          <Rhs vislevel="3" flags="7">
+            <Matrix/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Matrix_build_item.Matrix_square_item.action"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="TB10">
+          <Rhs vislevel="3" flags="7">
+            <Matrix/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Matrix_build_item.Matrix_circular_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="TB5">
@@ -41,42 +69,13 @@
         <Row popup="false" name="TB6">
           <Rhs vislevel="3" flags="7">
             <Matrix/>
-            <Subcolumn vislevel="1">
-              <Row name="super">
-                <Rhs vislevel="0" flags="4">
-                  <Matrix/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="integer">
-                <Rhs vislevel="1" flags="1">
-                  <Toggle caption="Integer" value="true"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="s">
-                <Rhs vislevel="1" flags="1">
-                  <Slider/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="ma">
-                <Rhs vislevel="1" flags="1">
-                  <Slider/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-            </Subcolumn>
+            <Subcolumn vislevel="1"/>
             <iText formula="Matrix_build_item.Matrix_laplacian_item.action"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1440" y="5" open="true" selected="false" sform="false" next="5" name="VB" caption="Matrix / Extract">
+    <Column x="1440" y="5" open="true" selected="false" sform="false" next="8" name="VB" caption="Matrix / Extract">
       <Subcolumn vislevel="3">
         <Row popup="false" name="VB1">
           <Rhs vislevel="1" flags="1">
@@ -92,11 +91,21 @@
             <iText formula="Matrix_extract_item.Rows_item.action VB1"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="VB6">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if VB2.value != [[1, 0, 0]] then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
         <Row popup="false" name="VB3">
           <Rhs vislevel="3" flags="7">
             <Matrix/>
             <Subcolumn vislevel="1"/>
             <iText formula="Matrix_extract_item.Columns_item.action VB1"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="VB5">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if VB3.value != [[1], [0], [0]] then error &quot;fail&quot; else &quot;ok!&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="VB4">
@@ -106,9 +115,14 @@
             <iText formula="Matrix_extract_item.Diagonal_item.action VB1"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="VB7">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if VB4.value != [[1], [1], [1]] then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
       </Subcolumn>
     </Column>
-    <Column x="1860" y="5" open="true" selected="false" sform="false" next="4" name="WB" caption="Matrix / Insert">
+    <Column x="1860" y="5" open="true" selected="false" sform="false" next="7" name="WB" caption="Matrix / Insert">
       <Subcolumn vislevel="3">
         <Row popup="false" name="WB1">
           <Rhs vislevel="1" flags="1">
@@ -124,6 +138,11 @@
             <iText formula="Matrix_insert_item.Rows_item.action WB1"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="WB5">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if WB2.value?0 != [0, 0, 0] then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
         <Row popup="false" name="WB3">
           <Rhs vislevel="3" flags="7">
             <Matrix/>
@@ -131,9 +150,14 @@
             <iText formula="Matrix_insert_item.Columns_item.action WB1"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="WB6">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if WB3.value?0 != [0, 1, 0, 0] then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
       </Subcolumn>
     </Column>
-    <Column x="2373" y="5" open="true" selected="false" sform="false" next="4" name="XB" caption="Matrix / Delete">
+    <Column x="2373" y="5" open="true" selected="false" sform="false" next="7" name="XB" caption="Matrix / Delete">
       <Subcolumn vislevel="3">
         <Row popup="false" name="XB1">
           <Rhs vislevel="1" flags="1">
@@ -149,11 +173,21 @@
             <iText formula="Matrix_delete_item.Rows_item.action XB1"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="XB4">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if XB2.value?0 != [0, 1, 0] then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
         <Row popup="false" name="XB3">
           <Rhs vislevel="3" flags="7">
             <Matrix/>
             <Subcolumn vislevel="1"/>
             <iText formula="Matrix_delete_item.Columns_item.action XB1"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="XB6">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if XB3.value?0 != [0, 0] then error &quot;fail&quot; else &quot;ok!&quot;"/>
           </Rhs>
         </Row>
       </Subcolumn>
@@ -247,7 +281,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2787" y="5" open="true" selected="false" sform="false" next="6" name="A" caption="Matrix / Join">
+    <Column x="2787" y="5" open="true" selected="true" sform="false" next="7" name="A" caption="Matrix / Join">
       <Subcolumn vislevel="3">
         <Row popup="false" name="A1">
           <Rhs vislevel="0" flags="4">
@@ -270,6 +304,11 @@
             <iText formula="Matrix_join.Left_right_item.action A1 A2"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="A6">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if A3.width != A1.width + A2.width then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
         <Row popup="false" name="A4">
           <Rhs vislevel="2" flags="5">
             <Matrix/>
@@ -277,9 +316,14 @@
             <iText formula="Matrix_join.Top_bottom_item.action A1 A2"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="A5">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if A4.height != A1.height + A2.height then error &quot;fail&quot; else &quot;ok!&quot;"/>
+          </Rhs>
+        </Row>
       </Subcolumn>
     </Column>
-    <Column x="5241" y="5" open="true" selected="true" sform="false" next="1" name="B" caption="Matrix / Plot, Build LUT">
+    <Column x="5241" y="5" open="true" selected="false" sform="false" next="1" name="B" caption="Matrix / Plot, Build LUT">
       <Subcolumn vislevel="3">
         <Row popup="false" name="B7">
           <Rhs vislevel="1" flags="4">
@@ -407,7 +451,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1028" y="5" open="true" selected="false" sform="false" next="2" name="D" caption="Matrix / Convert">
+    <Column x="1028" y="5" open="true" selected="false" sform="false" next="3" name="D" caption="Matrix / Convert">
       <Subcolumn vislevel="3">
         <Row popup="false" name="D4">
           <Rhs vislevel="3" flags="7">
@@ -428,6 +472,11 @@
             <Matrix/>
             <Subcolumn vislevel="0"/>
             <iText formula="Matrix_to_matrix_item.action D1"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="D2">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="if D4.value != D5.value then error &quot;fail&quot; else &quot;ok!&quot;"/>
           </Rhs>
         </Row>
       </Subcolumn>
