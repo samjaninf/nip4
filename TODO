@@ -1,11 +1,36 @@
+- try
 
-- selecting a row (or any interaction with a column?) should also select that
-  column
+    vips mask_ideal x.v 64 64 0.5
+    nip4 x.v
 
-    since you will almost always want the result in the same column
+  should display as black->white, nip2 does this
 
-    select dest column just before menu item click to operate into a different
-    column (rare case)
+- n4, recomb, crash
+
+    when args are reversed
+
+- try
+
+    ws defs
+    enter "f a b = a + b;"
+    press |> a few times
+    ststus bar changes between "0 defs" and "1 defs" crazilly
+
+- try:
+
+    ws defs
+    press tab
+    get 8 spaces!
+    what does the program window do?
+
+    tab is two spaces
+
+- try
+
+	start nip4
+	A1: 1
+	^S
+	file save dialog should start in CWD
 
 - try
 
@@ -33,6 +58,14 @@
     what does the program window do?
 
     tab is two spaces
+
+    copy tab code into wsdefs
+
+- test_object.def fails
+
+    because it can't find the test image
+
+        Not found, file "../images/slanted_oval_vase2.jpg" not found on path
 
 - test_object.def fails
 
@@ -81,6 +114,7 @@
 
 - menus next!
 
+<<<<<<< HEAD
     Colour.def      done
     Matrix.def      done
     Filter.def      done
@@ -93,6 +127,8 @@
     Math.def
     Widgets.def
 
+=======
+>>>>>>> main
 - changes
 
     colour_transform from to in = colourspace [$source_space => from] to in;
@@ -106,6 +142,7 @@
 
 - "nip4 for nerds" page
 
+<<<<<<< HEAD
 - support BMP drag/drop to help windows
 
     a gtk problem, gdk_texture_new_from_bytes() handles this and has no
@@ -113,6 +150,8 @@
 
     maybe win11 has PNG clipboard support?
 
+=======
+>>>>>>> main
 - libvips bug:
 
     $ vipsheader x.v

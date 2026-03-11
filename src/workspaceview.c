@@ -349,7 +349,7 @@ workspaceview_columnview_hit(View *view, void *a, void *b)
 	Workspaceview *wview = WORKSPACEVIEW(b);
 
 	graphene_rect_t bounds;
-	if (gtk_widget_compute_bounds(GTK_WIDGET(cview), wview->fixed, &bounds) &&
+	if (gtk_widget_compute_bounds(cview->top, wview->fixed, &bounds) &&
 		graphene_rect_contains_point(&bounds, point))
 		return cview;
 
