@@ -1,9 +1,9 @@
 - try
 
-	start nip4
-	A1: 1
-	^S
-	file save dialog should start in CWD
+	open wsdefs
+	replace from file
+	pick a big .def file
+	linebreaks between defs vanish during parse
 
 - try
 
@@ -12,11 +12,8 @@
     press |> a few times
     ststus bar changes between "0 defs" and "1 defs" crazilly
 
-- test_object.def fails
 
-    because it can't find the test image
 
-        Not found, file "../images/slanted_oval_vase2.jpg" not found on path
 
 - test_object.def fails
 

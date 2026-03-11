@@ -1104,6 +1104,7 @@ filemodel_replace(GtkWindow *window, Filemodel *filemodel, const char *verb,
 	Suspension *sus = g_new(Suspension, 1);
 	sus->window = window;
 	sus->filemodel = filemodel;
+	sus->verb = verb;
 	sus->next = next;
 	sus->error = error;
 	sus->a = a;

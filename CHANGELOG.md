@@ -13,6 +13,7 @@
 - fix tab size in wsdefs
 - better display of FOURIER images
 - improve file dialog start location
+- fix a crash with wsdefs replace
 
 ## 9.0.17 2026/02/25
 
