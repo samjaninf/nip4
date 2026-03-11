@@ -480,14 +480,24 @@ class_new_single_name(Heap *heap, PElement *pe,
 	ClassBuildInfo *pbi, PElement *instance)
 {
 	Symbol *snm = compile_lookup(pbi->compile, MEMBER_NAME);
-	char txt[256];
-	VipsBuf buf = VIPS_BUF_STATIC(txt);
 
-	/* Make class name string.
+	/* Make class name string. We want local classes to name as:
+	 *
+	 *   A = class {
+	 *     B = class {
+	 *     }
+	 *   }
+	 *
+	 * then:
+	 *
+	 *   dir A == ["this", "name", "super", "A", "B"]
+	 *   dir A.B == ["this", "name", "super", "B"]
+	 *   A.B.name == B
+	 *
+	 * So A.B.name must be a member of (dir A.B) .
 	 */
-	symbol_qualified_name(pbi->sym, &buf);
 	PEPUTP(pe, ELEMENT_ELIST, NULL);
-	if (!heap_managedstring_new(heap, vips_buf_all(&buf), pe))
+	if (!heap_managedstring_new(heap, IOBJECT(pbi->sym)->name, pe))
 		return heap;
 
 	/* Add as a member.

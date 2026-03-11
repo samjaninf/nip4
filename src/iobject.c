@@ -40,9 +40,18 @@ G_DEFINE_TYPE(iObject, iobject, G_TYPE_OBJECT)
 
 static guint iobject_signals[SIG_LAST] = { 0 };
 
-#ifdef DEBUG_LEAK
-GSList *iobject_all = NULL;
-#endif /*DEBUG_LEAK*/
+/* Track all currently alive objects here. At various points during recomp we
+ * need to know if an object pointer is valid.
+ */
+static GHashTable *iobject_all = NULL;
+
+/* Is this a valid object pointer.
+ */
+gboolean
+iobject_valid(void *pointer)
+{
+	return g_hash_table_contains(iobject_all, pointer);
+}
 
 /* Don't emit "destroy" immediately, do it from the _dispose handler, see
  * below.
@@ -127,9 +136,7 @@ iobject_finalize(GObject *gobject)
 	VIPS_FREE(iobject->name);
 	VIPS_FREE(iobject->caption);
 
-#ifdef DEBUG_LEAK
-	iobject_all = g_slist_remove(iobject_all, iobject);
-#endif /*DEBUG_LEAK*/
+	g_hash_table_remove(iobject_all, iobject);
 
 	G_OBJECT_CLASS(iobject_parent_class)->finalize(gobject);
 }
@@ -164,6 +171,11 @@ iobject_real_info(iObject *iobject, VipsBuf *buf, int indent)
 static void
 iobject_class_init(iObjectClass *class)
 {
+	if (!iobject_all)
+		iobject_all = g_hash_table_new(
+			(GHashFunc) g_direct_hash,
+			(GEqualFunc) g_direct_equal);
+
 	GObjectClass *gobject_class = G_OBJECT_CLASS(class);
 
 	gobject_class->dispose = iobject_dispose;
@@ -205,9 +217,8 @@ iobject_init(iObject *iobject)
 	 */
 	iobject->floating = TRUE;
 
-#ifdef DEBUG_LEAK
-	iobject_all = g_slist_prepend(iobject_all, iobject);
-#endif /*DEBUG_LEAK*/
+	g_assert(!g_hash_table_contains(iobject_all, iobject));
+	g_hash_table_add(iobject_all, iobject);
 }
 
 /* Test the name field ... handy with map.
@@ -301,18 +312,22 @@ iobject_get_user_name(iObject *object)
 	return user_name ? user_name : class_name;
 }
 
+#ifdef DEBUG_LEAK
+static void
+iobject_leak_sub(void *key, void *value, void *user_data)
+{
+	printf("leak: ");
+	iobject_dump(IOBJECT(value), 0);
+}
+#endif /*DEBUG_LEAK*/
+
 void
 iobject_leak(void)
 {
 #ifdef DEBUG_LEAK
 	printf("iobject_leak: leak checking ...\n");
-	if (iobject_all) {
-		printf("leaked objects:\n");
-		int n = 0;
-		for (GSList *i = iobject_all; i; i = i->next) {
-			printf("%d) ", n++);
-			iobject_dump(IOBJECT(i->data));
-		}
-	}
+	if (iobject_all &&
+		g_hash_table_size(iobject_all) > 0)
+		g_hash_table_foreach(iobject_all, iobject_leak_sub, NULL);
 #endif /*DEBUG_LEAK*/
 }

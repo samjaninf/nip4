@@ -1902,6 +1902,12 @@ reduce_pelement(Reduce *rc, ReduceFunction fn, PElement *out)
 {
 	gboolean res = TRUE;
 
+	if (in_update) {
+		// we mustn't reduce when updating the GUI, it'll race
+		printf("reduce_pelement: sanity failure! nested call into reduce!\n");
+		return FALSE;
+	}
+
 	REDUCE_CATCH_START(FALSE);
 	fn(reduce_context, out);
 	REDUCE_CATCH_STOP;

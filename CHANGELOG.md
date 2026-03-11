@@ -3,6 +3,11 @@
 - disable libvips DoS limits on file load for libvips 8.19+
 - add lazy pretty-print and string print of main
 - add "Copy value" to row menu
+- ref tilesource during update to prevent occasional read of freed mem
+- fix a race when Value caption updates during GUI refresh
+- add an object registry for testing pointer validity
+- load gainmaps on UHDR images
+- class.name is just the class name, even for nested classes
 
 ## 9.0.17 2026/02/25
 

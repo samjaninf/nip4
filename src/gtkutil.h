@@ -58,6 +58,9 @@
 #define PARENT_CLASS_DYNAMIC(OBJECT) \
 	(g_type_class_peek(g_type_parent(G_TYPE_FROM_INSTANCE(OBJECT))))
 
+// TRUE for in a nested mainloop
+extern gboolean in_update;
+
 void set_glabel(GtkWidget *label, const char *fmt, ...);
 void set_glabel1(GtkWidget *label, const char *fmt, ...);
 void set_gentryv(GtkWidget *edit, const char *fmt, va_list ap);
