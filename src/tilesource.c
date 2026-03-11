@@ -500,6 +500,24 @@ tilesource_image(Tilesource *tilesource, VipsImage **mask_out, int current_z)
 		image = x;
 	}
 
+	if (image->Type == VIPS_INTERPRETATION_FOURIER) {
+		/* Fill range, log scale. Filling the range is useful for eg. the
+		 * output of the fourier mask generators.
+		 *
+		 * This has to be before the vips_render() since scale will search for
+		 * the min and max values.
+		 */
+		if (vips_scale(image, &x, "log", TRUE, NULL))
+			/* Will fail for eg. a black image, and that's fine. Just ignore
+			 * fails.
+			 */
+			vips_error_clear();
+		else {
+			VIPS_UNREF(image);
+			image = x;
+		}
+	}
+
 	if (tilesource->synchronous) {
 		if (vips_copy(image, &x, NULL))
 			return NULL;
@@ -677,13 +695,6 @@ tilesource_rgb(Tilesource *tilesource, VipsImage *in)
 			return NULL;
 		VIPS_UNREF(image);
 		image = x;
-
-		if (image->Type == VIPS_INTERPRETATION_FOURIER) {
-			if (!(x = tilesource_log(image)))
-				return NULL;
-			VIPS_UNREF(image);
-			image = x;
-		}
 	}
 
 	/* Colour management to srgb.
