@@ -1815,13 +1815,14 @@ void *
 row_select(Row *row)
 {
 	Workspace *ws = row->ws;
+	Column *col = row_get_column(row);
 
 	workspace_deselect_all(ws);
 	row_select2(row);
 
 	/* Note for extend select.
 	 */
-	row_get_column(row)->last_select = row;
+	col->last_select = row;
 
 	return NULL;
 }
@@ -1887,8 +1888,18 @@ row_select_modifier(Row *row, GdkModifierType modifiers)
 		row_select_toggle(row);
 	else if (modifiers & GDK_SHIFT_MASK)
 		row_select_extend(row);
-	else
+	else {
+		Column *col = row_get_column(row);
+		Workspace *ws = row->ws;
+
+		/* Selecting a row always selects the column, since 99% of the time you
+		 * will want the result in the same column. ctrl-row select etc. don't
+		 * flip the column.
+		 */
+		workspace_column_select(ws, col);
+
 		row_select(row);
+	}
 }
 
 static void

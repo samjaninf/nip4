@@ -1,38 +1,44 @@
-<<<<<<< Updated upstream
-=======
-- test_colour2.ws
+- try
 
-	add uhdr stuff ... get and apply gainmap
+	start nip4
+	A1: 1
+	^S
+	file save dialog should start in CWD
 
-        get_gainmap will need vips_image_get_gainmap() ... returns image,
-        but with a new gainmap metadata item
+- try
 
-	call vips_image_get_gainmap() on all image loads? we'd be sure to
-	always have a gainmap image then
+    vips mask_ideal x.v 64 64 0.5
+    nip4 x.v
 
-        use (get_header "gainmap-data" A2) in nip4 to get the VipsImage for
-        the gainmap
+  should display as black->white, nip2 does this
 
-        right now you get "can't convert VipsBlob to nip type"
+- n4, recomb, crash
 
-        or maybe look for a gainmap item, if there return it, if not there,
-        copy, call vips_image_get_gainmap() and return it
+    when args are reversed
 
-    add
+- try
 
-        add gainmap (set gainmap?)
-        get UHDR metadata as a set of name-value pairs
-        set UHDR metadata?
+    ws defs
+    enter "f a b = a + b;"
+    press |> a few times
+    ststus bar changes between "0 defs" and "1 defs" crazilly
 
-        maybe need something to display an enum nicely for that? or display
-        as a class?
+- try:
 
-	should conversion to scRGB apply gainmap? maybe better at the
-	libvips level?
+    ws defs
+    press tab
+    get 8 spaces!
+    what does the program window do?
 
-        make it explicit
+    tab is two spaces
 
-	we have more built-in profiles now, does this help?
+    copy tab code into wsdefs
+
+- test_object.def fails
+
+    because it can't find the test image
+
+        Not found, file "../images/slanted_oval_vase2.jpg" not found on path
 
 - test_object.def fails
 
@@ -52,42 +58,14 @@
 
 - menus next!
 
-	Colour.def
-	Matrix.def
-	Filter.def
-	Object.def
-	Histogram.def
-	Image.def
-	Region.def
-	Magick.def
-	Tasks.def
-	Math.def
-	Widgets.def
-
 - changes
 
     colour_transform from to in = colourspace [$source_space => from] to in;
     colour_transform_to to in = colourspace [] to in;
 
->>>>>>> Stashed changes
-- try:
-
-	main = 12;
-	main = 43;
-
-  see
-
-	parse_toplevel_end: codegen failed!
-	Default case already defined, $HOME/pics/x/try.def:66
-	definition 2 of "main" is a second default case
-
-  not a very helpful message
-
 - try to reproduce that macOS crash
 
 - "nip4 for nerds" page
-
-- ask Carl about affiliation on papers
 
 - libvips bug:
 

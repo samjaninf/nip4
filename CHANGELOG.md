@@ -8,6 +8,8 @@
 - add an object registry for testing pointer validity
 - load gainmaps on UHDR images
 - class.name is just the class name, even for nested classes
+- fix click of non-selected cview
+- selecting a row also selects the enclosing column
 
 ## 9.0.17 2026/02/25
 
