@@ -30,11 +30,6 @@
 struct _Mainwindow {
 	GtkApplicationWindow parent;
 
-	/* The current save and load directories.
-	 */
-	GFile *save_folder;
-	GFile *load_folder;
-
 	// the model we display
 	Workspacegroup *wsg;
 
@@ -91,40 +86,6 @@ Workspacegroupview *
 mainwindow_get_workspacegroupview(Mainwindow *main)
 {
 	return WORKSPACEGROUPVIEW(main->wsgview);
-}
-
-GFile *
-mainwindow_get_save_folder(Mainwindow *main)
-{
-	return main->save_folder;
-}
-
-static GFile *
-get_parent(GFile *file)
-{
-	GFile *parent = g_file_get_parent(file);
-
-	return parent ? parent : g_file_new_for_path("/");
-}
-
-void
-mainwindow_set_save_folder(Mainwindow *main, GFile *file)
-{
-	VIPS_UNREF(main->save_folder);
-	main->save_folder = get_parent(file);
-}
-
-GFile *
-mainwindow_get_load_folder(Mainwindow *main)
-{
-	return main->load_folder;
-}
-
-void
-mainwindow_set_load_folder(Mainwindow *main, GFile *file)
-{
-	VIPS_UNREF(main->load_folder);
-	main->load_folder = get_parent(file);
 }
 
 static Workspace *
@@ -252,8 +213,6 @@ mainwindow_open(Mainwindow *main, GFile *file)
 {
 	g_autofree char *filename = g_file_get_path(file);
 
-	mainwindow_set_load_folder(main, file);
-
 	for (int i = 0; i < VIPS_NUMBER(mainwindow_file_types); i++)
 		if (vips_iscasepostfix(filename, mainwindow_file_types[i].suffix)) {
 			if (!mainwindow_file_types[i].handler(main, filename))
@@ -298,10 +257,7 @@ mainwindow_open_action(GSimpleAction *action,
 	gtk_file_dialog_set_title(dialog, "Open");
 	gtk_file_dialog_set_modal(dialog, TRUE);
 
-	// if we have a loaded file, use that folder
-	GFile *load_folder = mainwindow_get_load_folder(main);
-	if (load_folder)
-		gtk_file_dialog_set_initial_folder(dialog, load_folder);
+	filemodel_set_initial_folder(FILEMODEL(main->wsg), dialog);
 
 	GListStore *filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
 	GtkFileFilter *filter;
@@ -734,10 +690,6 @@ mainwindow_init(Mainwindow *main)
 #endif /*DEBUG*/
 
 	main->settings = g_settings_new(APPLICATION_ID);
-
-	g_autofree char *cwd = g_get_current_dir();
-	main->save_folder = g_file_new_for_path(cwd);
-	main->load_folder = g_file_new_for_path(cwd);
 
 	gtk_widget_init_template(GTK_WIDGET(main));
 
