@@ -121,6 +121,8 @@ void filemodel_set_window_hint(Filemodel *filemodel, GtkWindow *window);
 GtkWindow *filemodel_get_window_hint(Filemodel *filemodel);
 
 void filemodel_set_initial_folder(Filemodel *filemodel, GtkFileDialog *dialog);
+void filemodel_set_initial_file(Filemodel *filemodel, GtkFileDialog *dialog);
+void filemodel_set_filters(Filemodel *filemodel, GtkFileDialog *dialog);
 
 typedef void (*FilemodelSaveasResult)(GtkWindow *window,
 	Filemodel *filemodel, void *a, void *b);

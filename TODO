@@ -18,29 +18,6 @@
 
     have an env var for PROJECT_ROOT?
 
-- try:
-
-    main = 12;
-    main = 43;
-
-  see
-
-    parse_toplevel_end: codegen failed!
-    Default case already defined, $HOME/pics/x/try.def:66
-    definition 2 of "main" is a second default case
-
-  not a very helpful message
-
-- columns that change width on every update are annoying
-
-    relayout on a 0,5s timeout after an update? would make region drag or
-    slider drag look nicer
-
-    likewise, the biutton flashing for dity/clean is annoying, should also
-    be on a 0.5s timeout
-
-    we do mainwindow file dialogs reltive to ws path now
-
 - add to_enum
 
     takes an enum and a string or value (not a key), returns a value
@@ -113,13 +90,6 @@
     Interpretation_3ary.picker "sRGB"
 
 - remove Table?
-
-- try
-
-    cd x/y/z
-    nip4
-    save workspace
-    save dialog defaults to Home, should be x/y/z
 
 # menu redesign
 
@@ -209,6 +179,7 @@
 
 - better start dir for file dialogs
 
+<<<<<<< HEAD
     should be cwd
 
     a bit random right now, eg. mainwindow open and toolkit open start in
@@ -227,6 +198,20 @@
         - nip4 ~/pics/k2.jpg, program window, ^O, get pwd
         - nip4 ~/pics/k2.jpg, ^S, get $HOME
 
+=======
+    should always be pwd, unless it's "replace" eg. in imagewindow, in
+    which case it should be the dir of the filemodel we are replacing
+
+        flatpak sets pwd correctly
+
+    right now:
+
+        - nip4, then ^O, get pwd
+        - nip4 ~/pics/k2.jpg, then ^O, get ~/pics
+        - nip4 ~/pics/x.ws, ^O, get pwd, ^S, get $HOME
+        - nip4 ~/pics/k2.jpg, program window, ^O, get pwd
+
+>>>>>>> main
     trying to have a directory for each model, so one for pics, one for
     defs etc., with filesel directory navigation updating it
 

@@ -624,7 +624,7 @@ mainwindow_local_replace_action(GSimpleAction *action,
 		gtk_file_dialog_set_modal(dialog, TRUE);
 		gtk_file_dialog_set_accept_label(dialog, _("Replace"));
 		filemodel_set_initial_folder(FILEMODEL(main->wsg), dialog);
-		mainwindow_local_set_filters(dialog);
+		filemodel_set_filters(FILEMODEL(ws->local_kit), dialog);
 
 		gtk_file_dialog_open(dialog, GTK_WINDOW(main), NULL,
 			&mainwindow_local_replace_next, main);
