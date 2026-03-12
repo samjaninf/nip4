@@ -148,7 +148,7 @@ toolkit_real_new_from_filename(Filemodel *filemodel,
 		new_from_filename(FILEMODEL(kit), parent, filename);
 }
 
-static GtkFileFilter *
+GtkFileFilter *
 toolkit_filter_new(Filemodel *filemodel)
 {
 	GtkFileFilter *filter = gtk_file_filter_new();

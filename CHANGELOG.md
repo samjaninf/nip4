@@ -14,6 +14,7 @@
 - better display of FOURIER images
 - improve file dialog start location
 - fix a crash with wsdefs replace
+- much better save/load for wsdefs
 
 ## 9.0.17 2026/02/25
 

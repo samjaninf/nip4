@@ -1,9 +1,7 @@
-// leading comment
-
 // first comment
+
+// second
 a = 1;
 
-// second comment
+// third
 b = 2;
-
-// final comment

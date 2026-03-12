@@ -64,6 +64,8 @@ Tool *toolkit_map(Toolkit *kit, tool_map_fn fn, void *a, void *b);
 
 GType toolkit_get_type(void);
 
+GtkFileFilter *toolkit_filter_new(Filemodel *filemodel);
+
 Toolkit *toolkit_find(Toolkitgroup *kitg, const char *name);
 Toolkit *toolkit_by_name(Toolkitgroup *kitg, const char *name);
 void toolkit_set_name(Toolkit *kit, const char *name);
