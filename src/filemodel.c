@@ -684,6 +684,75 @@ filemodel_get_window_hint(Filemodel *filemodel)
 		return GTK_WINDOW(mainwindow_pick_one());
 }
 
+void
+filemodel_set_initial_folder(Filemodel *filemodel, GtkFileDialog *dialog)
+{
+	g_autoptr(GFile) folder = NULL;
+
+	const char *filename = filemodel_get_filename(filemodel);
+	if (filename) {
+		// if we have a loaded file, start in that folder
+		char name2[VIPS_PATH_MAX];
+
+		// filenames can contain eg. $HOME etc.
+		expand_variables(filename, name2);
+		g_autofree char *dirname = g_path_get_dirname(name2);
+		folder = g_file_new_for_path(dirname);
+	}
+	else {
+		// otherwise start in cwd (gtk will default to HOME if we don't do
+		// this)
+		g_autofree char *cwd = g_get_current_dir();
+		folder = g_file_new_for_path(cwd);
+	}
+
+	gtk_file_dialog_set_initial_folder(dialog, folder);
+}
+
+void
+filemodel_set_initial_file(Filemodel *filemodel, GtkFileDialog *dialog)
+{
+	const char *filename = filemodel_get_filename(filemodel);
+	if (filename) {
+		// filenames can contain eg. $HOME etc.
+		char name2[VIPS_PATH_MAX];
+		expand_variables(filename, name2);
+
+		g_autoptr(GFile) file = g_file_new_for_path(name2);
+
+		gtk_file_dialog_set_initial_file(dialog, file);
+	}
+	else {
+		// otherwise start in cwd (gtk will default to HOME if we don't do
+		// this)
+		g_autofree char *cwd = g_get_current_dir();
+		g_autoptr(GFile) folder = g_file_new_for_path(cwd);
+
+		gtk_file_dialog_set_initial_folder(dialog, folder);
+	}
+}
+
+void
+filemodel_set_filters(Filemodel *filemodel, GtkFileDialog *dialog)
+{
+	GtkFileFilter *filter;
+
+	if ((filter = filemodel_filter_new(filemodel))) {
+		GListStore *filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
+
+		g_list_store_append(filters, G_OBJECT(filter));
+		g_object_unref(filter);
+
+		filter = mainwindow_filter_all_new();
+		g_list_store_append(filters, G_OBJECT(filter));
+		g_object_unref(filter);
+
+		gtk_file_dialog_set_filters(dialog, G_LIST_MODEL(filters));
+
+		g_object_unref(filters);
+	}
+}
+
 static void
 filemodel_saveas_sub(GObject *source_object,
 	GAsyncResult *res, void *data)
@@ -748,30 +817,8 @@ filemodel_saveas(GtkWindow *window, Filemodel *filemodel,
 	g_object_set_data(G_OBJECT(dialog), "nip4-error", error);
 	g_object_set_data(G_OBJECT(dialog), "nip4-a", a);
 	g_object_set_data(G_OBJECT(dialog), "nip4-b", b);
-
-	if (filemodel->filename) {
-		char filename[VIPS_PATH_MAX];
-
-		expand_variables(filemodel->filename, filename);
-		g_autoptr(GFile) file = g_file_new_for_path(filename);
-		if (file)
-			gtk_file_dialog_set_initial_file(dialog, file);
-	}
-
-	GtkFileFilter *filter;
-	if ((filter = filemodel_filter_new(filemodel))) {
-		GListStore *filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
-
-		g_list_store_append(filters, G_OBJECT(filter));
-		g_object_unref(filter);
-
-		filter = mainwindow_filter_all_new();
-		g_list_store_append(filters, G_OBJECT(filter));
-		g_object_unref(filter);
-
-		gtk_file_dialog_set_filters(dialog, G_LIST_MODEL(filters));
-		g_object_unref(filters);
-	}
+	filemodel_set_initial_file(filemodel, dialog);
+	filemodel_set_filters(filemodel, dialog);
 
 	gtk_file_dialog_save(dialog, window, NULL, filemodel_saveas_sub, NULL);
 }
@@ -920,31 +967,6 @@ filemodel_merge_sub(GObject *source_object,
 }
 
 void
-filemodel_set_initial_folder(Filemodel *filemodel, GtkFileDialog *dialog)
-{
-	g_autoptr(GFile) folder = NULL;
-
-	const char *filename = filemodel_get_filename(filemodel);
-	if (filename) {
-		// if we have a loaded file, start in that folder
-		char name2[VIPS_PATH_MAX];
-
-		// filenames can contain eg. $HOME etc.
-		expand_variables(filename, name2);
-		g_autofree char *dirname = g_path_get_dirname(name2);
-		folder = g_file_new_for_path(dirname);
-	}
-	else {
-		// otherwise start in cwd (gtk will default to HOME if we don't do
-		// this)
-		g_autofree char *cwd = g_get_current_dir();
-		folder = g_file_new_for_path(cwd);
-	}
-
-	gtk_file_dialog_set_initial_folder(dialog, folder);
-}
-
-void
 filemodel_merge(GtkWindow *window, Filemodel *filemodel, const char *verb,
 	FilemodelSaveasResult next,
 	FilemodelSaveasResult error, void *a, void *b)
@@ -958,6 +980,7 @@ filemodel_merge(GtkWindow *window, Filemodel *filemodel, const char *verb,
 	gtk_file_dialog_set_accept_label(dialog, verb);
 
 	filemodel_set_initial_folder(filemodel, dialog);
+	filemodel_set_filters(filemodel, dialog);
 
 	g_object_set_data(G_OBJECT(dialog), "nip4-window", window);
 	g_object_set_data(G_OBJECT(dialog), "nip4-filemodel", filemodel);
@@ -965,21 +988,6 @@ filemodel_merge(GtkWindow *window, Filemodel *filemodel, const char *verb,
 	g_object_set_data(G_OBJECT(dialog), "nip4-error", error);
 	g_object_set_data(G_OBJECT(dialog), "nip4-a", a);
 	g_object_set_data(G_OBJECT(dialog), "nip4-b", b);
-
-	GtkFileFilter *filter;
-	if ((filter = filemodel_filter_new(filemodel))) {
-		GListStore *filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
-
-		g_list_store_append(filters, G_OBJECT(filter));
-		g_object_unref(filter);
-
-		filter = mainwindow_filter_all_new();
-		g_list_store_append(filters, G_OBJECT(filter));
-		g_object_unref(filter);
-
-		gtk_file_dialog_set_filters(dialog, G_LIST_MODEL(filters));
-		g_object_unref(filters);
-	}
 
 	gtk_file_dialog_open(dialog, window, NULL, &filemodel_merge_sub, NULL);
 }
@@ -1036,6 +1044,18 @@ filemodel_new_from_file(GtkWindow *window,
 	// set cwd
 	filemodel_set_initial_folder(NULL, dialog);
 
+	// not quite the same as filemodel_set_filters, since we have no instance
+	// of the class
+	GtkFileFilter *filter = class->filter_new(NULL);
+	GListStore *filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
+	g_list_store_append(filters, G_OBJECT(filter));
+	g_object_unref(filter);
+	filter = mainwindow_filter_all_new();
+	g_list_store_append(filters, G_OBJECT(filter));
+	g_object_unref(filter);
+	gtk_file_dialog_set_filters(dialog, G_LIST_MODEL(filters));
+	g_object_unref(filters);
+
 	g_object_set_data(G_OBJECT(dialog), "nip4-window", window);
 	g_object_set_data(G_OBJECT(dialog), "nip4-filemodelclass", class);
 	g_object_set_data(G_OBJECT(dialog), "nip4-parent", parent);
@@ -1043,19 +1063,6 @@ filemodel_new_from_file(GtkWindow *window,
 	g_object_set_data(G_OBJECT(dialog), "nip4-error", error);
 	g_object_set_data(G_OBJECT(dialog), "nip4-a", a);
 	g_object_set_data(G_OBJECT(dialog), "nip4-b", b);
-
-	GtkFileFilter *filter = class->filter_new(NULL);
-	GListStore *filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
-
-	g_list_store_append(filters, G_OBJECT(filter));
-	g_object_unref(filter);
-
-	filter = mainwindow_filter_all_new();
-	g_list_store_append(filters, G_OBJECT(filter));
-	g_object_unref(filter);
-
-	gtk_file_dialog_set_filters(dialog, G_LIST_MODEL(filters));
-	g_object_unref(filters);
 
 	gtk_file_dialog_open(dialog,
 		window, NULL, &filemodel_new_from_file_sub, NULL);

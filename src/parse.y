@@ -1438,10 +1438,8 @@ parse_toplevel_end(Symbol *sym)
         /* Codegen pass for eg. multiple defs
          */
         if (compile_map_all(sym->expr->compile,
-            (map_compile_fn) compile_codegen, NULL)) {
-            printf("parse_toplevel_end: codegen failed!\n");
+            (map_compile_fn) compile_codegen, NULL))
             return sym;
-        }
     }
 
     /* Link all symbols.

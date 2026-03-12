@@ -14,7 +14,7 @@
 
 - add to_enum
 
-	takes an enum and a string or value (not a key), returns a value
+    takes an enum and a string or value (not a key), returns a value
 
 - menus next!
 
@@ -41,14 +41,14 @@
 
 - support BMP drag/drop to help windows
 
-	a gtk problem, gdk_texture_new_from_bytes() handles this and has no
-	BMP support, only TIFF, PNG, JPG
+    a gtk problem, gdk_texture_new_from_bytes() handles this and has no
+    BMP support, only TIFF, PNG, JPG
 
-	maybe win11 has PNG clipboard support?
+    maybe win11 has PNG clipboard support?
 
 - should support texture paste in main window
 
-	right now you need to make an image, then paste into that
+    right now you need to make an image, then paste into that
 
   if you define a paste action in mainwindow_entries[] it breaks ^V in
   text entries, eg. bottom of column
@@ -58,45 +58,45 @@
 
 - better start dir for file dialogs
 
-	should always be pwd, unless it's "replace" eg. in imagewindow, in
-	which case it should be the dir of the filemodel we are replacing
+    should always be pwd, unless it's "replace" eg. in imagewindow, in
+    which case it should be the dir of the filemodel we are replacing
 
-		flatpak sets pwd correctly
+        flatpak sets pwd correctly
 
-	right now:
+    right now:
 
-		- nip4, then ^O, get pwd
-		- nip4 ~/pics/k2.jpg, then ^O, get ~/pics
-		- nip4 ~/pics/x.ws, ^O, get pwd, ^S, get $HOME
-		- nip4 ~/pics/k2.jpg, program window, ^O, get pwd
+        - nip4, then ^O, get pwd
+        - nip4 ~/pics/k2.jpg, then ^O, get ~/pics
+        - nip4 ~/pics/x.ws, ^O, get pwd, ^S, get $HOME
+        - nip4 ~/pics/k2.jpg, program window, ^O, get pwd
 
-	trying to have a directory for each model, so one for pics, one for
-	defs etc., with filesel directory navigation updating it
+    trying to have a directory for each model, so one for pics, one for
+    defs etc., with filesel directory navigation updating it
 
 - "nip4 try.def x.ws" ought to work
 
-	only images and workspaces as CLI args right now
+    only images and workspaces as CLI args right now
 
 - improve row layout (see notebook)
 
 - we heap_copy() the world when we make a row (all funcs copied), is this
   necessary?
 
-	should be able to link functions, I'd think?
+    should be able to link functions, I'd think?
 
 - linear match
 
-	allow refine tie points + no-resize atr the same time
+    allow refine tie points + no-resize atr the same time
 
-	show computed transform
+    show computed transform
 
 - try
 
-	Edit toolkits ...
-	[a, b, c] = [1, 2, 3];
-	|>
-	add a space
-	|>
+    Edit toolkits ...
+    [a, b, c] = [1, 2, 3];
+    |>
+    add a space
+    |>
 
   error: second def of "c"
 
@@ -108,11 +108,11 @@
 - do row select on button up, and as part of the mainwindow event state
   machine
 
-	same for up down buttons
+    same for up down buttons
 
-	same for textview flip to formula
+    same for textview flip to formula
 
-	need our own tiny subcolumnview event system
+    need our own tiny subcolumnview event system
 
 - nicholas's bug report
 
@@ -150,19 +150,19 @@
 
 - we could allow
 
-	fred x x = 12;
+    fred x x = 12;
 
   meaning, two args, must be equal
 
-	fred x [x, y, z] = y + z;
+    fred x [x, y, z] = y + z;
 
   meaning first list element must equal first arg
 
 - make "About" non-modal and update on gc
 
-	use progress system?
+    use progress system?
 
-	add a new GC signal
+    add a new GC signal
 
 - remove prefs workspace stuff?
 

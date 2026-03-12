@@ -1541,7 +1541,7 @@ compile_defs_check(Compile *compile)
 			 * default case.
 			 */
 			if (compile->has_default) {
-				error_top(_("Default case already defined"));
+				error_top(_("Redefinition of symbol"));
 				error_sub(_("definition %d of \"%s\" is a second default case"),
 					rhs, symbol_name(compile->sym));
 				return FALSE;
