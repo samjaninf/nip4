@@ -5,6 +5,41 @@
 	pick a big .def file
 	linebreaks between defs vanish during parse
 
+  also, we parse at least twice
+
+	first parse:
+
+		toolkit_load_text
+		model_load_text
+		filemodel_load_all_text
+		filemodel_load_all
+		filemodel_merge_sub
+
+	so parsed during toolkit load
+
+	then stripped
+
+	second parse
+
+		workspace_local_set
+		mainwindow_local_replace_next
+		filemodel_merge_sub
+
+	then CRITICAL during workspacedefs_refresh
+
+
+  new strategy:
+
+	- file dialog
+	- load to string
+	- call workspace_local_set()
+	- that does the parse, just as if someone had typed it
+
+
+
+
+  crash during recomp
+
 - try
 
     ws defs
