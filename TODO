@@ -1,3 +1,10 @@
+- on test_histogram
+
+    hist_diff is failing ... get <function>
+
+        probably missing options
+
+
 - test_object.def fails
 
     because it can't find the test image
@@ -27,7 +34,7 @@
     Colour.def      done
     Matrix.def      done
     Filter.def      done
-    Object.def
+    Object.def      done
     Histogram.def
     Image.def
     Region.def
