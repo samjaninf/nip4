@@ -133,11 +133,6 @@ pathnameview_clicked(GtkWidget *widget, Pathnameview *pathnameview)
 		g_autoptr(GFile) file = g_file_new_for_path(name);
 		gtk_file_dialog_set_initial_file(dialog, file);
 	}
-	else {
-		GFile *load_folder = mainwindow_get_load_folder(main);
-		if (load_folder)
-			gtk_file_dialog_set_initial_folder(dialog, load_folder);
-	}
 
 	gtk_file_dialog_open(dialog, GTK_WINDOW(main), NULL,
 		pathnameview_select_result, pathnameview);

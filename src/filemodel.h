@@ -93,11 +93,6 @@ typedef struct _FilemodelClass {
 	GtkFileFilter *(*filter_new)(Filemodel *filemodel);
 	const char *suffix;
 
-	/* The current save and load directories for objects of this type.
-	 */
-	GFile *save_folder;
-	GFile *load_folder;
-
 } FilemodelClass;
 
 void filemodel_register(Filemodel *filemodel);
@@ -107,6 +102,7 @@ void *filemodel_top_load(Filemodel *filemodel,
 	ModelLoadState *state, Model *parent, xmlNode *xnode);
 
 void filemodel_set_filename(Filemodel *filemodel, const char *filename);
+const char *filemodel_get_filename(Filemodel *filemodel);
 void filemodel_set_modified(Filemodel *filemodel, gboolean state);
 
 GType filemodel_get_type(void);
@@ -123,6 +119,8 @@ void filemodel_set_auto_load(Filemodel *filemodel);
 
 void filemodel_set_window_hint(Filemodel *filemodel, GtkWindow *window);
 GtkWindow *filemodel_get_window_hint(Filemodel *filemodel);
+
+void filemodel_set_initial_folder(Filemodel *filemodel, GtkFileDialog *dialog);
 
 typedef void (*FilemodelSaveasResult)(GtkWindow *window,
 	Filemodel *filemodel, void *a, void *b);

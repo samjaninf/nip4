@@ -30,11 +30,6 @@
 struct _Mainwindow {
 	GtkApplicationWindow parent;
 
-	/* The current save and load directories.
-	 */
-	GFile *save_folder;
-	GFile *load_folder;
-
 	// the model we display
 	Workspacegroup *wsg;
 
@@ -91,40 +86,6 @@ Workspacegroupview *
 mainwindow_get_workspacegroupview(Mainwindow *main)
 {
 	return WORKSPACEGROUPVIEW(main->wsgview);
-}
-
-GFile *
-mainwindow_get_save_folder(Mainwindow *main)
-{
-	return main->save_folder;
-}
-
-static GFile *
-get_parent(GFile *file)
-{
-	GFile *parent = g_file_get_parent(file);
-
-	return parent ? parent : g_file_new_for_path("/");
-}
-
-void
-mainwindow_set_save_folder(Mainwindow *main, GFile *file)
-{
-	VIPS_UNREF(main->save_folder);
-	main->save_folder = get_parent(file);
-}
-
-GFile *
-mainwindow_get_load_folder(Mainwindow *main)
-{
-	return main->load_folder;
-}
-
-void
-mainwindow_set_load_folder(Mainwindow *main, GFile *file)
-{
-	VIPS_UNREF(main->load_folder);
-	main->load_folder = get_parent(file);
 }
 
 static Workspace *
@@ -252,8 +213,6 @@ mainwindow_open(Mainwindow *main, GFile *file)
 {
 	g_autofree char *filename = g_file_get_path(file);
 
-	mainwindow_set_load_folder(main, file);
-
 	for (int i = 0; i < VIPS_NUMBER(mainwindow_file_types); i++)
 		if (vips_iscasepostfix(filename, mainwindow_file_types[i].suffix)) {
 			if (!mainwindow_file_types[i].handler(main, filename))
@@ -298,10 +257,7 @@ mainwindow_open_action(GSimpleAction *action,
 	gtk_file_dialog_set_title(dialog, "Open");
 	gtk_file_dialog_set_modal(dialog, TRUE);
 
-	// if we have a loaded file, use that folder
-	GFile *load_folder = mainwindow_get_load_folder(main);
-	if (load_folder)
-		gtk_file_dialog_set_initial_folder(dialog, load_folder);
+	filemodel_set_initial_folder(FILEMODEL(main->wsg), dialog);
 
 	GListStore *filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
 	GtkFileFilter *filter;
@@ -569,6 +525,46 @@ mainwindow_keyboard_group_selected_action(GSimpleAction *action,
 }
 
 static void
+mainwindow_local_saveas_next(GObject *source_object,
+	GAsyncResult *res, void *user_data)
+{
+	GtkFileDialog *dialog = GTK_FILE_DIALOG(source_object);
+    Mainwindow *main = MAINWINDOW(user_data);
+	Workspace *ws = WORKSPACE(ICONTAINER(main->wsg)->current);
+
+	g_autoptr(GFile) file = gtk_file_dialog_save_finish(dialog, res, NULL);
+	if (file &&
+		ws->local_defs) {
+		g_autofree char *filename = g_file_get_path(file);
+
+		g_autoptr(GError) error = NULL;
+		if (!g_file_set_contents(filename, ws->local_defs, -1, &error)) {
+			error_top("%s", _("Unable to save"));
+			error_sub("%s", error->message);
+			mainwindow_error(main);
+		}
+	}
+}
+
+static void
+mainwindow_local_set_filters(GtkFileDialog *dialog)
+{
+	GListStore *filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
+
+	GtkFileFilter *filter = toolkit_filter_new(NULL);
+	g_list_store_append(filters, G_OBJECT(filter));
+	g_object_unref(filter);
+
+	filter = mainwindow_filter_all_new();
+	g_list_store_append(filters, G_OBJECT(filter));
+	g_object_unref(filter);
+
+	gtk_file_dialog_set_filters(dialog, G_LIST_MODEL(filters));
+
+	g_object_unref(filters);
+}
+
+static void
 mainwindow_local_saveas_action(GSimpleAction *action,
 	GVariant *parameter, gpointer user_data)
 {
@@ -577,43 +573,37 @@ mainwindow_local_saveas_action(GSimpleAction *action,
 	if (main->wsg) {
 		Workspace *ws = WORKSPACE(ICONTAINER(main->wsg)->current);
 
-		if (ws->local_kit)
-			filemodel_saveas(GTK_WINDOW(main), FILEMODEL(ws->local_kit),
-				NULL,
-				mainwindow_save_error, main, NULL);
+		if (ws->local_kit) {
+			GtkFileDialog *dialog = gtk_file_dialog_new();
+
+			gtk_file_dialog_set_title(dialog, _("Save local definitions"));
+			gtk_file_dialog_set_modal(dialog, TRUE);
+			filemodel_set_initial_folder(FILEMODEL(main->wsg), dialog);
+			mainwindow_local_set_filters(dialog);
+
+			gtk_file_dialog_save(dialog, GTK_WINDOW(main), NULL,
+				mainwindow_local_saveas_next, main);
+		}
 	}
 }
 
-static void *
-mainwindow_set_from_tool(Tool *tool, void *a, void *b)
-{
-	GString *text = (GString *) a;
-
-	// ahem a little cautious
-	if (tool->sym &&
-		tool->sym->expr &&
-		tool->sym->expr->compile &&
-		tool->sym->expr->compile->text)
-		g_string_append(text, tool->sym->expr->compile->text);
-
-	return NULL;
-}
-
 static void
-mainwindow_local_replace_next(GtkWindow *win, Filemodel *filemodel,
-    void *a, void *b)
+mainwindow_local_replace_next(GObject *source_object,
+	GAsyncResult *res, gpointer user_data)
 {
-    Mainwindow *main = MAINWINDOW(a);
+	GtkFileDialog *dialog = GTK_FILE_DIALOG(source_object);
+    Mainwindow *main = MAINWINDOW(user_data);
 	Workspace *ws = WORKSPACE(ICONTAINER(main->wsg)->current);
 
-	g_autoptr(GString) text = g_string_sized_new(10000);
+	g_autoptr(GFile) file = gtk_file_dialog_open_finish(dialog, res, NULL);
+	if (file) {
+		g_autofree char *filename = g_file_get_path(file);
 
-	toolkit_map(TOOLKIT(filemodel), mainwindow_set_from_tool, text, NULL);
+		if (!workspace_local_set_from_file(ws, filename))
+			mainwindow_error(main);
 
-	if (!workspace_local_set(ws, text->str))
-		mainwindow_error(main);
-
-    symbol_recalculate_all();
+		symbol_recalculate_all();
+	}
 }
 
 static void
@@ -628,11 +618,17 @@ mainwindow_local_replace_action(GSimpleAction *action,
 		// zap any old defs
 		(void) workspace_local_set(ws, "");
 
-        filemodel_replace(GTK_WINDOW(main), FILEMODEL(ws->local_kit),
-            "Replace",
-            mainwindow_local_replace_next,
-            mainwindow_save_error, main, NULL);
-    }
+		GtkFileDialog *dialog = gtk_file_dialog_new();
+
+		gtk_file_dialog_set_title(dialog, _("Replace local definitions"));
+		gtk_file_dialog_set_modal(dialog, TRUE);
+		gtk_file_dialog_set_accept_label(dialog, _("Replace"));
+		filemodel_set_initial_folder(FILEMODEL(main->wsg), dialog);
+		mainwindow_local_set_filters(dialog);
+
+		gtk_file_dialog_open(dialog, GTK_WINDOW(main), NULL,
+			&mainwindow_local_replace_next, main);
+	}
 }
 
 static GActionEntry mainwindow_entries[] = {
@@ -734,10 +730,6 @@ mainwindow_init(Mainwindow *main)
 #endif /*DEBUG*/
 
 	main->settings = g_settings_new(APPLICATION_ID);
-
-	g_autofree char *cwd = g_get_current_dir();
-	main->save_folder = g_file_new_for_path(cwd);
-	main->load_folder = g_file_new_for_path(cwd);
 
 	gtk_widget_init_template(GTK_WIDGET(main));
 

@@ -67,11 +67,17 @@ workspacedefs_text_changed(GtkTextBuffer *buffer,
 	}
 }
 
+typedef void *(*tool_map_fn)(Tool *, void *, void *);
+
 static void *
-workspacedefs_sym_visible(Symbol *sym, int *n)
+workspacedefs_sym_visible(Tool *tool, void *a, void *b)
 {
-	if (is_visible(sym))
+	int *n = (int *) a;
+
+	if (tool->sym &&
+		is_visible(tool->sym))
 		*n += 1;
+
 	return NULL;
 }
 
@@ -112,8 +118,7 @@ workspacedefs_refresh(vObject *vobject)
 		/* Ignore eg. $$match etc.
 		 */
 		n = 0;
-		icontainer_map(ICONTAINER(ws->local_kit),
-			(icontainer_map_fn) workspacedefs_sym_visible, &n, NULL);
+		toolkit_map(ws->local_kit, workspacedefs_sym_visible, &n, NULL);
 		vips_buf_appendf(&buf,
 			ngettext("%d definition", "%d definitions", n), n);
 	}
@@ -237,3 +242,5 @@ workspacedefs_new(void)
 
 	return workspacedefs;
 }
+
+

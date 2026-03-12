@@ -42,48 +42,6 @@ G_DEFINE_TYPE(Filemodel, filemodel, MODEL_TYPE)
 
 static GSList *filemodel_registered = NULL;
 
-GFile *
-filemodel_get_save_folder(Filemodel *filemodel)
-{
-	FilemodelClass *class = FILEMODEL_GET_CLASS(filemodel);
-
-	return class->save_folder;
-}
-
-static GFile *
-get_parent(GFile *file)
-{
-	GFile *parent = g_file_get_parent(file);
-
-	return parent ? parent : g_file_new_for_path("/");
-}
-
-void
-filemodel_set_save_folder(Filemodel *filemodel, GFile *file)
-{
-	FilemodelClass *class = FILEMODEL_GET_CLASS(filemodel);
-
-	VIPS_UNREF(class->save_folder);
-	class->save_folder = get_parent(file);
-}
-
-GFile *
-filemodel_get_load_folder(Filemodel *filemodel)
-{
-	FilemodelClass *class = FILEMODEL_GET_CLASS(filemodel);
-
-	return class->load_folder;
-}
-
-void
-filemodel_set_load_folder(Filemodel *filemodel, GFile *file)
-{
-	FilemodelClass *class = FILEMODEL_GET_CLASS(filemodel);
-
-	VIPS_UNREF(class->load_folder);
-	class->load_folder = get_parent(file);
-}
-
 /* Register a file model. Registered models are part of the "xxx has been
  * modified, save before quit?" check.
  */
@@ -237,6 +195,12 @@ filemodel_set_filename(Filemodel *filemodel, const char *filename)
 		VIPS_SETSTR(filemodel->filename, filename);
 		iobject_changed(IOBJECT(filemodel));
 	}
+}
+
+const char *
+filemodel_get_filename(Filemodel *filemodel)
+{
+	return filemodel ? filemodel->filename : NULL;
 }
 
 static void
@@ -488,10 +452,6 @@ filemodel_class_init(FilemodelClass *class)
 	class->top_load = filemodel_real_top_load;
 	class->set_modified = filemodel_real_set_modified;
 	class->top_save = filemodel_real_top_save;
-
-	g_autofree char *cwd = g_get_current_dir();
-	class->save_folder = g_file_new_for_path(cwd);
-	class->load_folder = g_file_new_for_path(cwd);
 }
 
 static void
@@ -764,7 +724,6 @@ filemodel_saveas_sub(GObject *source_object,
 		else {
 			filemodel_set_filename(filemodel, filename);
 			filemodel_set_modified(filemodel, FALSE);
-			filemodel_set_save_folder(filemodel, file);
 
 			if (next)
 				next(window, filemodel, a, b);
@@ -950,7 +909,6 @@ filemodel_merge_sub(GObject *source_object,
 	    Model *parent = MODEL(ICONTAINER(filemodel)->parent);
 
 		if (filemodel_load_all(filemodel, parent, filename, NULL)) {
-			filemodel_set_load_folder(filemodel, file);
 			if (next)
 				next(window, filemodel, a, b);
 		}
@@ -959,6 +917,31 @@ filemodel_merge_sub(GObject *source_object,
 				error(window, filemodel, a, b);
 		}
 	}
+}
+
+void
+filemodel_set_initial_folder(Filemodel *filemodel, GtkFileDialog *dialog)
+{
+	g_autoptr(GFile) folder = NULL;
+
+	const char *filename = filemodel_get_filename(filemodel);
+	if (filename) {
+		// if we have a loaded file, start in that folder
+		char name2[VIPS_PATH_MAX];
+
+		// filenames can contain eg. $HOME etc.
+		expand_variables(filename, name2);
+		g_autofree char *dirname = g_path_get_dirname(name2);
+		folder = g_file_new_for_path(dirname);
+	}
+	else {
+		// otherwise start in cwd (gtk will default to HOME if we don't do
+		// this)
+		g_autofree char *cwd = g_get_current_dir();
+		folder = g_file_new_for_path(cwd);
+	}
+
+	gtk_file_dialog_set_initial_folder(dialog, folder);
 }
 
 void
@@ -973,8 +956,8 @@ filemodel_merge(GtkWindow *window, Filemodel *filemodel, const char *verb,
 	gtk_file_dialog_set_title(dialog, title);
 	gtk_file_dialog_set_modal(dialog, TRUE);
 	gtk_file_dialog_set_accept_label(dialog, verb);
-	gtk_file_dialog_set_initial_folder(dialog,
-		filemodel_get_load_folder(filemodel));
+
+	filemodel_set_initial_folder(filemodel, dialog);
 
 	g_object_set_data(G_OBJECT(dialog), "nip4-window", window);
 	g_object_set_data(G_OBJECT(dialog), "nip4-filemodel", filemodel);
@@ -1026,7 +1009,6 @@ filemodel_new_from_file_sub(GObject *source_object,
 		Filemodel *filemodel =
 			filemodel_new_from_filename(class, parent, filename);
 		if (filemodel) {
-			filemodel_set_load_folder(filemodel, file);
 			if (next)
 				next(window, filemodel, a, b);
 		}
@@ -1050,7 +1032,9 @@ filemodel_new_from_file(GtkWindow *window,
 	gtk_file_dialog_set_title(dialog, title);
 	gtk_file_dialog_set_modal(dialog, TRUE);
 	gtk_file_dialog_set_accept_label(dialog, verb);
-	gtk_file_dialog_set_initial_folder(dialog, class->load_folder);
+
+	// set cwd
+	filemodel_set_initial_folder(NULL, dialog);
 
 	g_object_set_data(G_OBJECT(dialog), "nip4-window", window);
 	g_object_set_data(G_OBJECT(dialog), "nip4-filemodelclass", class);
@@ -1120,6 +1104,7 @@ filemodel_replace(GtkWindow *window, Filemodel *filemodel, const char *verb,
 	Suspension *sus = g_new(Suspension, 1);
 	sus->window = window;
 	sus->filemodel = filemodel;
+	sus->verb = verb;
 	sus->next = next;
 	sus->error = error;
 	sus->a = a;

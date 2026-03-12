@@ -12,6 +12,10 @@
 - selecting a row also selects the enclosing column
 - fix tab size in wsdefs
 - better display of FOURIER images
+- improve file dialog start location
+- fix a crash with wsdefs replace
+- fix save/load for wsdefs
+- fix "n defs" header line in wsdefs
 
 ## 9.0.17 2026/02/25
 
