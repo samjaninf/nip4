@@ -7,7 +7,10 @@ Hist_new_item = class
 			_vislevel = 3;
 
 			d = Option "Depth" ["8 bit", "16 bit"] 0;
-			_result = Plot [] ([im_identity 1, im_identity_ushort 1 65536]?d);
+			_result = Plot [] (vips_identity [
+                $ushort => d == 1,
+                $size => 65536
+            ]);
 		}
 	}
 
@@ -194,14 +197,14 @@ Hist_profile_item = class
 		{
 			profile image
 				= (Plot_histogram @ hist_tag) [
-					profilemb 0 image.value,
-					profilemb 1 image.value,
-					profilemb 0 (fliptb image.value),
-					profilemb 1 (fliplr image.value)
-				]?edge;
-
-			// im_profile only does 1 band images :-(
-			profilemb d = bandjoin @ map (converse im_profile d) @ bandsplit;
+					proj 0 image.value,
+					proj 1 image.value,
+					proj 0 (fliptb image.value),
+					proj 1 (fliplr image.value)
+				]?edge
+            {
+                proj d i = (vips_profile [] i)?d;
+            }
 		}
 	}
 }
@@ -243,10 +246,11 @@ Hist_graph_item = class
 			graph arrow
 				= hist_tag area'
 			{
-				area = crop displace.value vdisplace.value width.value arrow;
+				area = extract_arrow
+                    displace.value vdisplace.value width.value arrow;
 
 				// squish vertically to get an average
-				area' = resize Kernel_linear 1 (1 / width.value) area;
+				area' = resize Kernel.LINEAR 1 (1 / width.value) area;
 			}
 		}
 	}
@@ -263,7 +267,8 @@ Extract_arrow_item = class
 		vdisplace = Scale "Vertical displace" (-50) 50 0;
 
 		_value
-			= map_unary (crop displace.value vdisplace.value width.value) x;
+			= map_unary
+                (extract_arrow displace.value vdisplace.value width.value) x;
 	}
 }
 
@@ -275,8 +280,8 @@ Hist_plot_item = class
 		_vislevel = 3;
 
 		caption = Expression "Chart caption" "none";
-		format = Option_enum "Format" Plot_format.names "YYYY";
-		style = Option_enum "Style" Plot_style.names "Line";
+		format = Plot_format.picker $YYYY;
+		style = Plot_style.picker $LINE;
 
 		auto = Toggle "Auto Range" true;
 		xmin = Expression "X range minimum" 0;
@@ -291,12 +296,14 @@ Hist_plot_item = class
 			= Plot options (image x)
 		{
 			options
-				= [$style => style.value, $format => format.value] ++
-					range ++ captions;
+				= [$style => style.value_key,
+                   $format => format.value_key] ++ range ++ captions;
 			range
 				= [], auto
-				= [$xmin => xmin.expr, $xmax => xmax.expr,
-					$ymin => ymin.expr, $ymax => ymax.expr];
+				= [$xmin => xmin.expr,
+                   $xmax => xmax.expr,
+				   $ymin => ymin.expr,
+                   $ymax => ymax.expr];
 
 			captions
 				= concat (map test caption_options) ++

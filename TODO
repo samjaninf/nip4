@@ -1,9 +1,23 @@
+    A18 plot window with radius 10.9 shows zero as -1.13e-13
+
+        add an epsilon
+
+- add $CWD to list of env vars we rewrite in paths
+
+
+
+
 - on test_histogram
 
-    hist_diff is failing ... get <function>
+    zerox and entropy not working
 
-        probably missing options
+    vips_case / vips_switch should be in histogram?
 
+    vips hist_ismonotonic ?
+
+    D6 autoranges y, it should probably be fixed for uchar
+
+    check we test find_indexed in image select
 
 - test_object.def fails
 
@@ -183,44 +197,6 @@
 - prewitt and scharr edge detectors
 
 - can we improve Group[]?
-
-- better start dir for file dialogs
-
-<<<<<<< HEAD
-    should be cwd
-
-    a bit random right now, eg. mainwindow open and toolkit open start in
-    different places
-
-    should always be pwd, unless it's "replace" eg. in imagewindow, in
-    which case it should be the dir of the filemodel we are replacing
-
-        flatpak sets pwd correctly
-
-    right now:
-
-        - nip4, then ^O, get pwd
-        - nip4 ~/pics/k2.jpg, then ^O, get ~/pics
-        - nip4 ~/pics/x.ws, ^O, get pwd, ^S, get $HOME
-        - nip4 ~/pics/k2.jpg, program window, ^O, get pwd
-        - nip4 ~/pics/k2.jpg, ^S, get $HOME
-
-=======
-    should always be pwd, unless it's "replace" eg. in imagewindow, in
-    which case it should be the dir of the filemodel we are replacing
-
-        flatpak sets pwd correctly
-
-    right now:
-
-        - nip4, then ^O, get pwd
-        - nip4 ~/pics/k2.jpg, then ^O, get ~/pics
-        - nip4 ~/pics/x.ws, ^O, get pwd, ^S, get $HOME
-        - nip4 ~/pics/k2.jpg, program window, ^O, get pwd
-
->>>>>>> main
-    trying to have a directory for each model, so one for pics, one for
-    defs etc., with filesel directory navigation updating it
 
 - "nip4 try.def x.ws" ought to work
 

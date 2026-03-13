@@ -1107,12 +1107,12 @@ Arrow image left top width height = class
 }
 
 HGuide image top = class
-    scope.Arrow image image.rect.left top image.width 0 {
+    scope.Arrow image 0 top image.width 0 {
     Arrow image left top width height = this.HGuide image top;
 }
 
 VGuide image left = class
-    scope.Arrow image left image.rect.top 0 image.height {
+    scope.Arrow image left 0 0 image.height {
     Arrow image left top width height = this.VGuide image left;
 }
 

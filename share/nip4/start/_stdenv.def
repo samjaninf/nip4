@@ -447,8 +447,8 @@ gravity x
 
         // matching identity
         i
-            = vips_identity [$ushort => true] w, w <= 2 ** 16 - 1
-            = xyz [] w 1 ? 0;
+            = vips_identity [$ushort => true, $size => w], w <= 2 ** 16 - 1
+            = (xyz [] w 1) ? 0;
 
         // weight identity and sum
         s = mean (i * h') * w;
@@ -1084,7 +1084,7 @@ transform params image
 rotate interp angle x
     = oo_binary_function rotate_op angle x, is_class angle
     = oo_binary'_function rotate_op angle x, is_class x
-    = vips_affine [$interpolate => interp.value] x [a, -b, b, a],
+    = vips_affine [$interpolate => interp] x [a, -b, b, a],
         is_real angle && is_image x
     = error (_ "bad arguments to " ++ "rotate")
 {
@@ -1370,7 +1370,7 @@ hist_diff hist
         Operator_type.COMPOUND_REWRAP false;
 
     hist_diff_im h
-        = (conv (Matrix [[-1, 1]]) @ cast (fmt (get_format h))) h
+        = (conv [] (Matrix [[-1, 1]]) @ cast (fmt (get_format h))) h
     {
         // up the format so it can represent the whole range of
         // possible values from this mask
@@ -2178,7 +2178,7 @@ extract_arrow hd vd h arrow
         = 180 - a, a > 90
         = -a;
 
-    im' = rotate Interpolate_bilinear a' arrow.image;
+    im' = rotate (Interpolate._new [] Interpolate.BILINEAR) a' arrow.image;
 
     // look at the start and end of the arrow, pick the leftmost
     p
