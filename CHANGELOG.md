@@ -16,6 +16,8 @@
 - fix a crash with wsdefs replace
 - fix save/load for wsdefs
 - fix "n defs" header line in wsdefs
+- add $CWD to path rewrite set
+- try to improve rounding for plot labels
 
 ## 9.0.17 2026/02/25
 

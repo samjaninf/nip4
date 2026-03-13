@@ -36,6 +36,15 @@ typedef struct _Bounds {
 #define MAX(A, B) ((A) > (B) ? (A) : (B))
 #define MIN(A, B) ((A) < (B) ? (A) : (B))
 
+// try to stop 0 turning into -3.14e-14 etc.
+static double
+round_to(double value, int digits)
+{
+	double factor = pow(10.0, digits);
+
+    return round(value * factor) / factor;
+}
+
 static void
 kplotctx_label_init_x(struct kplotctx *ctx, double offs, void *user_data)
 {
@@ -45,13 +54,12 @@ kplotctx_label_init_x(struct kplotctx *ctx, double offs, void *user_data)
 	char buf[128];
 
 	/* Call out to xformat function. */
+	double value =
+		round_to(ctx->minv.x + offs * (ctx->maxv.x - ctx->minv.x), 3);
 	if (NULL == ctx->cfg.xticlabelfmt)
-		snprintf(buf, sizeof(buf), "%g",
-			ctx->minv.x + offs * (ctx->maxv.x - ctx->minv.x));
+		snprintf(buf, sizeof(buf), "%g", value);
 	else
-		(*ctx->cfg.xticlabelfmt)
-			(ctx->minv.x + offs * (ctx->maxv.x - ctx->minv.x),
-			buf, sizeof(buf));
+		(*ctx->cfg.xticlabelfmt)(value, buf, sizeof(buf));
 
 	cairo_text_extents(ctx->cr, buf, &e);
 
@@ -78,13 +86,12 @@ kplotctx_label_init_y(struct kplotctx *ctx, double offs, void *user_data)
 	cairo_text_extents_t e;
 	char buf[128];
 
+	double value =
+		round_to(ctx->minv.y + offs * (ctx->maxv.y - ctx->minv.y), 3);
 	if (NULL == ctx->cfg.yticlabelfmt)
-		snprintf(buf, sizeof(buf), "%g",
-			ctx->minv.y + offs * (ctx->maxv.y - ctx->minv.y));
+		snprintf(buf, sizeof(buf), "%g", value);
 	else
-		(*ctx->cfg.yticlabelfmt)
-			(ctx->minv.y + offs * (ctx->maxv.y - ctx->minv.y),
-			buf, sizeof(buf));
+		(*ctx->cfg.yticlabelfmt)(value, buf, sizeof(buf));
 
 	cairo_text_extents(ctx->cr, buf, &e);
 
@@ -100,13 +107,12 @@ kplotctx_label_init_draw_x(struct kplotctx *ctx, double offs, void *user_data)
 	cairo_text_extents_t e;
 	char buf[128];
 
+	double value =
+		round_to(ctx->minv.x + offs * (ctx->maxv.x - ctx->minv.x), 3);
 	if (NULL == ctx->cfg.xticlabelfmt)
-		snprintf(buf, sizeof(buf), "%g",
-			ctx->minv.x + offs * (ctx->maxv.x - ctx->minv.x));
+		snprintf(buf, sizeof(buf), "%g", value);
 	else
-		(*ctx->cfg.xticlabelfmt)
-			(ctx->minv.x + offs * (ctx->maxv.x - ctx->minv.x),
-			buf, sizeof(buf));
+		(*ctx->cfg.xticlabelfmt)(value, buf, sizeof(buf));
 
 	cairo_text_extents(ctx->cr, buf, &e);
 
@@ -144,13 +150,12 @@ kplotctx_label_init_draw_y(struct kplotctx *ctx, double offs, void *user_data)
 	cairo_text_extents_t e;
 	char buf[128];
 
+	double value =
+		round_to(ctx->minv.y + offs * (ctx->maxv.y - ctx->minv.y), 3);
 	if (NULL == ctx->cfg.yticlabelfmt)
-		snprintf(buf, sizeof(buf), "%g",
-			ctx->minv.y + offs * (ctx->maxv.y - ctx->minv.y));
+		snprintf(buf, sizeof(buf), "%g", value);
 	else
-		(*ctx->cfg.yticlabelfmt)
-			(ctx->minv.y + offs * (ctx->maxv.y - ctx->minv.y),
-			buf, sizeof(buf));
+		(*ctx->cfg.yticlabelfmt)(value, buf, sizeof(buf));
 
 	cairo_text_extents(ctx->cr, buf, &e);
 
