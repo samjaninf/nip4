@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.0.17">
-  <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// private definitions for this workspace&#10;" name="test_histogram" filename="$HOME/GIT/nip4/test/workspaces/test_histogram.ws" major="9" minor="0">
+  <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// private definitions for this workspace&#10;" name="test_histogram" filename="$CWD/test_histogram.ws" major="9" minor="0">
     <Column x="10" y="5" open="true" selected="false" sform="false" next="17" name="B" caption="Colour / Colourspace">
       <Subcolumn vislevel="3">
         <Row popup="false" name="B1">
           <Rhs vislevel="1" flags="1">
             <iImage window_x="0" window_y="30" window_width="512" window_height="729" show_status="true" show_convert="true"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Image_file &quot;slanted_oval_vase2.jpg&quot;"/>
+            <iText formula="Image_file &quot;$CWD/images/slanted_oval_vase2.jpg&quot;"/>
           </Rhs>
         </Row>
       </Subcolumn>
@@ -178,7 +178,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="904" y="5" open="true" selected="true" sform="false" next="32" name="A" caption="Histogram / Maths">
+    <Column x="904" y="5" open="true" selected="true" sform="false" next="34" name="A" caption="Histogram / Maths">
       <Subcolumn vislevel="3">
         <Row popup="false" name="A1">
           <Rhs vislevel="0" flags="4">
@@ -294,6 +294,16 @@
             </Subcolumn>
             <iText formula="Filter_conv_item.Custom_blur_item.action A27"/>
             <Plot plot_left="0" plot_top="0" plot_mag="100" show_status="false"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="A33">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="&quot;entropy:&quot;"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="A32">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="Hist_entropy_item.action A17"/>
           </Rhs>
         </Row>
       </Subcolumn>

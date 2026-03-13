@@ -1362,28 +1362,28 @@
           <Rhs vislevel="1" flags="1">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Image_file &quot;$CWD/slanted_oval_vase2.jpg&quot;"/>
+            <iText formula="Image_file &quot;images/slanted_oval_vase2.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="O2">
           <Rhs vislevel="1" flags="1">
             <iImage show_status="false" show_convert="false" scale="0.016860462165912533" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Image_file &quot;$CWD/sample.hdr&quot;"/>
+            <iText formula="Image_file &quot;images/sample.hdr&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="O3">
           <Rhs vislevel="1" flags="1">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Image_file &quot;$CWD/print_test_image.v&quot;"/>
+            <iText formula="Image_file &quot;images/print_test_image.v&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="O4">
           <Rhs vislevel="1" flags="1">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Image_file &quot;/home/john/GIT/nip4/test/workspaces/ultra-hdr.jpg&quot;"/>
+	    <iText formula="Image_file &quot;images/ultra-hdr.jpg&quot;"/>
           </Rhs>
         </Row>
       </Subcolumn>

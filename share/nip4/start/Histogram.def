@@ -156,22 +156,6 @@ Hist_match_item = class
 	action in ref = map_binary hist_match in ref;
 }
 
-Hist_zerox_item = class
-	Menuaction "_Zero Crossings" "find zero crossings" {
-	action x = class
-		_result {
-		_vislevel = 3;
-
-		edge = Option "Direction" [
-			"Positive-going",
-			"Negative-going"
-		] 0;
-
-		_result
-			= map_unary (zerox (if edge == 0 then -1 else 1)) x;
-	}
-}
-
 Hist_entropy_item = class Menuaction "Entropy" "calculate histogram entropy" {
 	action x = hist_entropy x;
 }

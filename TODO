@@ -1,8 +1,6 @@
 
 - on test_histogram
 
-    zerox and entropy not working
-
     vips_case / vips_switch should be in histogram?
 
     vips hist_ismonotonic ?

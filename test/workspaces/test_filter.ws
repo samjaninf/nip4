@@ -7,7 +7,7 @@
           <Rhs vislevel="1" flags="1">
             <iImage window_x="0" window_y="30" window_width="512" window_height="729" show_status="true" show_convert="true"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Image_file &quot;slanted_oval_vase2.jpg&quot;"/>
+	    <iText formula="Image_file &quot;images/slanted_oval_vase2.jpg&quot;"/>
           </Rhs>
         </Row>
       </Subcolumn>
