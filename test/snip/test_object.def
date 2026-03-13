@@ -2,7 +2,7 @@
 
 // test the _Object class, or as much as we can
 
-sample_image = Image_file "../images/slanted_oval_vase2.jpg";
+sample_image = Image_file "slanted_oval_vase2.jpg";
 binary_operator = oo_binary_lookup "add";
 unary_operator = oo_unary_lookup "sin";
 

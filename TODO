@@ -11,7 +11,7 @@
 
     check we test find_indexed in image select
 
-- vip[s8 wrappers in _stdenv.def should all take options params
+- vips8 wrappers in _stdenv.def should all take options params
 
 	last chance to add this, will be importabnt for extensibility
 
