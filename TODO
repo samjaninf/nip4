@@ -1,4 +1,4 @@
-    A18 plot window with radius 10.9 shows zero as -1.13e-13
+- A18 plot window with radius 10.9 shows zero as -1.13e-13
 
         add an epsilon
 
@@ -18,6 +18,10 @@
     D6 autoranges y, it should probably be fixed for uchar
 
     check we test find_indexed in image select
+
+- vip[s8 wrappers in _stdenv.def should all take options params
+
+	last chance to add this, will be importabnt for extensibility
 
 - test_object.def fails
 
