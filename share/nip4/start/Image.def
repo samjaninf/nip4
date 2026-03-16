@@ -179,18 +179,10 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
     }
 
-    sense_option = Option "Sense" [
-        "Pass",
-        "Reject"
-    ] 0;
-
-    build fn size
-        = (Image @ set_header $interpretation $fourier @ rotquad @ fn)
-            (im_create_fmask size size);
-
     New_ideal_item = class
         Menupullright "_Ideal Fourier Mask"
             "make various ideal Fourier filter masks" {
+
         High_low_item = class
             Menuaction "_High or Low Pass"
                 ("make a mask image for a highpass/lowpass " ++
@@ -199,20 +191,12 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                width = Expression "Image width (pixels)" 64;
-                height = Expression "Image height (pixels)" 64;
-                sense = Filter_fourier_item.Sense.picker $PASS;
-                fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
-
-                _gen_mask width height
-                    = vips_mask_ideal [
-                        $reject => sense == Filter_fourier_item.Sense.REJECT,
-                        $optical => true
-                      ] width.expr height.expr
-                        fc.value;
+                mask = Fourier.Ideal.High_low;
+                width = Expression "Mask width (pixels)" 64;
+                height = Expression "Mask height (pixels)" 64;
 
                 _result
-                    = Image (_gen_mask width height);
+                    = Fourier.visualise (mask._generate width.expr height.expr);
             }
         }
 
@@ -224,16 +208,12 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                nsize = Expression "Image size (pixels)" 64;
-                sense = sense_option;
-                fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
-                rw = Scale "Ring width" 0.01 0.99 0.5;
+                mask = Fourier.Ideal.Ring;
+                width = Expression "Mask width (pixels)" 64;
+                height = Expression "Mask height (pixels)" 64;
 
                 _result
-                    = build param (to_real nsize)
-                {
-                    param f = f (sense.value + 6) fc.value rw.value 0 0 0;
-                }
+                    = Fourier.visualise (mask._generate width.expr height.expr);
             }
         }
 
@@ -245,18 +225,12 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                nsize = Expression "Image size (pixels)" 64;
-                sense = sense_option;
-                fcx = Scale "Horizontal frequency cutoff" 0.01 0.99 0.5;
-                fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
-                r = Scale "Radius" 0.01 0.99 0.5;
+                mask = Fourier.Ideal.Band;
+                width = Expression "Mask width (pixels)" 64;
+                height = Expression "Mask height (pixels)" 64;
 
                 _result
-                    = build param (to_real nsize)
-                {
-                    param f = f (sense.value + 12) fcx.value fcy.value
-                            r.value 0 0;
-                }
+                    = Fourier.visualise (mask._generate width.expr height.expr);
             }
         }
     }
@@ -272,16 +246,12 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                nsize = Expression "Image size (pixels)" 64;
-                sense = sense_option;
-                fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
-                ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
+                mask = Fourier.Gaussian.Band;
+                width = Expression "Mask width (pixels)" 64;
+                height = Expression "Mask height (pixels)" 64;
 
                 _result
-                    = build param (to_real nsize)
-                {
-                    param f = f (sense.value + 4) fc.value ac.value 0 0 0;
-                }
+                    = Fourier.visualise (mask._generate width.expr height.expr);
             }
         }
 
@@ -293,18 +263,12 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                nsize = Expression "Image size (pixels)" 64;
-                sense = sense_option;
-                fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
-                ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
-                rw = Scale "Ring width" 0.01 0.99 0.5;
+                mask = Fourier.Gaussian.Ring;
+                width = Expression "Mask width (pixels)" 64;
+                height = Expression "Mask height (pixels)" 64;
 
                 _result
-                    = build param (to_real nsize)
-                {
-                    param f = f (sense.value + 10) fc.value rw.value
-                            ac.value 0 0;
-                }
+                    = Fourier.visualise (mask._generate width.expr height.expr);
             }
         }
 
@@ -316,19 +280,12 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                nsize = Expression "Image size (pixels)" 64;
-                sense = sense_option;
-                fcx = Scale "Horizontal frequency cutoff" 0.01 0.99 0.5;
-                fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
-                r = Scale "Radius" 0.01 0.99 0.5;
-                ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
+                mask = Fourier.Gaussian.Band;
+                width = Expression "Mask width (pixels)" 64;
+                height = Expression "Mask height (pixels)" 64;
 
                 _result
-                    = build param (to_real nsize)
-                {
-                    param f = f (sense.value + 16) fcx.value fcy.value
-                            r.value ac.value 0;
-                }
+                    = Fourier.visualise (mask._generate width.expr height.expr);
             }
         }
     }
@@ -344,18 +301,12 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                nsize = Expression "Image size (pixels)" 64;
-                sense = sense_option;
-                fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
-                ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
-                order = Scale "Order" 1 10 2;
+                mask = Fourier.Butterworth.High_low;
+                width = Expression "Mask width (pixels)" 64;
+                height = Expression "Mask height (pixels)" 64;
 
                 _result
-                    = build param (to_real nsize)
-                {
-                    param f = f (sense.value + 2) order.value fc.value
-                            ac.value 0 0;
-                }
+                    = Fourier.visualise (mask._generate width.expr height.expr);
             }
         }
 
@@ -367,19 +318,12 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                nsize = Expression "Image size (pixels)" 64;
-                sense = sense_option;
-                fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
-                ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
-                rw = Scale "Ring width" 0.01 0.99 0.5;
-                order = Scale "Order" 1 10 2;
+                mask = Fourier.Butterworth.Ring;
+                width = Expression "Mask width (pixels)" 64;
+                height = Expression "Mask height (pixels)" 64;
 
                 _result
-                    = build param (to_real nsize)
-                {
-                    param f = f (sense.value + 8) order.value fc.value
-                        rw.value ac.value 0;
-                }
+                    = Fourier.visualise (mask._generate width.expr height.expr);
             }
         }
 
@@ -391,20 +335,12 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                nsize = Expression "Image size (pixels)" 64;
-                sense = sense_option;
-                fcx = Scale "Horizontal frequency cutoff" 0.01 0.99 0.5;
-                fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
-                r = Scale "Radius" 0.01 0.99 0.5;
-                ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
-                order = Scale "Order" 1 10 2;
+                mask = Fourier.Butterworth.Band;
+                width = Expression "Mask width (pixels)" 64;
+                height = Expression "Mask height (pixels)" 64;
 
                 _result
-                    = build param (to_real nsize)
-                {
-                    param f = f (sense.value + 14) order.value fcx.value
-                        fcy.value r.value ac.value;
-                }
+                    = Fourier.visualise (mask._generate width.expr height.expr);
             }
         }
     }

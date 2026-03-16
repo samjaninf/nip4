@@ -2592,3 +2592,155 @@ composite options mode a b
     composite_op = Operator "composite" (composite options mode)
         Operator_type.COMPOUND_REWRAP false;
 }
+
+Fourier = class {
+    Sense = class Enum {
+        PASS = 0;
+        REJECT = 1;
+
+        _description = [
+            [PASS, "Pass"],
+            [REJECT, "Reject"]
+        ];
+    }
+
+    options sense = [$reject => sense == Sense.REJECT];
+
+    // func to make a visualisation image
+    visualise
+        = Image @ set_header $interpretation $fourier @ rotquad;
+
+    // use a mask generation function to filter an image
+    process mask_generator image
+        = Image (set_header $interpretation interpretation
+            (vips_freqmult [] image mask))
+    {
+        interpretation = get_interpretation image;
+        width = get_width image;
+        height = get_height image;
+        mask = mask_generator width height;
+    }
+
+    Ideal = class {
+        High_low = class {
+            _vislevel = 2;
+
+            sense = Sense.picker $PASS;
+            fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
+
+            _generate width height
+                = vips_mask_ideal (options sense) width height
+                    fc.value;
+        }
+
+        Ring = class {
+            _vislevel = 2;
+
+            sense = Sense.picker $PASS;
+            fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
+            rw = Scale "Ring width" 0.01 0.99 0.5;
+
+            _generate width height
+                = vips_mask_ideal_ring (options sense) width height
+                    fc.value rw.value;
+        }
+
+        Band = class {
+            _vislevel = 2;
+
+            sense = Sense.picker $PASS;
+            fcx = Scale "Horizontal frequency cutoff" 0.01 0.99 0.5;
+            fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
+            r = Scale "Radius" 0.01 0.99 0.5;
+
+            _generate width height
+                = vips_mask_ideal_band (options sense) width height
+                    fcx.value fcy.value r.value;
+        }
+    }
+
+    Gaussian = class {
+        High_low = class {
+            _vislevel = 2;
+
+            sense = Sense.picker $PASS;
+            fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
+            ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
+
+            _generate width height
+                = vips_mask_gaussian (options sense) width height
+                    fc.value ac.value;
+        }
+
+        Ring = class {
+            _vislevel = 2;
+
+            sense = Sense.picker $PASS;
+            fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
+            ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
+            rw = Scale "Ring width" 0.01 0.99 0.5;
+
+            _generate width height
+                = vips_mask_gaussian_ring (options sense) width height
+                    fc.value rw.value ac.value;
+        }
+
+        Band = class {
+            _vislevel = 2;
+
+            sense = Sense.picker $PASS;
+            fcx = Scale "Horizontal frequency cutoff" 0.01 0.99 0.5;
+            fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
+            r = Scale "Radius" 0.01 0.99 0.5;
+            ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
+
+            _generate width height
+                = vips_mask_gaussian_band (options sense) width height
+                    fcx.value fcy.value r.value ac.value;
+        }
+    }
+
+    Butterworth = class {
+        High_low = class {
+            _vislevel = 2;
+
+            sense = Sense.picker $PASS;
+            fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
+            ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
+            o = Scale "Order" 1 10 2;
+
+            _generate width height
+                = vips_mask_butterworth (options sense) width height
+                    o.value fc.value ac.value;
+        }
+
+        Ring = class {
+            _vislevel = 2;
+
+            sense = Sense.picker $PASS;
+            fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
+            ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
+            rw = Scale "Ring width" 0.01 0.99 0.5;
+            o = Scale "Order" 1 10 2;
+
+            _generate width height
+                = vips_mask_butterworth_ring (options sense) width height
+                    o.value fc.value rw.value ac.value;
+        }
+
+        Band = class {
+            _vislevel = 2;
+
+            sense = Sense.picker $PASS;
+            fcx = Scale "Horizontal frequency cutoff" 0.01 0.99 0.5;
+            fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
+            r = Scale "Radius" 0.01 0.99 0.5;
+            ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
+            o = Scale "Order" 1 10 2;
+
+            _generate width height
+                = vips_mask_butterworth_band (options sense) width height
+                    o.value fcx.value fcy.value r.value ac.value;
+        }
+    }
+}
