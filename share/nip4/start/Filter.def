@@ -1273,40 +1273,20 @@ Filter_drop_shadow_item = class
 }
 
 Filter_paint_text_item = class
-    Menuaction "_Paint Text" "paint text into an image" {
+    Menuaction "_Paint text" "paint text into an image" {
     action x = class
         _result {
         _vislevel = 3;
 
-        text = String "Text to paint" "<span color='red'>Hello</span> world!";
-        font = Fontname "Use font" Workspaces.Preferences.PAINTBOX_FONT;
-        align = Align.picker $LOW;
-        dpi = Expression "DPI" 500;
-        spacing = Expression "Line spacing" 1;
-        wrap = Toggle "Wrap lines on character boundaries" false;
-        autofit = Toggle "Fit to box" false;
-        justify = Toggle "Justify" false;
         place = Region x (x.width / 4) (x.height / 4)
             (x.width / 2) (x.height / 2);
+        text = Text;
 
         _result
             = composite [
                 $x => place.left,
                 $y => place.top
-            ] Blend.OVER x txt
-        {
-            txt = vips_text [
-                $font => font.value,
-                $width => place.width,
-                $height => place.height,
-                $align => align.value_key,
-                $justify => justify.value,
-                $dpi => to_real dpi,
-                $autofit_dpi => autofit.value,
-                $spacing => to_real spacing,
-                $rgba => true,
-                $wrap => wrap.value
-              ] text.value;
-        }
+            ] Blend.OVER x
+                (Image (text._generate place.width place.height true));
     }
 }

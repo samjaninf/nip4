@@ -112,7 +112,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                     = 128 * im + 128, eight
                     = im
                 {
-                    im = perlin cell_size nwidth nheight;
+                    im = Image (perlin cell_size nwidth nheight);
                 }
             }
         }
@@ -128,7 +128,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 cell_size = Expression "Cell size (pixels)" 256;
 
                 _result
-                    = worley cell_size nwidth nheight;
+                    = Image (worley cell_size nwidth nheight);
             }
         }
 
@@ -140,51 +140,21 @@ Image_new_item = class Menupullright "_New" "make new things" {
             _result {
             _vislevel = 3;
 
-            text = String "Text to paint" "<i>Hello</i> world!";
-            font = Fontname "Use font" Workspaces.Preferences.PAINTBOX_FONT;
-            fontfile = Pathname "Font file" "";
-            textw = Expression "Text width" 0;
-            texth = Expression "Text height" 0;
-            align = Option "Alignment" [
-                "Left",
-                "Centre",
-                "Right"
-            ] 0;
-            dpi = Expression "DPI" 300;
-            fit = Toggle "Fit text to box" false;
-            spacing = Expression "Line spacing" 0;
+            text = Text;
+            nwidth = Expression "Image width (pixels)" 512;
+            nheight = Expression "Image height (pixels)" 512;
 
             _result
-                = Image out
-            {
-                base_options = [
-                    $font => font.value,
-                    $align => align.value
-                ];
-
-                set_option name default value
-                    = [name => value], value != default
-                    = [];
-
-                options = base_options ++ concat [
-                    set_option $width 0 (to_real textw),
-                    set_option $height 0 (to_real texth),
-                    set_option $fontfile "" fontfile.value,
-                    if !fit then set_option $dpi 72 (to_real dpi) else [],
-                    set_option $spacing 0 (to_real spacing)
-                ];
-
-                out = vips_text options text.value;
-            }
+                = Image (text._generate nwidth.expr nheight.expr true);
         }
     }
 
     New_ideal_item = class
-        Menupullright "_Ideal Fourier Mask"
+        Menupullright "_Ideal Fourier mask"
             "make various ideal Fourier filter masks" {
 
         High_low_item = class
-            Menuaction "_High or Low Pass"
+            Menuaction "_High or low pass"
                 ("make a mask image for a highpass/lowpass " ++
                     "ideal Fourier filter") {
             action = class
@@ -201,7 +171,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
 
         Ring_item = class
-            Menuaction "_Ring Pass or Ring Reject"
+            Menuaction "_Ring pass or ring reject"
                 ("make a mask image for an ring pass/reject " ++
                 "ideal Fourier filter") {
             action = class
@@ -218,7 +188,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
 
         Band_item = class
-            Menuaction "_Band Pass or Band Reject"
+            Menuaction "_Band pass or band reject"
                 ("make a mask image for a band pass/reject " ++
                 "ideal Fourier filter") {
             action = class
@@ -236,10 +206,10 @@ Image_new_item = class Menupullright "_New" "make new things" {
     }
 
     New_gaussian_item = class
-        Menupullright "_Gaussian Fourier Mask"
+        Menupullright "_Gaussian Fourier mask"
             "make various Gaussian Fourier filter masks" {
         High_low_item = class
-            Menuaction "_High or Low Pass"
+            Menuaction "_High or low pass"
                 ("make a mask image for a highpass/lowpass " ++
                     "Gaussian Fourier filter") {
             action = class
@@ -256,7 +226,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
 
         Ring_item = class
-            Menuaction "_Ring Pass or Ring Reject"
+            Menuaction "_Ring pass or ring reject"
                 ("make a mask image for an ring pass/reject " ++
                 "Gaussian Fourier filter") {
             action = class
@@ -273,7 +243,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
 
         Band_item = class
-            Menuaction "_Band Pass or Band Reject"
+            Menuaction "_Band pass or band reject"
                 ("make a mask image for a band pass/reject " ++
                 "Gaussian Fourier filter") {
             action = class
@@ -291,10 +261,10 @@ Image_new_item = class Menupullright "_New" "make new things" {
     }
 
     New_butterworth_item = class
-        Menupullright "_Butterworth Fourier Mask"
+        Menupullright "_Butterworth Fourier mask"
             "make various Butterworth Fourier filter masks" {
         High_low_item = class
-            Menuaction "_High or Low Pass"
+            Menuaction "_High or low pass"
                 ("make a mask image for a highpass/lowpass " ++
                     "Butterworth Fourier filter") {
             action = class
@@ -311,7 +281,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
 
         Ring_item = class
-            Menuaction "_Ring Pass or Ring Reject"
+            Menuaction "_Ring pass or ring reject"
                 ("make a mask image for an ring pass/reject " ++
                 "Butterworth Fourier filter") {
             action = class
@@ -328,7 +298,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
 
         Band_item = class
-            Menuaction "_Band Pass or Band Reject"
+            Menuaction "_Band pass or band reject"
                 ("make a mask image for a band pass/reject " ++
                 "Butterworth Fourier filter") {
             action = class
@@ -1775,12 +1745,12 @@ Image_SDF_item = class
             b = Matrix [[3 * across.expr / 4, 3 * down.expr / 4]];
             corners = Matrix [[10, 10, 10, 10]];
 
-            _result = sdf [
+            _result = Image (sdf [
                 $r => to_real radius,
                 $a => a.value?0,
                 $b => b.value?0,
                 $corners => corners.value?0
-            ] across down shape.value;
+            ] across down shape.value);
         }
     }
 

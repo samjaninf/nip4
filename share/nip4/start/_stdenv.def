@@ -2744,3 +2744,27 @@ Fourier = class {
         }
     }
 }
+
+Text = class {
+    _vislevel = 2;
+
+    text = String "Text to paint" "<span color='red'>Hello</span> world!";
+    font = Fontname "Use font" Workspaces.Preferences.PAINTBOX_FONT;
+    align = Align.picker $LOW;
+    dpi = Expression "DPI" 500;
+    spacing = Expression "Line spacing" 1;
+    wrap = Toggle "Wrap lines on character boundaries" false;
+    justify = Toggle "Justify" false;
+
+    _generate width height rgba = vips_text [
+        $font => font.value,
+        $width => width,
+        $height => height,
+        $align => align.value_key,
+        $justify => justify.value,
+        $dpi => to_real dpi,
+        $spacing => to_real spacing,
+        $rgba => rgba,
+        $wrap => wrap.value
+      ] text.value;
+}

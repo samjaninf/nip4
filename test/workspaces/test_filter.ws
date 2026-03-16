@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.0.17">
-  <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// private definitions for this workspace&#10;" name="test_filter" filename="$HOME/GIT/nip4/test/workspaces/test_filter.ws" major="9" minor="0">
+  <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// private definitions for this workspace&#10;" name="test_filter" filename="$CWD/test_filter.ws" major="9" minor="0">
     <Column x="10" y="5" open="true" selected="false" sform="false" next="23" name="B" caption="Colour / Colourspace">
       <Subcolumn vislevel="3">
         <Row popup="false" name="B1">
           <Rhs vislevel="1" flags="1">
             <iImage window_x="0" window_y="30" window_width="512" window_height="729" show_status="true" show_convert="true"/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;images/slanted_oval_vase2.jpg&quot;"/>
+            <iText formula="Image_file &quot;$CWD/images/slanted_oval_vase2.jpg&quot;"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="384" y="5" open="true" selected="false" sform="false" next="19" name="H" caption="Filter / Convolution">
+    <Column x="390" y="5" open="true" selected="false" sform="false" next="19" name="H" caption="Filter / Convolution">
       <Subcolumn vislevel="3">
         <Row popup="false" name="H1">
           <Rhs vislevel="0" flags="4">
@@ -242,7 +242,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1021" y="5" open="true" selected="false" sform="false" next="7" name="K" caption="Filter / Rank">
+    <Column x="1064" y="5" open="true" selected="false" sform="false" next="7" name="K" caption="Filter / Rank">
       <Subcolumn vislevel="3">
         <Row popup="false" name="K1">
           <Rhs vislevel="0" flags="4">
@@ -288,7 +288,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1751" y="5" open="true" selected="false" sform="false" next="12" name="M" caption="Filter / Morphology">
+    <Column x="1755" y="5" open="true" selected="false" sform="false" next="12" name="M" caption="Filter / Morphology">
       <Subcolumn vislevel="3">
         <Row popup="false" name="M1">
           <Rhs vislevel="0" flags="4">
@@ -369,7 +369,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2260" y="5" open="true" selected="false" sform="false" next="16" name="N" caption="Filter / Fourier / Ideal">
+    <Column x="2266" y="5" open="true" selected="false" sform="false" next="16" name="N" caption="Filter / Fourier / Ideal">
       <Subcolumn vislevel="3">
         <Row popup="false" name="N1">
           <Rhs vislevel="0" flags="4">
@@ -410,7 +410,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2858" y="5" open="true" selected="false" sform="false" next="12" name="O" caption="Filter / Fourier / Gaussian">
+    <Column x="2908" y="5" open="true" selected="false" sform="false" next="12" name="O" caption="Filter / Fourier / Gaussian">
       <Subcolumn vislevel="3">
         <Row popup="false" name="O1">
           <Rhs vislevel="0" flags="4">
@@ -451,7 +451,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="3456" y="5" open="true" selected="false" sform="false" next="13" name="P" caption="Filter / Fourier / Butterworth">
+    <Column x="3550" y="5" open="true" selected="false" sform="false" next="13" name="P" caption="Filter / Fourier / Butterworth">
       <Subcolumn vislevel="3">
         <Row popup="false" name="P1">
           <Rhs vislevel="0" flags="4">
@@ -492,7 +492,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="4054" y="5" open="true" selected="false" sform="false" next="7" name="Q" caption="Filter / Enhance">
+    <Column x="4192" y="5" open="true" selected="false" sform="false" next="7" name="Q" caption="Filter / Enhance">
       <Subcolumn vislevel="3">
         <Row popup="false" name="Q1">
           <Rhs vislevel="0" flags="4">
@@ -620,7 +620,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="5520" y="5" open="true" selected="false" sform="false" next="7" name="R" caption="Filter / Tilt Brightness">
+    <Column x="5665" y="5" open="true" selected="false" sform="false" next="7" name="R" caption="Filter / Tilt Brightness">
       <Subcolumn vislevel="3">
         <Row popup="false" name="R1">
           <Rhs vislevel="0" flags="4">
@@ -794,7 +794,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="5999" y="5" open="true" selected="false" sform="false" next="15" name="S" caption="Filter / Blend">
+    <Column x="6152" y="5" open="true" selected="false" sform="false" next="15" name="S" caption="Filter / Blend">
       <Subcolumn vislevel="3">
         <Row popup="false" name="S1">
           <Rhs vislevel="1" flags="1">
@@ -925,7 +925,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="6511" y="5" open="true" selected="false" sform="false" next="5" name="T" caption="Filter / Overlay">
+    <Column x="6666" y="5" open="true" selected="false" sform="false" next="5" name="T" caption="Filter / Overlay">
       <Subcolumn vislevel="3">
         <Row popup="false" name="T1">
           <Rhs vislevel="0" flags="4">
@@ -982,7 +982,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="6967" y="5" open="true" selected="false" sform="false" next="7" name="U" caption="Filter / Colorize">
+    <Column x="7128" y="5" open="true" selected="false" sform="false" next="7" name="U" caption="Filter / Colorize">
       <Subcolumn vislevel="3">
         <Row popup="false" name="U1">
           <Rhs vislevel="0" flags="4">
@@ -1071,7 +1071,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="7478" y="5" open="true" selected="false" sform="false" next="4" name="V" caption="Filter / Browse">
+    <Column x="7641" y="5" open="true" selected="false" sform="false" next="4" name="V" caption="Filter / Browse">
       <Subcolumn vislevel="3">
         <Row popup="false" name="V1">
           <Rhs vislevel="0" flags="4">
@@ -1143,11 +1143,11 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="7962" y="5" open="true" selected="false" sform="false" next="9" name="W" caption="Filter / Photographic">
+    <Column x="8125" y="5" open="true" selected="true" sform="false" next="10" name="W" caption="Filter / Photographic">
       <Subcolumn vislevel="3">
         <Row popup="false" name="W1">
           <Rhs vislevel="0" flags="4">
-            <iImage window_x="965" window_y="75" window_width="547" window_height="727" show_status="true" show_convert="true"/>
+            <iImage window_x="965" window_y="75" window_width="547" window_height="727" show_status="true" show_convert="true" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
@@ -1241,10 +1241,15 @@
             <iText formula="Filter_drop_shadow_item.action W1"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="W6">
+        <Row popup="false" name="W9">
           <Rhs vislevel="3" flags="7">
-            <iImage window_x="8" window_y="76" window_width="636" window_height="729" show_status="true" show_convert="true" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
+              <Row name="x">
+                <Rhs vislevel="0" flags="4">
+                  <iText/>
+                </Rhs>
+              </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
                   <iImage show_status="false" show_convert="false"/>
@@ -1252,90 +1257,80 @@
                   <iText/>
                 </Rhs>
               </Row>
-              <Row name="text">
-                <Rhs vislevel="1" flags="1">
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                  <String caption="Text to paint" value="&lt;span color=&quot;red&quot;&gt;Hello&lt;/span&gt; world!"/>
-                </Rhs>
-              </Row>
-              <Row name="font">
-                <Rhs vislevel="1" flags="1">
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                  <Fontname caption="Use font" value="Sans 12"/>
-                </Rhs>
-              </Row>
-              <Row name="align">
-                <Rhs vislevel="1" flags="1">
-                  <Option/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="dpi">
-                <Rhs vislevel="1" flags="1">
-                  <Expression caption="DPI"/>
-                  <Subcolumn vislevel="0">
-                    <Row name="caption">
-                      <Rhs vislevel="0" flags="4">
-                        <iText/>
-                      </Rhs>
-                    </Row>
-                    <Row name="expr">
-                      <Rhs vislevel="0" flags="4">
-                        <iText formula="500"/>
-                      </Rhs>
-                    </Row>
-                    <Row name="super">
-                      <Rhs vislevel="1" flags="4">
-                        <Subcolumn vislevel="0"/>
-                        <iText/>
-                      </Rhs>
-                    </Row>
-                  </Subcolumn>
-                  <iText/>
-                </Rhs>
-              </Row>
               <Row name="place">
                 <Rhs vislevel="1" flags="1">
-                  <iRegion show_status="false" show_convert="false">
+                  <iRegion show_status="false" show_convert="false" left="124" top="172" width="308" height="444">
                     <iRegiongroup/>
                   </iRegion>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
               </Row>
-              <Row name="justify">
-                <Rhs vislevel="1" flags="1">
-                  <Toggle caption="Justify" value="false"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="autofit">
-                <Rhs vislevel="1" flags="1">
-                  <Toggle caption="Fit to box" value="false"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="spacing">
-                <Rhs vislevel="1" flags="1">
-                  <Expression caption="Line spacing"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="wrap">
-                <Rhs vislevel="1" flags="1">
-                  <Toggle caption="Wrap lines on character boundaries" value="false"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="x">
-                <Rhs vislevel="0" flags="4">
+              <Row name="text">
+                <Rhs vislevel="2" flags="6">
+                  <Subcolumn vislevel="1">
+                    <Row name="super">
+                      <Rhs vislevel="0" flags="4">
+                        <iText/>
+                      </Rhs>
+                    </Row>
+                    <Row name="text">
+                      <Rhs vislevel="1" flags="1">
+                        <String/>
+                        <Subcolumn vislevel="0"/>
+                        <iText/>
+                      </Rhs>
+                    </Row>
+                    <Row name="font">
+                      <Rhs vislevel="1" flags="1">
+                        <Fontname/>
+                        <Subcolumn vislevel="0"/>
+                        <iText/>
+                      </Rhs>
+                    </Row>
+                    <Row name="align">
+                      <Rhs vislevel="1" flags="1">
+                        <Option/>
+                        <Subcolumn vislevel="0"/>
+                        <iText/>
+                      </Rhs>
+                    </Row>
+                    <Row name="dpi">
+                      <Rhs vislevel="1" flags="1">
+                        <Expression caption="DPI"/>
+                        <Subcolumn vislevel="0"/>
+                        <iText/>
+                      </Rhs>
+                    </Row>
+                    <Row name="spacing">
+                      <Rhs vislevel="1" flags="1">
+                        <Expression caption="Line spacing"/>
+                        <Subcolumn vislevel="0"/>
+                        <iText/>
+                      </Rhs>
+                    </Row>
+                    <Row name="wrap">
+                      <Rhs vislevel="1" flags="1">
+                        <Toggle caption="Wrap lines on character boundaries" value="true"/>
+                        <Subcolumn vislevel="0"/>
+                        <iText/>
+                      </Rhs>
+                    </Row>
+                    <Row name="autofit">
+                      <Rhs vislevel="1" flags="1">
+                        <Toggle caption="Fit to box" value="true"/>
+                        <Subcolumn vislevel="0"/>
+                        <iText/>
+                      </Rhs>
+                    </Row>
+                    <Row name="justify">
+                      <Rhs vislevel="1" flags="1">
+                        <Toggle caption="Justify" value="true"/>
+                        <Subcolumn vislevel="0"/>
+                        <iText/>
+                      </Rhs>
+                    </Row>
+                  </Subcolumn>
                   <iText/>
                 </Rhs>
               </Row>
@@ -1345,7 +1340,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="4580" y="5" open="true" selected="false" sform="false" next="8" name="A" caption="Filter / Spatial Correlation">
+    <Column x="4720" y="5" open="true" selected="false" sform="false" next="8" name="A" caption="Filter / Spatial Correlation">
       <Subcolumn vislevel="3">
         <Row popup="false" name="A1">
           <Rhs vislevel="0" flags="4">
@@ -1386,7 +1381,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="5053" y="5" open="true" selected="true" sform="false" next="7" name="D" caption="Filter / Hough">
+    <Column x="5194" y="5" open="true" selected="false" sform="false" next="7" name="D" caption="Filter / Hough">
       <Subcolumn vislevel="3">
         <Row popup="false" name="D1">
           <Rhs vislevel="1" flags="1">
