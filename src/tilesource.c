@@ -807,7 +807,7 @@ tilesource_update_rgb(Tilesource *tilesource)
 		VipsImage *rgb;
 
 		if (!(rgb = tilesource_rgb(tilesource, tilesource->image))) {
-			printf("tilesource_rgb failed!\n");
+			printf("tilesource_rgb failed: %s\n", vips_error_buffer());
 			return -1;
 		}
 		VIPS_UNREF(tilesource->rgb);
