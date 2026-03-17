@@ -1,5 +1,7 @@
 - on test_image.ws
 
+	make Text and Fourier into funcs so we don't get side effects on edit
+
 
 - on test_histogram
 
