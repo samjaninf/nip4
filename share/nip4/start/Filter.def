@@ -377,7 +377,7 @@ Filter_fourier_item = class
                 _vislevel = 3;
 
                 visualize = Fourier.visualise (mask._generate 64 64);
-                mask = Fourier.Ideal.High_low;
+                mask = Fourier.Ideal.High_low $PASS;
 
                 _result = map_unary (Fourier.process mask._generate) x;
             }
@@ -391,7 +391,7 @@ Filter_fourier_item = class
                 _vislevel = 3;
 
                 visualize = Fourier.visualise (mask._generate 64 64);
-                mask = Fourier.Ideal.Ring;
+                mask = Fourier.Ideal.Ring $PASS;
 
                 _result = map_unary (Fourier.process mask._generate) x;
             }
@@ -405,7 +405,7 @@ Filter_fourier_item = class
                 _vislevel = 3;
 
                 visualize = Fourier.visualise (mask._generate 64 64);
-                mask = Fourier.Ideal.Band;
+                mask = Fourier.Ideal.Band $PASS;
 
                 _result = map_unary (Fourier.process mask._generate) x;
             }
@@ -422,7 +422,7 @@ Filter_fourier_item = class
                 _vislevel = 3;
 
                 visualize = Fourier.visualise (mask._generate 64 64);
-                mask = Fourier.Gaussian.High_low;
+                mask = Fourier.Gaussian.High_low $PASS;
 
                 _result = map_unary (Fourier.process mask._generate) x;
             }
@@ -436,7 +436,7 @@ Filter_fourier_item = class
                 _vislevel = 3;
 
                 visualize = Fourier.visualise (mask._generate 64 64);
-                mask = Fourier.Gaussian.Ring;
+                mask = Fourier.Gaussian.Ring $PASS;
 
                 _result = map_unary (Fourier.process mask._generate) x;
             }
@@ -450,7 +450,7 @@ Filter_fourier_item = class
                 _vislevel = 3;
 
                 visualize = Fourier.visualise (mask._generate 64 64);
-                mask = Fourier.Gaussian.Band;
+                mask = Fourier.Gaussian.Band $PASS;
 
                 _result = map_unary (Fourier.process mask._generate) x;
             }
@@ -468,7 +468,7 @@ Filter_fourier_item = class
                 _vislevel = 3;
 
                 visualize = Fourier.visualise (mask._generate 64 64);
-                mask = Fourier.Butterworth.High_low;
+                mask = Fourier.Butterworth.High_low $PASS;
 
                 _result = map_unary (Fourier.process mask._generate) x;
             }
@@ -482,7 +482,7 @@ Filter_fourier_item = class
                 _vislevel = 3;
 
                 visualize = Fourier.visualise (mask._generate 64 64);
-                mask = Fourier.Butterworth.Ring;
+                mask = Fourier.Butterworth.Ring $PASS;
 
                 _result = map_unary (Fourier.process mask._generate) x;
             }
@@ -496,7 +496,7 @@ Filter_fourier_item = class
                 _vislevel = 3;
 
                 visualize = Fourier.visualise (mask._generate 64 64);
-                mask = Fourier.Butterworth.Band;
+                mask = Fourier.Butterworth.Band $PASS;
 
                 _result = map_unary (Fourier.process mask._generate) x;
             }

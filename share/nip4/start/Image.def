@@ -161,7 +161,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                mask = Fourier.Ideal.High_low;
+                mask = Fourier.Ideal.High_low $PASS;
                 width = Expression "Mask width (pixels)" 64;
                 height = Expression "Mask height (pixels)" 64;
 
@@ -178,7 +178,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                mask = Fourier.Ideal.Ring;
+                mask = Fourier.Ideal.Ring $PASS;
                 width = Expression "Mask width (pixels)" 64;
                 height = Expression "Mask height (pixels)" 64;
 
@@ -195,7 +195,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                mask = Fourier.Ideal.Band;
+                mask = Fourier.Ideal.Band $PASS;
                 width = Expression "Mask width (pixels)" 64;
                 height = Expression "Mask height (pixels)" 64;
 
@@ -216,7 +216,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                mask = Fourier.Gaussian.Band;
+                mask = Fourier.Gaussian.Band $PASS;
                 width = Expression "Mask width (pixels)" 64;
                 height = Expression "Mask height (pixels)" 64;
 
@@ -233,7 +233,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                mask = Fourier.Gaussian.Ring;
+                mask = Fourier.Gaussian.Ring $PASS;
                 width = Expression "Mask width (pixels)" 64;
                 height = Expression "Mask height (pixels)" 64;
 
@@ -250,7 +250,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                mask = Fourier.Gaussian.Band;
+                mask = Fourier.Gaussian.Band $PASS;
                 width = Expression "Mask width (pixels)" 64;
                 height = Expression "Mask height (pixels)" 64;
 
@@ -271,7 +271,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                mask = Fourier.Butterworth.High_low;
+                mask = Fourier.Butterworth.High_low $PASS;
                 width = Expression "Mask width (pixels)" 64;
                 height = Expression "Mask height (pixels)" 64;
 
@@ -288,7 +288,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                mask = Fourier.Butterworth.Ring;
+                mask = Fourier.Butterworth.Ring $PASS;
                 width = Expression "Mask width (pixels)" 64;
                 height = Expression "Mask height (pixels)" 64;
 
@@ -305,7 +305,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result {
                 _vislevel = 3;
 
-                mask = Fourier.Butterworth.Band;
+                mask = Fourier.Butterworth.Band $PASS;
                 width = Expression "Mask width (pixels)" 64;
                 height = Expression "Mask height (pixels)" 64;
 

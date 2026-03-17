@@ -2604,6 +2604,30 @@ Fourier = class {
         ];
     }
 
+    Type = class Enum {
+        IDEAL = 0;
+        GAUSSIAN = 1;
+        BUTTERWORTH = 2;
+
+        _description = [
+            [IDEAL, "Ideal"],
+            [GAUSSIAN, "Gaussian"]
+            [BUTTERWORTH, "Butterworth"]
+        ];
+    }
+
+    Order = class Enum {
+        HIGH_LOW = 0;
+        RING = 1;
+        BAND = 2;
+
+        _description = [
+            [HIGH_LOW, "High/low"],
+            [RING, "Ring"]
+            [BAND, "Band"]
+        ];
+    }
+
     options sense = [$reject => sense == Sense.REJECT];
 
     // func to make a visualisation image
@@ -2622,10 +2646,10 @@ Fourier = class {
     }
 
     Ideal = class {
-        High_low = class {
+        High_low default_sense = class {
             _vislevel = 2;
 
-            sense = Sense.picker $PASS;
+            sense = Sense.picker default_sense;
             fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
 
             _generate width height
@@ -2633,10 +2657,10 @@ Fourier = class {
                     fc.value;
         }
 
-        Ring = class {
+        Ring default_sense = class {
             _vislevel = 2;
 
-            sense = Sense.picker $PASS;
+            sense = Sense.picker default_sense;
             fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
             rw = Scale "Ring width" 0.01 0.99 0.5;
 
@@ -2645,10 +2669,10 @@ Fourier = class {
                     fc.value rw.value;
         }
 
-        Band = class {
+        Band default_sense = class {
             _vislevel = 2;
 
-            sense = Sense.picker $PASS;
+            sense = Sense.picker default_sense;
             fcx = Scale "Horizontal frequency cutoff" 0.01 0.99 0.5;
             fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
             r = Scale "Radius" 0.01 0.99 0.5;
@@ -2660,10 +2684,10 @@ Fourier = class {
     }
 
     Gaussian = class {
-        High_low = class {
+        High_low default_sense = class {
             _vislevel = 2;
 
-            sense = Sense.picker $PASS;
+            sense = Sense.picker default_sense;
             fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
             ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
 
@@ -2672,10 +2696,10 @@ Fourier = class {
                     fc.value ac.value;
         }
 
-        Ring = class {
+        Ring default_sense = class {
             _vislevel = 2;
 
-            sense = Sense.picker $PASS;
+            sense = Sense.picker default_sense;
             fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
             ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
             rw = Scale "Ring width" 0.01 0.99 0.5;
@@ -2685,10 +2709,10 @@ Fourier = class {
                     fc.value rw.value ac.value;
         }
 
-        Band = class {
+        Band default_sense = class {
             _vislevel = 2;
 
-            sense = Sense.picker $PASS;
+            sense = Sense.picker default_sense;
             fcx = Scale "Horizontal frequency cutoff" 0.01 0.99 0.5;
             fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
             r = Scale "Radius" 0.01 0.99 0.5;
@@ -2701,10 +2725,10 @@ Fourier = class {
     }
 
     Butterworth = class {
-        High_low = class {
+        High_low default_sense = class {
             _vislevel = 2;
 
-            sense = Sense.picker $PASS;
+            sense = Sense.picker default_sense;
             fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
             ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
             o = Scale "Order" 1 10 2;
@@ -2714,10 +2738,10 @@ Fourier = class {
                     o.value fc.value ac.value;
         }
 
-        Ring = class {
+        Ring default_sense = class {
             _vislevel = 2;
 
-            sense = Sense.picker $PASS;
+            sense = Sense.picker default_sense;
             fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
             ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
             rw = Scale "Ring width" 0.01 0.99 0.5;
@@ -2728,10 +2752,10 @@ Fourier = class {
                     o.value fc.value rw.value ac.value;
         }
 
-        Band = class {
+        Band default_sense = class {
             _vislevel = 2;
 
-            sense = Sense.picker $PASS;
+            sense = Sense.picker default_sense;
             fcx = Scale "Horizontal frequency cutoff" 0.01 0.99 0.5;
             fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
             r = Scale "Radius" 0.01 0.99 0.5;
