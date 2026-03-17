@@ -140,12 +140,12 @@ Image_new_item = class Menupullright "_New" "make new things" {
             _result {
             _vislevel = 3;
 
-            text = Text;
+            text = Text false "<i>Hello</i>, world!";
             nwidth = Expression "Image width (pixels)" 512;
             nheight = Expression "Image height (pixels)" 512;
 
             _result
-                = Image (text._generate nwidth.expr nheight.expr true);
+                = Image (text._generate nwidth.expr nheight.expr);
         }
     }
 

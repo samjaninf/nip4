@@ -1280,13 +1280,13 @@ Filter_paint_text_item = class
 
         place = Region x (x.width / 4) (x.height / 4)
             (x.width / 2) (x.height / 2);
-        text = Text;
+        text = Text true "<span color='red'>Hello</span>, world!";
 
         _result
             = composite [
                 $x => place.left,
                 $y => place.top
             ] Blend.OVER x
-                (Image (text._generate place.width place.height true));
+                (Image (text._generate place.width place.height));
     }
 }

@@ -2745,24 +2745,25 @@ Fourier = class {
     }
 }
 
-Text = class {
+Text rgba message = class {
     _vislevel = 2;
 
-    text = String "Text to paint" "<span color='red'>Hello</span> world!";
+    text = String "Text to paint" message;
     font = Fontname "Use font" Workspaces.Preferences.PAINTBOX_FONT;
     align = Align.picker $LOW;
     dpi = Expression "DPI" 500;
     spacing = Expression "Line spacing" 1;
     wrap = Toggle "Wrap lines on character boundaries" false;
     justify = Toggle "Justify" false;
+    autodpi = Toggle "Fit text within width and height" false;
 
-    _generate width height rgba = vips_text [
+    _generate width height = vips_text [
         $font => font.value,
         $width => width,
         $height => height,
         $align => align.value_key,
         $justify => justify.value,
-        $dpi => to_real dpi,
+        $dpi => if autodpi then 0 else to_real dpi,
         $spacing => to_real spacing,
         $rgba => rgba,
         $wrap => wrap.value
