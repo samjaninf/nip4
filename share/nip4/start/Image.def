@@ -47,6 +47,45 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
     }
 
+    Image_region_item = class
+        Menupullright "_Region on Image" "make a new region on an image" {
+        Region_item = Region_new_item.Region_item;
+        Arrow_item = Region_new_item.Arrow_item;
+        Mark_item = Region_new_item.Mark_item;
+        HGuide_item = Region_new_item.HGuide_item;
+        VGuide_item = Region_new_item.VGuide_item;
+
+        sep1 = Menuseparator;
+
+        Move_item = class
+            Menuaction "From Region"
+                "new region on image using existing region as a guide" {
+            action a b
+                = map_binary process a b
+            {
+                process a b
+                    = x.Region target x.left x.top x.width x.height,
+                            is_Region x
+                    = x.Arrow target x.left x.top x.width x.height,
+                            is_Arrow x
+                    = error "bad arguments to region-from-region"
+                {
+                    // prefer image then region
+                    compare a b
+                        = false,
+                            !is_Image a && is_Image b
+                        = false,
+                            is_Region a && !is_Region b
+                        = true;
+
+                    [target, x] = sortc compare [a, b];
+                }
+            }
+        }
+    }
+
+    sep1 = Menuseparator;
+
     SDF_item = class
         Menuaction "SDF" "construct signed distance fields" {
         action = Image_SDF_item.New_item.action;
@@ -148,6 +187,8 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 = Image (text._generate nwidth.expr nheight.expr);
         }
     }
+
+    sep2 = Menuseparator;
 
     New_ideal_item = class
         Menupullright "_Ideal Fourier mask"
@@ -315,6 +356,8 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
     }
 
+    sep3 = Menuseparator;
+
     Test_images_item = class
         Menupullright "Test I_mages" "various test images" {
         Eye_item = class
@@ -328,8 +371,10 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 nheight = Expression "Image height (pixels)" 64;
                 factor = Scale "Factor" 0.001 1 0.2;
 
-                _result = Image (im_eye (to_real nwidth) (to_real nheight)
-                    factor.value);
+                _result = Image (eye [
+                    $factor => factor.value,
+                    $uchar => true
+                  ] nwidth nheight);
             }
         }
 
@@ -341,7 +386,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
 
                 nsize = Expression "Image size (pixels)" 64;
 
-                _result = Image (im_zone (to_real nsize));
+                _result = Image (zone [$uchar => true] nsize nsize);
             }
         }
 
@@ -359,10 +404,9 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result
                     = imagearray_assemble 0 0 (transpose [strips])
                 {
-                    freq_slice wave = Image (sin (grey / wave) > 0);
+                    ramp = grey [] nwidth sheight * 360 * (to_real nwidth);
+                    freq_slice wave = Image (sin (ramp / wave) > 0);
                     strips = map freq_slice waves.expr;
-                    grey = im_fgrey (to_real nwidth) (to_real sheight) *
-                        360 * (to_real nwidth);
                 }
             }
         }
@@ -479,9 +523,9 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result
                     = Image (imagearray_assemble 0 0 [[green, red], [blue, white]])
                 {
-
                     black = image_new [
-                        $format => Format.FLOAT
+                        $format => Format.FLOAT,
+                        $interpretation => Interpretation.sRGB
                     ] (to_real psize) (to_real psize);
                     notblack = black + brightness;
 
@@ -529,7 +573,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
 
                 _result
                     = Image (set_header $interpretation $cmyk
-                        (cast "uchar" strips))
+                        (cast_unsigned_char strips))
                 {
                     wedge
                         = 255 / (to_real npatches - 1) *
@@ -564,7 +608,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 sepsize = Expression "Separator size" 4;
 
                 _result
-                    = colour_transform_to (get_type start) blocks'''
+                    = colourspace [] (get_interpretation start) blocks'''
                 {
                     size = (to_real nstep * 2 + 1) * to_real psize -
                         to_real sepsize;
@@ -575,52 +619,13 @@ Image_new_item = class Menupullright "_New" "make new things" {
                     grid = xy_grid?0 & xy_grid?1;
 
                     blocks = (int) (to_real ssize * ((int) (xy / to_real psize)));
-                    lab_start = colour_transform_to Interpretation.LAB start;
+                    lab_start = colourspace [] $lab start;
                     blocks' = blocks - to_real nstep * to_real ssize +
                         Vector (tl lab_start.value);
                     blocks'' = hd lab_start.value ++ Image blocks';
                     blocks'''
-                        = set_header $interpretation $lab blocks'', Image grid
+                        = set_header $interpretation $lab blocks'', is_Image grid
                         = 0;
-                }
-            }
-        }
-    }
-
-    sep1 = Menuseparator;
-
-    Image_region_item = class
-        Menupullright "_Region on Image" "make a new region on an image" {
-        Region_item = Region_new_item.Region_item;
-        Arrow_item = Region_new_item.Arrow_item;
-        Mark_item = Region_new_item.Mark_item;
-        HGuide_item = Region_new_item.HGuide_item;
-        VGuide_item = Region_new_item.VGuide_item;
-
-        sep1 = Menuseparator;
-
-        Move_item = class
-            Menuaction "From Region"
-                "new region on image using existing region as a guide" {
-            action a b
-                = map_binary process a b
-            {
-                process a b
-                    = x.Region target x.left x.top x.width x.height,
-                            is_Region x
-                    = x.Arrow target x.left x.top x.width x.height,
-                            is_Arrow x
-                    = error "bad arguments to region-from-region"
-                {
-                    // prefer image then region
-                    compare a b
-                        = false,
-                            !is_Image a && is_Image b
-                        = false,
-                            is_Region a && !is_Region b
-                        = true;
-
-                    [target, x] = sortc compare [a, b];
                 }
             }
         }

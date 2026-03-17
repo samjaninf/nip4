@@ -379,11 +379,16 @@ get_header_type field x
 // enums, eg. $interpretation $lab
 set_header field value x
     = oo_unary_function set_header_op x, is_class x
-    = copy [field => value] x, is_image x
+    = copy [field => value'] x, is_image x
     = error (_ "bad arguments to " ++ "set_header")
 {
     set_header_op = Operator "set_header" (set_header field value)
         Operator_type.COMPOUND false;
+
+    // map eg b_w to b-w
+    value'
+        = map (\x if x == '_' then '-' else x) value, is_string value
+        = value;
 }
 
 // set metadata, eg. "banana" ... can't set core fields, no strings for enums

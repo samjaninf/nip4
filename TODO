@@ -1,6 +1,6 @@
 - on test_image.ws
 
-	on freq testchart
+	on Colour_atlas_item
 
 
 - on test_histogram

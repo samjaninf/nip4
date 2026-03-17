@@ -569,8 +569,26 @@ rotquad in = apply_matim_operation "rotquad" (vips_wrap [
 ]) in;
 fliplr = apply_matim_operation "fliplr" (converse (vips_flip []) "horizontal");
 fliptb = apply_matim_operation "flipud" (converse (vips_flip []) "vertical");
-transpose = apply_matim_operation "transpose" (fliptb @ rot270);
 matinv = apply_matim_operation "matinv" (vips_matrixinvert []);
+
+transpose x
+    = oo_unary_function transpose_op x, is_class x
+    = transpose_image x, is_image x
+    = transpose_list x, is_listof is_list x
+    = error (_ "bad arguments to " ++ "transpose")
+{
+    transpose_op = Operator "transpose"
+        transpose Operator_type.COMPOUND_REWRAP false;
+
+    transpose_list l
+        = [], l' == []
+        = (map hd l') : (transpose_list (map tl l'))
+    {
+        l' = takewhile (not_equal []) l;
+    }
+
+    transpose_image = fliptb @ rot270;
+}
 
 apply_matim_binary fn a b
     = itom (fn (mtoi a) (mtoi b))
@@ -1429,8 +1447,8 @@ hist_match in ref
     hist_match_op = Operator "hist_match" hist_match
         Operator_type.COMPOUND_REWRAP false;
 
-	in' = (hist_norm @ hist_cum) in;
-	ref' = (hist_norm @ hist_cum) ref;
+    in' = (hist_norm @ hist_cum) in;
+    ref' = (hist_norm @ hist_cum) ref;
 }
 
 hist_equalize x = maplut [] ((hist_norm @ hist_cum @ hist_find) x) x;
@@ -1549,7 +1567,7 @@ sharpen radius x1 y2 y3 m1 m2 in
     sharpen_op = Operator "sharpen" (sharpen radius x1 y2 y3 m1 m2)
         Operator_type.COMPOUND_REWRAP false;
 
-	sharpen_im in mask_size x1 y2 y3 m1 m2
+    sharpen_im in mask_size x1 y2 y3 m1 m2
         = vips_sharpen [
             $sigma => mask_size / 4,
             $x1 => x1,
@@ -2504,6 +2522,12 @@ xyz options width height
 
 grey options width height
     = vips_grey options (to_real width) (to_real height);
+
+zone options width height
+    = vips_zone options (to_real width) (to_real height);
+
+eye options width height
+    = vips_eye options (to_real width) (to_real height);
 
 /* simple unit tester ... use with eg.
  *
