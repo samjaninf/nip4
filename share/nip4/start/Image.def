@@ -21,7 +21,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
             nheight = Expression "Image height (pixels)" 64;
             nbands = Expression "Image bands" 1;
             format_option = Option "Image format" format_names 0;
-            interpretation_option = Interpretation.picker "B_W";
+            interpretation_option = Interpretation.picker $B_W;
             pixel = Expression "Pixel value" 0;
 
             _result
@@ -854,8 +854,6 @@ Image_header_item = class
         }
     }
 
-    sep1 = Menuseparator;
-
     Image_set_meta_item = class
         Menuaction "_Set" "set image metadata" {
         action x = class
@@ -869,10 +867,12 @@ Image_header_item = class
                 = map_unary process x
             {
                 process image
-                    = set_header fname.value val.expr image;
+                    = set_meta fname.value val.expr image;
             }
         }
     }
+
+    sep1 = Menuseparator;
 
     Image_edit_header_item = class
         Menuaction "_Edit" "change advisory header fields of image" {
@@ -890,10 +890,10 @@ Image_header_item = class
             nyoff = Expression "Yoffset" (get_prop has_yoffset get_yoffset 0 x);
 
             ninterpretation
-                = Option_enum "Interpretation" Interpretation interp
+                = Interpretation.picker (Interpretation.get_key interp)
             {
                 interp
-                    = x.interpretation, is_Image x
+                    = get_interpretation x, has_interpretation x
                     = Interpretation.MULTIBAND;
             }
 
@@ -905,8 +905,8 @@ Image_header_item = class
                         $interpretation => ninterpretation.value_key,
                         $xres => (to_real nxres),
                         $yres => (to_real nyres),
-                        $xoffset => (to_real nxoffset),
-                        $yoffset => (to_real nyoffset)
+                        $xoffset => (to_real nxoff),
+                        $yoffset => (to_real nyoff)
                     ] x;
             }
         }
@@ -979,7 +979,7 @@ Image_levels_item = class
                 = Expression "Image maximum" mx
             {
                 mx
-                        = Format.maxval x.format, has_format x
+                        = Format._maxval x.format, has_format x
                         = 255;
             }
 
@@ -1075,13 +1075,14 @@ Image_transform_item = class
                 _vislevel = 3;
 
                 angle = Scale "Angle" (-180) 180 0;
-                interp = Interpolate_picker Interpolate_type.BILINEAR;
+                interp = Interpolate.picker $BILINEAR;
 
                 _result
                     = map_unary process x
                 {
                     process image
-                        = rotate interp angle image;
+                        = rotate inter angle image;
+                    inter = Interpolate._new [] interp.value_key;
                 }
             }
         }
@@ -1323,14 +1324,16 @@ Image_transform_item = class
             _result {
             _vislevel = 3;
 
-            interp = Interpolate_picker Interpolate_type.BILINEAR;
+            interp = Interpolate.picker $BILINEAR;
 
             _result
                 = map_binary trans a b
             {
                 trans a b
-                    = mapim interp.value in index
+                    = mapim [$interpolate => inter] in index
                 {
+                    inter = Interpolate._new [] interp.value_key;
+
                     // get the index image first
                     [index, in] = sortc (const is_twocomponent) [a, b];
 

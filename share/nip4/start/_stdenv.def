@@ -858,7 +858,7 @@ falsecolour x
 
 polar x
     = oo_unary_function polar_op x, is_class x
-    = vips_complex [] x "polar", is_image x
+    = vips_complex [] x $polar, is_image x
     = polar_cmplx x, is_complex x
     = error (_ "bad arguments to " ++ "polar")
 {
@@ -880,7 +880,7 @@ polar x
 
 rectangular x
     = oo_unary_function rectangular_op x, is_class x
-    = vips_complex [] a "rectangular" x, is_image x
+    = vips_complex [] x $rect, is_image x
     = rectangular_cmplx x, is_complex x
     = error (_ "bad arguments to " ++ "rectangular")
 {
@@ -2383,16 +2383,14 @@ hough_circle s mn mx x
         ] x;
 }
 
-mapim interp ind in
+mapim options ind in
     = oo_binary_function mapim_op ind in, is_class ind
     = oo_binary'_function mapim_op ind in, is_class in
-    = mapim_fn ind in, is_image ind && is_image in
+    = vips_mapim options in ind, is_image ind && is_image in
     = error (_ "bad arguments to " ++ "mapim")
 {
-    mapim_op = Operator "mapim" (mapim interp)
+    mapim_op = Operator "mapim" (mapim options)
         Operator_type.COMPOUND_REWRAP false;
-
-    mapim_fn ind im = vips_mapim [$interpolate => interp] im ind;
 }
 
 perlin cell width height

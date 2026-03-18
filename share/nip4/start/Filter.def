@@ -685,8 +685,10 @@ Filter_coordinate_item = class
                 = map_unary to_polar a
             {
                 to_polar im
-                    = mapim interp.value map' im
+                    = mapim [$interpolate => inter] map' im
                 {
+                    inter = Interpolate._new [] interp.value_key;
+
                     // xy image, origin in the centre, scaled to fit image to
                     // a circle
                     xy = xyz [] im.width im.height;
@@ -714,8 +716,10 @@ Filter_coordinate_item = class
                 = map_unary to_rect a
             {
                 to_rect im
-                    = mapim interp.value map'' im
+                    = mapim [$interpolate => inter] map'' im
                 {
+                    inter = Interpolate._new [] interp.value_key;
+
                     // xy image, vertical scaled to 360 degrees
                     xy = xyz [] im.width im.height;
                     xy' = xy * Vector [1, 360 / im.height];

@@ -1,6 +1,18 @@
 - on test_image.ws
 
-	image / header next
+	on Straighten
+
+- try:
+
+	Interpolate._new [] 0
+
+  displays as:
+
+	<>
+
+  should be eg.:
+
+	<VipsInterpolate bilinear 0x3894567>
 
 - on test_histogram
 
