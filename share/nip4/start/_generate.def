@@ -34,7 +34,7 @@ image_new options w h
     yoffset = defaults $yoffset;
     pixel = defaults $pixel;
 
-    image = vips_black [$bands => to_real bands] 1 1 + pixel;
+    image = vips_black [$bands => to_real bands] 1 1 + to_vector pixel;
     image' = vips_cast [] image format;
     image''
         = vips_Lab2LabQ [] image', coding == Coding.LABPACK

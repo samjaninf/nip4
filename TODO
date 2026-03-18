@@ -7,8 +7,32 @@
 		Vector [50] ++ <image>  fails
 		Vector [50] ++ Image  	works!!
 
-	surely we can improve this
+	surely we can improve this!
 
+		[1, 2, 3] ++ image | Image
+
+	can never work since ++ must be lazy in the first list arg
+
+		50 ++ image | Image
+		Real 50 ++ image | Image
+		Vector 50 ++ image | Image
+
+	should all work< though 50 ++ image would need C changes
+
+	also test cases like:
+
+		take 10 ([1..] ++ [2..])
+
+	ie. ++ lazy for lists in both args
+
+
+
+
+- on Image ++ [4]
+
+	image_new needs to allow $pixel => [4]
+
+	works for Vector [4], just not is_real_list
 
 - on test_histogram
 

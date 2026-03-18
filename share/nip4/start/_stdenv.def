@@ -40,7 +40,23 @@ remainder a b = a % b;
 
 cons a b = a : b;
 dot a b = a . ( b );
-join a b = a ++ b;
+
+join a b
+    // implement image ++ constant and constant ++ image here ... snip no
+    // longer has this in C
+    = bandjoin [a, b], is_image a && is_image b
+    = vips_bandjoin_const [] a (to_real_list b), is_image a
+    //= join (make_image b a) b, is_image b
+    = a ++ b
+{
+    //make_image image const
+        //= image_new [$pixel => const];
+
+    to_real_list x
+        = [x], is_real x
+        = x;
+}
+
 // 'difference' is defined in _list
 subscript a b = a ? b;
 
@@ -137,6 +153,15 @@ bandjoin l
     has_wrapper = has_member_list (has_member "Image") l;
     wrapper = get_member_list (has_member "Image") (get_member "Image") l;
     joined = vips_bandjoin [] (map get_image l);
+}
+
+bandjoin_const c x
+    = oo_unary_function bandjoin_const_op x, is_class x
+    = vips_bandjoin_const [] x (to_vector c).value, is_image x
+    = error (_ "bad arguments to " ++ "bandjoin_const")
+{
+    bandjoin_const_op = Operator "bandjoin_const" (bandjoin_const c)
+        Operator_type.COMPOUND_REWRAP false;
 }
 
 bandbool op x
@@ -2542,7 +2567,7 @@ unit_test test_list
     = map (const '.') pass ++ "\n" ++
       concat (map print_fail fail)
 {
-    verbose = any (map (member ["--verbose", "-V"]) argv);
+    verbose = any (map (member ["--list", "-L"]) argv);
 
     split fn l
         = foldr split_item [[], []] l

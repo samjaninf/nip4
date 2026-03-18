@@ -967,9 +967,9 @@ Image value = class
     oo_binary_table op x = [
         // handle image ++ constant here
         [wrap join_result_image,
-            (has_real x || is_Vector x) &&
+            (has_real x || is_real_list x || is_Vector x) &&
             (op.op_name == "join" || op.op_name == "join'")],
-            [wrap ite_result_image,
+        [wrap ite_result_image,
             op.op_name == "if_then_else"],
         [wrap (op.fn this.value (get_image x)),
             has_image x],
@@ -995,8 +995,9 @@ Image value = class
             = this.Image x;
 
         join_result_image
-            = value ++ new_stuff, op.op_name == "join"
-            = new_stuff ++ value
+            // don't use "++" or "join", we don't have eg image ++ real
+            = bandjoin [value, new_stuff], op.op_name == "join"
+            = bandjoin [new_stuff, value]
         {
             new_stuff = image_new [
                 $bands => new_bands,

@@ -97,6 +97,33 @@ main = unit_test [
         "Rect intersect"],
     [(Rect 10 20 30 40).margin_adjust 2 == Rect 8 18 34 44, "Rect margin"],
 
+    // ++ on lists is lazy in both args
+    [take 4 ([1..] ++ [2..]) == [1..4], "++ lazy in first list arg"],
+    [take 4 ([1, 2, 3] ++ [2..]) == [1, 2, 3, 2], "++ lazy in second list arg"],
+    [take 4 ([] ++ [2..]) == [2..5], "++ lazy in second list arg 2"],
+
+    // ++ on Image does bandjoin
+    [point (0, 0) (Image sample_image ++ 4) == Vector [1, 2, 3, 4],
+        "Image ++ real"],
+    [point (0, 0) (Image sample_image ++ [4]) == Vector [1, 2, 3, 4],
+        "Image ++ [real]"],
+    [point (0, 0) (Image sample_image ++ Real 4) == Vector [1, 2, 3, 4],
+        "Image ++ Real"],
+    [point (0, 0) (Image sample_image ++ Vector [4]) == Vector [1, 2, 3, 4],
+        "Image ++ Vector"],
+    [point (0, 0) (sample_image ++ Real 4) == Vector [1, 2, 3, 4],
+        "image ++ Real"],
+    [point (0, 0) (sample_image ++ Vector [4]) == Vector [1, 2, 3, 4],
+        "image ++ Vector"],
+
+    [point (0, 0) (4 ++ Image sample_image) == Vector [4, 1, 2, 3],
+        "real ++ Image"],
+    // [4] ++ Image can't work since ++ is lazy in the first list arg
+    [point (0, 0) (Real 4 ++ Image sample_image) == Vector [4, 1, 2, 3],
+        "Real ++ Image"],
+    [point (0, 0) (Vector [4] ++ Image sample_image) == Vector [4, 1, 2, 3],
+        "Vector ++ Image"],
+
     // add more! from Image onwards
 
     [(List [1, 2]).value == [1, 2], "List construct"],
