@@ -1835,38 +1835,48 @@ action_join(Reduce *rc, Compile *compile, int op, const char *name,
          */
         return;
 
-    if (PEISCLASS(a))
+    if (PEISLIST(a)) {
+        // lazy in the first arg if it's a list
+        if (reduce_safe_pointer(rc,
+                (reduce_safe_pointer_fn) action_join_sub,
+                a, b, out, compile))
+            action_boperror(rc, compile, error_get_sub(), op, name, a, b);
+    }
+    else if (PEISCLASS(a))
+        // class ++ x is lazy on second arg
         action_proc_class_binary(rc, compile, op, name, a, b, out);
-    else if (PEISIMAGE(a)) {
+    else {
+        // some other base type, we can reduce the rhs
         reduce_spine(rc, b);
 
-		if (PEISIMAGE(b)) {
-			g_autoptr(VipsArrayImage) c =
-				vips_array_image_newv(2, PEGETIMAGE(a), PEGETIMAGE(b));
-			vo_callva(rc, out, "bandjoin", c);
-		}
-		else if (PEISREAL(b)) {
-			g_autoptr(VipsArrayDouble) c =
-				vips_array_double_newv(1, PEGETREAL(b));
-			vo_callva(rc, out, "bandjoin_const", PEGETIMAGE(a), c);
-		}
-		else if (reduce_is_realvec(rc, b)) {
-			double buf[100];
-			int n = reduce_get_realvec(rc, b, buf, 100);
-			g_autoptr(VipsArrayDouble) c = vips_array_double_newv(n, buf);
-			vo_callva(rc, out, "bandjoin_const", PEGETIMAGE(a), c);
-		}
-		else
-			action_boperror(rc, compile, NULL, op, name, a, b);
-	}
-	else if (PEISLIST(a)) {
-		if (reduce_safe_pointer(rc,
-				(reduce_safe_pointer_fn) action_join_sub,
-				a, b, out, compile))
-			action_boperror(rc, compile, error_get_sub(), op, name, a, b);
-	}
-	else
-		action_boperror(rc, compile, NULL, op, name, a, b);
+        if (PEISCLASS(b))
+            action_proc_class_binary2(rc, compile, op, name, a, b, out);
+        // two base types ... just support the arg combinations that libvips
+        // supports
+        else if (PEISIMAGE(a) &&
+            PEISIMAGE(b)) {
+            g_autoptr(VipsArrayImage) c =
+                vips_array_image_newv(2, PEGETIMAGE(a), PEGETIMAGE(b));
+            vo_callva(rc, out, "bandjoin", c);
+        }
+        else if (PEISIMAGE(a)) {
+            g_autoptr(VipsArrayDouble) c = NULL;
+
+            if (PEISREAL(b))
+                c = vips_array_double_newv(1, PEGETREAL(b));
+            else if (reduce_is_realvec(rc, b)) {
+                double buf[100];
+                int n = reduce_get_realvec(rc, b, buf, 100);
+                c = vips_array_double_new(buf, n);
+            }
+            else
+                action_boperror(rc, compile, NULL, op, name, a, b);
+
+            vo_callva(rc, out, "bandjoin_const", PEGETIMAGE(a), c);
+        }
+        else
+            action_boperror(rc, compile, NULL, op, name, a, b);
+    }
 }
 
 /* Do a binary operator. Result in arg[0].
