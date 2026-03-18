@@ -482,9 +482,9 @@ columnview_pressed(GtkGestureClick *gesture,
 }
 
 static void
-columnview_expand_clicked(GtkGestureClick *gesture,
-	guint n_press, double x, double y, Columnview *cview)
+columnview_expand_clicked(GtkButton *self, gpointer user_data)
 {
+	Columnview *cview = COLUMNVIEW(user_data);
 	Column *col = COLUMN(VOBJECT(cview)->iobject);
 
 	column_set_open(col, !col->open);
