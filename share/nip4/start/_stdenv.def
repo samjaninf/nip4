@@ -1043,7 +1043,7 @@ measure_draw across down measure image
 
      mask = Image (insertset bg.value patch.value x y);
 
-     image' = colourspace [] Interpretation.sRGB image;
+     image' = colourspace [] $srgb image;
 
      mark = if mask then Vector [0, 255, 0] else image';
 
@@ -2573,7 +2573,7 @@ unit_test test_list
 
 colourspace options to in
     = oo_unary_function colourspace_op in, is_class in
-    = vips_colourspace options in (to_real to), is_image in
+    = vips_colourspace options in (to_enum to), is_image in
     = error (_ "bad arguments to " ++ "colourspace")
 {
     colourspace_op = Operator "colourspace" (colourspace options to)

@@ -184,6 +184,35 @@ to_real x
 
 to_int x = (int) (to_real x);
 
+/* Try to make an enum value. These can be strings (eg. $lab) or reals (eg.
+ * Interpretation.LAB).
+ */
+to_enum x
+    = to_enum x.expr, is_Expression x
+    = toe x
+{
+    to_enum_op = Operator "to_enum" toe Operator_type.COMPOUND false;
+
+    toe x
+        = oo_unary_function to_enum_op x, is_class x
+        = x, is_real x
+        = abs x, is_complex x
+        = 1, is_bool x && x
+        = 0, is_bool x && !x
+        = map (to_kebab @ to_lower) x, is_string x
+        = error (_ "bad arguments to " ++ "to_enum");
+
+    // map eg b_w to b-w
+    to_kebab c
+        = '-', c == '_'
+        = c;
+
+    // to lowercase ... all libvips enum names are lowercase only
+    to_lower c
+        = (int) c - (int) 'A' + (int) 'a', c >= 'A' && c <= 'Z'
+        = c;
+}
+
 /* Try to make a list ... ungroup, basically. We remove the innermost layer of
  * Groups.
  */

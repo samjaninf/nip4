@@ -2,6 +2,13 @@
 
 	on Colour_atlas_item
 
+		50 ++ <image>		fails
+		50 ++ Image 		fails
+		Vector [50] ++ <image>  fails
+		Vector [50] ++ Image  	works!!
+
+	surely we can improve this
+
 
 - on test_histogram
 

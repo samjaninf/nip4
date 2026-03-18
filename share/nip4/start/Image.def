@@ -359,9 +359,9 @@ Image_new_item = class Menupullright "_New" "make new things" {
     sep3 = Menuseparator;
 
     Test_images_item = class
-        Menupullright "Test I_mages" "various test images" {
+        Menupullright "Test i_mages" "various test images" {
         Eye_item = class
-            Menuaction "_Spatial Response"
+            Menuaction "_Spatial response"
                 "image for testing the eye's spatial response" {
             action = class
                 _result {
@@ -379,7 +379,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
 
         Zone_plate = class
-            Menuaction "_Zone Plate" "make a zone plate" {
+            Menuaction "_Zone plate" "make a zone plate" {
             action = class
                 _result {
                 _vislevel = 3;
@@ -391,7 +391,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
 
         Frequency_test_chart_item = class
-            Menuaction "_Frequency Testchart"
+            Menuaction "_Frequency testchart"
                 "make a black/white frequency test pattern" {
             action = class
                 _result {
@@ -412,7 +412,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
 
         Grey_item = class
-            Menuaction "Grey _Ramp" "make a smooth grey ramp" {
+            Menuaction "Grey _ramp" "make a smooth grey ramp" {
             action = class
                 _result {
                 _vislevel = 3;
@@ -498,7 +498,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
 
         New_CIELAB_slice_item = class
-            Menuaction "CIELAB _Slice" "make a slice through CIELAB space" {
+            Menuaction "CIELAB _slice" "make a slice through CIELAB space" {
             action = class
                 _result {
                 _vislevel = 3;
@@ -511,7 +511,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
 
         CRT_test_chart_item = class
-            Menuaction "CRT _Phosphor Chart"
+            Menuaction "CRT _phosphor chart"
                 "make an image for measuring phosphor colours" {
             action = class
                 _result {
@@ -562,7 +562,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
 
         CMYK_test_chart_item = class
-            Menuaction "_CMYK Wedges" "make a set of CMYK wedges" {
+            Menuaction "_CMYK wedges" "make a set of CMYK wedges" {
             action = class
                 _result {
                 _vislevel = 3;
@@ -595,7 +595,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
         }
 
         Colour_atlas_item = class
-            Menuaction "_Colour Atlas"
+            Menuaction "_Colour atlas"
                 "make a grid of patches grouped around a colour" {
             action = class
                 _result {
@@ -608,7 +608,8 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 sepsize = Expression "Separator size" 4;
 
                 _result
-                    = colourspace [] (get_interpretation start) blocks'''
+                    // = colourspace [] (get_interpretation start) blocks'''
+                    = Image blocks'
                 {
                     size = (to_real nstep * 2 + 1) * to_real psize -
                         to_real sepsize;
@@ -618,13 +619,15 @@ Image_new_item = class Menupullright "_New" "make new things" {
                         (to_real psize - to_real sepsize);
                     grid = xy_grid?0 & xy_grid?1;
 
-                    blocks = (int) (to_real ssize * ((int) (xy / to_real psize)));
+                    blocks
+                        = (int) (to_real ssize * ((int) (xy / to_real psize)));
                     lab_start = colourspace [] $lab start;
                     blocks' = blocks - to_real nstep * to_real ssize +
                         Vector (tl lab_start.value);
                     blocks'' = hd lab_start.value ++ Image blocks';
                     blocks'''
-                        = set_header $interpretation $lab blocks'', is_Image grid
+                        = set_header $interpretation $lab blocks'',
+                            is_Image grid
                         = 0;
                 }
             }
