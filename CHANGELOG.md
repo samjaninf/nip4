@@ -19,6 +19,7 @@
 - add $CWD to path rewrite set
 - try to improve rounding for plot labels
 - fix column expand / collapse [MvGulik]
+- add image ++ const action
 
 ## 9.0.17 2026/02/25
 

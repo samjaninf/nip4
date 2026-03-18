@@ -1840,22 +1840,33 @@ action_join(Reduce *rc, Compile *compile, int op, const char *name,
     else if (PEISIMAGE(a)) {
         reduce_spine(rc, b);
 
-        if (!PEISIMAGE(a) ||
-            !PEISIMAGE(b))
-            action_boperror(rc, compile, NULL, op, name, a, b);
-
-        g_autoptr(VipsArrayImage) c =
-            vips_array_image_newv(2, PEGETIMAGE(a), PEGETIMAGE(b));
-        vo_callva(rc, out, "bandjoin", c);
-    }
-    else if (PEISLIST(a)) {
-        if (reduce_safe_pointer(rc,
-                (reduce_safe_pointer_fn) action_join_sub,
-                a, b, out, compile))
-            action_boperror(rc, compile, error_get_sub(), op, name, a, b);
-    }
-    else
-        action_boperror(rc, compile, NULL, op, name, a, b);
+		if (PEISIMAGE(b)) {
+			g_autoptr(VipsArrayImage) c =
+				vips_array_image_newv(2, PEGETIMAGE(a), PEGETIMAGE(b));
+			vo_callva(rc, out, "bandjoin", c);
+		}
+		else if (PEISREAL(b)) {
+			g_autoptr(VipsArrayDouble) c =
+				vips_array_double_newv(1, PEGETREAL(b));
+			vo_callva(rc, out, "bandjoin_const", PEGETIMAGE(a), c);
+		}
+		else if (reduce_is_realvec(rc, b)) {
+			double buf[100];
+			int n = reduce_get_realvec(rc, b, buf, 100);
+			g_autoptr(VipsArrayDouble) c = vips_array_double_newv(n, buf);
+			vo_callva(rc, out, "bandjoin_const", PEGETIMAGE(a), c);
+		}
+		else
+			action_boperror(rc, compile, NULL, op, name, a, b);
+	}
+	else if (PEISLIST(a)) {
+		if (reduce_safe_pointer(rc,
+				(reduce_safe_pointer_fn) action_join_sub,
+				a, b, out, compile))
+			action_boperror(rc, compile, error_get_sub(), op, name, a, b);
+	}
+	else
+		action_boperror(rc, compile, NULL, op, name, a, b);
 }
 
 /* Do a binary operator. Result in arg[0].
