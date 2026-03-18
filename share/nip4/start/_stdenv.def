@@ -40,22 +40,7 @@ remainder a b = a % b;
 
 cons a b = a : b;
 dot a b = a . ( b );
-
-join a b
-    // implement image ++ constant and constant ++ image here ... snip no
-    // longer has this in C
-    = bandjoin [a, b], is_image a && is_image b
-    = vips_bandjoin_const [] a (to_real_list b), is_image a
-    //= join (make_image b a) b, is_image b
-    = a ++ b
-{
-    //make_image image const
-        //= image_new [$pixel => const];
-
-    to_real_list x
-        = [x], is_real x
-        = x;
-}
+join a b = a ++ b;
 
 // 'difference' is defined in _list
 subscript a b = a ? b;
@@ -122,6 +107,8 @@ vec op_name im vec
         op_name == "less_equal"
     = vips_relational_const [] im "moreeq" vec,
         op_name == "less_equal'"
+    = vips_bandjoin_const [] im vec,
+        op_name == "join"
     = error ("unimplemented vector operation: " ++ op_name)
 {
     zeros = replicate (len vec) 0;
@@ -2588,10 +2575,10 @@ unit_test test_list
     print_fail [pass, fail] = "FAIL: " ++ fail ++ "\n";
 
     print_verbose [test, name]
-        = label ++ ": " ++ name ++ "\n"
+        = name ++ ": " ++ label ++ "\n"
     {
         label
-            = "pass", test
+            = "ok", test
             = "FAIL";
     }
 }

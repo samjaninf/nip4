@@ -111,9 +111,14 @@ main = unit_test [
         "Image ++ Real"],
     [point (0, 0) (Image sample_image ++ Vector [4]) == Vector [1, 2, 3, 4],
         "Image ++ Vector"],
-    [point (0, 0) (sample_image ++ Real 4) == Vector [1, 2, 3, 4],
+
+    [point (0, 0) (sample_image ++ 4) == [1, 2, 3, 4],
+        "image ++ real"],
+    [point (0, 0) (sample_image ++ [4]) == [1, 2, 3, 4],
+        "image ++ [real]"],
+    [point (0, 0) (sample_image ++ Real 4) == [1, 2, 3, 4],
         "image ++ Real"],
-    [point (0, 0) (sample_image ++ Vector [4]) == Vector [1, 2, 3, 4],
+    [point (0, 0) (sample_image ++ Vector [4]) == [1, 2, 3, 4],
         "image ++ Vector"],
 
     [point (0, 0) (4 ++ Image sample_image) == Vector [4, 1, 2, 3],
