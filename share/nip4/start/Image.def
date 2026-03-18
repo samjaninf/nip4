@@ -608,8 +608,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 sepsize = Expression "Separator size" 4;
 
                 _result
-                    // = colourspace [] (get_interpretation start) blocks'''
-                    = Image blocks'
+                    = colourspace [] (get_interpretation start) blocks'''
                 {
                     size = (to_real nstep * 2 + 1) * to_real psize -
                         to_real sepsize;
@@ -626,8 +625,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                         Vector (tl lab_start.value);
                     blocks'' = hd lab_start.value ++ Image blocks';
                     blocks'''
-                        = set_header $interpretation $lab blocks'',
-                            is_Image grid
+                        = set_header $interpretation $lab blocks'', Image grid
                         = 0;
                 }
             }

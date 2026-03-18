@@ -2586,7 +2586,8 @@ unit_test test_list
 colourspace options to in
     = oo_unary_function colourspace_op in, is_class in
     = vips_colourspace options in (to_enum to), is_image in
-    = error (_ "bad arguments to " ++ "colourspace")
+    = error (_ "bad arguments to " ++ "colourspace: " ++ print [options, to,
+in])
 {
     colourspace_op = Operator "colourspace" (colourspace options to)
         Operator_type.COMPOUND_REWRAP false;

@@ -1144,7 +1144,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="9032" y="5" open="true" selected="false" sform="false" next="18" name="GB" caption="Image / Patterns">
+    <Column x="9022" y="5" open="true" selected="false" sform="false" next="18" name="GB" caption="Image / Patterns">
       <Subcolumn vislevel="3">
         <Row popup="false" name="GB1">
           <Rhs vislevel="3" flags="7">
@@ -1267,7 +1267,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="9412" y="5" open="true" selected="false" sform="false" next="8" name="HB" caption="Image / Test">
+    <Column x="9402" y="5" open="true" selected="false" sform="false" next="8" name="HB" caption="Image / Test">
       <Subcolumn vislevel="3">
         <Row popup="false" name="HB1">
           <Rhs vislevel="3" flags="7">
@@ -2090,7 +2090,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="3622" y="5" open="true" selected="true" sform="false" next="13" name="K" caption="Image / New">
+    <Column x="3622" y="5" open="true" selected="true" sform="false" next="14" name="K" caption="Image / New">
       <Subcolumn vislevel="3">
         <Row popup="false" name="K1">
           <Rhs vislevel="3" flags="7">
@@ -2160,6 +2160,73 @@
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Test_images_item.CMYK_test_chart_item.action"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="K13">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="1">
+              <Row name="super">
+                <Rhs vislevel="0" flags="4">
+                  <iImage show_status="false" show_convert="false"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="start">
+                <Rhs vislevel="3" flags="7">
+                  <Colour/>
+                  <Subcolumn vislevel="1"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="nstep">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Number of steps"/>
+                  <Subcolumn vislevel="0">
+                    <Row name="caption">
+                      <Rhs vislevel="0" flags="4">
+                        <iText/>
+                      </Rhs>
+                    </Row>
+                    <Row name="expr">
+                      <Rhs vislevel="0" flags="4">
+                        <iText formula="2"/>
+                      </Rhs>
+                    </Row>
+                    <Row name="super">
+                      <Rhs vislevel="1" flags="4">
+                        <Subcolumn vislevel="0"/>
+                        <iText/>
+                      </Rhs>
+                    </Row>
+                  </Subcolumn>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="ssize">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Step size"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="psize">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Patch size"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="sepsize">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Separator size"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+            </Subcolumn>
+            <iText formula="Image_new_item.Test_images_item.Colour_atlas_item.action"/>
           </Rhs>
         </Row>
       </Subcolumn>
