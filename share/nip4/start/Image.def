@@ -1095,13 +1095,15 @@ Image_transform_item = class
                 _result {
                 _vislevel = 3;
 
-                interp = Interpolate_picker Interpolate_type.BILINEAR;
+                interp = Interpolate.picker $BILINEAR;
 
                 _result
                     = map_unary straighten x
                 {
+                    inter = Interpolate._new [] interp.value_key;
+
                     straighten arrow
-                        = rotate interp angle'' arrow.image
+                        = rotate inter angle'' arrow.image
                     {
                         x = arrow.width;
                         y = arrow.height;
@@ -1145,13 +1147,13 @@ Image_transform_item = class
 
                 xfactor = Expression "Horizontal scale factor" 1;
                 yfactor = Expression "Vertical scale factor" 1;
-                kernel = Kernel_picker Kernel.LINEAR;
+                kernel = Kernel.picker $LINEAR;
 
                 _result
                     = map_unary process x
                 {
                     process image
-                        = resize kernel xfactor yfactor image;
+                        = resize kernel.value_key xfactor yfactor image;
                 }
             }
         }
@@ -1170,14 +1172,14 @@ Image_transform_item = class
                 ] 0;
                 size = Expression "Resize to (pixels)" 128;
                 aspect = Toggle "Break aspect ratio" false;
-                kernel = Kernel_picker Kernel.LINEAR;
+                kernel = Kernel.picker $LINEAR;
 
                 _result
                     = map_unary process x
                 {
                     process image
-                        = resize kernel h v image, aspect
-                        = resize kernel fac fac image
+                        = resize kernel.value_key h v image, aspect
+                        = resize kernel.value_key fac fac image
                     {
                         xfac = to_real size / image.width;
                         yfac = to_real size / image.height;
@@ -1222,7 +1224,7 @@ Image_transform_item = class
                 size = Option "Page size" [
                     "Full page", "Half page", "Quarter page"
                 ] 0;
-                kernel = Kernel_picker Kernel.LINEAR;
+                kernel = Kernel.picker $LINEAR;
 
                 _result
                     = map_unary process x
@@ -1235,7 +1237,7 @@ Image_transform_item = class
                     [width, height] = allrect?within;
 
                     process x
-                        = resize kernel fac fac x, fac < 1
+                        = resize kernel.value_key fac fac x, fac < 1
                         = x
                     {
                         xfac = (width / xdiv) / x.width;
@@ -1254,7 +1256,7 @@ Image_transform_item = class
 
                 // try to guess a sensible size for the new image
                 _guess_size
-                    = x.rect, is_Image x
+                    = Rect 0 0 x.width x.height, is_Image x
                     = Rect 0 0 100 100;
 
                 nwidth = Expression "New width (pixels)" _guess_size.width;
@@ -1286,12 +1288,12 @@ Image_transform_item = class
                         height = image.height;
                         coding = image.coding;
                         bands
-                            = 3, coding == Image_coding.LABPACK
+                            = 3, coding == Coding.LABPACK
                             = image.bands;
                         format
-                            = Format.FLOAT, coding == Image_coding.LABPACK
+                            = Format.FLOAT, coding == Coding.LABPACK
                             = image.format;
-                        type = image.type;
+                        interpretation = image.interpretation;
 
                         // placement vectors ... left, centre, right
                         xposv = [0, to_real nwidth / 2 - width / 2,

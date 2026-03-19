@@ -757,11 +757,11 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="5866" y="5" open="true" selected="true" sform="false" next="20" name="FB" caption="Image / Transform">
+    <Column x="5866" y="5" open="true" selected="false" sform="false" next="28" name="FB" caption="Image / Transform">
       <Subcolumn vislevel="3">
         <Row popup="false" name="FB1">
-          <Rhs vislevel="0" flags="4">
-            <iImage window_x="5" window_y="54" window_width="512" window_height="729" show_status="true" show_convert="true"/>
+          <Rhs vislevel="2" flags="5">
+            <iImage window_x="5" window_y="54" window_width="512" window_height="729" show_status="true" show_convert="true" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
@@ -816,31 +816,31 @@
             <iText formula="Arrow FB1 134 680 44 (-626)"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="FB5">
-          <Rhs vislevel="2" flags="5">
+        <Row popup="false" name="FB20">
+          <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
-            <Subcolumn vislevel="0"/>
+            <Subcolumn vislevel="1"/>
             <iText formula="Image_transform_item.Rotate_item.Straighten_item.action FB4"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="FB6">
+        <Row popup="false" name="FB21">
           <Rhs vislevel="1" flags="1">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Image_transform_item.Flip_item.Left_right_item.action FB5"/>
+            <iText formula="Image_transform_item.Flip_item.Left_right_item.action FB20"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="FB7">
-          <Rhs vislevel="2" flags="5">
+        <Row popup="false" name="FB22">
+          <Rhs vislevel="1" flags="1">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Image_transform_item.Flip_item.Top_bottom_item.action FB5"/>
+            <iText formula="Image_transform_item.Flip_item.Top_bottom_item.action FB21"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="FB8">
+        <Row popup="false" name="FB23">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
-            <Subcolumn vislevel="0">
+            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
                   <iText/>
@@ -864,7 +864,7 @@
                     </Row>
                     <Row name="expr">
                       <Rhs vislevel="0" flags="4">
-                        <iText formula="0.5"/>
+                        <iText formula="0.2"/>
                       </Rhs>
                     </Row>
                     <Row name="super">
@@ -888,7 +888,7 @@
                     </Row>
                     <Row name="expr">
                       <Rhs vislevel="0" flags="4">
-                        <iText formula="0.5"/>
+                        <iText formula="0.2"/>
                       </Rhs>
                     </Row>
                     <Row name="super">
@@ -902,26 +902,20 @@
                 </Rhs>
               </Row>
               <Row name="kernel">
-                <Rhs vislevel="2" flags="6">
+                <Rhs vislevel="1" flags="1">
+                  <Option caption="Kernel" labelsn="8" labels0="Nearest neighbour" labels1="Linear" labels2="Cubic" labels3="Mitchell" labels4="Lanczos, two lobes" labels5="Lanczos, three lobes" labels6="Magic, 2013" labels7="Magic, 2021" value="1"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
               </Row>
             </Subcolumn>
-            <iText formula="Image_transform_item.Resize_item.Scale_item.action FB7"/>
+            <iText formula="Image_transform_item.Resize_item.Scale_item.action FB22"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="FB9">
+        <Row popup="false" name="FB24">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
-            <Subcolumn vislevel="0"/>
-            <iText formula="Image_transform_item.Resize_item.Size_item.action FB1"/>
-          </Rhs>
-        </Row>
-        <Row popup="false" name="FB19">
-          <Rhs vislevel="3" flags="7">
-            <iImage window_x="516" window_y="29" window_width="475" window_height="519" show_status="true" show_convert="true"/>
-            <Subcolumn vislevel="0">
+            <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
                   <iText/>
@@ -934,50 +928,51 @@
                   <iText/>
                 </Rhs>
               </Row>
-              <Row name="within">
-                <Rhs vislevel="1" flags="1">
-                  <Option caption="Fit within (pixels)" labelsn="9" labels0="2048 x 1536" labels1="1920 x 1200" labels2="1600 x 1200" labels3="1400 x 1050" labels4="1280 x 1024" labels5="1024 x 768" labels6="800 x 600" labels7="640 x 480" labels8="Custom" value="7"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="custom_width">
-                <Rhs vislevel="1" flags="1">
-                  <Expression caption="Custom width"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="custom_height">
-                <Rhs vislevel="1" flags="1">
-                  <Expression caption="Custom height"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="size">
+              <Row name="which">
                 <Rhs vislevel="1" flags="1">
                   <Option/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
               </Row>
+              <Row name="size">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Resize to (pixels)"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="aspect">
+                <Rhs vislevel="1" flags="1">
+                  <Toggle/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
               <Row name="kernel">
-                <Rhs vislevel="2" flags="6">
+                <Rhs vislevel="1" flags="1">
+                  <Option caption="Kernel" labelsn="8" labels0="Nearest neighbour" labels1="Linear" labels2="Cubic" labels3="Mitchell" labels4="Lanczos, two lobes" labels5="Lanczos, three lobes" labels6="Magic, 2013" labels7="Magic, 2021" value="4"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
               </Row>
             </Subcolumn>
-            <iText formula="Image_transform_item.Resize_item.Size_within_item.action B1"/>
+            <iText formula="Image_transform_item.Resize_item.Size_item.action FB1"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="FB17">
+        <Row popup="false" name="FB25">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
-            <Subcolumn vislevel="0">
+            <Subcolumn vislevel="1"/>
+            <iText formula="Image_transform_item.Resize_item.Size_within_item.action FB24"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="FB27">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="1">
               <Row name="x">
-                <Rhs vislevel="0" flags="4">
+                <Rhs vislevel="3" flags="4">
                   <iText/>
                 </Rhs>
               </Row>
@@ -999,7 +994,7 @@
                     </Row>
                     <Row name="expr">
                       <Rhs vislevel="0" flags="4">
-                        <iText formula="496 * 2"/>
+                        <iText formula="200"/>
                       </Rhs>
                     </Row>
                     <Row name="super">
@@ -1023,7 +1018,7 @@
                     </Row>
                     <Row name="expr">
                       <Rhs vislevel="0" flags="4">
-                        <iText formula="688 * 2"/>
+                        <iText formula="400"/>
                       </Rhs>
                     </Row>
                     <Row name="super">
@@ -1039,13 +1034,30 @@
               <Row name="bgcolour">
                 <Rhs vislevel="1" flags="1">
                   <Expression caption="Background colour"/>
-                  <Subcolumn vislevel="0"/>
+                  <Subcolumn vislevel="0">
+                    <Row name="caption">
+                      <Rhs vislevel="0" flags="4">
+                        <iText/>
+                      </Rhs>
+                    </Row>
+                    <Row name="expr">
+                      <Rhs vislevel="0" flags="4">
+                        <iText formula="Vector [128, 0, 0]"/>
+                      </Rhs>
+                    </Row>
+                    <Row name="super">
+                      <Rhs vislevel="1" flags="4">
+                        <Subcolumn vislevel="0"/>
+                        <iText/>
+                      </Rhs>
+                    </Row>
+                  </Subcolumn>
                   <iText/>
                 </Rhs>
               </Row>
               <Row name="position">
                 <Rhs vislevel="1" flags="1">
-                  <Option caption="Position" labelsn="10" labels0="North-west" labels1="North" labels2="North-east" labels3="West" labels4="Centre" labels5="East" labels6="South-west" labels7="South" labels8="South-east" labels9="Specify in pixels" value="4"/>
+                  <Option caption="Position" labelsn="10" labels0="North-west" labels1="North" labels2="North-east" labels3="West" labels4="Centre" labels5="East" labels6="South-west" labels7="South" labels8="South-east" labels9="Specify in pixels" value="2"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1065,87 +1077,12 @@
                 </Rhs>
               </Row>
             </Subcolumn>
-            <iText formula="Image_transform_item.Resize_item.Resize_item.Resize_item.Resize_canvas_item.action FB1"/>
-          </Rhs>
-        </Row>
-        <Row popup="false" name="FB15">
-          <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
-            <Subcolumn vislevel="0">
-              <Row name="x">
-                <Rhs vislevel="0" flags="4">
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="y">
-                <Rhs vislevel="0" flags="4">
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="super">
-                <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="ap1">
-                <Rhs vislevel="1" flags="1">
-                  <iArrow>
-                    <iRegiongroup/>
-                  </iArrow>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="bp1">
-                <Rhs vislevel="1" flags="1">
-                  <iArrow>
-                    <iRegiongroup/>
-                  </iArrow>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="ap2">
-                <Rhs vislevel="1" flags="1">
-                  <iArrow>
-                    <iRegiongroup/>
-                  </iArrow>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="bp2">
-                <Rhs vislevel="1" flags="1">
-                  <iArrow>
-                    <iRegiongroup/>
-                  </iArrow>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="refine">
-                <Rhs vislevel="1" flags="1">
-                  <Toggle caption="Refine selected tie-points" value="true"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="lock">
-                <Rhs vislevel="1" flags="1">
-                  <Toggle/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-            </Subcolumn>
-            <iText formula="Image_transform_item.Match_item.action FB1 FB5"/>
+            <iText formula="Image_transform_item.Resize_item.Resize_canvas_item.action FB25"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="9420" y="5" open="true" selected="false" sform="false" next="18" name="GB" caption="Image / Patterns">
+    <Column x="9424" y="5" open="true" selected="false" sform="false" next="18" name="GB" caption="Image / Patterns">
       <Subcolumn vislevel="3">
         <Row popup="false" name="GB1">
           <Rhs vislevel="3" flags="7">
@@ -1268,7 +1205,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="9798" y="5" open="true" selected="false" sform="false" next="8" name="HB" caption="Image / Test">
+    <Column x="9802" y="5" open="true" selected="false" sform="false" next="8" name="HB" caption="Image / Test">
       <Subcolumn vislevel="3">
         <Row popup="false" name="HB1">
           <Rhs vislevel="3" flags="7">
