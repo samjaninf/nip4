@@ -1730,221 +1730,6 @@ Image_alpha_item = class
     }
 }
 
-Image_SDF_item = class
-    Menupullright "SDF" "make and combine signed distance fields" {
-    New_item = class
-        Menuaction "New" "construct signed distance fields" {
-        action = class
-            _result {
-            _vislevel = 3;
-
-            # musn't override width and height in the superclass, we need
-            # different names
-            across = Expression "Image width (pixels)" 256;
-            down = Expression "Image height (pixels)" 256;
-            shape = Option "Shape" [
-                "Circle",
-                "Box",
-                "Rounded box",
-                "Line"
-            ] 0;
-            radius = Scale "Radius" 0 100 75;
-            a = Matrix [[across.expr / 2, down.expr / 2]];
-            b = Matrix [[3 * across.expr / 4, 3 * down.expr / 4]];
-            corners = Matrix [[10, 10, 10, 10]];
-
-            _result = Image (sdf [
-                $r => to_real radius,
-                $a => a.value?0,
-                $b => b.value?0,
-                $corners => corners.value?0
-            ] across down shape.value);
-        }
-    }
-
-    Union_item = class
-        Menuaction "Union" "union of two SDFs" {
-        action x y = class
-            _result {
-            _result = minpair x y;
-        }
-    }
-
-    Intersection_item = class
-        Menuaction "Intersection" "imtersection of two SDFs" {
-        action x y = class
-            _result {
-            _result = maxpair x y;
-        }
-    }
-
-    Difference_item = class
-        Menuaction "Difference" "difference of two SDFs" {
-        action x y = class
-            _result {
-            _result = maxpair (-x) y;
-        }
-    }
-
-    Annular_item = class
-        Menuaction "Annular" "make annular" {
-        action x = class
-            _result {
-            _vislevel = 3;
-
-            width = Scale "Width" 0 100 50;
-
-            _result = abs x - width;
-        }
-    }
-
-    Render_item = class
-        Menuaction "Render" "render as an image" {
-        action x = class
-            _result {
-            _vislevel = 3;
-
-            antialias = Toggle "Antialias" true;
-
-            _result
-                = linear [$uchar => true] (-255) 255 (clamp 0 1 x), antialias
-                = clamp 0 1 x < 0.5;
-        }
-    }
-}
-
-Image_crop_item = class
-    Menuaction "_Crop" "extract a rectangular area from an image" {
-    action x = class
-        _result {
-        _vislevel = 3;
-
-        _width
-            = get_width x.value?0, is_Group x && has_width x.value?0
-            = get_width x, has_width x
-            = 100;
-        _height
-            = get_height x.value?0, is_Group x && has_height x.value?0
-            = get_height x, has_height x
-            = 100;
-
-        nleft = Expression "Crop left" ((int) (_width / 4));
-        ntop = Expression "Crop top" ((int) (_height / 4));
-        nwidth = Expression "Crop width" (maxpair 1 ((int) (_width / 2)));
-        nheight = Expression "Crop height" (maxpair 1 ((int) (_height / 2)));
-
-        _result
-            = map_nary (list_5ary extract)
-                [x, nleft.expr, ntop.expr, nwidth.expr, nheight.expr]
-        {
-            extract image left top width height
-                = crop left' top' width' height' image
-            {
-                width' = minpair (to_real width) image.width;
-                height' = minpair (to_real height) image.height;
-                left' = clamp 0 (image.width - width') (to_real left);
-                top' = clamp 0 (image.height - height') (to_real top);
-            }
-        }
-    }
-}
-
-Trim_item = class Menuaction "_Trim" "crop away edges" {
-    action x = class
-        _result {
-        _vislevel = 3;
-
-        thresh = Scale "threshold" 0 100 10;
-        background = Expression "Background" default_background
-        {
-            default_background
-                = map mean (bandsplit (crop 0 0 1 1 x));
-        }
-
-        _result
-            = Region x l t w h
-        {
-            [l, t, w, h] = vips_find_trim [
-                $threshold => thresh.value,
-                $background => background.expr
-            ] x.value;
-        }
-    }
-}
-
-Image_insert_item = class
-    Menuaction "_Insert" "insert a small image into a large image" {
-    action a b
-        = insert_position, is_Group a || is_Group b
-        = insert_area
-    {
-        insert_area = class
-            _result {
-            _check_args = [
-                [a, "a", check_Image],
-                [b, "b", check_Image]
-            ];
-            _vislevel = 3;
-
-            // sort to get smallest first
-            _pred x y = x.width * x.height < y.width * y.height;
-            [_a', _b'] = sortc _pred [a, b];
-
-            place
-                = Area _b' left top width height
-            {
-                // be careful in case b is smaller than a
-                left = maxpair 0 ((_b'.width - _a'.width) / 2);
-                top = maxpair 0 ((_b'.height - _a'.height) / 2);
-                width = minpair _a'.width _b'.width;
-                height = minpair _a'.height _b'.height;
-            }
-
-            _result
-                = insert [] place.left place.top
-                    (cast _b'.format a'') _b'
-            {
-                a'' = crop 0 0 place.width place.height _a';
-            }
-        }
-
-        insert_position = class
-            _result {
-            _vislevel = 3;
-
-            position = Option "Position" [
-                "North-west",
-                "North",
-                "North-east",
-                "West",
-                "Centre",
-                "East",
-                "South-west",
-                "South",
-                "South-east",
-                "Specify in pixels"
-            ] 4;
-            left = Expression "Pixels from left" 0;
-            top = Expression "Pixels from top" 0;
-
-            _result
-                = map_binary process a b
-            {
-                process a b
-                    = insert [] left top (cast b.format a) b,
-                        position == 9
-                    = insert [] xp yp (cast b.format a) b
-                {
-                    xr = b.width - a.width;
-                    yr = b.height - a.height;
-                    xp = [0, xr / 2, xr]?((int) (position % 3));
-                    yp = [0, yr / 2, yr]?((int) (position / 3));
-                }
-            }
-        }
-    }
-}
-
 Image_select_item = Select_item;
 
 Image_draw_item = class
@@ -2316,6 +2101,223 @@ Image_tile_item = class
                 process x
                     = imagearray_chop tile_width tile_height
                         hoverlap voverlap x;
+            }
+        }
+    }
+}
+
+Image_SDF_item = class
+    Menupullright "SDF" "make and combine signed distance fields" {
+    New_item = class
+        Menuaction "New" "construct signed distance fields" {
+        action = class
+            _result {
+            _vislevel = 3;
+
+            # musn't override width and height in the superclass, we need
+            # different names
+            across = Expression "Image width (pixels)" 256;
+            down = Expression "Image height (pixels)" 256;
+            shape = Option "Shape" [
+                "Circle",
+                "Box",
+                "Rounded box",
+                "Line"
+            ] 0;
+            radius = Scale "Radius" 0 100 75;
+            a = Matrix [[across.expr / 2, down.expr / 2]];
+            b = Matrix [[3 * across.expr / 4, 3 * down.expr / 4]];
+            corners = Matrix [[10, 10, 10, 10]];
+
+            _result = Image (sdf [
+                $r => to_real radius,
+                $a => a.value?0,
+                $b => b.value?0,
+                $corners => corners.value?0
+            ] across down shape.value);
+        }
+    }
+
+    Union_item = class
+        Menuaction "Union" "union of two SDFs" {
+        action x y = class
+            _result {
+            _result = minpair x y;
+        }
+    }
+
+    Intersection_item = class
+        Menuaction "Intersection" "imtersection of two SDFs" {
+        action x y = class
+            _result {
+            _result = maxpair x y;
+        }
+    }
+
+    Difference_item = class
+        Menuaction "Difference" "difference of two SDFs" {
+        action x y = class
+            _result {
+            _result = maxpair (-x) y;
+        }
+    }
+
+    Annular_item = class
+        Menuaction "Annular" "make annular" {
+        action x = class
+            _result {
+            _vislevel = 3;
+
+            width = Scale "Width" 0 100 50;
+
+            _result = abs x - width;
+        }
+    }
+
+    Render_item = class
+        Menuaction "Render" "render as an image" {
+        action x = class
+            _result {
+            _vislevel = 3;
+
+            antialias = Toggle "Antialias" true;
+
+            _result
+                = linear [$uchar => true] (-255) 255 (clamp 0 1 x), antialias
+                = clamp 0 1 x < 0.5;
+        }
+    }
+}
+
+#separator
+
+Image_crop_item = class
+    Menuaction "_Crop" "extract a rectangular area from an image" {
+    action x = class
+        _result {
+        _vislevel = 3;
+
+        _width
+            = get_width x.value?0, is_Group x && has_width x.value?0
+            = get_width x, has_width x
+            = 100;
+        _height
+            = get_height x.value?0, is_Group x && has_height x.value?0
+            = get_height x, has_height x
+            = 100;
+
+        nleft = Expression "Crop left" ((int) (_width / 4));
+        ntop = Expression "Crop top" ((int) (_height / 4));
+        nwidth = Expression "Crop width" (maxpair 1 ((int) (_width / 2)));
+        nheight = Expression "Crop height" (maxpair 1 ((int) (_height / 2)));
+
+        _result
+            = map_nary (list_5ary extract)
+                [x, nleft.expr, ntop.expr, nwidth.expr, nheight.expr]
+        {
+            extract image left top width height
+                = crop left' top' width' height' image
+            {
+                width' = minpair (to_real width) image.width;
+                height' = minpair (to_real height) image.height;
+                left' = clamp 0 (image.width - width') (to_real left);
+                top' = clamp 0 (image.height - height') (to_real top);
+            }
+        }
+    }
+}
+
+Trim_item = class Menuaction "_Trim" "crop away edges" {
+    action x = class
+        _result {
+        _vislevel = 3;
+
+        thresh = Scale "threshold" 0 100 10;
+        background = Expression "Background" default_background
+        {
+            default_background
+                = map mean (bandsplit (crop 0 0 1 1 x));
+        }
+
+        _result
+            = Region x l t w h
+        {
+            [l, t, w, h] = vips_find_trim [
+                $threshold => thresh.value,
+                $background => background.expr
+            ] x.value;
+        }
+    }
+}
+
+Image_insert_item = class
+    Menuaction "_Insert" "insert a small image into a large image" {
+    action a b
+        = insert_position, is_Group a || is_Group b
+        = insert_area
+    {
+        insert_area = class
+            _result {
+            _check_args = [
+                [a, "a", check_Image],
+                [b, "b", check_Image]
+            ];
+            _vislevel = 3;
+
+            // sort to get smallest first
+            _pred x y = x.width * x.height < y.width * y.height;
+            [_a', _b'] = sortc _pred [a, b];
+
+            place
+                = Area _b' left top width height
+            {
+                // be careful in case b is smaller than a
+                left = maxpair 0 ((_b'.width - _a'.width) / 2);
+                top = maxpair 0 ((_b'.height - _a'.height) / 2);
+                width = minpair _a'.width _b'.width;
+                height = minpair _a'.height _b'.height;
+            }
+
+            _result
+                = insert [] place.left place.top
+                    (cast _b'.format a'') _b'
+            {
+                a'' = crop 0 0 place.width place.height _a';
+            }
+        }
+
+        insert_position = class
+            _result {
+            _vislevel = 3;
+
+            position = Option "Position" [
+                "North-west",
+                "North",
+                "North-east",
+                "West",
+                "Centre",
+                "East",
+                "South-west",
+                "South",
+                "South-east",
+                "Specify in pixels"
+            ] 4;
+            left = Expression "Pixels from left" 0;
+            top = Expression "Pixels from top" 0;
+
+            _result
+                = map_binary process a b
+            {
+                process a b
+                    = insert [] left top (cast b.format a) b,
+                        position == 9
+                    = insert [] xp yp (cast b.format a) b
+                {
+                    xr = b.width - a.width;
+                    yr = b.height - a.height;
+                    xp = [0, xr / 2, xr]?((int) (position % 3));
+                    yp = [0, yr / 2, yr]?((int) (position / 3));
+                }
             }
         }
     }

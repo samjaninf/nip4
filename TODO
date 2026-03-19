@@ -1,8 +1,10 @@
 - on test_image.ws
 
-	- remove all im_ use
-
     - add missing tests
+
+        reached "perspective distort"
+
+            fails with "bad args to transform"
 
 - "pattern match failed" is a terrible error message
 
