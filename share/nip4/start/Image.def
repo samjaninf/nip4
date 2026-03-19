@@ -2210,10 +2210,17 @@ Image_join_item = class
             // TODO: chop-into-tiles should return an array class which
             // displays as group but does not have the looping behaviour?
             _result
-                = (image_set_origin 0 0 @
+                = (set_origin 0 0 @
                     foldl1 (jointb vshim.value bg_colour.expr halign.value) @
                     map (foldl1 (joinlr hshim.value
-                        bg_colour.expr valign.value))) (to_list (to_list x));
+                        bg_colour.expr valign.value))) (to_list (to_list x))
+            {
+                set_origin x y image
+                    = copy [
+                        $xoffset => to_real x,
+                        $yoffset => to_real y
+                    ] image;
+            }
         }
     }
 
@@ -2246,10 +2253,17 @@ Image_join_item = class
             }
 
             _result
-                = (image_set_origin 0 0 @
+                = (set_origin 0 0 @
                     foldl1 (jointb vshim.value bg_colour.expr halign.value) @
                     map (foldl1 (joinlr hshim.value
-                        bg_colour.expr valign.value))) (to_list (to_list _l'));
+                        bg_colour.expr valign.value))) (to_list (to_list _l'))
+            {
+                set_origin x y image
+                    = copy [
+                        $xoffset => to_real x,
+                        $yoffset => to_real y
+                    ] image;
+            }
         }
     }
 }

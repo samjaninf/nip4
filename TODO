@@ -1,13 +1,14 @@
 - on test_image.ws
 
-	on image join
+	- remove all im_ use
 
-        image_set_origin is not defined
-
+    - add missing tests
 
 - "pattern match failed" is a terrible error message
 
     add a diagnostic line, ideally with source code line number
+
+- unit_test should (error "some tests failed") if any tests fail
 
 - try:
 
