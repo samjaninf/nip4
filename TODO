@@ -1,6 +1,13 @@
 - on test_image.ws
 
-	on Straighten
+	on image join
+
+        image_set_origin is not defined
+
+
+- "pattern match failed" is a terrible error message
+
+    add a diagnostic line, ideally with source code line number
 
 - try:
 

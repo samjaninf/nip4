@@ -1247,6 +1247,7 @@ reduce_start:
 		case SYM_PARAM:
 			/* All params should be taken out by var abstract.
 			 */
+			printf("stray param: %s\n", symbol_name(PEGETSYMBOL(&np)));
 			g_assert(FALSE);
 			break;
 

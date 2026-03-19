@@ -2505,23 +2505,16 @@ clamp min max x
     ] (get_image x);
 }
 
-linear a b x
+linear options a b x
     = oo_unary_function linear_op x, is_class x
-    = vips_linear [] (get_image x) (to_real a) (to_real b), has_image x
+    = vips_linear options (get_image x) (to_real_list a) (to_real_list b),
+        has_image x
     = a * x + b
 {
-    linear_op = Operator "linear" (linear a b)
+    linear_op = Operator "linear" (linear options a b)
         Operator_type.ARITHMETIC false;
-}
 
-linearu a b x
-    = oo_unary_function linearu_op x, is_class x
-    = vips_linear [$uchar => true] (get_image x) (to_real a) (to_real b),
-        has_image x
-    = (int) (a * x + b)
-{
-    linearu_op = Operator "linearu" (linearu a b)
-        Operator_type.ARITHMETIC false;
+    to_real_list x = (to_vector x).value;
 }
 
 sdf options width height shape

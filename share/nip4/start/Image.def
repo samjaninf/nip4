@@ -1810,7 +1810,7 @@ Image_SDF_item = class
             antialias = Toggle "Antialias" true;
 
             _result
-                = linearu (-255) 255 (clamp 0 1 x), antialias
+                = linear [$uchar => true] (-255) 255 (clamp 0 1 x), antialias
                 = clamp 0 1 x < 0.5;
         }
     }
@@ -1818,47 +1818,35 @@ Image_SDF_item = class
 
 Image_crop_item = class
     Menuaction "_Crop" "extract a rectangular area from an image" {
-    action x
-        = crop x [l, t, w, h]
-    {
-        fields = [
-            [has_left, get_left, 0],
-            [has_top, get_top, 0],
-            [has_width, get_width, 100],
-            [has_height, get_height, 100]
-        ];
-
-        [l, t, w, h]
-            = map get_default fields
-        {
-            get_default line
-                = get x, has x
-                = default
-            {
-                [has, get, default] = line;
-            }
-        }
-    }
-
-    crop x geo = class
+    action x = class
         _result {
         _vislevel = 3;
 
-        l = Expression "Crop left" ((int) (geo?0 + geo?2 / 4));
-        t = Expression "Crop top" ((int) (geo?1 + geo?3 / 4));
-        w = Expression "Crop width" (maxpair 1 ((int) (geo?2 / 2)));
-        h = Expression "Crop height" (maxpair 1 ((int) (geo?3 / 2)));
+        _width
+            = get_width x.value?0, is_Group x && has_width x.value?0
+            = get_width x, has_width x
+            = 100;
+        _height
+            = get_height x.value?0, is_Group x && has_height x.value?0
+            = get_height x, has_height x
+            = 100;
+
+        nleft = Expression "Crop left" ((int) (_width / 4));
+        ntop = Expression "Crop top" ((int) (_height / 4));
+        nwidth = Expression "Crop width" (maxpair 1 ((int) (_width / 2)));
+        nheight = Expression "Crop height" (maxpair 1 ((int) (_height / 2)));
 
         _result
-            = map_nary (list_5ary extract) [x, l.expr, t.expr, w.expr, h.expr]
+            = map_nary (list_5ary extract)
+                [x, nleft.expr, ntop.expr, nwidth.expr, nheight.expr]
         {
-            extract im l t w h
-                = crop left' top' width' height' im
+            extract image left top width height
+                = crop left' top' width' height' image
             {
-                width' = minpair (to_real w) im.width;
-                height' = minpair (to_real h) im.height;
-                left' = clamp 0 (im.width - width') (to_real l);
-                top' = clamp 0 (im.height - height') (to_real t);
+                width' = minpair (to_real width) image.width;
+                height' = minpair (to_real height) image.height;
+                left' = clamp 0 (image.width - width') (to_real left);
+                top' = clamp 0 (image.height - height') (to_real top);
             }
         }
     }
