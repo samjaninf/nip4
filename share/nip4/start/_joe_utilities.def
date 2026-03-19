@@ -339,7 +339,7 @@ frame_position_image im ref os colour= result
 	{
 	background = image_new_from_image [$pixel => colour] im ref.width ref.height;
 
-	result = insert_noexpand xp yp im background
+	result = insert [] xp yp im background
 		{
 		xp = (ref.width - im.width)/2;
 		yp = (ref.height - im.height - os)/2;

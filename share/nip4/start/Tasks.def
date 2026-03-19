@@ -912,7 +912,7 @@ Manual_balance_item = class
 
             _result
                 = im1, Options.pause
-                = Image (im_insert im1.value patch r1.left r1.top)
+                = Image (insert [] im1.value patch r1.left r1.top)
             {
                 r2 = Region im2 p2.left p2.top r1.width r1.height;
                 ref_meanmax = so_meanmax (if mask then 0 else r1);

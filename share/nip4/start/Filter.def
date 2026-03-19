@@ -950,9 +950,8 @@ Filter_blend_item = class
                         = grey [] blend_width' output_height, orientation == 0
                         = rot90 (grey [] blend_width' output_width);
                     condition
-                        = insert_noexpand start 0 ramp background?0,
-                            orientation == 0
-                        = insert_noexpand 0 start ramp background?1;
+                        = insert [] start 0 ramp background?0, orientation == 0
+                        = insert [] 0 start ramp background?1;
                 }
             }
         }
@@ -1262,7 +1261,8 @@ Filter_drop_shadow_item = class
                 // wrap up the input image ... put the shadow colour
                 // around it, so if we are outputting a separate
                 // alpha the shadow colour will be set correctly
-                fg = insert (image_rect.left - final_rect.left)
+                fg = insert [$expand => true]
+                    (image_rect.left - final_rect.left)
                     (image_rect.top - final_rect.top)
                     image.value shadow_image;
 

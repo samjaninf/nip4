@@ -337,7 +337,7 @@ meanze x
         // histogram, knock out zeros
         hist = hist_find i;
         black = image_new_from_image [] hist 1 1;
-        histze = insert 0 0 black hist;
+        histze = insert [] 0 0 black hist;
 
         // matching identity
         iden = vips_identity [
@@ -994,27 +994,16 @@ blend cond in1 in2
     }
 }
 
-// do big first: we want to keep big's class, if possible
-// eg. big is a Plot, small is a 1x1 Image
-insert x y small big
+insert options x y small big
+    // do big first: we want to keep big's class, if possible
+    // eg. big is a Plot, small is a 1x1 Image
     = oo_binary'_function insert_op small big, is_class big
     = oo_binary_function insert_op small big, is_class small
-    = vips_insert [$expand => true] big small (to_real x) (to_real y),
+    = vips_insert options big small (to_real x) (to_real y),
         is_image small && is_image big
     = error (_ "bad arguments to " ++ "insert")
 {
-    insert_op = Operator "insert" (insert x y)
-        Operator_type.COMPOUND_REWRAP false;
-}
-
-insert_noexpand x y small big
-    = oo_binary_function insert_noexpand_op small big, is_class small
-    = oo_binary'_function insert_noexpand_op small big, is_class big
-    = vips_insert [] big small (to_real x) (to_real y),
-        is_image small && is_image big
-    = error (_ "bad arguments to " ++ "insert_noexpand")
-{
-    insert_noexpand_op = Operator "insert_noexpand" (insert_noexpand x y)
+    insert_op = Operator "insert" (insert options x y)
         Operator_type.COMPOUND_REWRAP false;
 }
 
@@ -1035,35 +1024,35 @@ decode im
 measure_draw across down measure image
     = mark
 {
-     patch_width = image.width / across;
-     sample_width = patch_width * (measure / 100);
-     left_margin = (patch_width - sample_width) / 2;
-     patch_height = image.height / down;
-     sample_height = patch_height * (measure / 100);
-     top_margin = (patch_height - sample_height) / 2;
+    patch_width = image.width / across;
+    sample_width = patch_width * (measure / 100);
+    left_margin = (patch_width - sample_width) / 2;
+    patch_height = image.height / down;
+    sample_height = patch_height * (measure / 100);
+    top_margin = (patch_height - sample_height) / 2;
 
-     cods = [[x * patch_width + left_margin, y * patch_height + top_margin] ::
-         y <- [0 .. down - 1]; x <- [0 .. across - 1]];
-     x = map (extract 0) cods;
-     y = map (extract 1) cods;
+    cods = [[x * patch_width + left_margin, y * patch_height + top_margin] ::
+        y <- [0 .. down - 1]; x <- [0 .. across - 1]];
+    x = map (extract 0) cods;
+    y = map (extract 1) cods;
 
-     outer = Image (image_new [$pixel => 255] sample_width sample_height);
-     inner = Image (image_new [] (sample_width - 4) (sample_height - 4));
-     patch = insert 2 2 inner outer;
+    outer = Image (image_new [$pixel => 255] sample_width sample_height);
+    inner = Image (image_new [] (sample_width - 4) (sample_height - 4));
+    patch = insert [] 2 2 inner outer;
 
-     bg = Image (image_new [] image.width image.height);
+    bg = Image (image_new [] image.width image.height);
 
-     mask = Image (insertset bg.value patch.value x y);
+    mask = Image (insertset bg.value patch.value x y);
 
-     image' = colourspace [] $srgb image;
+    image' = colourspace [] $srgb image;
 
-     mark = if mask then Vector [0, 255, 0] else image';
+    mark = if mask then Vector [0, 255, 0] else image';
 
     insertset main sub x y
           = foldr add_another main (zip2 x y)
-     {
-          add_another [x, y] im = insert x y sub im;
-     }
+    {
+          add_another [x, y] im = insert [] x y sub im;
+    }
 }
 
 measure_sample across down measure image
@@ -1133,7 +1122,7 @@ joinlr a b
 {
     joinlr_op = Operator "joinlr" joinlr Operator_type.COMPOUND_REWRAP false;
 
-    joinlr_im a b = insert (get_width a) 0 b a;
+    joinlr_im a b = insert [$expand => true] (get_width a) 0 b a;
 }
 
 jointb a b
@@ -1145,7 +1134,7 @@ jointb a b
 {
     jointb_op = Operator "jointb" jointb Operator_type.COMPOUND_REWRAP false;
 
-    jointb_im a b = insert 0 (get_height a) b a;
+    jointb_im a b = insert [$expand => true] 0 (get_height a) b a;
 }
 
 conj x
@@ -1712,7 +1701,7 @@ draw_flood x y ink image
        = vips_draw_flood [$equal => false] in ink start_x start_y;
 }
 
-/* This version of draw_rect uses insert_noexpand and should be fast, even for
+/* This version of draw_rect uses insert and should be fast, even for
  * huge images.
  */
 draw_rect_width x y w h f t ink image
@@ -1727,13 +1716,12 @@ draw_rect_width x y w h f t ink image
         Operator_type.COMPOUND_REWRAP false;
 
     my_draw_rect_width image x y w h f t ink
-        = insert x' y' (block w' h') image, f == 1
-        = (insert x' y' (block w' t) @
-            insert (x' + w' - t) y' (block t h') @
-            insert x' (y' + h' - t) (block w' t) @
-            insert x' y' (block t h')) image
+        = insert [] x' y' (block w' h') image, f == 1
+        = (insert [] x' y' (block w' t) @
+            insert [] (x' + w' - t) y' (block t h') @
+            insert [] x' (y' + h' - t) (block w' t) @
+            insert [] x' y' (block t h')) image
     {
-        insert = insert_noexpand;
         block w h = image_new_from_image [$pixel => ink'] image w h;
 
         ink'
@@ -1998,8 +1986,8 @@ imagearray_chop tile_width tile_height hoverlap voverlap i
 imagearray_assemble hoverlap voverlap il
     = (copy [$xoffset => 0, $yoffset => 0] @ foldl1 tbj @ map (foldl1 lrj)) il
 {
-    lrj l r = insert (get_width l + hoverlap) 0 r l;
-    tbj t b = insert 0 (get_height t + voverlap) b t;
+    lrj l r = insert [$expand => true] (get_width l + hoverlap) 0 r l;
+    tbj t b = insert [$expand => true] 0 (get_height t + voverlap) b t;
 }
 
 /* Generate an nxn identity matrix.
@@ -2531,6 +2519,10 @@ zone options width height
 
 eye options width height
     = vips_eye options (to_real width) (to_real height);
+
+fractsurf options dimension width height
+    = vips_fractsurf options
+        (to_real width) (to_real height) (to_real dimension);
 
 /* simple unit tester ... use with eg.
  *

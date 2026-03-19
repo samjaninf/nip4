@@ -132,7 +132,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 nsize = Expression "Image size (pixels)" 64;
                 dimension = Scale "Dimension" 2.001 2.999 2.001;
 
-                _result = Image (im_fractsurf (to_real nsize) dimension.value);
+                _result = Image (fractsurf [] dimension nsize nsize);
             }
         }
 
@@ -428,11 +428,9 @@ Image_new_item = class Menupullright "_New" "make new things" {
                 _result
                     = Image im
                 {
-                    gen
-                        = im_grey, foption == 0
-                        = im_fgrey;
                     w = to_real nwidth;
                     h = to_real nheight;
+                    gen = grey [$uchar => foption == 0];
                     im
                         = gen w h, orientation == 0
                         = rot90 (gen h w);
@@ -979,8 +977,8 @@ Image_levels_item = class
                 = Expression "Image maximum" mx
             {
                 mx
-                        = Format._maxval x.format, has_format x
-                        = 255;
+                    = Format._maxval x.format, has_format x
+                    = 255;
             }
 
             _result
@@ -1282,7 +1280,7 @@ Image_transform_item = class
                     = map_unary process x
                 {
                     process image
-                        = insert_noexpand xp yp image background
+                        = insert [] xp yp image background
                     {
                         width = image.width;
                         height = image.height;
@@ -1501,13 +1499,12 @@ Image_transform_item = class
                     bp2'' = norm bp1 bp2;
 
                     b'''
-                        = im_match_linear_search a' b''
-                            ap1.left ap1.top bp1.left bp1.top
-                            ap2''.left ap2''.top bp2''.left bp2''.top
-                            object window,
-                                // we can't search if lock is on
-                                refine && !lock
-                        = im_match_linear a' b''
+                        = vips_match [
+                            $hwindow => object,
+                            $harea => window,
+                            // we can't search if lock is on
+                            $search => refine && !lock
+                          ]
                             ap1.left ap1.top bp1.left bp1.top
                             ap2''.left ap2''.top bp2''.left bp2''.top;
                 }
@@ -1904,7 +1901,7 @@ Image_insert_item = class
             }
 
             _result
-                = insert_noexpand place.left place.top
+                = insert [] place.left place.top
                     (cast _b'.format a'') _b'
             {
                 a'' = crop 0 0 place.width place.height _a';
@@ -1931,12 +1928,12 @@ Image_insert_item = class
             top = Expression "Pixels from top" 0;
 
             _result
-                = map_binary insert a b
+                = map_binary process a b
             {
-                insert a b
-                    = insert_noexpand left top (cast b.format a) b,
+                process a b
+                    = insert [] left top (cast b.format a) b,
                         position == 9
-                    = insert_noexpand xp yp (cast b.format a) b
+                    = insert [] xp yp (cast b.format a) b
                 {
                     xr = b.width - a.width;
                     yr = b.height - a.height;
@@ -2063,15 +2060,13 @@ Image_draw_item = class
             py = Expression "Top" 50;
             wid = Expression "Width" 100;
             thick = Scale "Line thickness" 1 50 3;
-            text = String "Dimension text" "50μm";
-            font = Fontname "Use font" Workspaces.Preferences.PAINTBOX_FONT;
+            text = Text false "50μm";
             pos = Option "Position Text" ["Above", "Below"] 1;
             vp = Option "Dimension by" [
                 "Inner Vertical Edge",
                 "Centre of Vertical",
                 "Outer Vertical Edge"
             ] 1;
-            dpi = Expression "DPI" 100;
             ink = Colour "Lab" [50,0,0];
 
             _result
@@ -2081,7 +2076,7 @@ Image_draw_item = class
                     = blend (Image scale) ink' im
                 {
                     // make an ink compatible with the image
-                    ink' = colour_transform_to (get_type im) ink;
+                    ink' = colourspace [] (get_interpretation im) ink;
 
                     x = to_real px;
                     y = to_real py;
@@ -2093,7 +2088,7 @@ Image_draw_item = class
                     bg = image_new_from_image [] im (get_width im) (get_height im);
                     draw_block x y w t im =
                         draw_rect_width x y w t true 1 [255] im;
-                    label = im_text text.value font.value w 1 d;
+                    label = text._generate w 1;
                     lw = get_width label;
                     lh = get_height label;
                     ly = [y - lh - t, y + 2 * t]?pos;
@@ -2106,7 +2101,7 @@ Image_draw_item = class
                     scale = (draw_block x y w t @
                         draw_block vx?0 (y - 2 * t) t (t * 5) @
                         draw_block vx?1 (y - 2 * t) t (t * 5) @
-                        insert_noexpand (x + w / 2 - lw / 2) ly label)
+                        insert [] (x + w / 2 - lw / 2) ly label)
                         bg;
                 }
             }
@@ -2136,8 +2131,8 @@ Image_join_item = class
         yb = [0, maxpair 0 ((a.height - b.height)/2),
             maxpair 0 (a.height - b.height)];
 
-        im1 = insert_noexpand 0 ya?align a back;
-        im2 = insert_noexpand (a.width + shim) yb?align b im1;
+        im1 = insert [] 0 ya?align a back;
+        im2 = insert [] (a.width + shim) yb?align b im1;
     }
 
     jointb shim bg align a b
@@ -2153,8 +2148,8 @@ Image_join_item = class
         xb = [0, maxpair 0 ((a.width - b.width)/2),
             maxpair 0 (a.width - b.width)];
 
-        im1 = insert_noexpand xa?align 0 a back;
-        im2 = insert_noexpand xb?align (a.height + shim) b im1;
+        im1 = insert [] xa?align 0 a back;
+        im2 = insert [] xb?align (a.height + shim) b im1;
     }
 
     halign_names = ["Top", "Centre", "Bottom"];
@@ -2286,8 +2281,10 @@ Image_tile_item = class
                 = tile across down image, repeat == 0
                 = tile across down image''
             {
-                image' = insert image.width 0 (fliplr image) image;
-                image'' = insert 0 image.height (fliptb image') image';
+                image' = insert [$expand => true]
+                    image.width 0 (fliplr image) image;
+                image'' = insert [$expand => true]
+                    0 image.height (fliptb image') image';
             }
         }
     }
