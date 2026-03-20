@@ -35,7 +35,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
     }
 
     Image_new_from_image_item = class
-        Menuaction "_From Image" "make a new image based on image x" {
+        Menuaction "_From image" "make a new image based on image x" {
         action x = class
             Image _result {
                 _vislevel = 3;
@@ -48,7 +48,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
     }
 
     Image_region_item = class
-        Menupullright "_Region on Image" "make a new region on an image" {
+        Menupullright "_Region on image" "make a new region on an image" {
         Region_item = Region_new_item.Region_item;
         Arrow_item = Region_new_item.Arrow_item;
         Mark_item = Region_new_item.Mark_item;
@@ -92,7 +92,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
     }
 
     Xy_item = class
-        Menuaction "_XY Image"
+        Menuaction "_XY image"
             "make a two band image whose pixel values are their coordinates" {
         action = class
             _result {

@@ -1,11 +1,6 @@
 - on test_image.ws
 
-    - check menu item capitalisation
-
     - add some more self-tests
-
-- unit_test should (error "some tests failed") if any tests fail
-
 
 
 
