@@ -2,11 +2,6 @@
 
     add a diagnostic line, ideally with source code line number
 
-- draw funcs have side effects
-
-    not copying images before calling draw?
-
-    apparent in test_image.ws
 
 
 

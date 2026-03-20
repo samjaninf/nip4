@@ -152,9 +152,8 @@ vo_gvalue_copy(const GValue *in, GValue *out)
 		VipsImage *image = VIPS_IMAGE(g_value_get_object(out));
 
 		VipsImage *copy;
-		if (!(copy = vips_image_copy_memory(image))) {
+		if (vips_copy(image, &copy, NULL)) {
 			error_top(_("Bad argument"));
-			error_sub(_("unable to copy value"));
 			error_vips();
 			return FALSE;
 		}
