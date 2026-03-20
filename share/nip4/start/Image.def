@@ -1641,7 +1641,7 @@ Image_alpha_item = class
             }
             prem = Toggle "Images have premultiplied alpha" false;
 
-            _value = composite2 [
+            _value = composite [
                 $x => to_real hmove,
                 $y => to_real vmove,
                 $compositing_space => space.value_key,

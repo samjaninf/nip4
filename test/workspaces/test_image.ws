@@ -256,7 +256,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="12561" y="5" open="true" selected="false" sform="false" next="11" name="CB" caption="Image / Join">
+    <Column x="10704" y="5" open="true" selected="false" sform="false" next="11" name="CB" caption="Image / Join">
       <Subcolumn vislevel="3">
         <Row popup="false" name="CB1">
           <Rhs vislevel="0" flags="4">
@@ -480,7 +480,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="13207" y="5" open="true" selected="false" sform="false" next="5" name="DB" caption="Image / Tile">
+    <Column x="11350" y="5" open="true" selected="false" sform="false" next="5" name="DB" caption="Image / Tile">
       <Subcolumn vislevel="3">
         <Row popup="false" name="DB1">
           <Rhs vislevel="0" flags="4">
@@ -1420,7 +1420,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="11830" y="5" open="true" selected="false" sform="false" next="20" name="D" caption="Image / Select">
+    <Column x="9973" y="5" open="true" selected="true" sform="false" next="20" name="D" caption="Image / Select">
       <Subcolumn vislevel="3">
         <Row popup="false" name="D17">
           <Rhs vislevel="0" flags="4">
@@ -2050,7 +2050,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="10085" y="5" open="true" selected="false" sform="false" next="11" name="L" caption="Image / Crop">
+    <Column x="12691" y="5" open="true" selected="false" sform="false" next="11" name="L" caption="Image / Crop">
       <Subcolumn vislevel="3">
         <Row popup="false" name="L1">
           <Rhs vislevel="0" flags="4">
@@ -2154,7 +2154,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="9482" y="5" open="true" selected="false" sform="false" next="10" name="M" caption="Image / SDF">
+    <Column x="12088" y="5" open="true" selected="false" sform="false" next="10" name="M" caption="Image / SDF">
       <Subcolumn vislevel="3">
         <Row popup="false" name="M1">
           <Rhs vislevel="3" flags="7">
@@ -2405,7 +2405,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="10796" y="5" open="true" selected="false" sform="false" next="4" name="N" caption="Image / Trim">
+    <Column x="13401" y="5" open="true" selected="false" sform="false" next="4" name="N" caption="Image / Trim">
       <Subcolumn vislevel="3">
         <Row popup="false" name="N1">
           <Rhs vislevel="0" flags="4">
@@ -2521,7 +2521,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="11342" y="5" open="true" selected="false" sform="false" next="4" name="O" caption="Image / Insert">
+    <Column x="13947" y="5" open="true" selected="false" sform="false" next="4" name="O" caption="Image / Insert">
       <Subcolumn vislevel="3">
         <Row popup="false" name="O1">
           <Rhs vislevel="1" flags="1">
@@ -2836,7 +2836,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="8051" y="5" open="true" selected="true" sform="false" next="6" name="R" caption="Image / Transform">
+    <Column x="8051" y="5" open="true" selected="false" sform="false" next="6" name="R" caption="Image / Transform">
       <Subcolumn vislevel="3">
         <Row popup="false" name="R1">
           <Rhs vislevel="0" flags="4">
@@ -3024,6 +3024,98 @@
               </Row>
             </Subcolumn>
             <iText formula="Image_transform_item.Image_perspective_match_item.action R2 R3"/>
+          </Rhs>
+        </Row>
+      </Subcolumn>
+    </Column>
+    <Column x="9482" y="5" open="true" selected="false" sform="false" next="7" name="S" caption="Image / Alpha">
+      <Subcolumn vislevel="3">
+        <Row popup="false" name="S1">
+          <Rhs vislevel="1" flags="1">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="B1"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="S2">
+          <Rhs vislevel="2" flags="5">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="S1?1 &lt; 128"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="S3">
+          <Rhs vislevel="1" flags="1">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="S1 ++ S2"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="S4">
+          <Rhs vislevel="1" flags="1">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="S1 + Vector [50, 0, 0]"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="S6">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <Subcolumn vislevel="1">
+              <Row name="bg">
+                <Rhs vislevel="0" flags="4">
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="fg">
+                <Rhs vislevel="0" flags="4">
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="super">
+                <Rhs vislevel="0" flags="4">
+                  <iImage show_status="false" show_convert="false"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="mode">
+                <Rhs vislevel="1" flags="1">
+                  <Option caption="Blend" labelsn="29" labels0="Clear" labels1="Source" labels2="Over" labels3="In" labels4="Out" labels5="Atop" labels6="Dest" labels7="Dest over" labels8="Dest in" labels9="Dest out" labels10="Dest atop" labels11="XOR" labels12="Add" labels13="Saturate" labels14="Multiply" labels15="Screen" labels16="Overlay" labels17="Darken" labels18="Lighten" labels19="Colour dodge" labels20="Colour burn" labels21="Hard light" labels22="Soft light" labels23="Difference" labels24="Exclusion" labels25="Hue" labels26="Saturation" labels27="Colour" labels28="Luminosity" value="2"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="space">
+                <Rhs vislevel="1" flags="1">
+                  <Option/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="hmove">
+                <Rhs vislevel="1" flags="1">
+                  <Slider caption="Horizontal move by" from="-496" to="496" value="62"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="vmove">
+                <Rhs vislevel="1" flags="1">
+                  <Slider caption="Vertical move by" from="-688" to="688" value="107.5"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="prem">
+                <Rhs vislevel="1" flags="1">
+                  <Toggle/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+            </Subcolumn>
+            <iText formula="Image_alpha_item.Composite2_item.action S4 S3"/>
           </Rhs>
         </Row>
       </Subcolumn>
