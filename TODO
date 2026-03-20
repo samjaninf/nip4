@@ -1,16 +1,17 @@
 - on test_image.ws
 
-    - add missing tests
-
-        add segment and fill next
-
     - check menu item capitalisation
+
+    - add some more self-tests
+
+- unit_test should (error "some tests failed") if any tests fail
+
+
+
 
 - "pattern match failed" is a terrible error message
 
     add a diagnostic line, ideally with source code line number
-
-- unit_test should (error "some tests failed") if any tests fail
 
 - try:
 
@@ -23,6 +24,14 @@
   should be eg.:
 
 	<VipsInterpolate bilinear 0x3894567>
+
+- draw funcs have side effects
+
+    not copying images before calling draw?
+
+    apparent in test_image.ws
+
+- edit column caption, should trigger ws layout on enter
 
 - on test_histogram
 

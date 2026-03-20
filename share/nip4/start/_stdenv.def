@@ -2245,7 +2245,7 @@ segment x
     segment_op = Operator "segment" segment Operator_type.COMPOUND_REWRAP false;
 
     [image, nsegs] = vips_labelregions [$segments => true] x;
-    image' = set_header "n-segments" nsegs image;
+    image' = set_meta "n-segments" nsegs image;
 }
 
 point a b
@@ -2533,11 +2533,19 @@ fractsurf options dimension width height
  *
  */
 unit_test test_list
-    = concat (map print_verbose test_list), verbose
-    = map (const '.') pass ++ "\n" ++
-      concat (map print_fail fail)
+     = body ++ footer
 {
-    verbose = any (map (member ["--list", "-L"]) argv);
+    body
+        = concat (map print_list test_list), list
+        = map (const '.') pass ++ "\n";
+
+    footer
+        = "\ntests failed:\n" ++
+            concat (map print_fail fail) ++
+            error "abort", len fail > 0
+        = [];
+
+    list = any (map (member ["--list", "-L"]) argv);
 
     split fn l
         = foldr split_item [[], []] l
@@ -2557,7 +2565,7 @@ unit_test test_list
     [pass, fail] = split (extract 0) test_list;
     print_fail [pass, fail] = "FAIL: " ++ fail ++ "\n";
 
-    print_verbose [test, name]
+    print_list [test, name]
         = name ++ ": " ++ label ++ "\n"
     {
         label
