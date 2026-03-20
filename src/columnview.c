@@ -84,6 +84,9 @@ columnview_caption_edit_activate(GtkEntry *self, gpointer user_data)
 
 	cview->state = COL_WAIT;
 	vobject_refresh_queue(VOBJECT(cview));
+
+	// since the column width may have changed
+	workspace_queue_layout(ws);
 }
 
 static void

@@ -1554,11 +1554,17 @@ compile_defs_check(Compile *compile)
 	return TRUE;
 }
 
-/* Generate a parsetree for a "pattern match failed" error.
+/* Generate a parsetree for a runtime error.
  */
 static ParseNode *
-compile_pattern_error(Compile *compile)
+compile_errorf(Compile *compile, const char *fmt, ...)
 {
+	va_list ap;
+
+	va_start(ap, fmt);
+	char *message = g_strdup_vprintf(fmt, ap);
+	va_end(ap);
+
 	ParseNode *left;
 	ParseConst n;
 	ParseNode *right;
@@ -1566,7 +1572,7 @@ compile_pattern_error(Compile *compile)
 
 	left = tree_leaf_new(compile, "error");
 	n.type = PARSE_CONST_STR;
-	n.val.str = g_strdup(_("pattern match failed"));
+	n.val.str = message;
 	right = tree_const_new(compile, n);
 	node = tree_appl_new(compile, left, right);
 
@@ -1596,7 +1602,9 @@ compile_defs_codegen_default(Compile *compile)
 		symbol_parameter_init(param);
 	}
 
-	def->expr->compile->tree = compile_pattern_error(def->expr->compile);
+	def->expr->compile->tree = compile_errorf(def->expr->compile,
+		"No cases match\nno matching definition for call to \"%s\"",
+		symbol_name(compile->sym));
 
 	compile->has_default = TRUE;
 
@@ -2969,7 +2977,8 @@ compile_pattern_leaf(PatternInfo *info, Symbol *leaf)
 		tree_leaf_new(compile, IOBJECT(info->match)->name),
 		compile_pattern_access(compile,
 			info->value, info->trail, info->depth - 1),
-		compile_pattern_error(compile));
+		compile_errorf(compile, "Pattern match failed\n"
+			"unable to reference \"%s\"", symbol_name(leaf)));
 
 	info->built_syms = g_slist_append(info->built_syms, sym);
 

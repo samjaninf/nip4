@@ -101,9 +101,10 @@ image_value_caption(ImageValue *value, VipsBuf *buf)
 	/* Show the filename if this ii came from a file, otherwise show
 	 * the class.
 	 */
-	if (ii && imageinfo_is_from_file(ii) && classmodel->filename) {
+	if (ii &&
+		imageinfo_is_from_file(ii) &&
+		classmodel->filename) {
 		g_autofree char *basename = g_path_get_basename(classmodel->filename);
-
 		vips_buf_appends(buf, basename);
 	}
 	else if (!heapmodel_name(HEAPMODEL(classmodel), buf))
