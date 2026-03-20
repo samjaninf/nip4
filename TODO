@@ -8,7 +8,6 @@
 
     apparent in test_image.ws
 
-- edit column caption, should trigger ws layout on enter
 
 
 - test_object.def fails
