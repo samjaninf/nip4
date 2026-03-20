@@ -3,31 +3,6 @@
     - add some more self-tests
 
 
-
-- "pattern match failed" is a terrible error message
-
-    add a diagnostic line, ideally with source code line number
-
-- try:
-
-	Interpolate._new [] 0
-
-  displays as:
-
-	<>
-
-  should be eg.:
-
-	<VipsInterpolate bilinear 0x3894567>
-
-- draw funcs have side effects
-
-    not copying images before calling draw?
-
-    apparent in test_image.ws
-
-- edit column caption, should trigger ws layout on enter
-
 - on test_histogram
 
     vips_case / vips_switch should be in histogram?
