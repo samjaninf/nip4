@@ -1354,92 +1354,9 @@ Image_transform_item = class
         }
     }
 
-    Image_perspective_item = Perspective_item;
-
-    Image_rubber_item = class
-        Menupullright "Ru_bber Sheet"
-            "automatically warp images to superposition" {
-        rubber_interp = Option "Interpolation" ["Nearest", "Bilinear"] 1;
-        rubber_order = Option "Order" ["0", "1", "2", "3"] 1;
-        rubber_wrap = Toggle "Wrap image edges" false;
-
-        // a transform ... a matrix, plus the size of the image the
-        // matrix was made for
-        Transform matrix image_width image_height = class
-            matrix {
-            // scale a transform ... if it worked for a m by n image, make
-            // it work for a (m * xfac) by (y * yfac) image
-            rescale xfac yfac
-                = Transform (Matrix (map2 (map2 multiply) matrix.value facs))
-                    (image_width * xfac) (image_height * yfac)
-            {
-                facs = [
-                    [xfac, yfac],
-                    [1, 1],
-                    [1, 1],
-                    [1 / xfac, 1 / yfac],
-                    [1 / xfac, 1 / yfac],
-                    [1 / xfac, 1 / yfac]
-                ];
-            }
-        }
-
-        // yuk!!!! fix is_instanceof to not need absolute names
-        is_Transform = is_instanceof
-            "Image_transform_item.Image_rubber_item.Transform";
-
-        Find_item = class
-            Menuaction "_Find"
-                ("find a transform which will map sample image onto " ++
-                "reference") {
-            action reference sample = class
-                _trn {
-                _vislevel = 3;
-
-                // controls
-                order = rubber_order;
-                interp = rubber_interp;
-                wrap = rubber_wrap;
-                max_err = Expression "Maximum error" 0.3;
-                max_iter = Expression "Maximum iterations" 10;
-
-                // transform
-                [sample', trn, err] = transform_search
-                    max_err max_iter order interp wrap
-                    sample reference;
-                transformed_image = Image sample';
-                _trn = Transform trn reference.width reference.height;
-                final_error = err;
-            }
-        }
-
-        Apply_item = class
-            Menuaction "_Apply" "apply a transform to an image" {
-            action a b = class
-                _result {
-                _vislevel = 3;
-
-                // controls
-                interp = rubber_interp;
-                wrap = rubber_wrap;
-
-                _result
-                    = map_binary trans a b
-                {
-                    trans a b
-                        = transform interp wrap t' i
-                    {
-                        // get the transform arg first
-                        [i, t] = sortc (const is_Transform) [a, b];
-                        t' = t.rescale (i.width / t.image_width)
-                            (i.height / t.image_height);
-                    }
-                }
-            }
-        }
-    }
-
     sep1 = Menuseparator;
+
+    Image_perspective_item = Perspective_item;
 
     Match_item = class
         Menuaction "_Linear Match"
@@ -1465,6 +1382,7 @@ Image_transform_item = class
 
             refine = Toggle "Refine selected tie-points" false;
             lock = Toggle "No resize" false;
+            interp = Interpolate.picker $BILINEAR;
 
             _result
                 = map_binary process x y
@@ -1498,13 +1416,16 @@ Image_transform_item = class
                     ap2'' = norm ap1 ap2;
                     bp2'' = norm bp1 bp2;
 
+                    inter = Interpolate._new [] interp.value_key;
+
                     b'''
                         = vips_match [
                             $hwindow => object,
                             $harea => window,
                             // we can't search if lock is on
-                            $search => refine && !lock
-                          ]
+                            $search => refine.value && !lock.value,
+                            $interpolate => inter
+                          ] a' b''
                             ap1.left ap1.top bp1.left bp1.top
                             ap2''.left ap2''.top bp2''.left bp2''.top;
                 }
@@ -2197,14 +2118,15 @@ Image_crop_item = class
         _result {
         _vislevel = 3;
 
-        _width
-            = get_width x.value?0, is_Group x && has_width x.value?0
-            = get_width x, has_width x
-            = 100;
-        _height
-            = get_height x.value?0, is_Group x && has_height x.value?0
-            = get_height x, has_height x
-            = 100;
+        // try to find an image ... for a group, get the first item
+        find_image x
+            = x, is_Image x
+            = find_image x?0, is_list x
+            = find_image x.value, is_class x && has_value x
+            = error "unable to find image";
+
+        _width = get_width (find_image x);
+        _height = get_height (find_image x);
 
         nleft = Expression "Crop left" ((int) (_width / 4));
         ntop = Expression "Crop top" ((int) (_height / 4));

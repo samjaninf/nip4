@@ -2,9 +2,9 @@
 
     - add missing tests
 
-        reached "perspective distort"
+        just done perspective match
 
-            fails with "bad args to transform"
+    - check menu item capitalisation
 
 - "pattern match failed" is a terrible error message
 

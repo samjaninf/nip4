@@ -1091,12 +1091,12 @@ invert x
     invert_op = Operator "invert" invert Operator_type.COMPOUND false;
 }
 
-transform params image
+transform options params image
     = oo_unary_function transform_op image, is_class image
-    = vips_quadratic [] image (to_matrix params), is_image image
+    = vips_quadratic options image (to_matrix params), is_image image
     = error (_ "bad arguments to " ++ "transform")
 {
-    transform_op = Operator "transform" (transform params)
+    transform_op = Operator "transform" (transform options params)
         Operator_type.COMPOUND_REWRAP false;
 }
 

@@ -428,8 +428,13 @@ Perspective_match_item = class
 		bp3 = Mark_relative _b 0.1 0.9;
 		bp4 = Mark_relative _b 0.9 0.9;
 
-		_result = map_binary process x y
-			{
+        interp = Interpolate.picker $BILINEAR;
+
+		_result
+            = map_binary process x y
+        {
+            inter = Interpolate._new [] interp.value_key;
+
 			f1 = _a.width / _b.width;
 			f2 = _a.height / _b.height;
 
@@ -452,20 +457,25 @@ Perspective_match_item = class
 
 			trans = perspective_transform to from;
 
-			process a b = transform 1 0 trans b2
-				{
-				b2 = resize Kernel_linear f1 f2 b, (f1 >= 1 && f2 >= 1) || (f1 >= 1 && f2 >= 1)
-			    	= resize Kernel_linear f1 1 b1
-					{b1 = resize Kernel_linear 1 f2 b;}
-				}
-			}
-		}
-	};
+			process a b
+                = transform [$interpolate => inter] trans b2
+            {
+				b2
+                    = resize Kernel.LINEAR f1 f2 b,
+                        (f1 >= 1 && f2 >= 1) || (f1 >= 1 && f2 >= 1)
+			    	= resize Kernel.LINEAR f1 1 b1
+                {
+                    b1 = resize Kernel.LINEAR 1 f2 b;
+                }
+            }
+        }
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 Perspective_item = class
-	Menuaction "Pe_rspective Distort"
+	Menuaction "Pe_rspective distort"
 		"rotate, scale and skew an image with respect to defined points" {
 	action x = class
 		_result	{
@@ -480,25 +490,33 @@ Perspective_item = class
 
 		_a = find_image x;
 
-		dir = Option "Select distort direction" [ "Distort to points", "Distort to corners" ] 1;
 		ap1 = Mark_relative _a 0.1 0.1;
 		ap2 = Mark_relative _a 0.9 0.1;
 		ap3 = Mark_relative _a 0.9 0.9;
 		ap4 = Mark_relative _a 0.1 0.9;
+		dir = Option "Select distort direction" [
+            "Distort to points",
+            "Distort to corners"
+        ] 1;
+        interp = Interpolate.picker $BILINEAR;
 
-		_result = map_unary process x
-			{
-			trans = [perspective_transform to from, perspective_transform from to]?(dir.value)
-				{
+		_result
+            = map_unary process x
+        {
+            inter = Interpolate._new [] interp.value_key;
+			trans
+                = [perspective_transform to from,
+                   perspective_transform from to]?(dir.value)
+            {
 				rl = sort_pts_clockwise [ap1, ap2, ap3, ap4];
 				to = [(rl?0).left, (rl?0).top, (rl?1).left, (rl?1).top,
 			    	  (rl?2).left, (rl?2).top, (rl?3).left, (rl?3).top];
 				from=[0, 0, (_a.width - 1), 0,
 					  (_a.width - 1), (_a.height - 1), 0, (_a.height - 1)];
-				}
+            }
 
-			process a = transform 1 0 trans a;
-			}
-		}
-	};
+			process a = transform [$interpolate => inter] trans a;
+        }
+    }
+}
 
