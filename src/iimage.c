@@ -92,7 +92,7 @@ iimage_generate_caption(iObject *iobject)
 
 	if (ii) {
 		vips_buf_appends(buf, ", ");
-		iobject_info(IOBJECT(iimage->value.ii), buf, 0);
+		vips_buf_appendi(buf, iimage->value.ii->image);
 	}
 
 	return vips_buf_all(buf);

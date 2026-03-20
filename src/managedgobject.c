@@ -57,6 +57,8 @@ managedgobject_info(iObject *iobject, VipsBuf *buf, int indent)
 
 	if (VIPS_IS_OBJECT(managedgobject->object)) {
 		vips_buf_space(buf, indent);
+		vips_buf_appendf(buf,
+			"%s ", G_OBJECT_TYPE_NAME(managedgobject->object));
 		vips_object_summary(VIPS_OBJECT(managedgobject->object), buf);
 	}
 	else

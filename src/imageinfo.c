@@ -371,7 +371,8 @@ imageinfo_info(iObject *iobject, VipsBuf *buf, int indent)
 	Imageinfo *imageinfo = IMAGEINFO(iobject);
 
 	vips_buf_space(buf, indent);
-	vips_buf_appendi(buf, imageinfo->image);
+	vips_buf_appends(buf, "VipsImage ");
+	vips_object_summary(VIPS_OBJECT(imageinfo->image), buf);
 
 	/* Don't chain up to parent->info(), we don't want all the other
 	 * stuff, this is going to be used for a caption.

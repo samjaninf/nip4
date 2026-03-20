@@ -365,18 +365,12 @@ itext_add_element(VipsBuf *buf, PElement *base,
 			return FALSE;
 		vips_buf_appends(buf, "]");
 	}
-	else if (PEISIMAGE(base)) {
-		vips_buf_appendf(buf, "<");
-		vips_buf_appendi(buf, PEGETIMAGE(base));
-		vips_buf_appendf(buf, " %p", PEGETIMAGE(base));
-		vips_buf_appendf(buf, ">");
-	}
 	else if (PEISMANAGED(base)) {
 		Managed *managed = PEGETMANAGED(base);
 
 		vips_buf_appends(buf, "<");
 		iobject_info(IOBJECT(managed), buf, 0);
-		vips_buf_appends(buf, ">");
+		vips_buf_appendf(buf, ">");
 	}
 	else if (PEISCLASS(base)) {
 		Compile *compile = PEGETCLASSCOMPILE(base);

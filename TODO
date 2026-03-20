@@ -1,3 +1,16 @@
+- "pattern match failed" is a terrible error message
+
+    add a diagnostic line, ideally with source code line number
+
+- draw funcs have side effects
+
+    not copying images before calling draw?
+
+    apparent in test_image.ws
+
+- edit column caption, should trigger ws layout on enter
+
+
 - test_object.def fails
 
     because it can't find the test image
