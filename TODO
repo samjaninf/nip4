@@ -2,6 +2,7 @@
 
     - add some more self-tests
 
+- after Reset on a row, mark dirty and recalc
 
 - on test_histogram
 

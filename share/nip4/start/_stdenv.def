@@ -2639,7 +2639,7 @@ Fourier = class {
 
         _description = [
             [IDEAL, "Ideal"],
-            [GAUSSIAN, "Gaussian"]
+            [GAUSSIAN, "Gaussian"],
             [BUTTERWORTH, "Butterworth"]
         ];
     }
@@ -2651,7 +2651,7 @@ Fourier = class {
 
         _description = [
             [HIGH_LOW, "High/low"],
-            [RING, "Ring"]
+            [RING, "Ring"],
             [BAND, "Band"]
         ];
     }

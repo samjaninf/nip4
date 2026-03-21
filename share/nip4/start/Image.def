@@ -87,8 +87,11 @@ Image_new_item = class Menupullright "_New" "make new things" {
     sep1 = Menuseparator;
 
     SDF_item = class
-        Menuaction "SDF" "construct signed distance fields" {
-        action = Image_SDF_item.New_item.action;
+        Menupullright "SDF" "new signed distance fields" {
+        Circle_item = Image_SDF_item.New_item.Circle_item;
+        Box_item = Image_SDF_item.New_item.Box_item;
+        Rounded_box_item = Image_SDF_item.New_item.Rounded_box_item;
+        Line_item = Image_SDF_item.New_item.Line_item;
     }
 
     Xy_item = class
@@ -2029,34 +2032,120 @@ Image_tile_item = class
 
 Image_SDF_item = class
     Menupullright "SDF" "make and combine signed distance fields" {
+
+    SdfShape = class Enum {
+        CIRCLE = 0;
+        BOX = 1;
+        ROUNDED_BOX = 2;
+        LINE = 3;
+
+        _description = [
+            [CIRCLE, "Circle"],
+            [BOX, "Box"],
+            [ROUNDED_BOX, "Rounded box"],
+            [LINE, "Line"]
+        ];
+    }
+
     New_item = class
-        Menuaction "New" "construct signed distance fields" {
-        action = class
-            _result {
-            _vislevel = 3;
+        Menupullright "New" "make a SDF" {
+        Circle_item = class
+            Menuaction "Circle" "circular signed distance field" {
+            action = class
+                _result {
+                _vislevel = 3;
 
-            # musn't override width and height in the superclass, we need
-            # different names
-            across = Expression "Image width (pixels)" 256;
-            down = Expression "Image height (pixels)" 256;
-            shape = Option "Shape" [
-                "Circle",
-                "Box",
-                "Rounded box",
-                "Line"
-            ] 0;
-            radius = Scale "Radius" 0 100 75;
-            a = Matrix [[across.expr / 2, down.expr / 2]];
-            b = Matrix [[3 * across.expr / 4, 3 * down.expr / 4]];
-            corners = Matrix [[10, 10, 10, 10]];
+                nwidth = Expression "Image width (pixels)" 256;
+                nheight = Expression "Image height (pixels)" 256;
+                cx = Expression "Centre x" (to_real nwidth / 2);
+                cy = Expression "Centre y" (to_real nheight / 2);
+                radius = Scale "Radius"
+                    0 (to_real nwidth / 2) (to_real nwidth / 4);
 
-            _result = Image (sdf [
-                $r => to_real radius,
-                $a => a.value?0,
-                $b => b.value?0,
-                $corners => corners.value?0
-            ] across down shape.value);
+                _result
+                    = Image (sdf [
+                        $r => to_real radius,
+                        $a => [to_real cx, to_real cy]
+                    ] nwidth nheight SdfShape.CIRCLE);
+            }
         }
+
+        Box_item = class
+            Menuaction "Box" "box signed distance field" {
+            action = class
+                _result {
+                _vislevel = 3;
+
+                nwidth = Expression "Image width (pixels)" 256;
+                nheight = Expression "Image height (pixels)" 256;
+                bleft = Expression "Box left" (to_real nwidth / 4);
+                btop = Expression "Box top" (to_real nheight / 4);
+                bright = Expression "Box right" (3 * to_real nwidth / 4);
+                bbottom = Expression "Box bottom" (3 * to_real nheight / 4);
+
+                _result
+                    = Image (sdf [
+                        $a => [to_real bleft, to_real btop],
+                        $b => [to_real bright, to_real bbottom]
+                    ] nwidth nheight SdfShape.BOX);
+            }
+        }
+
+        Rounded_box_item = class
+            Menuaction "Rounded box" "rounded box signed distance field" {
+            action = class
+                _result {
+                _vislevel = 3;
+
+                nwidth = Expression "Image width (pixels)" 256;
+                nheight = Expression "Image height (pixels)" 256;
+
+                bleft = Expression "Box left" (to_real nwidth / 4);
+                btop = Expression "Box top" (to_real nheight / 4);
+                bright = Expression "Box right" (3 * to_real nwidth / 4);
+                bbottom = Expression "Box bottom" (3 * to_real nheight / 4);
+
+                tl_radius = Scale "Top-left corner radius" 0 100 10;
+                tr_radius = Scale "Top-right corner radius" 0 100 10;
+                bl_radius = Scale "Bottom-left corner radius" 0 100 10;
+                br_radius = Scale "Bottom-right corner radius" 0 100 30;
+
+                _result
+                    = Image (sdf [
+                        $a => [to_real bleft, to_real btop],
+                        $b => [to_real bright, to_real bbottom],
+                        $corners => [
+                            to_real br_radius,
+                            to_real tr_radius,
+                            to_real bl_radius,
+                            to_real tl_radius
+                        ]
+                    ] nwidth nheight SdfShape.ROUNDED_BOX);
+            }
+        }
+
+        Line_item = class
+            Menuaction "Line" "line signed distance field" {
+            action = class
+                _result {
+                _vislevel = 3;
+
+                nwidth = Expression "Image width (pixels)" 256;
+                nheight = Expression "Image height (pixels)" 256;
+
+                startx = Expression "Start x" (to_real nwidth / 4);
+                starty = Expression "Start y" (to_real nheight / 4);
+                endx = Expression "End x" (3 * to_real nwidth / 4);
+                endy = Expression "End y" (3 * to_real nheight / 4);
+
+                _result
+                    = Image (sdf [
+                        $a => [to_real startx, to_real starty],
+                        $b => [to_real endx, to_real endy]
+                    ] nwidth nheight SdfShape.LINE);
+            }
+        }
+
     }
 
     Union_item = class
