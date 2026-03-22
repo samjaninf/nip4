@@ -1,11 +1,14 @@
 - after Reset on a row, mark dirty and recalc
 
-
-
+- use error_bad_arg everywhere
 
 - on test_histogram
 
     vips_case / vips_switch should be in histogram?
+
+	case should do constant expansion of cases list (like ifthenelse)
+
+	could allow constant for index as well I guess? not very useful
 
     vips hist_ismonotonic ?
 

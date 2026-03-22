@@ -122,6 +122,15 @@ mknvpair n v
     = [n, v], is_string n
     = error "not [char] on LHS of =>";
 
+error_bad_args name types args
+    = error (
+        _ "bad arguments to" ++ " \"" ++ name ++ "\"\n" ++
+	    _ "expected" ++ ":\n" ++
+	    concat (map (\type "   " ++ type ++ "\n") types) ++
+	    _ "you passed" ++ ":\n" ++
+	    concat (map (\arg "   " ++ print arg ++ "\n") args)
+    );
+
 bandsplit x
     = oo_unary_function bandsplit_op x, is_class x
     = map (subscript x) [0 .. bands - 1], is_image x
@@ -2491,6 +2500,68 @@ clamp min max x
         $min => to_real min,
         $max => to_real max
     ] (get_image x);
+}
+
+switch tests
+    = oo_unary_function switch_op tests, is_class tests
+    = vips_switch [] tests, is_image_list tests
+    = switch_wrapped tests, is_list tests
+    = bad_args
+{
+    switch_op = Operator "switch" switch
+        Operator_type.COMPOUND_REWRAP false;
+
+    switch_wrapped l
+        = Image (switch l'), all (map is_image l')
+        = bad_args
+    {
+        unwrap x
+            = get_image x, has_image x
+            = x;
+
+        l' = map unwrap l;
+    }
+
+    bad_args = error_bad_args "switch" ["[image|Image]"] [tests];
+}
+
+case index cases
+    = oo_binary_function case_op x, is_class x
+    = vips_case [] index cases', is_image index && is_image_list cases
+    = case_wrapped index cases, is_list cases
+    = error (_ "bad arguments to " ++ "case")
+{
+    case_op = Operator "case" case
+        Operator_type.COMPOUND_REWRAP false;
+
+    // expand constants in cases list ... take width/height from the
+    // first image in ([index] ++ cases)
+
+    objects = [index] ++ cases;
+    target_width = get_member_list has_width get_width objects;
+    target_height = get_member_list has_height get_height objects;
+    target_bands = get_member_list has_bands get_bands objects;
+    target_format = get_member_list has_format get_format objects;
+
+    to_image x
+        = to_image_size target_width target_height target_bands target_format x;
+
+    expand x
+        = to_image x, not is_image x
+        = x;
+
+    cases' = map expand cases;
+
+    cases_wrapped index cases
+        = Image (cases index' cases'), all (map is_image l')
+        = bad_args
+    {
+        unwrap x
+            = get_image x, has_image x
+            = x;
+
+    bad_args = error_bad_args "case"
+        ["image|Image", "[image|Image|constant]"] [index, cases];
 }
 
 linear options a b x

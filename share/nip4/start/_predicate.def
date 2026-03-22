@@ -86,6 +86,10 @@ is_real_list l = is_listof is_real l;
  */
 is_string_list l = is_listof is_string l;
 
+/* is_image_list l: is l a finite list of images
+ */
+is_image_list l = is_listof is_image l;
+
 /* Test list length is exactly n ... quicker than len l == n for large
  * (or infinite) lists, since it won't eval the whole of l.
  */
