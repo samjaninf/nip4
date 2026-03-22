@@ -80,6 +80,10 @@ Hist_find_item = class
 		}
 	}
 
+    sep2 = Menuseparator;
+
+    Segment_item = Select_item.Segment_item;
+
 	Indexed_item = class
 		Menuaction "_Indexed"
 			"use a 1-band index image to pick bins for an n-band image" {
@@ -109,7 +113,39 @@ Hist_find_item = class
 			}
 		}
 	}
+
+    Switch_item = class
+		Menuaction "Switch"
+			"use an array of test images to make an index image" {
+		action x = class
+			_result {
+			_result = map_unary switch x
+        }
+    }
+
+    Case_item = class
+		Menuaction "Case"
+			"use an index image to pick pixels form an array of case images" {
+		action x y = class
+			_result {
+			_result = map_binary case x y
+        }
+    }
+
 }
+
+    Switch_item = class
+		Menuaction "Switch"
+			"use a 1-band index image to pick pixels from an array of images" {
+		action x y  = class
+			_result {
+			_vislevel = 3;
+        }
+
+    }
+}
+
+Hist_eq_item = Filter_enhance_item.Hist_equal_item;
 
 Hist_map_item = class
 	Menuaction "_Map" "map an image through a histogram" {
@@ -123,8 +159,6 @@ Hist_map_item = class
 		}
 	}
 }
-
-Hist_eq_item = Filter_enhance_item.Hist_equal_item;
 
 #separator
 

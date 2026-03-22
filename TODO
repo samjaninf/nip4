@@ -1,8 +1,7 @@
-- on test_image.ws
-
-    - add some more self-tests
-
 - after Reset on a row, mark dirty and recalc
+
+
+
 
 - on test_histogram
 
@@ -17,6 +16,7 @@
 - vips8 wrappers in _stdenv.def should all take options params
 
 	last chance to add this, will be important for extensibility
+
 
 - test_object.def fails
 
@@ -49,7 +49,7 @@
     Filter.def      done
     Object.def      done
     Histogram.def
-    Image.def
+    Image.def		done
     Region.def
     Magick.def
     Tasks.def
