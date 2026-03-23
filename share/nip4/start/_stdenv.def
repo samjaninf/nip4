@@ -2526,7 +2526,8 @@ switch tests
 }
 
 case index cases
-    = oo_binary_function case_op x, is_class x
+    = oo_binary_function maxpair_op index cases, is_class index
+    = oo_binary'_function maxpair_op index cases, is_class cases
     = vips_case [] index cases', is_image index && is_image_list cases
     = case_wrapped index cases, is_list cases
     = error (_ "bad arguments to " ++ "case")
@@ -2559,6 +2560,7 @@ case index cases
         unwrap x
             = get_image x, has_image x
             = x;
+    }
 
     bad_args = error_bad_args "case"
         ["image|Image", "[image|Image|constant]"] [index, cases];
