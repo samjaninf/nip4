@@ -125,10 +125,10 @@ mknvpair n v
 error_bad_args name types args
     = error (
         _ "bad arguments to" ++ " \"" ++ name ++ "\"\n" ++
-	    _ "expected" ++ ":\n" ++
-	    concat (map (\type "   " ++ type ++ "\n") types) ++
-	    _ "you passed" ++ ":\n" ++
-	    concat (map (\arg "   " ++ print arg ++ "\n") args)
+        _ "expected" ++ ":\n" ++
+        concat (map (\type "   " ++ type ++ "\n") types) ++
+        _ "you passed" ++ ":\n" ++
+        concat (map (\arg "   " ++ print arg ++ "\n") args)
     );
 
 bandsplit x
@@ -2526,14 +2526,13 @@ switch tests
 }
 
 case index cases
-    = oo_binary_function maxpair_op index cases, is_class index
-    = oo_binary'_function maxpair_op index cases, is_class cases
+    = oo_binary_function case_op index cases, is_class index
+    = oo_binary'_function case_op index cases, is_class cases
     = vips_case [] index cases', is_image index && is_image_list cases
     = case_wrapped index cases, is_list cases
-    = error (_ "bad arguments to " ++ "case")
+    = bad_args
 {
-    case_op = Operator "case" case
-        Operator_type.COMPOUND_REWRAP false;
+    case_op = Operator "case" case Operator_type.COMPOUND_REWRAP false;
 
     // expand constants in cases list ... take width/height from the
     // first image in ([index] ++ cases)
@@ -2548,15 +2547,19 @@ case index cases
         = to_image_size target_width target_height target_bands target_format x;
 
     expand x
-        = to_image x, not is_image x
+        = to_image x, not (is_image x)
         = x;
 
     cases' = map expand cases;
 
-    cases_wrapped index cases
-        = Image (cases index' cases'), all (map is_image l')
+    // cases is a list ... unwrap any Image objects in the list, expand any
+    // constants, and recurse
+    case_wrapped index cases
+        = Image (case index cases'), all (map is_image cases')
         = bad_args
     {
+        cases' = map (expand @ unwrap) cases;
+
         unwrap x
             = get_image x, has_image x
             = x;

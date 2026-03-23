@@ -1,20 +1,34 @@
 - after Reset on a row, mark dirty and recalc
 
+- menus say "Mono", captions say "b-w"
+
+    make captions show mono?
+
+    we should probably just use b-w (libvips terminology) everywhere
+
 - use error_bad_arg everywhere
+
+- now that image_new sets interp to sRGB for many band pixels, perhaps we can
+  remove some (set_header $interpretation $srgb)?
+
+    what about
+
+        image_new [
+            $pixel => 100,
+            $interpretation => $srgb
+        ]
+
+    will that make a three band image?
 
 - on test_histogram
 
-    vips_case / vips_switch should be in histogram?
+    add tests for find_indexed, switch, case
 
-	case should do constant expansion of cases list (like ifthenelse)
-
-	could allow constant for index as well I guess? not very useful
+        do we test find_indexed in image select? probably not
 
     vips hist_ismonotonic ?
 
     D6 autoranges y, it should probably be fixed for uchar
-
-    check we test find_indexed in image select
 
 - vips8 wrappers in _stdenv.def should all take options params
 

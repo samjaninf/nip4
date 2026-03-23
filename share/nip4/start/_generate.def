@@ -6,11 +6,15 @@
 image_new options w h
     = embed 1 0 0 w h image'''
 {
+    // set the interpretation default from the pixel, so sRGB or B_W depending
+    // on vector size
+    pixel = get_option options [$pixel => 0] $pixel;
+
     defaults = get_option options [
         $format => Format.UCHAR,
         $bands => 1,
         $coding => Coding.NOCODING,
-        $interpretation => Interpretation.B_W,
+        $interpretation => get_interpretation pixel,
         $xres => 0,
         $yres => 0,
         $xoffset => 0,
@@ -32,7 +36,6 @@ image_new options w h
     yres = defaults $yres;
     xoffset = defaults $xoffset;
     yoffset = defaults $yoffset;
-    pixel = defaults $pixel;
 
     image = vips_black [$bands => to_real bands] 1 1 + to_vector pixel;
     image' = vips_cast [] image format;
@@ -69,7 +72,7 @@ image_new_from_image options image
  */
 lab_slice size l
     = copy [
-        $interpretation => "lab",
+        $interpretation => $lab,
         $xoffset => size / 2,
         $yoffset => size / 2
     ] (L ++ a ++ b)

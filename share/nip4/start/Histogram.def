@@ -86,18 +86,18 @@ Hist_find_item = class
 
     Indexed_item = class
         Menuaction "_Indexed"
-            "use a 1-band index image to pick bins for an n-band image" {
+            "use an index image to pick histogram bins" {
         action x y  = class
             _result {
             _vislevel = 3;
 
-            combine = Combine_picker Combine_type.SUM;
+            combine = Combine.picker $SUM;
 
             _result
                 = map_binary map x y
             {
                 map a b
-                    = hist_find_indexed combine.value index im
+                    = hist_find_indexed combine.value_key index im
                 {
                     [im, index] = sortc (const is_index) [a, b];
 
@@ -125,13 +125,20 @@ Hist_find_item = class
 
     Case_item = class
         Menuaction "Case"
-            "use an index image to pick pixels form an array of case images" {
+            "use an index image to pick pixels from an array of values" {
         action x y = class
             _result {
-            _result = map_binary case x y;
+            _result
+                = map_binary process x y
+            {
+                process x y
+                    = case index cases
+                {
+                    [index, cases] = sortc (const is_list) [x, y];
+                }
+            }
         }
     }
-
 }
 
 Hist_eq_item = Filter_enhance_item.Hist_equal_item;
