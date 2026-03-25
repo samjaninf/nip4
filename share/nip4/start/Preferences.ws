@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.0.0">
-  <Workspace window_x="0" window_y="0" window_width="680" window_height="800" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" lpane_position="100" lpane_open="false" rpane_position="400" rpane_open="false" local_defs="// private definitions for this workspace&#10;" name="Preferences" filename="$VIPSHOME/share/$PACKAGE/start/Preferences.ws" major="9" minor="0">
+  <Workspace window_x="0" window_y="0" window_width="680" window_height="800" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" lpane_position="100" lpane_open="false" rpane_position="400" rpane_open="false" local_defs="// private definitions for this workspace&#10;" name="Preferences" filename="$VIPSHOME/share/$PACKAGE/start/Preferences.ws" major="9" minor="1">
     <Column x="5" y="3122" open="false" selected="false" sform="false" next="99" name="B" caption="Interface column -- don't touch this!">
       <Subcolumn vislevel="2">
         <Row popup="false" name="CSV_SEPARATOR">
