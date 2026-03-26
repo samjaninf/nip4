@@ -1,6 +1,6 @@
 project('nip4', 'c',
   # ie. a major after nip2 8.9 for workspace save file versioning
-  version: '9.0.17',
+  version: '9.1.0',
   license: 'GPL',
   meson_version: '>=0.64',
   default_options: [
