@@ -1,3 +1,9 @@
+- Image.def
+
+	"switch" menu item doesn't work
+
+		list arg confuses it?
+
 - after Reset on a row, mark dirty and recalc
 
 - menus say "Mono", captions say "b-w"
@@ -19,16 +25,6 @@
         ]
 
     will that make a three band image?
-
-- on test_histogram
-
-    add tests for find_indexed, switch, case
-
-        do we test find_indexed in image select? probably not
-
-    vips hist_ismonotonic ?
-
-    D6 autoranges y, it should probably be fixed for uchar
 
 - vips8 wrappers in _stdenv.def should all take options params
 

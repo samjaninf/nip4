@@ -113,32 +113,6 @@ Hist_find_item = class
             }
         }
     }
-
-    Switch_item = class
-        Menuaction "Switch"
-            "use an array of test images to make an index image" {
-        action x = class
-            _result {
-            _result = map_unary switch x;
-        }
-    }
-
-    Case_item = class
-        Menuaction "Case"
-            "use an index image to pick pixels from an array of values" {
-        action x y = class
-            _result {
-            _result
-                = map_binary process x y
-            {
-                process x y
-                    = case index cases
-                {
-                    [index, cases] = sortc (const is_list) [x, y];
-                }
-            }
-        }
-    }
 }
 
 Hist_eq_item = Filter_enhance_item.Hist_equal_item;

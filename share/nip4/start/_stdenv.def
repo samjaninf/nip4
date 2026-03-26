@@ -2569,6 +2569,21 @@ case index cases
         ["image|Image", "[image|Image|constant]"] [index, cases];
 }
 
+fill_nearest x
+	= oo_unary_function nearest_op x, is_class x
+	= near x, is_image x
+	= error (_ "bad arguments to " ++ "fill_nearest")
+{
+	nearest_op = Operator "fill_nearest"
+		fill_nearest Operator_type.COMPOUND_REWRAP false;
+
+	near x
+		= [out, distance]
+	{
+		  [out, distance] = vips_fill_nearest [$distance => true] x;
+	}
+}
+
 linear options a b x
     = oo_unary_function linear_op x, is_class x
     = vips_linear options (get_image x) (to_real_list a) (to_real_list b),

@@ -1,3 +1,74 @@
+# vulkan / nouveau strangeness
+
+{
+   vk-enumerate
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*alloc
+   obj:/usr/lib/x86_64-linux-gnu/libvulkan_nouveau.so
+   ...
+   fun:vkEnumeratePhysicalDevices
+}
+
+{
+   vk-enumerate3
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*alloc
+   obj:/usr/lib/x86_64-linux-gnu/libvulkan_lvp.so
+   ...
+   fun:vkEnumeratePhysicalDevices
+}
+
+{
+   vk-create
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*alloc
+   obj:/usr/lib/x86_64-linux-gnu/libvulkan_lvp.so
+   ...
+   fun:vkCreateInstance
+}
+
+{
+   vk-create2
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*alloc
+   obj:/usr/lib/x86_64-linux-gnu/libvulkan_nouveau.so
+   ...
+   fun:vkCreateInstance
+}
+
+{
+   vk-create3
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*alloc
+   obj:/usr/lib/x86_64-linux-gnu/libVkLayer_MESA_device_select.so
+   ...
+   fun:vkCreateInstance
+}
+
+{
+   vk-create5
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*alloc
+   ...
+   fun:vkCreateDevice
+}
+
+{
+   gtk-nouveau
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*alloc
+   obj:/usr/lib/x86_64-linux-gnu/libvulkan_nouveau.so
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libgtk-4.so.*
+}
+
 # various nvidia wtfs
 
 {
@@ -89,6 +160,47 @@
    ...
    fun:gsk_gl_driver_load_programs
 }
+
+{
+   gtk-icon-theme
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*alloc
+   ...
+   fun:gtk_icon_theme_get_for_display
+}
+
+{
+   fontconfig
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*alloc
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.1
+}
+
+{
+   gtk-rsvg
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*alloc
+   obj:/usr/lib/x86_64-linux-gnu/librsvg-2.so.2.60.0
+   ...
+   fun:rsvg_handle_render_document
+   obj:/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2000.1
+}
+
+{
+   gtk-rsvg2
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*alloc
+   ...
+   fun:rsvg_handle_new_from_data
+   obj:/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2000.1
+}
+
+
 
 
 
