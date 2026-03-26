@@ -1,5 +1,7 @@
 ## main
 
+## 9.0.18 2026/03/25
+
 - disable libvips DoS limits on file load for libvips 8.19+
 - add lazy pretty-print and string print of main
 - add "Copy value" to row menu
