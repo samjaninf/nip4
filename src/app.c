@@ -230,6 +230,7 @@ app_startup(GApplication *app)
 		{ "win.properties", { "<Alt>Return", NULL } },
 		{ "win.keyboard-duplicate", { "<Primary>d", NULL } },
 		{ "win.keyboard-group-selected", { "<Primary>g", NULL } },
+		{ "win.toolkits", { "<Primary>m", NULL } },
 	};
 
 	// all our private application settings
