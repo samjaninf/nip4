@@ -480,7 +480,8 @@ recover_ok_action(GSimpleAction *action,
 	GObject *item = gtk_single_selection_get_selected_item(recover->selection);
 	Recoverfile *file = RECOVERFILE(item);
 
-	recover_recover_recoverfile(recover, file);
+	if (file)
+		recover_recover_recoverfile(recover, file);
 }
 
 static GActionEntry recover_entries[] = {
