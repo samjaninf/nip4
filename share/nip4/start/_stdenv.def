@@ -2275,6 +2275,32 @@ point a b
         = error "bad position format";
 }
 
+mosaic options direction xref yref xsec ysec a b
+    = oo_binary_function mosaic_op a b, is_class a
+    = oo_binary'_function mosaic_op a b, is_class b
+    = vips_mosaic options a b direction xref yref xsec ysec,
+        is_image a && is_image b
+    = error_bad_args "mosaic"
+        ["[option]", "Direction", "real", "real", "real", "real",
+            "Image|image", "Image|image"]
+        [options, direction, xref, yref, xsec, ysec, a, b]
+{
+    mosaic_op = Operator "mosaic" (mosaic options direction xref yref xsec ysec)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+merge options direction dx dy a b
+    = oo_binary_function merge_op a b, is_class a
+    = oo_binary'_function merge_op a b, is_class b
+    = vips_merge options a b direction dy dy, is_image a && is_image b
+    = error_bad_args "merge"
+        ["[option]", "Direction", "real", "real", "Image|image", "Image|image"]
+        [options, direction, dx, dy, a, b]
+{
+    merge_op = Operator "merge" (merge options direction dx dy)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
 /* One image in, one out.
  */
 system_image command x

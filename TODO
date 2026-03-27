@@ -1,3 +1,17 @@
+- Tasks.def has a lot of im_ funcs
+
+    on mosaic/merge left right
+
+        merge [] "horizontal" (-265) 0 A2 A3
+
+    "too much overlap" how odd
+
+- use Direction enum
+
+    look for Horizontal or vertical enums, eg. in join?
+
+- Math.def uses im_cntlines
+
 - after Reset on a row, mark dirty and recalc
 
 - menus say "Mono", captions say "b-w"
@@ -57,7 +71,7 @@
     Magick.def      done
     Tasks.def
     Math.def        done
-    Widgets.def
+    Widgets.def	    done
 
 - changes
 

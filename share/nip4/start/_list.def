@@ -234,14 +234,6 @@ map3 fn l1 l2 l3 = map (list_3ary fn) (zip3 l1 l2 l3);
  */
 member l x = any (map (equal x) l);
 
-/* merge p l r: merge two lists based on a bool list
- *
- * merge :: [bool] -> [*] -> [*] -> [*]
- */
-merge true:p a:x b:y = a : merge p x y;
-merge false:p a:x b:y = b : merge p x y;
-merge p l y = [];
-
 /* mkset eq l: remove duplicates from list l using equality function
  *
  * mkset :: (* -> bool) -> [*] -> [*]

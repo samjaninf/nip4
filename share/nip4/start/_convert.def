@@ -230,6 +230,35 @@ to_group x
     = Group (map to_group x.value), is_Group x
     = x;
 
+/* Macbeth chart patch names.
+ */
+macbeth_names = [
+	"Dark skin",
+	"Light skin",
+	"Blue sky",
+	"Foliage",
+	"Blue flower",
+	"Bluish green",
+	"Orange",
+	"Purplish blue",
+	"Moderate red",
+	"Purple",
+	"Yellow green",
+	"Orange yellow",
+	"Blue",
+	"Green",
+	"Red",
+	"Yellow",
+	"Magenta",
+	"Cyan",
+	"White (density 0.05)",
+	"Neutral 8 (density 0.23)",
+	"Neutral 6.5 (density 0.44)",
+	"Neutral 5 (density 0.70)",
+	"Neutral 3.5 (density 1.05)",
+	"Black (density 1.50)"
+];
+
 Whitepoint = class Enum {
     D93 = Vector [89.7400, 100, 130.7700];
     D75 = Vector [94.9682, 100, 122.5710];

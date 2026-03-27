@@ -1406,3 +1406,13 @@ Combine = class Enum {
         [MIN, _ "Minimum"]
     ];
 }
+
+Direction = class Enum {
+    HORIZONTAL = 0;
+    VERTICAL = 1;
+
+    _description = [
+        [HORIZONTAL, _ "Horizontal"],
+        [VERTICAL, _ "Vertical"]
+    ];
+}
