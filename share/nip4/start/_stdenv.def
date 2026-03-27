@@ -755,8 +755,8 @@ minpos x
 
 stats x
     = oo_unary_function stats_op x, is_class x
-    = vips_stats [] x, is_image x
-    = vips_stats [] (vips_image_from_matrix (Matrix x)), is_matrix x
+    = to_matrix (vips_stats [] x), is_image x
+    = to_matrix (vips_stats [] (to_image x)), is_matrix x
     = error (_ "bad arguments to " ++ "stats")
 {
     stats_op = Operator "stats" stats Operator_type.COMPOUND false;

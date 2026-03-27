@@ -1,5 +1,3 @@
-- Image.def
-
 - after Reset on a row, mark dirty and recalc
 
 - menus say "Mono", captions say "b-w"
@@ -55,10 +53,10 @@
     Object.def      done
     Histogram.def   done
     Image.def       done
-    Region.def
-    Magick.def
+    Region.def      done
+    Magick.def      done
     Tasks.def
-    Math.def
+    Math.def        done
     Widgets.def
 
 - changes
