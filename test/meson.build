@@ -6,6 +6,8 @@ should_pass_tests = [
   'test_magick.ws',
   'test_matrix.ws',
   'test_region.ws',
+  'test_math.ws',
+  'test_widgets.ws',
 
 ]
 

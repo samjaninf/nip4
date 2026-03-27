@@ -8,6 +8,8 @@ should_pass="\
   test_magick.ws \
   test_matrix.ws \
   test_region.ws \
+  test_math.ws \
+  test_widgets.ws \
 "
 
 should_fail="\
