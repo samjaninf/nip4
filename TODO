@@ -1,9 +1,5 @@
 - Image.def
 
-	"switch" menu item doesn't work
-
-		list arg confuses it?
-
 - after Reset on a row, mark dirty and recalc
 
 - menus say "Mono", captions say "b-w"
@@ -28,7 +24,7 @@
 
 - vips8 wrappers in _stdenv.def should all take options params
 
-	last chance to add this, will be important for extensibility
+    last chance to add this, will be important for extensibility
 
 
 - test_object.def fails
@@ -44,12 +40,8 @@
     Image_file with a relative path should be relative to the script or
     workspace directory?
 
-    and in workspaces, should be relative to workspace location?
-
-    kind of is now -- we rewrite paths on load taking into account any
-    changes to workspace location
-
-    have an env var for PROJECT_ROOT?
+    we have $CWD for current dir, perhaps we should have $WORKSPACE_DIR for
+    directory the workspace was read from?
 
 - add to_enum
 
@@ -61,8 +53,8 @@
     Matrix.def      done
     Filter.def      done
     Object.def      done
-    Histogram.def
-    Image.def		done
+    Histogram.def   done
+    Image.def       done
     Region.def
     Magick.def
     Tasks.def
