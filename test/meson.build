@@ -1,25 +1,19 @@
 should_pass_tests = [
-  # test workspaces
   'test_colour.ws',
   'test_filter.ws',
-  'test_matrix.ws',
-  'test_image.ws',
   'test_histogram.ws',
+  'test_image.ws',
+  'test_magick.ws',
+  'test_matrix.ws',
+  'test_region.ws',
 
-  #'big_and_small_disks.ws',
-  #'test_conv.ws',
-  #'test_fourier.ws',
-  #'test_math.ws',
-  #'test_stats.ws',
-  #'test_tasks.ws',
-  #'test_widgets.ws',
 ]
 
 should_fail_tests = [
   'test_fail.ws',
 ]
 
-# all the demo workspaces, except frame and register, since they ise a
+# all the demo workspaces, except frame and register, since they use a
 # non-free plugin
 demos = [
   #'1_point_mosaic/1pt_mosaic.ws',

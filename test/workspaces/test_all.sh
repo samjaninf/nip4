@@ -5,10 +5,14 @@ should_pass="\
   test_filter.ws \
   test_histogram.ws \
   test_image.ws \
+  test_magick.ws \
   test_matrix.ws \
+  test_region.ws \
 "
 
-should_fail="test_fail.ws"
+should_fail="\
+  test_fail.ws \
+"
 
 for test in $should_pass; do
   echo -n "$test: "
