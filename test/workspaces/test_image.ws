@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.0.17">
-  <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// private definitions for this workspace&#10;" name="test_image" filename="$CWD/test_image.ws" major="9" minor="0">
+  <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// private definitions for this workspace&#10;" name="test_image" filename="$CWD/test_image.ws" major="9" minor="1">
     <Column x="10" y="5" open="true" selected="false" sform="false" next="19" name="B" caption="Sample image">
       <Subcolumn vislevel="3">
         <Row popup="false" name="B1">

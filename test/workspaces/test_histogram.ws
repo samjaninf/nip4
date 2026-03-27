@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.0.17">
-  <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// private definitions for this workspace&#10;" name="test_histogram" filename="$CWD/test_histogram.ws" major="9" minor="0">
+<root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.1.0">
+  <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// private definitions for this workspace&#10;" name="test_histogram" filename="$CWD/test_histogram.ws" major="9" minor="1">
     <Column x="10" y="5" open="true" selected="false" sform="false" next="17" name="B" caption="Colour / Colourspace">
       <Subcolumn vislevel="3">
         <Row popup="false" name="B1">
@@ -12,7 +12,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="384" y="5" open="true" selected="false" sform="false" next="36" name="Z" caption="Histogram / Make, find, apply">
+    <Column x="390" y="5" open="true" selected="false" sform="false" next="36" name="Z" caption="Histogram / Make, find, apply">
       <Subcolumn vislevel="3">
         <Row popup="false" name="Z1">
           <Rhs vislevel="0" flags="4">
@@ -178,7 +178,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1337" y="5" open="true" selected="false" sform="false" next="34" name="A" caption="Histogram / Maths">
+    <Column x="1566" y="5" open="true" selected="false" sform="false" next="34" name="A" caption="Histogram / Maths">
       <Subcolumn vislevel="3">
         <Row popup="false" name="A1">
           <Rhs vislevel="0" flags="4">
@@ -258,7 +258,7 @@
               </Row>
               <Row name="r">
                 <Rhs vislevel="1" flags="1">
-                  <Slider caption="Radius" from="1" to="100" value="10.9"/>
+                  <Slider caption="Radius" from="1" to="100" value="10.620564516129033"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -308,7 +308,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1875" y="5" open="true" selected="false" sform="false" next="16" name="C" caption="Histogram / Profile and Projection">
+    <Column x="2105" y="5" open="true" selected="false" sform="false" next="16" name="C" caption="Histogram / Profile and Projection">
       <Subcolumn vislevel="3">
         <Row popup="false" name="C1">
           <Rhs vislevel="0" flags="4">
@@ -366,7 +366,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2465" y="5" open="true" selected="false" sform="false" next="10" name="D" caption="Histogram / Extract, Plot">
+    <Column x="2698" y="5" open="true" selected="false" sform="false" next="10" name="D" caption="Histogram / Extract, Plot">
       <Subcolumn vislevel="3">
         <Row popup="false" name="D1">
           <Rhs vislevel="2" flags="5">
@@ -385,7 +385,7 @@
           </Rhs>
         </Row>
         <Row popup="false" name="D6">
-          <Rhs vislevel="1" flags="1">
+          <Rhs vislevel="2" flags="5">
             <Subcolumn vislevel="0"/>
             <iText formula="Hist_graph_item.action D5"/>
             <Plot plot_left="0" plot_top="0" plot_mag="100" show_status="false"/>
@@ -540,7 +540,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="904" y="5" open="true" selected="false" sform="false" next="7" name="E" caption="Histogram / Find indexed">
+    <Column x="914" y="5" open="true" selected="true" sform="false" next="15" name="E" caption="Histogram / Find indexed">
       <Subcolumn vislevel="3">
         <Row popup="false" name="E1">
           <Rhs vislevel="1" flags="1">
@@ -549,21 +549,19 @@
             <iText formula="B1"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="E3">
-          <Rhs vislevel="1" flags="1">
+        <Row popup="false" name="E11">
+          <Rhs vislevel="1" flags="4">
+            <iText formula="[E1?1 &gt; t :: t &lt;- [50, 100, 150, 200]]"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="E12">
+          <Rhs vislevel="2" flags="5">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="E1?1 &gt; 128"/>
+            <iText formula="Image_select_item.Switch_item.action E11"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="E4">
-          <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1.3167126608449264" offset="0" page="0" falsecolour="true" mode="multipage"/>
-            <Subcolumn vislevel="1"/>
-            <iText formula="Hist_find_item.Segment_item.action E3"/>
-          </Rhs>
-        </Row>
-        <Row popup="false" name="E5">
+        <Row popup="false" name="E7">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1">
@@ -585,7 +583,7 @@
                     </Row>
                     <Row name="expr">
                       <Rhs vislevel="0" flags="4">
-                        <iText formula="E4.width"/>
+                        <iText formula="E1.width"/>
                       </Rhs>
                     </Row>
                     <Row name="super">
@@ -609,7 +607,7 @@
                     </Row>
                     <Row name="expr">
                       <Rhs vislevel="0" flags="4">
-                        <iText formula="E4.height"/>
+                        <iText formula="E1.height"/>
                       </Rhs>
                     </Row>
                     <Row name="super">
@@ -626,36 +624,18 @@
             <iText formula="Image_new_item.Xy_item.action"/>
           </Rhs>
         </Row>
-        <Row popup="false" name="E6">
+        <Row popup="false" name="E13">
           <Rhs vislevel="3" flags="7">
             <Plot plot_left="0" plot_top="0" plot_mag="100" show_status="false"/>
-            <Subcolumn vislevel="1">
-              <Row name="x">
-                <Rhs vislevel="3" flags="4">
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="y">
-                <Rhs vislevel="3" flags="4">
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="super">
-                <Rhs vislevel="0" flags="4">
-                  <Plot plot_left="0" plot_top="0" plot_mag="100" show_status="false"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="combine">
-                <Rhs vislevel="1" flags="1">
-                  <Option caption="Combine" labelsn="3" labels0="Maximum" labels1="Sum" labels2="Minimum" value="0"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-            </Subcolumn>
-            <iText formula="Hist_find_item.Indexed_item.action E4 E5"/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Hist_find_item.Indexed_item.action E12 E7"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="E14">
+          <Rhs vislevel="2" flags="5">
+            <Plot plot_left="0" plot_top="0" plot_mag="100" show_status="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="E13 / (E1.width * E1.height)"/>
           </Rhs>
         </Row>
       </Subcolumn>

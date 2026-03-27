@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.0.17">
-  <Workspace view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// local definitions for this tab&#10;" name="tab2" filename="$CWD/test_colour.ws" major="9" minor="0">
+  <Workspace view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// local definitions for this tab&#10;" name="tab2" filename="$CWD/test_colour.ws" major="9" minor="1">
     <Column x="390" y="5" open="true" selected="false" sform="false" next="8" name="A" caption="Colour / New">
       <Subcolumn vislevel="3">
         <Row popup="false" name="A1">
