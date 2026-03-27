@@ -1655,33 +1655,33 @@ Image_alpha_item = class
 }
 
 Image_select_item = class
-	Menupullright "_Select" "select areas of an image" {
+    Menupullright "_Select" "select areas of an image" {
 
-	/* Option toggle used to define whether the user is replacing a
-	 * dark or a light area.
-	 */
-	_control = Option "Make" [
-		"Selection Brighter",
-	 	"Selection Darker",
-	 	"Selection Black",
-	 	"Selection White",
-	 	"Background Black",
-	 	"Background White",
-		"Mask"
-	] 4;
+    /* Option toggle used to define whether the user is replacing a
+     * dark or a light area.
+     */
+    _control = Option "Make" [
+        "Selection Brighter",
+        "Selection Darker",
+        "Selection Black",
+        "Selection White",
+        "Background Black",
+        "Background White",
+        "Mask"
+    ] 4;
 
-	control_selection mask im no
-		= [
-			if mask then im * 1.2 else im * 1,
-			if mask then im * 0.8 else im * 1,
-			if mask then 0 else im,
-			if mask then 255 else im,
-			if mask then im else 0,
-			if mask then im else 255,
-			mask
-		]?no;
+    control_selection mask im no
+        = [
+            if mask then im * 1.2 else im * 1,
+            if mask then im * 0.8 else im * 1,
+            if mask then 0 else im,
+            if mask then 255 else im,
+            if mask then im else 0,
+            if mask then im else 255,
+            mask
+        ]?no;
 
-	Rectangle = class
+    Rectangle = class
         Menuaction "_Rectangle"
             "use an arrow or region to define a rectangle" {
         action x = class
@@ -1708,125 +1708,125 @@ Image_select_item = class
         }
     }
 
-	Elipse = class
-		Menuaction "_Ellipse"
-			"use an arrow to define the center and major axis of an ellipse" {
-		action x = class
-			_result {
-			_vislevel = 3;
+    Elipse = class
+        Menuaction "_Ellipse"
+            "use an arrow to define the center and major axis of an ellipse" {
+        action x = class
+            _result {
+            _vislevel = 3;
 
-			control = _control;
-			width = Scale "Width" 0.01 1 0.5;
+            control = _control;
+            width = Scale "Width" 0.01 1 0.5;
 
-			_result
+            _result
                 = control_selection mask im control
             {
-				mask = select_ellipse x width.value;
-				im = x.image;
+                mask = select_ellipse x width.value;
+                im = x.image;
             }
         }
     }
 
-	Tetragon = class
-		Menuaction "_Tetragon"
-			"selects the convex area defined by four points" {
-		action a b c d = class
-			_result {
-			_vislevel = 3;
+    Tetragon = class
+        Menuaction "_Tetragon"
+            "selects the convex area defined by four points" {
+        action a b c d = class
+            _result {
+            _vislevel = 3;
 
-			control = _control;
+            control = _control;
 
-			_result
+            _result
                 = control_selection mask im control
             {
-				mask = select_tetragon a b c d;
-				im = get_image a;
+                mask = select_tetragon a b c d;
+                im = get_image a;
             }
         }
     }
 
-	Polygon = class
-		Menuaction "_Polygon"
-			"selects a polygon from an ordered group of points" {
-		action pt_list = class
-			_result {
-			_vislevel = 3;
+    Polygon = class
+        Menuaction "_Polygon"
+            "selects a polygon from an ordered group of points" {
+        action pt_list = class
+            _result {
+            _vislevel = 3;
 
-			control = _control;
+            control = _control;
 
-			_result
+            _result
                 = control_selection mask im control
             {
-				mask = select_polygon pt_list;
-				im = get_image ((pt_list.value)?0);
+                mask = select_polygon pt_list;
+                im = get_image ((pt_list.value)?0);
             }
         }
     }
 
-	sep1 = Menuseparator;
+    sep1 = Menuseparator;
 
-	Threshold_item = class
-		Menuaction "Thres_hold" "simple image threshold" {
-		action x = class
-			_result {
-			_vislevel = 3;
+    Threshold_item = class
+        Menuaction "Thres_hold" "simple image threshold" {
+        action x = class
+            _result {
+            _vislevel = 3;
 
-			t
-				= Scale "Threshold" 0 mx (mx / 2)
-			{
-				mx
-					= Format._maxval x.format, is_Image x
-					= 255;
-			}
+            t
+                = Scale "Threshold" 0 mx (mx / 2)
+            {
+                mx
+                    = Format._maxval x.format, is_Image x
+                    = 255;
+            }
 
-			_result = map_unary (more t.value) x;
-		}
-	}
+            _result = map_unary (more t.value) x;
+        }
+    }
 
-	Threshold_percent_item = class
-		Menuaction "Per_cent Threshold" "threshold at a percentage of pixels" {
-		action x = class
-			_result {
-			_vislevel = 3;
+    Threshold_percent_item = class
+        Menuaction "Per_cent Threshold" "threshold at a percentage of pixels" {
+        action x = class
+            _result {
+            _vislevel = 3;
 
-			t = Scale "Percentage of pixels" 0 100 50;
+            t = Scale "Percentage of pixels" 0 100 50;
 
-			_result
-				= map_unary (more (hist_thresh (t.value / 100) x)) x;
-		}
-	}
+            _result
+                = map_unary (more (hist_thresh (t.value / 100) x)) x;
+        }
+    }
 
-	sep2 = Menuseparator;
+    sep2 = Menuseparator;
 
-	Segment_item = class
-		Menuaction "_Segment" "break image into disjoint regions" {
-		action x = class
-			_result {
-			_vislevel = 3;
+    Segment_item = class
+        Menuaction "_Segment" "break image into disjoint regions" {
+        action x = class
+            _result {
+            _vislevel = 3;
 
-			segments
-				= Expression "Number of disjoint regions"
-					(map_unary (get_header "n-segments") _result);
+            segments
+                = Expression "Number of disjoint regions"
+                    (map_unary (get_header "n-segments") _result);
 
-			_result = map_unary segment x;
-		}
-	}
+            _result = map_unary segment x;
+        }
+    }
 
-	Fill_item = class
-		Menuaction "_Fill" "fill zero pixels with the nearest non-zero" {
-		action x = class
-			Image _result {
-			_vislevel = 3;
+    Fill_item = class
+        Menuaction "_Fill" "fill zero pixels with the nearest non-zero" {
+        action x = class
+            Image _result {
+            _vislevel = 3;
 
-			distance = Image _distance;
+            distance = Image _distance;
 
-			[_result, _distance] = vips_fill_nearest [
-				$distance => true
-			] x.value;
-		}
-	}
+            [_result, _distance] = vips_fill_nearest [
+                $distance => true
+            ] x.value;
+        }
+    }
 
-	sep3 = Menuseparator;
+    sep3 = Menuseparator;
 
     Switch_item = class
         Menuaction "Switch"
