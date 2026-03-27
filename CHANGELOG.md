@@ -1,5 +1,8 @@
 ## main
 
+- block -NaN in tslider when range == 0 [MvGulik]
+- fix crash in recover when no recover item selected [MvGulik]
+
 ## 9.0.18 2026/03/25
 
 - disable libvips DoS limits on file load for libvips 8.19+
