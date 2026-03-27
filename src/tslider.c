@@ -72,6 +72,10 @@ tslider_dispose(GObject *object)
 static double
 tslider_value_to_slider(Tslider *tslider, double value)
 {
+	// guard against /0 ... it'll make NaNs which confuse later processing
+	if (tslider->to - tslider->from == 0)
+		return 0;
+
 	/* Map our range to 0-1.
 	 */
 	const double scale = 1.0 / (tslider->to - tslider->from);
@@ -97,6 +101,10 @@ tslider_value_to_slider(Tslider *tslider, double value)
 static double
 tslider_slider_to_value(Tslider *tslider, double value)
 {
+	// guard against /0 ... it'll make NaNs which confuse later processing
+	if (tslider->to - tslider->from == 0)
+		return 0;
+
 	/* Map our range to 0-1.
 	 */
 	const double scale = 1.0 / (tslider->to - tslider->from);
