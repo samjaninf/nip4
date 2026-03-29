@@ -3,14 +3,14 @@ Colour_new_item = class
     Menupullright (_ "New") (_ "make a patch of colour") {
     Widget_colour_item = class
         Menuaction (_ "Colour") (_ "make a patch of colour") {
-        action = Colour_picker "LAB" [50,0,0];
+        action = Colour_picker $LAB [50,0,0];
     }
 
     sep1 = Menuseparator;
 
     LAB_colour = class
         Menuaction (_ "CIE Lab Picker") (_ "pick colour in CIE Lab space") {
-        action = widget "LAB" [50, 0, 0];
+        action = widget $LAB [50, 0, 0];
 
         // ab_slice size
         size = 512;

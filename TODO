@@ -1,10 +1,8 @@
 - Tasks.def has a lot of im_ funcs
 
-    on mosaic/merge left right
+    IB10: Tasks_mosaic_item.Manual_balance_item.Balance_check_item.action
 
-        merge [] "horizontal" (-265) 0 A2 A3
-
-    "too much overlap" how odd
+  fails with ifthenelse error
 
 - use Direction enum
 
