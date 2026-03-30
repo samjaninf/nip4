@@ -1,8 +1,15 @@
 - Tasks.def has a lot of im_ funcs
 
-    IB10: Tasks_mosaic_item.Manual_balance_item.Balance_check_item.action
-
-  fails with ifthenelse error
+	im_binfile
+	im_video_v4l1
+	im_invertlut
+	im_lrmosaic1
+	im_lrmerge1
+	im_tbmosaic1
+	im_tbmerge1
+	im_global_balancef
+	im_blend
+	im_remosaic
 
 - use Direction enum
 

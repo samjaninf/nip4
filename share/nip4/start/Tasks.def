@@ -692,8 +692,9 @@ Manual_balance_item = class
             _control_im = if m_control then im_in else 0;
             _control_meanmax = so_meanmax _control_im;
             _group_check = is_Group m_group;
-            _m_list = m_group.value, _group_check
-                    = m_group;
+            _m_list
+                = m_group.value, _group_check
+                = m_group;
 
             process m_current mat_in = mat_out
                 {so_values  = so_calculate _control_meanmax im_in m_current;
@@ -714,82 +715,91 @@ Manual_balance_item = class
               */
     {
         action im_in m_matrix m_group = class
-            Image value
-            {
+            Image value {
             _vislevel = 3;
 
             blur = Scale "Blur" 1 10 1;
-            _blur = (blur.value/2 + 0.5), blur.value > 1
-                  =  1;
+            _blur
+                = (blur.value/2 + 0.5), blur.value > 1
+                =  1;
 
             _group_check = is_Group m_group;
-            _m_list = m_group.value, _group_check
-                    = m_group;
+            _m_list
+                = m_group.value, _group_check
+                = m_group;
 
-            adjust = Matrix_rec mat_a
-                {
+            adjust
+                = Matrix_rec mat_a
+            {
                 no_masks = len _m_list;
                 mat_a = replicate no_masks [0, 0];
-                }
+            }
 
-        // Apply the user defined adjustments to the inputted matrix of scale and offset values
+            // Apply the user defined adjustments to the inputted matrix of scale and offset values
             _adjusted = map2 fn_adjust m_matrix.value adjust.value;
-                fn_adjust a b = [(a?0 + b?0), (a?1 + (a?1 * b?1))];
+            fn_adjust a b = [(a?0 + b?0), (a?1 + (a?1 * b?1))];
 
             _scaled_ims = map (fn_so_apply im_in) _adjusted;
-                fn_so_apply im so = map_unary adj im
-                    {adj im = im * (so?0) + (so?1);}
+
+            fn_so_apply im so = map_unary adj im
+            {
+                adj im = im * (so?0) + (so?1);
+            }
+
             _im_pairs = zip2 _m_list _scaled_ims;
 
-        // Prepare black images as starting point. ////////////
+            // Prepare black images as starting point.
             _blank = image_new [] (_m_list?0).width (_m_list?0).height;
 
-            _pair_start = [(_blank + 1), _blank];
+            _pair_start = [_blank + 1, _blank];
 
             Build = Toggle "Build Scale and Offset Correction Images" false;
 
-            Output = class
-                {
+
+            Output = class {
                 _vislevel = 1;
                 scale_im = _build?0;
                 offset_im = _build?1;
                 so_values = Matrix _adjusted;
 
-                _build = [Image so_images?0, Image so_images?1], Build
+                _build = [Image (so_images?0), Image (so_images?1)], Build
                        = ["Scale image not built.", "Offset image not built."]
-                    {
+                {
                     m_list' = transpose [_m_list];
                     m_all = map2 join m_list' _adjusted;
                     so_images = foldr process_2 _pair_start m_all;
-                    }
                 }
+            }
 
-            value = (foldr process_1 im_in_b _im_pairs).value
-                {im_in_b = map_unary cast_float im_in;}
+            value
+                = (foldr process_1 im_in_b _im_pairs).value
+            {
+                im_in_b = map_unary cast_float im_in;
+            }
 
             process_1 m_current im_start
                 = im_out
-                {
-                bl_mask    = convsep (matrix_blur _blur) (get_image m_current?0);
-                blended_im  = im_blend bl_mask (m_current?1).value im_start.value;
-                im_out      = Image (cast im_start.format blended_im);
-                }
+            {
+                bl_mask = convsep [] (matrix_blur _blur) (get_image m_current?0);
+                blended_im = im_blend bl_mask (m_current?1).value im_start.value;
+                im_out = Image (cast im_start.format blended_im);
+            }
 
             // Process for building scale and offset image.
             process_2 current p_start
                 = p_out
-                {
-                im_s = if ((current?0) > 128) then current?1 else _blank;
-                im_o = if ((current?0) > 128) then current?2 else _blank;
+            {
+                im_s = if current?0 > 128 then current?1 else _blank;
+                im_o = if current?0 > 128 then current?2 else _blank;
 
-                im_s' = convsep (matrix_blur _blur) (im_s != 0);
-                im_o' = convsep (matrix_blur _blur) (im_o != 0);
+                im_s' = convsep [] (matrix_blur _blur) (im_s != 0);
+                im_o' = convsep [] (matrix_blur _blur) (im_o != 0);
 
                 im_s'' = im_blend im_s'.value im_s.value p_start?0;
                 im_o'' = im_blend im_o'.value im_o.value p_start?1;
 
                 p_out  = [im_s'', im_o''];
-                }
+            }
         }
     }
 
@@ -802,19 +812,18 @@ Manual_balance_item = class
               */
     {
         action im_in scale_im offset_im = class
-            Image value
-            {
+            Image value {
             _vislevel = 1;
 
             xfactor = im_in.width/scale_im.width;
             yfactor = im_in.height/scale_im.height;
 
-            _scale_im = resize Kernel_linear xfactor yfactor scale_im;
-            _offset_im = resize Kernel_linear xfactor yfactor offset_im;
+            _scale_im = resize Kernel.LINEAR xfactor yfactor scale_im;
+            _offset_im = resize Kernel.LINEAR xfactor yfactor offset_im;
 
             value = get_image (cast im_in.format ((im_in * _scale_im) + _offset_im));
-            }
         }
+    }
 }
 
     Tilt_item = Filter_tilt_item;
@@ -903,7 +912,7 @@ Manual_balance_item = class
                     [255, 255, 255]
                 ];
                 mask_a = map_unary (dilate mask8) mask;
-                mask_b = convsep (matrix_blur 2) mask_a;
+                mask_b = convsep [] (matrix_blur 2) mask_a;
                 patch
                     = so_balance ref_meanmax r1 r2 mask_b Options.process,
                         Options.balance
