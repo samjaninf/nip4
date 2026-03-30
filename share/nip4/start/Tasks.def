@@ -39,28 +39,6 @@ Tasks_capture_item = class
         }
     }
 
-    Raw_import_item = class
-        Menuaction "_Raw Import" "read a file of binary values" {
-        action = class
-            _result {
-            _vislevel = 3;
-
-            path = Pathname "File to load" "empty";
-            across = Expression "Pixels across" 100;
-            down = Expression "Pixels down" 100;
-            bytes = Expression "Bytes per pixel" 3;
-            skip = Expression "Skip over initial bytes" 0;
-
-            _result
-                = Image blank, path.value == "empty"
-                = Image (im_binfile path.value
-                    across.expr down.expr bytes.expr skip.expr)
-            {
-                blank = image_new [$format => Format.DOUBLE] 1 1;
-            }
-        }
-    }
-
     // interpret Analyze header for layout and calibration
     Analyze7_header_item = class
         Menuaction "_Interpret Analyze 7 Header"
@@ -97,63 +75,6 @@ Tasks_capture_item = class
 
             // multiply by scale factor to get kBeq
             x''' = x'' * (cal_max / glmax);
-        }
-    }
-
-    Video_item = class
-        Menuaction "Capture _Video Frame" "capture a frame of still video" {
-        // shortcut to prefs
-        prefs = Workspaces.Preferences;
-
-        action = class
-            _result {
-            _vislevel = 3;
-
-            device = prefs.VIDEO_DEVICE;
-            channel = Option "Input channel" [
-                "TV",
-                "Composite 1",
-                "Composite 2",
-                "Composite 3"
-            ] prefs.VIDEO_CHANNEL;
-            b = Scale "Brightness" 0 32767 prefs.VIDEO_BRIGHTNESS;
-            col = Scale "Colour" 0 32767 prefs.VIDEO_COLOUR;
-            con = Scale "Contrast" 0 32767 prefs.VIDEO_CONTRAST;
-            hue = Scale "Hue" 0 32767 prefs.VIDEO_HUE;
-            frames = Scale "Frames to average" 0 100 prefs.VIDEO_FRAMES;
-            mono = Toggle "Monochrome grab" prefs.VIDEO_MONO;
-            crop = Toggle "Crop image" prefs.VIDEO_CROP;
-
-            // grab, but hide it ... if we let the crop edit
-            _raw_grab = Image (im_video_v4l1 device channel.value
-                b.value col.value con.value
-                hue.value frames.value);
-
-            edit_crop
-                = Region _raw_grab left top width height
-            {
-                left = prefs.VIDEO_CROP_LEFT;
-                top = prefs.VIDEO_CROP_TOP;
-                width = minpair
-                    prefs.VIDEO_CROP_WIDTH (_raw_grab.width + left);
-                height = minpair
-                    prefs.VIDEO_CROP_HEIGHT (_raw_grab.height + top);
-            }
-
-            aspect_ratio = Expression "Stretch vertically by"
-                prefs.VIDEO_ASPECT;
-
-            _result
-                = frame'
-            {
-                frame
-                    = edit_crop, crop
-                    = _raw_grab;
-
-                frame'
-                    = colourspace [] Interpretation.B_W frame, mono
-                    = frame;
-            }
         }
     }
 
@@ -302,7 +223,7 @@ Tasks_capture_item = class
             }
 
             // make a linearising lut ... zero on left
-            _linear_lut = im_invertlut _comb (_max_value + 1);
+            _linear_lut = vips_invertlut [$size => _max_value + 1] _comb;
 
             // and display it
             // plot from 0 explicitly so we see the effect of mode1 (intercept
@@ -605,19 +526,22 @@ Tasks_mosaic_item = class
                 refine = refine_widget;
 
                 _result
-                    = im_lrmosaic1 a'.image.value b'.image.value 0
+                    = mosaic1 options "horizontal"
                         a'.left a'.top b'.left b'.top
                         c'.left c'.top d'.left d'.top
-                        (object_size / 2) (search_area / 2)
-                        0 bw.value,
-                            refine
-                    = im_lrmerge1 a'.image.value b'.image.value
-                        a'.left a'.top b'.left b'.top
-                        c'.left c'.top d'.left d'.top
-                        bw.value
+                        a'.image.value b'.image.value
                 {
                     [a', b', c', d'] = mosaic_sort mosaic_sort_lr [a, b, c, d];
+                    options = [$mblend => bw.value] ++
+                        if refine then [
+                            $halfcorrelation => object_size / 2,
+                            $halfarea => search_area / 2,
+                            $search => true
+                        ]
+                        else [
+                        ];
                 }
+
             }
         }
 
@@ -632,18 +556,20 @@ Tasks_mosaic_item = class
                 refine = refine_widget;
 
                 _result
-                    = im_tbmosaic1 a'.image.value b'.image.value 0
+                    = mosaic1 options "vertical"
                         a'.left a'.top b'.left b'.top
                         c'.left c'.top d'.left d'.top
-                        (object_size / 2) (search_area / 2)
-                        0 bw.value,
-                            refine
-                    = im_tbmerge1 a'.image.value b'.image.value
-                        a'.left a'.top b'.left b'.top
-                        c'.left c'.top d'.left d'.top
-                        bw.value
+                        a'.image.value b'.image.value
                 {
                     [a', b', c', d'] = mosaic_sort mosaic_sort_tb [a, b, c, d];
+                    options = [$mblend => bw.value] ++
+                        if refine then [
+                            $halfcorrelation => object_size / 2,
+                            $halfarea => search_area / 2,
+                            $search => true
+                        ]
+                        else [
+                        ];
                 }
             }
         }
@@ -655,19 +581,9 @@ Tasks_mosaic_item = class
         Menuaction "Mosaic _Balance"
             "disassemble mosaic, scale brightness to match, reassemble" {
         action x
-            = map_unary balance x
-        {
-            balance x
-                = oo_unary_function balance_op x, is_class x
-                = im_global_balancef x
-                    Workspaces.Preferences.MOSAIC_BALANCE_GAMMA,
-                    is_image x
-                = error (_ "bad arguments to " ++ "balance")
-            {
-                balance_op = Operator "balance" balance
-                    Operator_type.COMPOUND_REWRAP false;
-            }
-        }
+            = map_unary globalbalance [
+                $gamma => Workspaces.Preferences.MOSAIC_BALANCE_GAMMA
+              ] x;
     }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -781,7 +697,8 @@ Manual_balance_item = class
                 = im_out
             {
                 bl_mask = convsep [] (matrix_blur _blur) (get_image m_current?0);
-                blended_im = im_blend bl_mask (m_current?1).value im_start.value;
+                blended_im
+                    = vips_ifthenelse [$blend => true] bl_mask (m_current?1).value im_start.value;
                 im_out = Image (cast im_start.format blended_im);
             }
 
@@ -795,8 +712,8 @@ Manual_balance_item = class
                 im_s' = convsep [] (matrix_blur _blur) (im_s != 0);
                 im_o' = convsep [] (matrix_blur _blur) (im_o != 0);
 
-                im_s'' = im_blend im_s'.value im_s.value p_start?0;
-                im_o'' = im_blend im_o'.value im_o.value p_start?1;
+                im_s'' = vips_ifthenelse [$blend => true] im_s'.value im_s.value p_start?0;
+                im_o'' = vips_ifthenelse [$blend => true] im_o'.value im_o.value p_start?1;
 
                 p_out  = [im_s'', im_o''];
             }
@@ -844,7 +761,7 @@ Manual_balance_item = class
                 = map_unary remosaic x
             {
                 remosaic image
-                    = Image (im_remosaic image.value old.value new.value);
+                    = Image (vips_remosaic [] image.value old.value new.value);
             }
         }
     }
@@ -918,7 +835,7 @@ Manual_balance_item = class
                         Options.balance
                     = so_balance ref_meanmax r1 r2 mask_b Options.process,
                         Options.process
-                    = im_blend (get_image mask_b) (get_image r2) (get_image r1);
+                    =  vips_ifthenelse [$blend => true] (get_image mask_b) (get_image r2) (get_image r1);
            }
        }
    }

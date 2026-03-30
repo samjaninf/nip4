@@ -1,15 +1,12 @@
-- Tasks.def has a lot of im_ funcs
+- Tasks.def
 
-	im_binfile
-	im_video_v4l1
-	im_invertlut
-	im_lrmosaic1
-	im_lrmerge1
-	im_tbmosaic1
-	im_tbmerge1
-	im_global_balancef
-	im_blend
-	im_remosaic
+	IB11 is producing the wrong result
+
+        should match IB10
+
+        Tasks_mosaic_item.Manual_balance_item.Balance_apply_item.action
+
+    many tests missing for Tasks.def
 
 - use Direction enum
 
