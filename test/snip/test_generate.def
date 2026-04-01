@@ -4,6 +4,20 @@ image = image_new [] 1 1;
 image_lab = colourspace [] Interpretation.LAB image;
 
 main = unit_test [
+    [(Vector (point (0, 0) (image_new [$pixel => 12.2] 1 1)) -
+      Vector [12.2])?0 < 0.000001,
+        "image_new format from pixel"],
+    [point (0, 0) (image_new [$pixel => 12.2, $format => Format.UCHAR] 1 1) ==
+     [12],
+        "image_new format can be overridden"],
+    [point (0, 0) (image_new [$pixel => [1, 2, 3]] 1 1) == [1, 2, 3],
+        "image_new bands from pixel"],
+    [get_interpretation (image_new [$pixel => [1, 2, 3]] 1 1) ==
+     Interpretation.sRGB,
+        "image_new interpretation from pixel 1"],
+    [get_interpretation (image_new [$pixel => 3] 1 1) == Interpretation.B_W,
+        "image_new interpretation from pixel 2"],
+
     [point (256, 256) (lab_slice 513 54) == [54, 0, 0], "lab_slice"],
     [image_white image == Vector [255], "image_white"],
     [image_white image_lab == Colour "LAB" [100, 0, 0], "image_white LAB"],

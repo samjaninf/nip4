@@ -602,7 +602,7 @@ Manual_balance_item = class
               */
     {
         action im_in m_control m_group = class
-            Matrix values{
+            Matrix values {
             _vislevel = 1;
 
             _control_im = if m_control then im_in else 0;
@@ -612,11 +612,14 @@ Manual_balance_item = class
                 = m_group.value, _group_check
                 = m_group;
 
-            process m_current mat_in = mat_out
-                {so_values  = so_calculate _control_meanmax im_in m_current;
-                 mat_out = join [so_values] mat_in;}
+            process m_current mat_in
+                = mat_out
+            {
+                so_values  = so_calculate _control_meanmax im_in m_current;
+                mat_out = join [so_values] mat_in;
+            }
 
-            values = (foldr process [] _m_list);
+            values = foldr process [] _m_list;
         }
     }
 
@@ -671,7 +674,6 @@ Manual_balance_item = class
 
             Build = Toggle "Build Scale and Offset Correction Images" false;
 
-
             Output = class {
                 _vislevel = 1;
                 scale_im = _build?0;
@@ -696,7 +698,7 @@ Manual_balance_item = class
             process_1 m_current im_start
                 = im_out
             {
-                bl_mask = convsep [] (matrix_blur _blur) (get_image m_current?0);
+                bl_mask = convsep [$precision => $integer] (matrix_blur _blur) (get_image m_current?0);
                 blended_im
                     = vips_ifthenelse [$blend => true] bl_mask (m_current?1).value im_start.value;
                 im_out = Image (cast im_start.format blended_im);
@@ -709,8 +711,8 @@ Manual_balance_item = class
                 im_s = if current?0 > 128 then current?1 else _blank;
                 im_o = if current?0 > 128 then current?2 else _blank;
 
-                im_s' = convsep [] (matrix_blur _blur) (im_s != 0);
-                im_o' = convsep [] (matrix_blur _blur) (im_o != 0);
+                im_s' = convsep [$precision => $integer] (matrix_blur _blur) (im_s != 0);
+                im_o' = convsep [$precision => $integer] (matrix_blur _blur) (im_o != 0);
 
                 im_s'' = vips_ifthenelse [$blend => true] im_s'.value im_s.value p_start?0;
                 im_o'' = vips_ifthenelse [$blend => true] im_o'.value im_o.value p_start?1;
@@ -829,7 +831,7 @@ Manual_balance_item = class
                     [255, 255, 255]
                 ];
                 mask_a = map_unary (dilate mask8) mask;
-                mask_b = convsep [] (matrix_blur 2) mask_a;
+                mask_b = convsep [$precision => $integer] (matrix_blur 2) mask_a;
                 patch
                     = so_balance ref_meanmax r1 r2 mask_b Options.process,
                         Options.balance

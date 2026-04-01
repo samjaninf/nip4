@@ -1,11 +1,5 @@
 - Tasks.def
 
-	IB11 is producing the wrong result
-
-        should match IB10
-
-        Tasks_mosaic_item.Manual_balance_item.Balance_apply_item.action
-
     many tests missing for Tasks.def
 
 - use Direction enum
@@ -15,6 +9,8 @@
 - Math.def uses im_cntlines
 
 - after Reset on a row, mark dirty and recalc
+
+- class params missing value display
 
 - menus say "Mono", captions say "b-w"
 

@@ -1034,9 +1034,9 @@ Image value = class
                 has_member_list has_format x
             = NULL;
 
-        to_image x = to_image_size width height target_bands target_format x;
+        to_image_target x = to_image_size width height target_bands target_format x;
 
-        [then', else'] = map to_image x;
+        [then', else'] = map to_image_target x;
 
         ite_result_image = copy [$interpretation => target_interpretation]
             (if value then then' else else');
