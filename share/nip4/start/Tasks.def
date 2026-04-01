@@ -639,8 +639,8 @@ Manual_balance_item = class
 
             blur = Scale "Blur" 1 10 1;
             _blur
-                = (blur.value/2 + 0.5), blur.value > 1
-                =  1;
+                = blur.value / 2 + 0.5, blur.value > 1
+                = 1;
 
             _group_check = is_Group m_group;
             _m_list
@@ -654,15 +654,18 @@ Manual_balance_item = class
                 mat_a = replicate no_masks [0, 0];
             }
 
-            // Apply the user defined adjustments to the inputted matrix of scale and offset values
+            // Apply the user defined adjustments to the matrix of scale and offset values
             _adjusted = map2 fn_adjust m_matrix.value adjust.value;
-            fn_adjust a b = [(a?0 + b?0), (a?1 + (a?1 * b?1))];
+            // why are offset and scale swapped here? very odd
+            fn_adjust [a_off, a_scale] [b_off, b_scale]
+                = [a_off + b_off, a_scale + a_scale * b_scale];
 
             _scaled_ims = map (fn_so_apply im_in) _adjusted;
 
-            fn_so_apply im so = map_unary adj im
+            fn_so_apply im [scale, offset]
+                = map_unary adj im
             {
-                adj im = im * (so?0) + (so?1);
+                adj im = im * scale + offset;
             }
 
             _im_pairs = zip2 _m_list _scaled_ims;
@@ -676,16 +679,16 @@ Manual_balance_item = class
 
             Output = class {
                 _vislevel = 1;
-                scale_im = _build?0;
-                offset_im = _build?1;
+                [scale_im, offset_im] = _build;
                 so_values = Matrix _adjusted;
 
-                _build = [Image (so_images?0), Image (so_images?1)], Build
-                       = ["Scale image not built.", "Offset image not built."]
+                _build
+                    = [Image scale_im, Image offset_im], Build
+                    = ["Scale image not built.", "Offset image not built."]
                 {
                     m_list' = transpose [_m_list];
                     m_all = map2 join m_list' _adjusted;
-                    so_images = foldr process_2 _pair_start m_all;
+                    [scale_im, offset_im] = foldr process_2 _pair_start m_all;
                 }
             }
 
@@ -705,17 +708,17 @@ Manual_balance_item = class
             }
 
             // Process for building scale and offset image.
-            process_2 current p_start
+            process_2 [mask, scale, offset] [scale_image, offset_image]
                 = p_out
             {
-                im_s = if current?0 > 128 then current?1 else _blank;
-                im_o = if current?0 > 128 then current?2 else _blank;
+                im_s = if mask > 128 then scale else _blank;
+                im_o = if mask > 128 then offset else _blank;
 
                 im_s' = convsep [$precision => $integer] (matrix_blur _blur) (im_s != 0);
                 im_o' = convsep [$precision => $integer] (matrix_blur _blur) (im_o != 0);
 
-                im_s'' = vips_ifthenelse [$blend => true] im_s'.value im_s.value p_start?0;
-                im_o'' = vips_ifthenelse [$blend => true] im_o'.value im_o.value p_start?1;
+                im_s'' = vips_ifthenelse [$blend => true] im_s'.value im_s.value scale_image;
+                im_o'' = vips_ifthenelse [$blend => true] im_o'.value im_o.value offset_image;
 
                 p_out  = [im_s'', im_o''];
             }
