@@ -200,7 +200,7 @@ Tasks_capture_item = class
 
             // load true values
             _true_Lab = Matrix_file macbeth.value;
-            _true_XYZ = colourspace [$from => Interpretation.LAB]
+            _true_XYZ = colourspace [$source_space => Interpretation.LAB]
                 Interpretation.XYZ _true_Lab;
 
             // get Ys of greyscale
@@ -248,7 +248,7 @@ Tasks_capture_item = class
 
             // now turn the camera to LAB and calculate dE76
             _camera'' = (to_matrix @
-                colourspace [$from => Interpretation.XYZ] Interpretation.LAB @
+                colourspace [$source_space => Interpretation.XYZ] Interpretation.LAB @
                 recomb M @
                 multiply scale @
                 to_image) _camera';
@@ -275,7 +275,7 @@ Tasks_capture_item = class
 
             // convert RGB camera to Lab
             _result = (Image @
-                colourspace [$from => Interpretation.XYZ] Interpretation.LAB @
+                colourspace [$source_space => Interpretation.XYZ] Interpretation.LAB @
                 norm @
                 recomb M @
                 cast_float @
@@ -300,7 +300,7 @@ Tasks_capture_item = class
                     [a, b];
 
                 result = (Image @
-                    colourspace [$from => Interpretation.XYZ] Interpretation.LAB @
+                    colourspace [$source_space => Interpretation.XYZ] Interpretation.LAB @
                     calib.norm @
                     recomb calib.M @
                     cast_float @
