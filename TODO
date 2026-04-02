@@ -1,6 +1,32 @@
 - Tasks.def
 
+    Find_calib_item isn't working
+
+        A1: "$VIPSHOME/share/$PACKAGE/data/macbeth_lab_d65.mat"
+        A2: Matrix_file A1
+        A3: colourspace [$from => Interpretation.LAB] Interpretation.XYZ A2
+
+    get funny numbers!
+
+        what path is being executed? is $from not being used correctly?
+
+    have:
+
+        B10: Matrix [[..]]
+        A1: vips_image_from_matrix B10
+            <VipsImage 3x24 double, 1 band, matrix>
+
+            needs to be 1x24 double, 3 band, multiband
+
+        A2: vips_colourspace [$from => Interpretation.LAB] A1 Interpretation.XYZ
+            <VipsImage 3x24 float, 3 bands, xyz>
+
+    should be 3x24
+
+
     many tests missing for Tasks.def
+
+- add bandfold / unfold menu items?
 
 - use Direction enum
 

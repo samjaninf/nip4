@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.1.0">
   <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="" name="test_tasks" filename="$CWD/test_tasks.ws" major="9" minor="1">
-    <Column x="10" y="5" open="true" selected="false" sform="false" next="17" name="B" caption="Colour / Colourspace">
+    <Column x="10" y="5" open="true" selected="false" sform="false" next="20" name="B" caption="Test images">
       <Subcolumn vislevel="3">
         <Row popup="false" name="B1">
           <Rhs vislevel="1" flags="1">
@@ -10,12 +10,26 @@
             <iText formula="Image_file &quot;$VIPSHOME/share/nip4/data/examples/businesscard/slanted_oval_vase2.jpg&quot;"/>
           </Rhs>
         </Row>
+        <Row popup="false" name="B17">
+          <Rhs vislevel="1" flags="1">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Image_file &quot;/home/john/GIT/nip4/test/workspaces/images/print_test_image.v&quot;"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="B18">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Colour_convert_item.sRGB_item.action B17"/>
+          </Rhs>
+        </Row>
       </Subcolumn>
     </Column>
-    <Column x="384" y="5" open="true" selected="false" sform="false" next="33" name="BC" caption="Tasks / Capture">
+    <Column x="410" y="5" open="true" selected="false" sform="false" next="34" name="BC" caption="Tasks / Capture">
       <Subcolumn vislevel="3">
         <Row popup="false" name="BC2">
-          <Rhs vislevel="1" flags="1">
+          <Rhs vislevel="2" flags="5">
             <iImage window_x="0" window_y="30" window_width="512" window_height="729" show_status="true" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
@@ -29,7 +43,7 @@
           </Rhs>
         </Row>
         <Row popup="false" name="BC4">
-          <Rhs vislevel="1" flags="1">
+          <Rhs vislevel="2" flags="5">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Tasks_capture_item.Light_correct_item.action BC2 BC3"/>
@@ -171,7 +185,7 @@
         </Row>
         <Row popup="false" name="BC11">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="3" flags="4">
@@ -187,21 +201,21 @@
               </Row>
               <Row name="tilt">
                 <Rhs vislevel="1" flags="1">
-                  <Slider caption="Tilt" from="-1" to="1" value="0.60000000000000009"/>
+                  <Slider caption="Tilt" from="-1" to="1" value="-0.84738955823293172"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
               </Row>
               <Row name="hshift">
                 <Rhs vislevel="1" flags="1">
-                  <Slider/>
+                  <Slider caption="Horizontal shift by" from="-1" to="1" value="-0.17269076305220887"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
               </Row>
               <Row name="vshift">
                 <Rhs vislevel="1" flags="1">
-                  <Slider/>
+                  <Slider caption="Vertical shift by" from="-1" to="1" value="-0.02008032128514059"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -227,10 +241,49 @@
           </Rhs>
         </Row>
         <Row popup="false" name="BC14">
-          <Rhs vislevel="1" flags="1">
+          <Rhs vislevel="2" flags="5">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="BC33">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="1">
+              <Row name="x">
+                <Rhs vislevel="0" flags="4">
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="super">
+                <Rhs vislevel="0" flags="4">
+                  <iImage show_status="false" show_convert="false"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="gamma">
+                <Rhs vislevel="1" flags="1">
+                  <Slider caption="Gamma" from="0.001" to="4" value="1.8594564315352693"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="image_maximum_hint">
+                <Rhs vislevel="1" flags="4">
+                  <iText/>
+                </Rhs>
+              </Row>
+              <Row name="im_mx">
+                <Rhs vislevel="1" flags="1">
+                  <Expression caption="Image maximum"/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
+            </Subcolumn>
+            <iText formula="Tasks_capture_item.Gamma_item.action BC14"/>
           </Rhs>
         </Row>
         <Row popup="false" name="BC16">
@@ -241,7 +294,7 @@
           </Rhs>
         </Row>
         <Row popup="false" name="BC21">
-          <Rhs vislevel="1" flags="1">
+          <Rhs vislevel="2" flags="5">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
@@ -292,7 +345,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1048" y="5" open="true" selected="false" sform="false" next="31" name="UB" caption="Tasks / Mosaic / Onepoint|Twopoint">
+    <Column x="1550" y="5" open="true" selected="false" sform="false" next="31" name="UB" caption="Tasks / Mosaic / Onepoint|Twopoint">
       <Subcolumn vislevel="3">
         <Row popup="false" name="UB1">
           <Rhs vislevel="1" flags="1">
@@ -496,7 +549,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1545" y="5" open="true" selected="true" sform="false" next="38" name="IB" caption="Tasks / Mosaic / Manual Balance">
+    <Column x="2047" y="5" open="true" selected="false" sform="false" next="38" name="IB" caption="Tasks / Mosaic / Manual Balance">
       <Subcolumn vislevel="3">
         <Row popup="false" name="IB8">
           <Rhs vislevel="1" flags="4">
@@ -623,7 +676,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2296" y="5" open="true" selected="false" sform="false" next="6" name="EC" caption="Tasks / Mosaic / Clone">
+    <Column x="3088" y="5" open="true" selected="false" sform="false" next="6" name="EC" caption="Tasks / Mosaic / Clone">
       <Subcolumn vislevel="3">
         <Row popup="false" name="EC4">
           <Rhs vislevel="1" flags="4">
@@ -739,6 +792,29 @@
               </Row>
             </Subcolumn>
             <iText formula="Tasks_mosaic_item.Clone_area_item.action EC1 EC2"/>
+          </Rhs>
+        </Row>
+      </Subcolumn>
+    </Column>
+    <Column x="2798" y="5" open="true" selected="false" sform="false" next="1" name="A">
+      <Subcolumn vislevel="3"/>
+    </Column>
+    <Column x="1160" y="5" open="true" selected="true" sform="false" next="6" name="C" caption="Tasks / Capture / Calib">
+      <Subcolumn vislevel="3">
+        <Row popup="false" name="C1">
+          <Rhs vislevel="2" flags="5">
+            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="B18"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="C2">
+          <Rhs vislevel="1" flags="1">
+            <iRegion show_status="false" show_convert="false" left="6" top="0" width="543" height="367">
+              <iRegiongroup/>
+            </iRegion>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Region C1 50 38 323 175"/>
           </Rhs>
         </Row>
       </Subcolumn>

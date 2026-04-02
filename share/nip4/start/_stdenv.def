@@ -2713,14 +2713,41 @@ unit_test test_list
     }
 }
 
+bandfold options in
+    = oo_unary_function bandfold_op in, is_class in
+    = vips_bandfold options in, is_image in
+    = error_bad_args "bandfold" ["[option]", "image|Image"] [options, in]
+{
+    bandfold_op = Operator "bandfold" (bandfold options)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+bandunfold options in
+    = oo_unary_function bandunfold_op in, is_class in
+    = vips_bandunfold options in, is_image in
+    = error_bad_args "bandunfold" ["[option]", "image|Image"] [options, in]
+{
+    bandunfold_op = Operator "bandunfold" (bandunfold options)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
 colourspace options to in
     = oo_unary_function colourspace_op in, is_class in
+    = mat1 (colourspace options to) in, is_matrix in
     = vips_colourspace options in (to_enum to), is_image in
-    = error (_ "bad arguments to " ++ "colourspace: " ++ print [options, to,
-in])
+    = error_bad_args "colourspace"
+        ["[option]", "Interpretation", "image|Image|Matrix|Vector"] [options, to, in]
 {
     colourspace_op = Operator "colourspace" (colourspace options to)
         Operator_type.COMPOUND_REWRAP false;
+
+    mat1 fn = get_value @
+        vips_matrix_from_image @
+        bandunfold [] @ fn @
+        set_header $interpretation $multiband @
+        bandfold [] @
+        vips_image_from_matrix @
+        Matrix;
 }
 
 dE76 a b

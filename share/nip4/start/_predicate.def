@@ -132,7 +132,7 @@ is_rectangular l
  *
  * [[]] is the empty matrix, [] is the empty list ... disallow []
  */
-is_matrix l = l != [] && is_listof is_real_list l && is_rectangular l;
+is_matrix l = is_list l && l != [] && is_listof is_real_list l && is_rectangular l;
 
 /* is_square_matrix l: is l a matrix with width == height
  */
