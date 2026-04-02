@@ -14,7 +14,7 @@
           <Rhs vislevel="1" flags="1">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Image_file &quot;/home/john/GIT/nip4/test/workspaces/images/print_test_image.v&quot;"/>
+            <iText formula="Image_file &quot;$CWD/images/print_test_image.v&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="B18">
@@ -26,7 +26,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="410" y="5" open="true" selected="false" sform="false" next="34" name="BC" caption="Tasks / Capture">
+    <Column x="411" y="5" open="true" selected="false" sform="false" next="34" name="BC" caption="Tasks / Capture">
       <Subcolumn vislevel="3">
         <Row popup="false" name="BC2">
           <Rhs vislevel="2" flags="5">
@@ -345,7 +345,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1550" y="5" open="true" selected="false" sform="false" next="31" name="UB" caption="Tasks / Mosaic / Onepoint|Twopoint">
+    <Column x="1817" y="5" open="true" selected="false" sform="false" next="31" name="UB" caption="Tasks / Mosaic / Onepoint|Twopoint">
       <Subcolumn vislevel="3">
         <Row popup="false" name="UB1">
           <Rhs vislevel="1" flags="1">
@@ -549,7 +549,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2047" y="5" open="true" selected="false" sform="false" next="38" name="IB" caption="Tasks / Mosaic / Manual Balance">
+    <Column x="2318" y="5" open="true" selected="false" sform="false" next="38" name="IB" caption="Tasks / Mosaic / Manual Balance">
       <Subcolumn vislevel="3">
         <Row popup="false" name="IB8">
           <Rhs vislevel="1" flags="4">
@@ -676,7 +676,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="3088" y="5" open="true" selected="false" sform="false" next="6" name="EC" caption="Tasks / Mosaic / Clone">
+    <Column x="3072" y="5" open="true" selected="false" sform="false" next="6" name="EC" caption="Tasks / Mosaic / Clone">
       <Subcolumn vislevel="3">
         <Row popup="false" name="EC4">
           <Rhs vislevel="1" flags="4">
@@ -796,10 +796,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2798" y="5" open="true" selected="false" sform="false" next="1" name="A">
-      <Subcolumn vislevel="3"/>
-    </Column>
-    <Column x="1160" y="5" open="true" selected="true" sform="false" next="6" name="C" caption="Tasks / Capture / Calib">
+    <Column x="1161" y="5" open="true" selected="false" sform="false" next="8" name="C" caption="Tasks / Capture / Calib">
       <Subcolumn vislevel="3">
         <Row popup="false" name="C1">
           <Rhs vislevel="2" flags="5">
@@ -815,6 +812,20 @@
             </iRegion>
             <Subcolumn vislevel="0"/>
             <iText formula="Region C1 50 38 323 175"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="C6">
+          <Rhs vislevel="3" flags="7">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="1"/>
+            <iText formula="Tasks_capture_item.Find_calib_item.action C2"/>
+          </Rhs>
+        </Row>
+        <Row popup="false" name="C7">
+          <Rhs vislevel="1" flags="1">
+            <iImage show_status="false" show_convert="false"/>
+            <Subcolumn vislevel="0"/>
+            <iText formula="Tasks_capture_item.Apply_calib_item.action C2 C6"/>
           </Rhs>
         </Row>
       </Subcolumn>
