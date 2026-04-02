@@ -1,17 +1,45 @@
+- doing examples/1_point_mosaic
+
+    global balance fails with affine out of range o.O
+
+    rename example as "reflectogram"
+
 - Tasks.def
 
-    Find_calib_item isn't working
+    check menu item capitalisation
 
-	input lut find is broken?
+    check for any im_ funcs
 
-
-    many tests missing for Tasks.def
+    add missing tests
 
 - misspelled or incorrect options don't raise errors
 
 	maybe have a strict mode?
 
+- Enum.picker could allow string or numeric arg
+
+            style = Plot_style.picker $LINE;
+            style = Plot_style.picker Plot_style.LINE;
+
+    second does a lookup to get the key name
+
 - add bandfold / unfold menu items?
+
+- try:
+
+    move mouse pointer out of image window
+    hold down ctrl
+    move back into image window
+    left click
+    mark is not created
+
+    very annoying while mosaicing!
+
+  poll button state on window enter?
+
+- double-clicking on a thumbnail should not select that row + column
+
+    very annoying while mosaicing!
 
 - use Direction enum
 

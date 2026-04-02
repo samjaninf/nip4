@@ -17,22 +17,14 @@ Tasks_capture_item = class
 
             _result
                 = Image blank, path.value == "empty"
-                = Image (im_csv2vips filename)
+                = Image image
             {
-                filename = search (expand path.value) ++ ":" ++
-                    "skip:" ++ print (start_line.expr - 1) ++ "," ++
-                    "whi:" ++ escape whitespace.value ++ "," ++
-                    "sep:" ++ escape separator.value ++ "," ++
-                    "line:" ++ print rows.expr;
-
-                // prefix any ',' with a '\' in the separators line
-                escape x
-                    = foldr prefix [] x
-                {
-                    prefix x l
-                        = '\\' : x : l, x == ','
-                        = x : l;
-                }
+                image = vips_csvload [
+                    $skip => start_line.expr - 1,
+                    $lines => rows.expr,
+                    $whitespace => whitespace.value,
+                    $separator => separator.value
+                  ] path.value;
 
                 blank = image_new [$format => Format.DOUBLE] 1 1;
             }
@@ -319,7 +311,7 @@ Tasks_capture_item = class
             _result {
             _vislevel = 3;
 
-            style = Option_enum "Style" Plot_style.names "Line";
+            style = Plot_style.picker $LINE;
 
             auto = Toggle "Auto Range" true;
             ymin = Expression "Y range minimum" 0;
@@ -581,9 +573,9 @@ Tasks_mosaic_item = class
         Menuaction "Mosaic _Balance"
             "disassemble mosaic, scale brightness to match, reassemble" {
         action x
-            = map_unary globalbalance [
+            = map_unary (globalbalance [
                 $gamma => Workspaces.Preferences.MOSAIC_BALANCE_GAMMA
-              ] x;
+              ]) x;
     }
 
 ////////////////////////////////////////////////////////////////////////////////////

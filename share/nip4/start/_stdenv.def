@@ -2318,9 +2318,10 @@ mosaic1 options direction xr1 yr1 xs1 ys1 xr2 yr2 xs2 ys2 a b
 globalbalance options x
     = oo_unary_function globalbalance_op x, is_class x
     = vips_globalbalance options x, is_image x
-    = error (_ "bad arguments to " ++ "globalbalance")
+    = error_bad_args "globalbalance" ["[option]", "image|Image"] [options, x]
 {
-    globalbalance_op = Operator "globalbalance" globalbalance Operator_type.COMPOUND_REWRAP false;
+    globalbalance_op = Operator "globalbalance"
+        (globalbalance options) Operator_type.COMPOUND_REWRAP false;
 }
 
 /* One image in, one out.
