@@ -460,7 +460,7 @@ Tasks_mosaic_item = class
                   ] "vertical" (b'.left - a'.left) (b'.top - a'.top)
                      a'.image b'.image
             {
-                [a', b'] = mosaic_sort mosaic_sort_lr [a, b];
+                [a', b'] = mosaic_sort mosaic_sort_tb [a, b];
             }
         }
 

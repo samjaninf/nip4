@@ -120,12 +120,12 @@ Kirk
             type = Option "Type" ["Blur", "Sharpen"] 0;
             r = Scale "Radius" 1 100 1;
             fac = Scale "Amount" 0 1 1;
-            layers = Scale "Layers" 1 100 10;
             shape = Option "Mask shape" [
                 "Square",
                 "Gaussian"
             ] 0;
             prec = Precision.picker $INTEGER;
+            layers = Scale "Layers" 1 100 10;
 
             _result
                 = map_unary process x
