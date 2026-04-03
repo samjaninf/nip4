@@ -527,16 +527,15 @@ Math_stats_item = class
 			_result {
 			_vislevel = 3;
 
-			edge = Option "Count" [
-				"Horizontal lines",
-				"Vertical lines"
-			] 0;
+			direction = Direction.picker $HORIZONTAL;
 
 			_result
 				= map_unary process x
 			{
-				process image = Number (edge.labels?edge)
-					(im_cntlines image.value edge.value);
+                dir = direction.value_key;
+
+				process image = Number (direction.labels?dir)
+					(countlines [] dir image);
 			}
 		}
 	}

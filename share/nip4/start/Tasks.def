@@ -4,7 +4,7 @@ Tasks_capture_item = class
         "useful stuff for capturing and preprocessing images" {
 
     Csv_import_item = class
-        Menuaction "_CSV Import" "read a file of comma-separated values" {
+        Menuaction "_CSV import" "read a file of comma-separated values" {
         action = class
             _result {
             _vislevel = 3;
@@ -33,7 +33,7 @@ Tasks_capture_item = class
 
     // interpret Analyze header for layout and calibration
     Analyze7_header_item = class
-        Menuaction "_Interpret Analyze 7 Header"
+        Menuaction "_Interpret Analyze 7 header"
             "examine the Analyze header and set layout and value" {
         action x
             = x'''
@@ -103,7 +103,7 @@ Tasks_capture_item = class
     sep1 = Menuseparator;
 
     White_balance_item = class
-        Menuaction "_White Balance"
+        Menuaction "_White balance"
             "use average of small image to set white of large image" {
         action a b = class
             _result {
@@ -160,7 +160,7 @@ Tasks_capture_item = class
     Temp_item = Colour_temperature_item;
 
     Find_calib_item = class
-        Menuaction "Find _Colour Calibration"
+        Menuaction "Find _colour calibration"
             "find an RGB -> XYZ transform from an image of a colour chart" {
         action image = class
             _result {
@@ -276,7 +276,7 @@ Tasks_capture_item = class
     }
 
     Apply_calib_item = class
-        Menuaction "_Apply Colour Calibration"
+        Menuaction "_Apply colour calibration"
             "apply an RGB -> LAB transform to an image" {
         action a b = class
             (map_binary process a b) {
@@ -306,7 +306,7 @@ Tasks_capture_item = class
     Graph_hist_item = Hist_find_item;
 
     Graph_bands_item = class
-        Menuaction "Plot _Bands" "show image bands as a graph" {
+        Menuaction "Plot _bands" "show image bands as a graph" {
         action x = class
             _result {
             _vislevel = 3;
@@ -405,7 +405,7 @@ Tasks_mosaic_item = class
     mosaic_sort fn = concat @ transpose @ fn @ mosaic_sort_test;
 
     Mosaic_1point_item = class
-        Menupullright "_One Point" "join two images with a single tie point" {
+        Menupullright "_One point" "join two images with a single tie point" {
         check_ab_args a b = [
             [a, "a", check_Mark],
             [b, "b", check_Mark]
@@ -465,13 +465,13 @@ Tasks_mosaic_item = class
         }
 
         Left_right_item = class
-            Menuaction "_Left to Right"
+            Menuaction "_Left to right"
                 "join two images left-right with a single tie point" {
             action a b = lr_mos refine_widget a b;
         }
 
         Top_bottom_item = class
-            Menuaction "_Top to Bottom"
+            Menuaction "_Top to bottom"
                 "join two images top-bottom with a single tie point" {
             action a b = tb_mos refine_widget a b;
         }
@@ -479,20 +479,20 @@ Tasks_mosaic_item = class
         sep1 = Menuseparator;
 
         Left_right_manual_item = class
-            Menuaction "Manual L_eft to Right"
+            Menuaction "Manual l_eft to right"
                 "join left-right, no auto-adjust of tie points" {
             action a b = lr_mos false a b;
         }
 
         Top_bottom_manual_item = class
-            Menuaction "Manual T_op to Bottom"
+            Menuaction "Manual t_op to bottom"
                 "join top-bottom, no auto-adjust of tie points" {
             action a b = tb_mos false a b;
         }
     }
 
     Mosaic_2point_item = class
-        Menupullright "_Two Point" "join two images with two tie points" {
+        Menupullright "_Two point" "join two images with two tie points" {
         check_abcd_args a b c d = [
             [a, "a", check_Mark],
             [b, "b", check_Mark],
@@ -508,7 +508,7 @@ Tasks_mosaic_item = class
         refine_widget = Toggle "Refine selected tie-points" prefs.MOSAIC_REFINE;
 
         Left_right_item = class
-            Menuaction "_Left to Right"
+            Menuaction "_Left to right"
                 "join two images left-right with a pair of tie points" {
             action a b c d = class
                 Image _result {
@@ -538,7 +538,7 @@ Tasks_mosaic_item = class
         }
 
         Top_bottom_item = class
-            Menuaction "_Top to Bottom"
+            Menuaction "_Top to bottom"
                 "join two images top-bottom with a pair of tie points" {
             action a b c d = class
                 Image _result {
@@ -570,7 +570,7 @@ Tasks_mosaic_item = class
     sep1 = Menuseparator;
 
     Balance_item = class
-        Menuaction "Mosaic _Balance"
+        Menuaction "Mosaic _balance"
             "disassemble mosaic, scale brightness to match, reassemble" {
         action x
             = map_unary (globalbalance [
@@ -581,12 +581,12 @@ Tasks_mosaic_item = class
 ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 Manual_balance_item = class
-    Menupullright "Manual B_alance" "balance tonality of user defined areas" {
+    Menupullright "Manual b_alance" "balance tonality of user defined areas" {
     prefs = Workspaces.Preferences;
 
     ////////////////////////////////////////////////////////////////////////////////////
     Balance_find_item = class
-        Menuaction "_Find Values"
+        Menuaction "_Find values"
              "calculates values required to scale and offset balance user defined areas in a given image"
              /* Outputs a matrix of scale and offset values. Eg. Values required to balance the secondary
               * structure in an X-ray image.  Takes an X-ray image an 8-bit control mask and a list of
@@ -617,7 +617,7 @@ Manual_balance_item = class
 
     ////////////////////////////////////////////////////////////////////////////////////
     Balance_check_item = class
-        Menuaction "_Check Values"
+        Menuaction "_Check values"
              "allows calculated set of scale and offset values to be checked and adjusted if required"
              /* Outputs adjusted matrix of scale and offset values and scale and offset image maps.
               * Eg. Check values required to balance the secondary structure in an X-ray image.
@@ -719,7 +719,7 @@ Manual_balance_item = class
 
     ////////////////////////////////////////////////////////////////////////////////////
     Balance_apply_item = class
-        Menuaction "_Apply Values"
+        Menuaction "_Apply values"
              "apply scale and offset corrections, defined as image maps, to a given image"
              /* Outputs the balanced image. Eg. Balance the secondary structure in an X-ray image.  Takes an
               * X-ray image an 32-bit float scale image and a 32-bit offset image.
@@ -766,7 +766,7 @@ Manual_balance_item = class
     sep3 = Menuseparator;
 
     Clone_area_item = class
-        Menuaction "_Clone Area"
+        Menuaction "_Clone area"
             "replace dark or light section of im1 with pixels from im2" {
         action im1 im2 = class
             _result {

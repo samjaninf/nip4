@@ -1,18 +1,4 @@
-- doing examples/1_point_mosaic
-
-    global balance fails with affine out of range o.O
-
-    n4 works, how odd
-
-    rename example as "reflectogram"
-
-- Tasks.def
-
-    check menu item capitalisation
-
-    check for any im_ funcs
-
-    add missing tests
+- revise other examples for new menus
 
 - misspelled or incorrect options don't raise errors
 
@@ -46,8 +32,6 @@
 - use Direction enum
 
     look for Horizontal or vertical enums, eg. in join?
-
-- Math.def uses im_cntlines
 
 - after Reset on a row, mark dirty and recalc
 
@@ -97,25 +81,6 @@
 - add to_enum
 
     takes an enum and a string or value (not a key), returns a value
-
-- menus next!
-
-    Colour.def      done
-    Matrix.def      done
-    Filter.def      done
-    Object.def      done
-    Histogram.def   done
-    Image.def       done
-    Region.def      done
-    Magick.def      done
-    Tasks.def
-    Math.def        done
-    Widgets.def	    done
-
-- changes
-
-    colour_transform from to in = colourspace [$source_space => from] to in;
-    colour_transform_to to in = colourspace [] to in;
 
 - try to reproduce that macOS crash
 

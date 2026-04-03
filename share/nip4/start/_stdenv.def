@@ -2324,6 +2324,16 @@ globalbalance options x
         (globalbalance options) Operator_type.COMPOUND_REWRAP false;
 }
 
+countlines options direction x
+    = oo_unary_function countlines_op x, is_class x
+    = vips_countlines options x direction, is_image x
+    = error_bad_args "countlines"
+        ["[option]", "Direction", "image|Image"] [options, direction, x]
+{
+    countlines_op = Operator "countlines"
+        (countlines options direction) Operator_type.COMPOUND false;
+}
+
 /* One image in, one out.
  */
 system_image command x
@@ -2619,18 +2629,18 @@ case index cases
 }
 
 fill_nearest x
-	= oo_unary_function nearest_op x, is_class x
-	= near x, is_image x
-	= error (_ "bad arguments to " ++ "fill_nearest")
+    = oo_unary_function nearest_op x, is_class x
+    = near x, is_image x
+    = error (_ "bad arguments to " ++ "fill_nearest")
 {
-	nearest_op = Operator "fill_nearest"
-		fill_nearest Operator_type.COMPOUND_REWRAP false;
+    nearest_op = Operator "fill_nearest"
+        fill_nearest Operator_type.COMPOUND_REWRAP false;
 
-	near x
-		= [out, distance]
-	{
-		  [out, distance] = vips_fill_nearest [$distance => true] x;
-	}
+    near x
+        = [out, distance]
+    {
+          [out, distance] = vips_fill_nearest [$distance => true] x;
+    }
 }
 
 linear options a b x
