@@ -1,5 +1,7 @@
 - revise other examples for new menus
 
+	copy versions of them into test/workspaces
+
 - misspelled or incorrect options don't raise errors
 
 	maybe have a strict mode?
@@ -12,6 +14,13 @@
     second does a lookup to get the key name
 
 - add bandfold / unfold menu items?
+
+	should go into Image.def
+
+	vips_grid as well? other pixel reorganisers?
+
+		transpose3d
+		wrap
 
 - try:
 
