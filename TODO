@@ -2,6 +2,10 @@
 
 	copy versions of them into test/workspaces
 
+    clone.ws is broken
+
+        broken in nip2 as well
+
 - misspelled or incorrect options don't raise errors
 
 	maybe have a strict mode?

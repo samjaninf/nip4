@@ -145,6 +145,22 @@ heapmodel_parent_add(iContainer *child)
 	heapmodel->row = heapmodel_get_row(heapmodel);
 }
 
+static void
+heapmodel_parent_remove(iContainer *child)
+{
+	Heapmodel *heapmodel = HEAPMODEL(child);
+
+	g_assert(IS_HEAPMODEL(child->parent) ||
+		IS_FILEMODEL(child->parent));
+
+	ICONTAINER_CLASS(heapmodel_parent_class)->parent_remove(child);
+
+	/* Parent is going, so the enclosing rhs and row must go to.
+	 */
+	heapmodel->rhs = NULL;
+	heapmodel->row = NULL;
+}
+
 static void *
 heapmodel_real_new_heap(Heapmodel *heapmodel, PElement *root)
 {
@@ -197,6 +213,7 @@ heapmodel_class_init(HeapmodelClass *class)
 	/* Init methods.
 	 */
 	icontainer_class->parent_add = heapmodel_parent_add;
+	icontainer_class->parent_remove = heapmodel_parent_remove;
 
 	heapmodel_class->new_heap = heapmodel_real_new_heap;
 	heapmodel_class->update_heap = heapmodel_real_update_heap;

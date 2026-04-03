@@ -556,7 +556,8 @@ imagewindow_imageui_set_visible(Imagewindow *win,
 	 */
 	const char *title;
 	title = tilesource_get_path(new_tilesource);
-	if (!title) {
+	if (!title &&
+		HEAPMODEL(win->iimage)->row) {
 		vips_buf_rewind(&buf);
 		row_qualified_name(HEAPMODEL(win->iimage)->row, &buf);
 		title = vips_buf_all(&buf);
