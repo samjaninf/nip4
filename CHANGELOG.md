@@ -2,7 +2,9 @@
 
 - block -NaN in tslider when range == 0 [MvGulik]
 - fix crash in recover when no recover item selected [MvGulik]
-- add ctrl-M shortcut for show/hide the toolkit menu
+- add ctrl-M shortcut to show/hide the toolkit menu
+- rewritten vips8 menus
+- new test suite
 
 ## 9.0.18 2026/03/25
 
