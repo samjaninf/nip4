@@ -932,8 +932,7 @@ crop x y w h obj
     w' = to_real w;
     h' = to_real h;
 
-    crop_op = Operator "crop" (crop x y w h)
-        Operator_type.COMPOUND_REWRAP false;
+    crop_op = Operator "crop" (crop x y w h) Operator_type.COMPOUND_REWRAP false;
 
     crop_range from length list = (take length @ drop from) list;
 }

@@ -1,270 +1,272 @@
-////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////
 Frame_item = class
-	Menupullright "Picture _Frame" "working with images of frames"
-	{
-	////////////////////////////////////////////////////////////////////////////////////
-	Build_frame_item = class
-	Menupullright "_Build Frame From" "builds a new frame from image a and places it around image b"
-		{
-		////////////////////////////////////////////////////////////////////////////////////
-		Frame_corner_item = class
-			Menuaction "_Frame Corner"
-			"copies and extends a frame corner, a, to produce a complete frame to fit round a given image, b"
-			{
-			prefs = Workspaces.Preferences;
+    Menupullright "Picture _Frame" "working with images of frames" {
 
-			action a b = class
-				_result
-			{
-			_check_args = [
-				[a, "a", check_Image],
-				[b, "b", check_Image]
-			];
-			_check_all = [
-				[a.coding == b.coding && a.bands == b.bands,
-					"a.coding == b.coding && a.bands == b.bands"]
-			];
-			_vislevel = 3;
+    Build_frame_item = class
+        Menupullright "_Build Frame From" "builds a new frame from image a and places it around image b" {
 
-			ppcm = Expression "Number of pixels per cm" 25;
+        Frame_corner_item = class
+            Menuaction "_Frame Corner" "copies and extends a frame corner, a, to produce a complete frame to fit round a given image, b" {
 
-			/* Given the value of ppcm, distance between the inner edge of the frame
-			 * and the outer edge of the image.  +ve values mean the frame overlaps
-			 * the image.
-			 */
-			overlap = Expression "Size of frame overlap in cm" 0;
-			variables = Frame_variables 0;
+            prefs = Workspaces.Preferences;
 
-			_type = Interpretation_3ary.get_key b.type;
+            action a b = class _result {
+                _check_args = [
+                    [a, "a", check_Image],
+                    [b, "b", check_Image]
+                ];
+                _check_all = [
+                    [a.coding == b.coding && a.bands == b.bands,
+                        "a.coding == b.coding && a.bands == b.bands"]
+                ];
+                _vislevel = 3;
 
-			//If applied the count colour be seen for -ve values of overlap
-			mount_options = Mount_options _type ppcm.expr;
+                ppcm = Expression "Number of pixels per cm" 25;
 
-			_cs = variables.corner_section.value;
-			_ms = variables.middle_section.value;
-			_ov = ppcm.expr * overlap.expr;
-			_sf = variables.scale_factor.expr;
-			_bf = variables.blend_fraction.value;
+                /* Given the value of ppcm, distance between the inner edge of the frame
+                 * and the outer edge of the image.  +ve values mean the frame overlaps
+                 * the image.
+                 */
+                overlap = Expression "Size of frame overlap in cm" 0;
+                variables = Frame_variables 0;
 
-			//Scale frame image if required.
-			_a = a, _sf == 1;
-			   = a, _sf == 0;
-			   = Image (resize Kernel_linear _sf _sf a.value);
+                _interpretation = Interpretation_3ary.get_key b.interpretation;
 
-			_im_w = b.width;
-			_im_h = b.height + mount_options._los, mount_options.apply
-				  = b.height;
-			_os = mount_options._los, mount_options.apply
-				= 0;
-			_cl = Vector mount_options.mount_colour.value, mount_options.apply
-				= 0;
+                // If applied the count colour be seen for -ve values of overlap
+                mount_options = Mount_options _interpretation ppcm.expr;
 
-			//Produce scaled and resized frame.
-			frame = corner_frame _a _im_w _im_h _ov _cs _ms _bf;
-			//Resize image canvas and applied mount colour as required.
-			_pos_im = frame_position_image b frame _os _cl;
-			//Wrap frame round image.
-			_result = if (frame == 0) then _pos_im else frame;
-			}
-			}
+                _cs = variables.corner_section.value;
+                _ms = variables.middle_section.value;
+                _ov = ppcm.expr * overlap.expr;
+                _sf = variables.scale_factor.expr;
+                _bf = variables.blend_fraction.value;
 
-		////////////////////////////////////////////////////////////////////////////////////
-		Simple_frame_item = class
-			Menuaction "_Simple Frame"
-				"extends or shortens the central sections of a simple frame, a,  to fit round a given image, b"
-			{
-			prefs = Workspaces.Preferences;
+                // Scale frame image if required.
+                _a
+                    = a, _sf == 1;
+                    = a, _sf == 0;
+                    = Image (resize Kernel.LINEAR _sf _sf a.value);
 
-			action a b = class
-			_result
-			{
-			_check_args = [
-				[a, "a", check_Image],
-				[b, "b", check_Image]
-				];
-			_check_all = [
-				[a.coding == b.coding && a.bands == b.bands,
-					"a.coding == b.coding && a.bands == b.bands"]
-				];
-			_vislevel = 3;
+                _im_w = b.width;
+                _im_h
+                    = b.height + mount_options._los, mount_options.apply
+                    = b.height;
+                _os
+                    = mount_options._los, mount_options.apply
+                    = 0;
+                _cl
+                    = Vector mount_options.mount_colour.value, mount_options.apply
+                    = 0;
+
+                // Produce scaled and resized frame.
+                frame = corner_frame _a _im_w _im_h _ov _cs _ms _bf;
+
+                // Resize image canvas and applied mount colour as required.
+                _pos_im = frame_position_image b frame _os _cl;
+
+                // Wrap frame round image.
+                _result = if (frame == 0) then _pos_im else frame;
+            }
+        }
+
+        Simple_frame_item = class
+            Menuaction "_Simple Frame"
+                "extends or shortens the central sections of a simple frame, a,  to fit round a given image, b" {
+            prefs = Workspaces.Preferences;
+
+            action a b = class _result {
+                _check_args = [
+                    [a, "a", check_Image],
+                    [b, "b", check_Image]
+                    ];
+                _check_all = [
+                    [a.coding == b.coding && a.bands == b.bands,
+                        "a.coding == b.coding && a.bands == b.bands"]
+                    ];
+                _vislevel = 3;
+
+                ppcm = Expression "Number of pixels per cm" 25;
+
+                /* Given the value of ppcm, distance between the inner edge of the frame
+                 * and the outer edge of the image.  +ve values mean the frame overlaps
+                 * the image.
+                 */
+                overlap = Expression "Size of frame overlap in cm" 0;
+                variables = Frame_variables 0;
+
+                _interpretation = Interpretation_3ary.get_key b.interpretation;
+                // If applied the count colour be seen for -ve values of overlap
+                mount_options = Mount_options _interpretation ppcm.expr;
+
+                _cs = variables.corner_section.value;
+                _ms = variables.middle_section.value;
+                _ov = ppcm.expr * overlap.expr;
+                _sf = variables.scale_factor.expr;
+                _bf = variables.blend_fraction.value;
+
+                // Scale frame image if required.
+                _a
+                    = a, _sf == 1;
+                    = a, _sf == 0;
+                    = Image (resize Kernel.LINEAR _sf _sf a.value);
+
+                _im_w = b.width;
+                _im_h
+                    = b.height + mount_options._los, mount_options.apply
+                    = b.height;
+                _os
+                    = mount_options._los, mount_options.apply
+                    = 0;
+                _cl
+                    = Vector mount_options.mount_colour.value, mount_options.apply
+                    = 0;
+
+                // Produce scaled and resized frame.
+                frame = simple_frame _a _im_w _im_h _ov _cs _ms _bf variables.option;
+
+                // Resize image canvas and applied mount colour as required.
+                _pos_im = frame_position_image b frame _os _cl;
+
+                // Wrap frame round image.
+                _result = if (frame == 0) then _pos_im else frame;
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////
+        Complex_frame_item = class
+            Menuaction "_Complex Frame"
+            "extends or shortens the central sections of a frame a, preserving any central edge details, to fit image b" {
+        prefs = Workspaces.Preferences;
+
+        action a b = class
+            _result
+            {
+            _check_args = [
+                [a, "a", check_Image],
+                [b, "b", check_Image]
+                ];
+            _check_all = [
+                [a.coding == b.coding && a.bands == b.bands,
+                    "a.coding == b.coding && a.bands == b.bands"]
+                ];
+            _vislevel = 3;
+
+            ppcm = Expression "Number of pixels per cm" 25;
+
+            /* Given the value of ppcm, distance between the inner edge of the frame
+             * and the outer edge of the image.  +ve values mean the frame overlaps
+             * the image.
+             */
+            overlap = Expression "Size of frame overlap in cm" 0;
+            variables = Frame_variables 1;
+
+            _interpretation = Interpretation_3ary.get_key b.interpretation;
+
+            //If applied the count colour be seen for -ve values of overlap
+            mount_options = Mount_options _interpretation ppcm.expr;
+
+            _cs = variables.corner_section.value;
+            _es = variables.edge_section.value;
+            _ms = variables.middle_section.value;
+            _ov = ppcm.expr * overlap.expr;
+            _sf = variables.scale_factor.expr;
+            _bf = variables.blend_fraction.value;
+
+            _a = a, _sf == 1;
+               = a, _sf == 0;
+               = Image (resize Kernel.LINEAR _sf _sf a.value);
+
+            _im_w = b.width;
+            _im_h
+                = b.height + mount_options._los, mount_options.apply
+                = b.height;
+            _os = mount_options._los, mount_options.apply
+                = 0;
+            _cl = Vector mount_options.colour.value, mount_options.apply
+                = 0;
 
 
-			ppcm = Expression "Number of pixels per cm" 25;
+            //Produce scaled and resized frame.
+            frame = complex_frame _a _im_w _im_h _ov _cs _es _ms _bf variables.option;
+            //Resize image canvas and applied mount colour as required.
+            _pos_im = frame_position_image b frame _os _cl;
+            //Wrap frame round image.
+            _result = if (frame == 0) then _pos_im else frame;
+            }
+        }
+    }
 
-			/* Given the value of ppcm, distance between the inner edge of the frame
-			 * and the outer edge of the image.  +ve values mean the frame overlaps
-			 * the image.
-			 */
-			overlap = Expression "Size of frame overlap in cm" 0;
-			variables = Frame_variables 0;
-
-			_type = Interpretation_3ary.get_key b.type;
-			//If applied the count colour be seen for -ve values of overlap
-			mount_options = Mount_options _type ppcm.expr;
-
-			_cs = variables.corner_section.value;
-			_ms = variables.middle_section.value;
-			_ov = ppcm.expr * overlap.expr;
-			_sf = variables.scale_factor.expr;
-			_bf = variables.blend_fraction.value;
-
-			//Scale frame image if required.
-			_a = a, _sf == 1;
-			   = a, _sf == 0;
-			   = Image (resize Kernel_linear _sf _sf a.value);
-
-			_im_w = b.width;
-			_im_h = b.height + mount_options._los, mount_options.apply
-				  = b.height;
-			_os = mount_options._los, mount_options.apply
-				= 0;
-			_cl = Vector mount_options.mount_colour.value, mount_options.apply
-				= 0;
-
-			//Produce scaled and resized frame.
-			frame = simple_frame _a _im_w _im_h _ov _cs _ms _bf variables.option;
-			//Resize image canvas and applied mount colour as required.
-			_pos_im = frame_position_image b frame _os _cl;
-			//Wrap frame round image.
-			_result = if (frame == 0) then _pos_im else frame;
-			}
-			}
-
-		////////////////////////////////////////////////////////////////////////////////////
-		Complex_frame_item = class
-			Menuaction "_Complex Frame"
-			"extends or shortens the central sections of a frame a, preserving any central edge details, to fit image b" {
-		prefs = Workspaces.Preferences;
-
-		action a b = class
-			_result
-			{
-			_check_args = [
-				[a, "a", check_Image],
-				[b, "b", check_Image]
-				];
-			_check_all = [
-				[a.coding == b.coding && a.bands == b.bands,
-					"a.coding == b.coding && a.bands == b.bands"]
-				];
-			_vislevel = 3;
-
-			ppcm = Expression "Number of pixels per cm" 25;
-
-			/* Given the value of ppcm, distance between the inner edge of the frame
-			 * and the outer edge of the image.  +ve values mean the frame overlaps
-			 * the image.
-			 */
-			overlap = Expression "Size of frame overlap in cm" 0;
-			variables = Frame_variables 1;
-
-			_type = Interpretation_3ary.get_key b.type;
-
-			//If applied the count colour be seen for -ve values of overlap
-			mount_options = Mount_options _type ppcm.expr;
-
-			_cs = variables.corner_section.value;
-			_es = variables.edge_section.value;
-			_ms = variables.middle_section.value;
-			_ov = ppcm.expr * overlap.expr;
-			_sf = variables.scale_factor.expr;
-			_bf = variables.blend_fraction.value;
-
-			_a = a, _sf == 1;
-			   = a, _sf == 0;
-			   = Image (resize Kernel_linear _sf _sf a.value);
-
-			_im_w = b.width;
-			_im_h = b.height + mount_options._los, mount_options.apply
-				  = b.height;
-			_os = mount_options._los, mount_options.apply
-				= 0;
-			_cl = Vector mount_options.colour.value, mount_options.apply
-				= 0;
-
-
-			//Produce scaled and resized frame.
-			frame = complex_frame _a _im_w _im_h _ov _cs _es _ms _bf variables.option;
-			//Resize image canvas and applied mount colour as required.
-			_pos_im = frame_position_image b frame _os _cl;
-			//Wrap frame round image.
-			_result = if (frame == 0) then _pos_im else frame;
-			}
-		}
-	}
 ////////////////////////////////////////////////////////////////////////////////////
-	Straighten_frame_item = class
-		Menuaction "_Straighten Frame" "uses four points to square up distorted images of frames" {
-		action a = Perspective_item.action a;
-		}
+    Straighten_frame_item = class
+        Menuaction "_Straighten Frame" "uses four points to square up distorted images of frames" {
+        action a = Perspective_item.action a;
+        }
 };
 ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 
 Perspective_match_item = class
-	Menuaction "_Perspective Match"
-		"rotate, scale and skew one image to match another" {
-	action x y = class
-		_result {
-		_vislevel = 3;
+    Menuaction "_Perspective Match"
+        "rotate, scale and skew one image to match another" {
+    action x y = class
+        _result {
+        _vislevel = 3;
 
-		// try to find an image ... for a group, get the first item
-		find_image x
-			= x, is_Image x
-			= find_image x?0, is_list x
-			= find_image x.value, is_class x && has_value x
-			= error "unable to find image";
+        // try to find an image ... for a group, get the first item
+        find_image x
+            = x, is_Image x
+            = find_image x?0, is_list x
+            = find_image x.value, is_class x && has_value x
+            = error "unable to find image";
 
-		_a = find_image x;
-		_b = find_image y;
+        _a = find_image x;
+        _b = find_image y;
 
-		ap1 = Mark_relative _a 0.1 0.1;
-		ap2 = Mark_relative _a 0.9 0.1;
-		ap3 = Mark_relative _a 0.1 0.9;
-		ap4 = Mark_relative _a 0.9 0.9;
+        ap1 = Mark_relative _a 0.1 0.1;
+        ap2 = Mark_relative _a 0.9 0.1;
+        ap3 = Mark_relative _a 0.1 0.9;
+        ap4 = Mark_relative _a 0.9 0.9;
 
-		bp1 = Mark_relative _b 0.1 0.1;
-		bp2 = Mark_relative _b 0.9 0.1;
-		bp3 = Mark_relative _b 0.1 0.9;
-		bp4 = Mark_relative _b 0.9 0.9;
+        bp1 = Mark_relative _b 0.1 0.1;
+        bp2 = Mark_relative _b 0.9 0.1;
+        bp3 = Mark_relative _b 0.1 0.9;
+        bp4 = Mark_relative _b 0.9 0.9;
 
         interp = Interpolate.picker $BILINEAR;
 
-		_result
+        _result
             = map_binary process x y
         {
             inter = Interpolate._new [] interp.value_key;
 
-			f1 = _a.width / _b.width;
-			f2 = _a.height / _b.height;
+            f1 = _a.width / _b.width;
+            f2 = _a.height / _b.height;
 
-			rl = sort_pts_clockwise [ap1, ap2, ap3, ap4];
-			pl = sort_pts_clockwise [bp1, bp2, bp3, bp4];
+            rl = sort_pts_clockwise [ap1, ap2, ap3, ap4];
+            pl = sort_pts_clockwise [bp1, bp2, bp3, bp4];
 
-			to = [
-				rl?0.left, rl?0.top,
-				rl?1.left, rl?1.top,
-				rl?2.left, rl?2.top,
-				rl?3.left, rl?3.top
-			];
+            to = [
+                rl?0.left, rl?0.top,
+                rl?1.left, rl?1.top,
+                rl?2.left, rl?2.top,
+                rl?3.left, rl?3.top
+            ];
 
-			from = [
-				pl?0.left * f1, pl?0.top * f2,
-				pl?1.left * f1, pl?1.top * f2,
-				pl?2.left * f1, pl?2.top * f2,
-				pl?3.left * f1, pl?3.top * f2
-			];
+            from = [
+                pl?0.left * f1, pl?0.top * f2,
+                pl?1.left * f1, pl?1.top * f2,
+                pl?2.left * f1, pl?2.top * f2,
+                pl?3.left * f1, pl?3.top * f2
+            ];
 
-			trans = perspective_transform to from;
+            trans = perspective_transform to from;
 
-			process a b
+            process a b
                 = transform [$interpolate => inter] trans b2
             {
-				b2
+                b2
                     = resize Kernel.LINEAR f1 f2 b,
                         (f1 >= 1 && f2 >= 1) || (f1 >= 1 && f2 >= 1)
-			    	= resize Kernel.LINEAR f1 1 b1
+                    = resize Kernel.LINEAR f1 1 b1
                 {
                     b1 = resize Kernel.LINEAR 1 f2 b;
                 }
@@ -276,47 +278,47 @@ Perspective_match_item = class
 ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 Perspective_item = class
-	Menuaction "Pe_rspective distort"
-		"rotate, scale and skew an image with respect to defined points" {
-	action x = class
-		_result	{
-		_vislevel = 3;
+    Menuaction "Pe_rspective distort"
+        "rotate, scale and skew an image with respect to defined points" {
+    action x = class
+        _result {
+        _vislevel = 3;
 
-		// try to find an image ... for a group, get the first item
-		find_image x
-			= x, is_Image x
-			= find_image x?0, is_list x
-			= find_image x.value, is_class x && has_value x
-			= error "unable to find image";
+        // try to find an image ... for a group, get the first item
+        find_image x
+            = x, is_Image x
+            = find_image x?0, is_list x
+            = find_image x.value, is_class x && has_value x
+            = error "unable to find image";
 
-		_a = find_image x;
+        _a = find_image x;
 
-		ap1 = Mark_relative _a 0.1 0.1;
-		ap2 = Mark_relative _a 0.9 0.1;
-		ap3 = Mark_relative _a 0.9 0.9;
-		ap4 = Mark_relative _a 0.1 0.9;
-		dir = Option "Select distort direction" [
+        ap1 = Mark_relative _a 0.1 0.1;
+        ap2 = Mark_relative _a 0.9 0.1;
+        ap3 = Mark_relative _a 0.9 0.9;
+        ap4 = Mark_relative _a 0.1 0.9;
+        dir = Option "Select distort direction" [
             "Distort to points",
             "Distort to corners"
         ] 1;
         interp = Interpolate.picker $BILINEAR;
 
-		_result
+        _result
             = map_unary process x
         {
             inter = Interpolate._new [] interp.value_key;
-			trans
+            trans
                 = [perspective_transform to from,
                    perspective_transform from to]?(dir.value)
             {
-				rl = sort_pts_clockwise [ap1, ap2, ap3, ap4];
-				to = [(rl?0).left, (rl?0).top, (rl?1).left, (rl?1).top,
-			    	  (rl?2).left, (rl?2).top, (rl?3).left, (rl?3).top];
-				from=[0, 0, (_a.width - 1), 0,
-					  (_a.width - 1), (_a.height - 1), 0, (_a.height - 1)];
+                rl = sort_pts_clockwise [ap1, ap2, ap3, ap4];
+                to = [(rl?0).left, (rl?0).top, (rl?1).left, (rl?1).top,
+                      (rl?2).left, (rl?2).top, (rl?3).left, (rl?3).top];
+                from=[0, 0, (_a.width - 1), 0,
+                      (_a.width - 1), (_a.height - 1), 0, (_a.height - 1)];
             }
 
-			process a = transform [$interpolate => inter] trans a;
+            process a = transform [$interpolate => inter] trans a;
         }
     }
 }
