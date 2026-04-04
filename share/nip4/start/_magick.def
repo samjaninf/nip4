@@ -45,7 +45,7 @@ Magick = class {
         = error "no magick executable found"
     {
         command_path_list =
-            filter (not_equal "") (map search_for ["gm", "magick", "convert"]);
+            filter (not_equal "") (map search_for ["magick", "convert", "gm"]);
     }
 
     // Are we in GM or IM mode?
