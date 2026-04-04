@@ -919,10 +919,7 @@ Filter_blend_item = class
             _result {
             _vislevel = 3;
 
-            orientation = Option "Orientation" [
-                "Left to Right",
-                "Top to Bottom"
-            ] 0;
+            direction = Direction.picker $HORIZONTAL;
             blend_position = Scale "Blend position" 0 1 0.5;
             blend_width = Scale "Blend width" 0 1 0.05;
 
@@ -934,8 +931,9 @@ Filter_blend_item = class
                 {
                     output_width = maxpair a.width b.width;
                     output_height = maxpair a.height b.height;
+                    is_horizontal = direction.value_key == Direction.HORIZONTAL;
                     range
-                        = output_width, orientation == 0
+                        = output_width, is_horizontal
                         = output_height;
                     blend_position'
                         = floor (range * blend_position.value);
@@ -947,10 +945,10 @@ Filter_blend_item = class
                     background = (xyz [] output_width output_height) >=
                         blend_position';
                     ramp
-                        = grey [] blend_width' output_height, orientation == 0
-                        = rot90 (grey [] blend_width' output_width);
+                        = grey [$uchar => true] blend_width' output_height, is_horizontal
+                        = rot90 (grey [$uchar => true] blend_width' output_width);
                     condition
-                        = insert [] start 0 ramp background?0, orientation == 0
+                        = insert [] start 0 ramp background?0, is_horizontal
                         = insert [] 0 start ramp background?1;
                 }
             }

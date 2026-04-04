@@ -2,9 +2,7 @@
 
 	copy versions of them into test/workspaces
 
-    clone.ws is broken
-
-        broken in nip2 as well
+	Filter.def Line_blend_item blend width doesn't work
 
 - misspelled or incorrect options don't raise errors
 

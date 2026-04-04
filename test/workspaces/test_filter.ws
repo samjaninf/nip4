@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.0.17">
+<root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.1.0">
   <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// private definitions for this workspace&#10;" name="test_filter" filename="$CWD/test_filter.ws" major="9" minor="1">
     <Column x="10" y="5" open="true" selected="false" sform="false" next="23" name="B" caption="Colour / Colourspace">
       <Subcolumn vislevel="3">
@@ -288,7 +288,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1704" y="5" open="true" selected="false" sform="false" next="12" name="M" caption="Filter / Morphology">
+    <Column x="1719" y="5" open="true" selected="false" sform="false" next="12" name="M" caption="Filter / Morphology">
       <Subcolumn vislevel="3">
         <Row popup="false" name="M1">
           <Rhs vislevel="0" flags="4">
@@ -369,7 +369,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2213" y="5" open="true" selected="false" sform="false" next="16" name="N" caption="Filter / Fourier / Ideal">
+    <Column x="2228" y="5" open="true" selected="false" sform="false" next="16" name="N" caption="Filter / Fourier / Ideal">
       <Subcolumn vislevel="3">
         <Row popup="false" name="N1">
           <Rhs vislevel="0" flags="4">
@@ -410,7 +410,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2850" y="5" open="true" selected="false" sform="false" next="12" name="O" caption="Filter / Fourier / Gaussian">
+    <Column x="2865" y="5" open="true" selected="false" sform="false" next="12" name="O" caption="Filter / Fourier / Gaussian">
       <Subcolumn vislevel="3">
         <Row popup="false" name="O1">
           <Rhs vislevel="0" flags="4">
@@ -451,7 +451,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="3487" y="5" open="true" selected="false" sform="false" next="13" name="P" caption="Filter / Fourier / Butterworth">
+    <Column x="3502" y="5" open="true" selected="false" sform="false" next="13" name="P" caption="Filter / Fourier / Butterworth">
       <Subcolumn vislevel="3">
         <Row popup="false" name="P1">
           <Rhs vislevel="0" flags="4">
@@ -492,7 +492,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="4124" y="5" open="true" selected="false" sform="false" next="7" name="Q" caption="Filter / Enhance">
+    <Column x="4139" y="5" open="true" selected="false" sform="false" next="7" name="Q" caption="Filter / Enhance">
       <Subcolumn vislevel="3">
         <Row popup="false" name="Q1">
           <Rhs vislevel="0" flags="4">
@@ -620,7 +620,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="6038" y="5" open="true" selected="false" sform="false" next="7" name="R" caption="Filter / Tilt Brightness">
+    <Column x="6053" y="5" open="true" selected="false" sform="false" next="7" name="R" caption="Filter / Tilt Brightness">
       <Subcolumn vislevel="3">
         <Row popup="false" name="R1">
           <Rhs vislevel="0" flags="4">
@@ -794,7 +794,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="6517" y="5" open="true" selected="false" sform="false" next="15" name="S" caption="Filter / Blend">
+    <Column x="6532" y="5" open="true" selected="true" sform="false" next="15" name="S" caption="Filter / Blend">
       <Subcolumn vislevel="3">
         <Row popup="false" name="S1">
           <Rhs vislevel="1" flags="1">
@@ -879,7 +879,7 @@
         </Row>
         <Row popup="false" name="S11">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="a">
                 <Rhs vislevel="0" flags="4">
@@ -898,16 +898,9 @@
                   <iText/>
                 </Rhs>
               </Row>
-              <Row name="orientation">
-                <Rhs vislevel="1" flags="1">
-                  <Option/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
               <Row name="blend_position">
                 <Rhs vislevel="1" flags="1">
-                  <Slider caption="Blend position" from="0" to="1" value="0.546875"/>
+                  <Slider caption="Blend position" from="0" to="1" value="0.40625"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -919,13 +912,20 @@
                   <iText/>
                 </Rhs>
               </Row>
+              <Row name="direction">
+                <Rhs vislevel="1" flags="1">
+                  <Option/>
+                  <Subcolumn vislevel="0"/>
+                  <iText/>
+                </Rhs>
+              </Row>
             </Subcolumn>
             <iText formula="Filter_blend_item.Line_blend_item.action S1 S2"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="7029" y="5" open="true" selected="false" sform="false" next="5" name="T" caption="Filter / Overlay">
+    <Column x="7044" y="5" open="true" selected="false" sform="false" next="5" name="T" caption="Filter / Overlay">
       <Subcolumn vislevel="3">
         <Row popup="false" name="T1">
           <Rhs vislevel="0" flags="4">
@@ -982,7 +982,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="7485" y="5" open="true" selected="false" sform="false" next="7" name="U" caption="Filter / Colorize">
+    <Column x="7500" y="5" open="true" selected="false" sform="false" next="7" name="U" caption="Filter / Colorize">
       <Subcolumn vislevel="3">
         <Row popup="false" name="U1">
           <Rhs vislevel="0" flags="4">
@@ -1071,7 +1071,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="7996" y="5" open="true" selected="false" sform="false" next="4" name="V" caption="Filter / Browse">
+    <Column x="8011" y="5" open="true" selected="false" sform="false" next="4" name="V" caption="Filter / Browse">
       <Subcolumn vislevel="3">
         <Row popup="false" name="V1">
           <Rhs vislevel="0" flags="4">
@@ -1143,7 +1143,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="8480" y="5" open="true" selected="false" sform="false" next="10" name="W" caption="Filter / Photographic">
+    <Column x="8495" y="5" open="true" selected="false" sform="false" next="10" name="W" caption="Filter / Photographic">
       <Subcolumn vislevel="3">
         <Row popup="false" name="W1">
           <Rhs vislevel="0" flags="4">
@@ -1350,7 +1350,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="4650" y="5" open="true" selected="false" sform="false" next="8" name="A" caption="Filter / Spatial Correlation">
+    <Column x="4665" y="5" open="true" selected="false" sform="false" next="8" name="A" caption="Filter / Spatial Correlation">
       <Subcolumn vislevel="3">
         <Row popup="false" name="A1">
           <Rhs vislevel="0" flags="4">
@@ -1391,7 +1391,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="5123" y="5" open="true" selected="false" sform="false" next="7" name="D" caption="Filter / Hough">
+    <Column x="5138" y="5" open="true" selected="false" sform="false" next="7" name="D" caption="Filter / Hough">
       <Subcolumn vislevel="3">
         <Row popup="false" name="D1">
           <Rhs vislevel="0" flags="4">
@@ -1508,7 +1508,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="5590" y="5" open="true" selected="true" sform="false" next="5" name="C" caption="Filter / Coordinate transform">
+    <Column x="5605" y="5" open="true" selected="false" sform="false" next="5" name="C" caption="Filter / Coordinate transform">
       <Subcolumn vislevel="3">
         <Row popup="false" name="C1">
           <Rhs vislevel="1" flags="1">
