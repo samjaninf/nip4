@@ -998,7 +998,7 @@ Image_levels_item = class
     }
 
     Tone_item = class
-        Menuaction "_Tone Curve" "adjust tone curve" {
+        Menuaction "_Tone curve" "adjust tone curve" {
         action x = class
             _result {
             _vislevel = 3;
@@ -1054,17 +1054,17 @@ Image_transform_item = class
             }
 
             Rot90_item = class
-                Menuaction "_90 Degrees" "clockwise rotation by 90 degrees" {
+                Menuaction "_90 degrees" "clockwise rotation by 90 degrees" {
                 action x = rotate_widget 1 x;
             }
 
             Rot180_item = class
-                Menuaction "_180 Degrees" "clockwise rotation by 180 degrees" {
+                Menuaction "_180 degrees" "clockwise rotation by 180 degrees" {
                 action x = rotate_widget 2 x;
             }
 
             Rot270_item = class
-                Menuaction "_270 Degrees" "clockwise rotation by 270 degrees" {
+                Menuaction "_270 degrees" "clockwise rotation by 270 degrees" {
                 action x = rotate_widget 3 x;
             }
         }
@@ -1128,12 +1128,12 @@ Image_transform_item = class
     Flip_item = class
         Menupullright "_Flip" "mirror left/right or up/down" {
         Left_right_item = class
-            Menuaction "_Left Right" "mirror object left/right" {
+            Menuaction "_Left right" "mirror object left/right" {
             action x = map_unary fliplr x;
         }
 
         Top_bottom_item = class
-            Menuaction "_Top Bottom" "mirror object top/bottom" {
+            Menuaction "_Top bottom" "mirror object top/bottom" {
             action x = map_unary fliptb x;
         }
     }
@@ -1160,7 +1160,7 @@ Image_transform_item = class
         }
 
         Size_item = class
-            Menuaction "_Size To" "resize to a fixed size" {
+            Menuaction "_Size to" "resize to a fixed size" {
             action x = class
                 _result {
                 _vislevel = 3;
@@ -1205,7 +1205,7 @@ Image_transform_item = class
         }
 
         Size_within_item = class
-            Menuaction "Size _Within" "size to fit within a rectangle" {
+            Menuaction "Size _within" "size to fit within a rectangle" {
             action x = class
                 _result {
                 _vislevel = 3;
@@ -1362,7 +1362,7 @@ Image_transform_item = class
     Image_perspective_item = Perspective_item;
 
     Match_item = class
-        Menuaction "_Linear Match"
+        Menuaction "_Linear match"
             "rotate and scale one image to match another" {
         action x y = class
             _result {
@@ -1506,19 +1506,49 @@ Image_band_item = class
     sep1a = Menuseparator;
 
     Bandand_item = class
-        Menuaction "Bitwise Band AND" "bitwise AND of image bands" {
-        action x = bandand x;
+        Menuaction "Bitwise band AND" "bitwise AND of image bands" {
+        action x = map_unary bandand x;
     }
 
     Bandor_item = class
-        Menuaction "Bitwise Band OR" "bitwise OR of image bands" {
-        action x = bandor x;
+        Menuaction "Bitwise band OR" "bitwise OR of image bands" {
+        action x = map_unary bandor x;
     }
 
     sep2 = Menuseparator;
 
+    Band_fold_item = class
+        Menuaction "Band fold" "fold image bands into horizontal axis" {
+        action x = class
+            _result {
+            _vislevel = 3;
+
+            factor = Expression "Fold factor" 0;
+
+            _result = bandfold [
+                $factor => factor.expr
+            ] x;
+        }
+    }
+
+    Band_unfold_item = class
+        Menuaction "Band unfold" "unfold image bands into horizontal axis" {
+        action x = class
+            _result {
+            _vislevel = 3;
+
+            factor = Expression "Fold factor" 0;
+
+            _result = bandunfold [
+                $factor => factor.expr
+            ] x;
+        }
+    }
+
+    sep3 = Menuseparator;
+
     To_dimension_item = class
-        Menuaction "To D_imension" "convert bands to width or height" {
+        Menuaction "To d_imension" "convert bands to width or height" {
         action x = class
             _result {
             _vislevel = 3;
@@ -1538,7 +1568,7 @@ Image_band_item = class
     }
 
     To_bands_item = class
-        Menuaction "To B_ands" "turn width or height to bands" {
+        Menuaction "To b_ands" "turn width or height to bands" {
         action x = class
             _result {
             _vislevel = 3;
@@ -1784,7 +1814,7 @@ Image_select_item = class
     }
 
     Threshold_percent_item = class
-        Menuaction "Per_cent Threshold" "threshold at a percentage of pixels" {
+        Menuaction "Per_cent threshold" "threshold at a percentage of pixels" {
         action x = class
             _result {
             _vislevel = 3;
@@ -2020,7 +2050,7 @@ Image_draw_item = class
 Image_join_item = class
     Menupullright "_Join" "join two or more images together" {
     Bandwise_item = class
-        Menuaction "_Bandwise Join" "join two images bandwise" {
+        Menuaction "_Bandwise join" "join two images bandwise" {
         action a b = join a b;
     }
 
@@ -2064,7 +2094,7 @@ Image_join_item = class
     valign_names = ["Left", "Centre", "Right"];
 
     Left_right_item = class
-        Menuaction "_Left to Right" "join two images left-right" {
+        Menuaction "_Left to right" "join two images left-right" {
         action a b = class
             _result {
             _vislevel = 3;
@@ -2079,7 +2109,7 @@ Image_join_item = class
     }
 
     Top_bottom_item = class
-        Menuaction "_Top to Bottom" "join two images top-bottom" {
+        Menuaction "_Top to bottom" "join two images top-bottom" {
         action a b = class
             _result {
             _vislevel = 3;
@@ -2128,7 +2158,7 @@ Image_join_item = class
     }
 
     ArrayFL_item = class
-        Menuaction "_Array from List"
+        Menuaction "_Array from list"
             "join a list of images into a single image" {
         action x = class
             _result {
@@ -2203,12 +2233,12 @@ Image_tile_item = class
     }
 
     Fourway_item = class
-        Menuaction "_Four-way Mirror" "four-way mirror across and down" {
+        Menuaction "_Four-way mirror" "four-way mirror across and down" {
         action x = tile_widget 1 x;
     }
 
     Chop_item = class
-        Menuaction "_Chop Into Tiles" "slice an image into tiles" {
+        Menuaction "_Chop into tiles" "slice an image into tiles" {
         action x = class
             _result {
             _vislevel = 3;
@@ -2227,6 +2257,39 @@ Image_tile_item = class
             }
         }
     }
+
+    Grid_item = class
+        Menuaction "Make grid" "form a grid from a tall, thin strip" {
+        action x = class
+            _result {
+            _vislevel = 3;
+
+            // find a sample image to set defaults from
+            _image = get_image x;
+
+            tile_height = Expression "Tile height" (get_height _image);
+            across = Expression "Number of tiles across" 1;
+            down = Expression "Number of tiles down" 1;
+
+            _result = grid [] tile_height across down x;
+        }
+    }
+
+    Tranpose3d_item = class
+        Menuaction "Transpose lines and pages" "swap the line and page dimension" {
+        action x = class
+            _result {
+            _vislevel = 3;
+
+            // find a sample image to set defaults from
+            _image = get_image x;
+
+            tile_height = Expression "Tile height" (get_height _image);
+
+            _result = transpose3d [$page_height => to_real tile_height] x;
+        }
+    }
+
 }
 
 Image_SDF_item = class

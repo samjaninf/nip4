@@ -56,12 +56,12 @@ Tasks_capture_item = class
 
             // lay out higher dimensions width-ways
             x''
-                = grid dim2 dim3 1 x', dim0 == 3
-                = grid dim2 dim3 dim4 x', dim0 == 4
-                = grid (dim2 * dim4) dim5 1 (grid dim2 dim3 dim4) x', dim0 == 5
-                = grid (dim2 * dim4) dim5 dim6 (grid dim2 dim3 dim4) x', dim0 == 6
-                = grid (dim2 * dim4 * dim6) dim7 1
-                    (grid (dim2 * dim4) dim5 dim6 (grid dim2 dim3 dim4)) x',
+                = grid [] dim2 dim3 1 x', dim0 == 3
+                = grid [] dim2 dim3 dim4 x', dim0 == 4
+                = grid [] (dim2 * dim4) dim5 1 (grid [] dim2 dim3 dim4) x', dim0 == 5
+                = grid [] (dim2 * dim4) dim5 dim6 (grid [] dim2 dim3 dim4) x', dim0 == 6
+                = grid [] (dim2 * dim4 * dim6) dim7 1
+                    (grid [] (dim2 * dim4) dim5 dim6 (grid [] dim2 dim3 dim4)) x',
                         dim0 == 7
                 = error (_ "unsupported dimension " ++ dim0);
 

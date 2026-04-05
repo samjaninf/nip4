@@ -655,13 +655,22 @@ tile across down x
         Operator_type.COMPOUND_REWRAP false;
 }
 
-grid tile_height across down x
+grid options tile_height across down x
     = oo_unary_function grid_op x, is_class x
-    = vips_grid [] x (to_real tile_height) (to_real across) (to_real down),
+    = vips_grid options x (to_real tile_height) (to_real across) (to_real down),
         is_image x
     = error (_ "bad arguments to " ++ "grid")
 {
-    grid_op = Operator "grid" (grid tile_height across down)
+    grid_op = Operator "grid" (grid options tile_height across down)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+transpose3d options x
+    = oo_unary_function transpose3d_op x, is_class x
+    = vips_transpose3d options x, is_image x
+    = error (_ "bad arguments to " ++ "transpose3d")
+{
+    transpose3d_op = Operator "transpose3d" (transpose3d options)
         Operator_type.COMPOUND_REWRAP false;
 }
 

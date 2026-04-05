@@ -9,15 +9,6 @@
 
     second does a lookup to get the key name
 
-- add bandfold / unfold menu items?
-
-	should go into Image.def
-
-	vips_grid as well? other pixel reorganisers?
-
-		transpose3d
-		wrap
-
 - try:
 
     move mouse pointer out of image window
