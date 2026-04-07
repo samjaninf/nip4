@@ -11,10 +11,13 @@
 
   poll button state on window enter?
 
+    probably won't work on windows
+
 - double-clicking on a thumbnail should not select that row + column
 
     very annoying while mosaicing!
 
+    maybe remove click-on-thumbnail-to-select-row?
 
 
 - adding bad_args to _stdenv.def
