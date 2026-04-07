@@ -276,7 +276,7 @@ main_print_ws(Workspace *ws, gboolean *found)
     return NULL;
 }
 
-/* Make nip's argc/argv[].
+/* Make nip's argv[].
  */
 static void
 main_build_argv(int argc, char **argv)

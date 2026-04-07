@@ -6,9 +6,10 @@ should_pass="\
   test_histogram.ws \
   test_image.ws \
   test_magick.ws \
+  test_math.ws \
   test_matrix.ws \
   test_region.ws \
-  test_math.ws \
+  test_tasks.ws \
   test_widgets.ws \
 "
 

@@ -1,21 +1,3 @@
-- adding bad_args to _stdenv.def
-
-	reached transform
-
-- set "args" to [] in GUI mode?
-
-	to stop warnings about argv being undefined
-
-- misspelled or incorrect options don't raise errors
-
-	maybe have a strict mode?
-
-- Enum.picker could allow string or numeric arg
-
-            style = Plot_style.picker $LINE;
-            style = Plot_style.picker Plot_style.LINE;
-
-    second does a lookup to get the key name
 
 - try:
 
@@ -32,6 +14,19 @@
 - double-clicking on a thumbnail should not select that row + column
 
     very annoying while mosaicing!
+
+
+
+- adding bad_args to _stdenv.def
+
+	reached transform
+
+- Enum.picker could allow string or numeric arg
+
+            style = Plot_style.picker $LINE;
+            style = Plot_style.picker Plot_style.LINE;
+
+    second does a lookup to get the key name
 
 - use Direction enum
 

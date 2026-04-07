@@ -526,8 +526,8 @@ Tasks_mosaic_item = class
                     [a', b', c', d'] = mosaic_sort mosaic_sort_lr [a, b, c, d];
                     options = [$mblend => bw.value] ++
                         if refine then [
-                            $halfcorrelation => object_size / 2,
-                            $halfarea => search_area / 2,
+                            $hwindow => object_size / 2,
+                            $harea => search_area / 2,
                             $search => true
                         ]
                         else [
@@ -556,8 +556,8 @@ Tasks_mosaic_item = class
                     [a', b', c', d'] = mosaic_sort mosaic_sort_tb [a, b, c, d];
                     options = [$mblend => bw.value] ++
                         if refine then [
-                            $halfcorrelation => object_size / 2,
-                            $halfarea => search_area / 2,
+                            $hwindow => object_size / 2,
+                            $harea => search_area / 2,
                             $search => true
                         ]
                         else [

@@ -223,8 +223,14 @@ vo_set_optional_arg(const char *name, PElement *value, Vo *vo)
 	 * though only one interpolator uses this property.
 	 */
 	if (vips_object_get_argument(vo->object, name,
-			&pspec, &argument_class, &argument_instance))
+			&pspec, &argument_class, &argument_instance)) {
+#ifdef DEBUG
+		printf("vo_set_optional_arg: %s", vips_error_buffer());
+#endif /*DEBUG*/
+		vips_error_clear();
+
 		return NULL;
+	}
 
 	if (!(argument_class->flags & VIPS_ARGUMENT_REQUIRED) &&
 		(argument_class->flags & VIPS_ARGUMENT_CONSTRUCT) &&

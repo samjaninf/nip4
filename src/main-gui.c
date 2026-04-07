@@ -105,6 +105,13 @@ main(int argc, char **argv)
 
 	main_startup(argc, argv);
 
+	// an empty argv in GUI mode
+	Toolkit *kit = toolkit_new(main_toolkitgroup, "_args");
+	attach_input_string("argv = [];");
+	(void) parse_onedef(kit, -1);
+	filemodel_set_modified(FILEMODEL(kit), FALSE);
+    symbol_recalculate_all_force(TRUE);
+
 	App *app = app_new(welcome);
 	int status = g_application_run(G_APPLICATION(app), argc, argv);
 
