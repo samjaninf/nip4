@@ -68,13 +68,9 @@ graphicview_pressed(GtkGestureClick *gesture,
 {
 	Mainwindow *main = MAINWINDOW(view_get_window(VIEW(graphicview)));
 
-	if (n_press == 1) {
-		Rowview *rowview = graphicview_rowview(graphicview);
-		Row *row = ROW(VOBJECT(rowview)->iobject);
-
-		row_select_modifier(row, mainwindow_get_modifiers(main));
-	}
-	else {
+	// don't do single-click-select, it'll trigger for doublelick too and be
+	// very annoying
+	if (n_press < 1) {
 		Model *model = MODEL(VOBJECT(graphicview)->iobject);
 
 		model_edit(model, GTK_WINDOW(main));
