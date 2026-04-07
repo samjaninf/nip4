@@ -2019,7 +2019,6 @@ Image_draw_item = class
                     x = to_real px;
                     y = to_real py;
                     w = to_real wid;
-                    d = to_real dpi;
 
                     t = floor thick;
 

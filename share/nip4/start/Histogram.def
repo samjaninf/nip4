@@ -82,7 +82,7 @@ Hist_find_item = class
 
     sep2 = Menuseparator;
 
-    Segment_item = Select_item.Segment_item;
+    Segment_item = Image_select_item.Segment_item;
 
     Indexed_item = class
         Menuaction "_Indexed"

@@ -337,7 +337,7 @@ Enum = class {
     has_value value = member values value;
     get_value key = get_member key this;
 
-    has_index index = index >= 0 && index < len names;
+    has_index index = index >= 0 && index < len keys;
     get_index_from_key key = index (equal key) keys;
     get_index_from_value value = index (equal value) values;
 

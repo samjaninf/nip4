@@ -272,7 +272,7 @@ Filter_morphology_item = class
     mask1 = Matrix_mor [[0, 0, 0], [0, 255, 0], [0, 0, 0]];
     thin = Matrix_mor [[0, 0, 0], [128, 255, 128], [255, 255, 255]];
 
-    Threshold_item = Select_item.Threshold_item;
+    Threshold_item = Image_select_item.Threshold_item;
 
     sep1 = Menuseparator;
 

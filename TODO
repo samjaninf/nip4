@@ -2,13 +2,9 @@
 
 	reached transform
 
-- list unresolved has some errors
+- set "args" to [] in GUI mode?
 
-	Filter_morphology_item.Threshold_item ($SAVEDIR/start/Filter.def:266)  refers to undefined symbol Select_item
-	Hist_find_item.Segment_item ($SAVEDIR/start/Histogram.def:56)  refers to undefined symbol Select_item
-	Image_draw_item.Draw_scalebar_item.action._result.process.d ($SAVEDIR/start/Image.def:1888)  refers to undefined symbol dpi
-	unit_test.list ($SAVEDIR/start/_stdenv.def:2706)  refers to undefined symbol argv
-	Enum.has_index ($SAVEDIR/start/_types.def:312)  refers to undefined symbol names
+	to stop warnings about argv being undefined
 
 - misspelled or incorrect options don't raise errors
 
