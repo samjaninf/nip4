@@ -1,0 +1,2542 @@
+error_bad_args name types args
+    = error (
+        _ "bad arguments to" ++ " \"" ++ name ++ "\"\n" ++
+        _ "expected" ++ ":\n" ++
+        concat (map (\type "   " ++ type ++ "\n") types) ++
+        _ "you passed" ++ ":\n" ++
+        concat (map (\arg "   " ++ print arg ++ "\n") args)
+    );
+
+// the vector ops ... im is an image, vec is a real_list
+vec op_name im vec
+    = vips_linear [] im ones vec,
+        op_name == "add" || op_name == "add'"
+    = vips_linear [] (-1 * im) ones vec,
+        op_name == "subtract'"
+    = vips_linear [] im ones inv,
+        op_name == "subtract"
+    = vips_linear [] im vec zeros,
+        op_name == "multiply" || op_name == "multiply'"
+    = vips_linear [] (1 / im) vec zeros,
+        op_name == "divide'"
+    = vips_linear [] im recip zeros,
+        op_name == "divide"
+    = vips_math2_const [] im "pow" vec,
+        op_name == "power"
+    = vips_math2_const [] im "wop" vec,
+        op_name == "power'"
+    = vips_remainder_const [] im vec,
+        op_name == "remainder"
+    = vips_boolean_const [] im "and" vec,
+        op_name == "bitwise_and" || op_name == "bitwise_and'"
+    = vips_boolean_const [] im "or" vec,
+        op_name == "bitwise_or" || op_name == "bitwise_or'"
+    = vips_boolean_const [] im "eor" vec,
+        op_name == "eor" || op_name == "eor'"
+    = vips_relational_const [] im "equal" vec,
+        op_name == "equal" || op_name == "equal'"
+    = vips_relational_const [] im "noteq" vec,
+        op_name == "not_equal" || op_name == "not_equal'"
+    = vips_relational_const [] im "less" vec,
+        op_name == "less"
+    = vips_relational_const [] im "more" vec,
+        op_name == "less'"
+    = vips_relational_const [] im "lesseq" vec,
+        op_name == "less_equal"
+    = vips_relational_const [] im "moreeq" vec,
+        op_name == "less_equal'"
+    = vips_bandjoin_const [] im vec,
+        op_name == "join"
+    = error ("unimplemented vector operation: " ++ op_name)
+{
+    zeros = replicate (len vec) 0;
+    ones = replicate (len vec) 1;
+    recip = map (divide 1) vec;
+    inv = map (multiply (-1)) vec;
+}
+
+bandsplit x
+    = oo_unary_function bandsplit_op x, is_class x
+    = map (subscript x) [0 .. bands - 1], is_image x
+    = error (_ "bad arguments to " ++ "bandsplit")
+{
+    bands = get_header "bands" x;
+    bandsplit_op = Operator "bandsplit" (map Image @ bandsplit)
+        Operator_type.COMPOUND false;
+}
+
+bandjoin l
+    = wrapper joined, has_wrapper
+    = joined, is_listof has_image l
+    = error (_ "bad arguments to " ++ "bandjoin")
+{
+    has_wrapper = has_member_list (has_member "Image") l;
+    wrapper = get_member_list (has_member "Image") (get_member "Image") l;
+    joined = vips_bandjoin [] (map get_image l);
+}
+
+bandjoin_const c x
+    = oo_unary_function bandjoin_const_op x, is_class x
+    = vips_bandjoin_const [] x (to_vector c).value, is_image x
+    = error (_ "bad arguments to " ++ "bandjoin_const")
+{
+    bandjoin_const_op = Operator "bandjoin_const" (bandjoin_const c)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+bandbool op x
+    = oo_unary_function bandbool_op x, is_class x
+    = vips_bandbool [] x op, is_image x
+    = error (_ "bad arguments to " ++ "bandbool")
+{
+    bandbool_op = Operator "bandbool" (bandbool op)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+bandand = bandbool "and";
+bandor = bandbool "or";
+bandeor = bandbool "eor";
+
+sum x
+    = oo_unary_function sum_op x, is_class x
+    // don't use "mean" here, it'd create a circular dependency
+    = vips_avg [] x * get_width x * get_height x * get_bands x, is_image x
+    = sum_list x, is_list x
+    = error (_ "bad arguments (" ++ print x ++ ") to " ++ "sum")
+{
+    sum_op = Operator "sum" sum Operator_type.COMPOUND false;
+
+    // add elements in a nested-list thing
+    sum_list l
+        = foldr acc 0 l
+    {
+        acc x total
+            = total + sum x, is_list x
+            = total + x;
+    }
+}
+
+product x
+    = oo_unary_function product_op x, is_class x
+    = product_list x, is_list x
+    // (product image) doesn't make much sense :(
+    = error (_ "bad arguments (" ++ print x ++ ") to " ++ "product")
+{
+    product_op = Operator "product" product Operator_type.COMPOUND false;
+
+    product_list l
+        = foldr prod 1 l
+    {
+        prod x total
+            = total * product x, is_list x
+            = total * x;
+    }
+}
+
+mean x
+    = oo_unary_function mean_op x, is_class x
+    = vips_avg [] x, is_image x
+    = mean_list x, is_list x
+    = error (_ "bad arguments (" ++ print x ++ ") to " ++ "mean")
+{
+    mean_op = Operator "mean" mean Operator_type.COMPOUND false;
+
+    mean_list l = sum l / size l;
+
+    // number of elements in some sort of nested-list thing
+    size l
+        = foldr acc 0 l
+    {
+        acc x total
+            = total + size x, is_list x
+            = total + 1;
+    }
+}
+
+// geometric mean
+meang x
+    = (appl (power e) @ mean @ appl log) x
+{
+    appl fn x
+        = map fn x, is_list x
+        = fn x;
+}
+
+deviation x
+    = oo_unary_function deviation_op x, is_class x
+    = vips_deviate [] x, is_image x
+    = deviation_list x, is_real_list x || is_matrix x
+    = error (_ "bad arguments to " ++ "deviation")
+{
+    deviation_op = Operator "deviation" deviation
+        Operator_type.COMPOUND false;
+
+    deviation_list l
+        = (abs (s2 - (s * s / n)) / (n - 1)) ** 0.5
+    {
+        [n, s, s2] = sum_sum2_list l;
+    }
+
+    // return n, sum, sum of squares for a list of reals
+    sum_sum2_list x
+        = foldr accumulate [0, 0, 0] x
+    {
+        accumulate x sofar
+            = [n + 1, x + s, x * x + s2], is_real x
+            = [n + n', s + s', s2 + s2'], is_list x
+            = error "sum_sum2_list: not real or [real]"
+        {
+            [n, s, s2] = sofar;
+            [n', s', s2'] = sum_sum2_list x;
+        }
+    }
+}
+
+deviationze x
+    = oo_unary_function deviationze_op x, is_class x
+    = deviationze_image x, is_image x
+    = deviationze_list x, is_real_list x || is_matrix x
+    = error (_ "bad arguments to " ++ "deviationze")
+{
+    deviationze_op = Operator "deviationze" deviationze
+        Operator_type.COMPOUND false;
+
+    deviationze_list l
+        = (abs (s2 - (s * s / n)) / (n - 1)) ** 0.5
+    {
+        [n, s, s2] = sum_sum2_list l;
+    }
+
+    // return number of non-zero elements, sum, sum of squares for a list of
+    // reals
+    sum_sum2_list x
+        = foldr accumulate [0, 0, 0] x
+    {
+        accumulate x sofar
+            = sofar, is_real x && x == 0
+            = [n + 1, x + s, x * x + s2], is_real x
+            = [n + n', s + s', s2 + s2'], is_list x
+            = error "sum_sum2_list: not real or [real]"
+        {
+            [n, s, s2] = sofar;
+            [n', s', s2'] = sum_sum2_list x;
+        }
+    }
+
+    deviationze_image i
+        = ((sum2 - sum * sum / N) / (N - 1)) ** 0.5
+    {
+        w = get_width i;
+        h = get_height i;
+        b = get_bands i;
+
+        st = stats i;
+        sum = st.value?0?2;
+        sum2 = st.value?0?3;
+
+        // find non-zero pixels (not zero in all bands)
+        zp = vec "not_equal" i (replicate b 0);
+
+        // number of non-zero pixels
+        N = b * (mean zp * w * h) / 255;
+    }
+}
+
+project x
+    = oo_unary_function project_op x, is_class x
+    = vips_project [] x, is_image x
+    = error (_ "bad arguments to " ++ "project")
+{
+    project_op = Operator "project" project Operator_type.COMPOUND false;
+}
+
+abs x
+    = oo_unary_function abs_op x, is_class x
+    = vips_abs [] x, is_image x
+    = abs_cmplx x, is_complex x
+    = abs_num x, is_real x
+    = abs_list x, is_real_list x
+    = abs_list (map abs_list x), is_matrix x
+    = error (_ "bad arguments to " ++ "abs")
+{
+    abs_op = Operator "abs" abs Operator_type.COMPOUND false;
+
+    abs_list l = (sum (map square l)) ** 0.5;
+
+    abs_num n
+        = n, n >= 0
+        = -n;
+
+    abs_cmplx c = ((re c) ** 2 + (im c) ** 2) ** 0.5;
+}
+
+copy options x
+    = oo_unary_function copy_op x, is_class x
+    = vips_copy options x, is_image x
+    = x
+{
+    copy_op = Operator "copy" (copy options)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+// apply an image function to a [[real]] ... matrix is converted to a 1 band
+// image for processing
+apply_matrix_as_image fn
+    = get_value @ vips_matrix_from_image @ fn @ vips_image_from_matrix @ Matrix;
+
+// a general image/matrix operation where the mat version is most easily done
+// by converting mat -> image -> mat
+apply_matim_operation name fn in
+    = oo_unary_function class_op in, is_class in
+    = fn in, is_image in
+    = apply_matrix_as_image fn in, is_matrix in
+    = error (_ "bad arguments to " ++ name)
+{
+    class_op = Operator name (apply_matim_operation name fn)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+rot45 = apply_matim_operation "rot45" (vips_rot45 []);
+rot90 = apply_matim_operation "rot90" (converse (vips_rot []) "d90");
+rot180 = apply_matim_operation "rot180" (converse (vips_rot []) "d180");
+rot270 = apply_matim_operation "rot270" (converse (vips_rot []) "d270");
+rotquad in = apply_matim_operation "rotquad" (vips_wrap [
+    $x => get_width in / 2,
+    $y => get_height in / 2
+]) in;
+fliplr = apply_matim_operation "fliplr" (converse (vips_flip []) "horizontal");
+fliptb = apply_matim_operation "flipud" (converse (vips_flip []) "vertical");
+matinv = apply_matim_operation "matinv" (vips_matrixinvert []);
+
+apply_matim_binary fn a b
+    = itom (fn (mtoi a) (mtoi b))
+{
+    itom x = (vips_matrix_from_image x).value;
+    mtoi x
+        = vips_image_from_matrix (Matrix x), is_matrix x
+        = x;
+}
+
+matmul a b
+    = oo_binary'_function matmul_op a b, is_class b
+    = oo_binary_function matmul_op a b, is_class a
+    = apply_matim_binary (vips_matrixmultiply []) a b,
+        is_matrix_image a && is_matrix_image b
+    = error (_ "bad arguments to " ++ "matmul")
+{
+    matmul_op = Operator "matmul" matmul Operator_type.COMPOUND_REWRAP false;
+}
+
+cache tile_width tile_height max_tiles x
+    = oo_unary_function cache_op x, is_class x
+    = vips_tilecache [
+        $tile_width => to_real tile_width,
+        $tile_height => to_real tile_height,
+        $max_tiles => to_real max_tiles,
+        $access => "random",
+        $persistent => true,
+        $threaded => true
+      ] x, is_image x
+    = error (_ "bad arguments to " ++ "cache")
+{
+    cache_op = Operator "cache" (cache tile_width tile_height max_tiles)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+tile across down x
+    = oo_unary_function tile_op x, is_class x
+    = vips_replicate [] x (to_real across) (to_real down), is_image x
+    = error (_ "bad arguments to " ++ "tile")
+{
+    tile_op = Operator "tile" (tile across down)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+grid options tile_height across down x
+    = oo_unary_function grid_op x, is_class x
+    = vips_grid options x (to_real tile_height) (to_real across) (to_real down),
+        is_image x
+    = error (_ "bad arguments to " ++ "grid")
+{
+    grid_op = Operator "grid" (grid options tile_height across down)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+transpose3d options x
+    = oo_unary_function transpose3d_op x, is_class x
+    = vips_transpose3d options x, is_image x
+    = error (_ "bad arguments to " ++ "transpose3d")
+{
+    transpose3d_op = Operator "transpose3d" (transpose3d options)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+max x
+    = oo_unary_function max_op x, is_class x
+    = vips_max [] x, is_image x
+    = max_list x, is_list x
+    = x, is_number x
+    = error (_ "bad arguments to " ++ "max")
+{
+    max_op = Operator "max" max Operator_type.COMPOUND false;
+
+    max_list [] = error "max []";
+    max_list x
+        = foldr1 maxpair x, is_real_list x
+        = foldr1 maxpair (map max_list x), is_list x
+        = max x;
+}
+
+min x
+    = oo_unary_function min_op x, is_class x
+    = vips_min [] x, is_image x
+    = min_list x, is_list x
+    = x, is_number x
+    = error (_ "bad arguments to " ++ "min")
+{
+    min_op = Operator "min" min Operator_type.COMPOUND false;
+
+    min_list [] = error "min []";
+    min_list x
+        = foldr1 minpair x, is_real_list x
+        = foldr1 minpair (map min_list x), is_list x
+        = min x;
+}
+
+maxpos x
+    = oo_unary_function maxpos_op x, is_class x
+    = maxpos_im x, is_image x
+    = maxpos_matrix x, is_matrix x
+    = maxpos_list x, is_list x
+    = error (_ "bad arguments to " ++ "maxpos")
+{
+    maxpos_op = Operator "maxpos" maxpos Operator_type.COMPOUND false;
+
+    maxpos_matrix [[]] = (-1, -1);
+    maxpos_matrix m
+        = (indexes?row, row)
+    {
+        max_value = max (Matrix m);
+        indexes = map (index (equal max_value)) m;
+        row = index (not_equal (-1)) indexes;
+    }
+
+    maxpos_list [] = -1;
+    maxpos_list l = index (equal (max l)) l;
+
+    maxpos_im i
+        = (x, y)
+     {
+        [value, x, y] = vips_max [$x => true, $y => true] i;
+     }
+}
+
+minpos x
+    = oo_unary_function minpos_op x, is_class x
+    = minpos_im x, is_image x
+    = minpos_matrix x, is_matrix x
+    = minpos_list x, is_list x
+    = error (_ "bad arguments to " ++ "minpos")
+{
+    minpos_op = Operator "minpos" minpos Operator_type.COMPOUND false;
+
+    minpos_matrix [[]] = (-1, -1);
+    minpos_matrix m
+        = (indexes?row, row)
+    {
+        min_value = min (Matrix m);
+        indexes = map (index (equal min_value)) m;
+        row = index (not_equal (-1)) indexes;
+    }
+
+    minpos_list [] = -1;
+    minpos_list l = index (equal (min l)) l;
+
+    minpos_im i
+        = (x, y)
+     {
+        [value, x, y] = vips_min [$x => true, $y => true] i;
+     }
+}
+
+stats x
+    = oo_unary_function stats_op x, is_class x
+    = to_matrix (vips_stats [] x), is_image x
+    = to_matrix (vips_stats [] (to_image x)), is_matrix x
+    = error (_ "bad arguments to " ++ "stats")
+{
+    stats_op = Operator "stats" stats Operator_type.COMPOUND false;
+}
+
+sign x
+    = oo_unary_function sign_op x, is_class x
+    = vips_sign [] x, is_image x
+    = sign_cmplx x, is_complex x
+    = sign_num x, is_real x
+    = error (_ "bad arguments to " ++ "sign")
+{
+    sign_op = Operator "sign" sign Operator_type.COMPOUND_REWRAP false;
+
+    sign_num n
+        = 0, n == 0
+        = 1, n > 0
+        = -1;
+
+    sign_cmplx c
+        = (0, 0), mod == 0
+        = (re c / mod, im c / mod)
+    {
+        mod = abs c;
+    }
+}
+
+rint x
+    = oo_unary_function rint_op x, is_class x
+    = vips_round [] x "rint", is_image x
+    = rint_value x, is_number x
+    = error (_ "bad arguments to " ++ "rint")
+{
+    rint_op = Operator "rint" rint Operator_type.ARITHMETIC false;
+
+    rint_value x
+        = (int) (x + 0.5), x > 0
+        = (int) (x - 0.5);
+}
+
+scale x
+    = oo_unary_function scale_op x, is_class x
+    = (unsigned char) x, is_number x
+    = vips_scale [] x, is_image x
+    = scale_list x, is_real_list x || is_matrix x
+    = error (_ "bad arguments to " ++ "scale")
+{
+    scale_op = Operator "scale" scale Operator_type.COMPOUND_REWRAP false;
+
+    scale_list l
+        = apply_scale s o l
+    {
+        mn = find_limit minpair l;
+        mx = find_limit maxpair l;
+        s = 255.0 / (mx - mn);
+        o = -(mn * s);
+    }
+
+    find_limit fn l
+        = find_limit fn (map (find_limit fn) l), is_listof is_list l
+        = foldr1 fn l;
+
+    apply_scale s o x
+        = x * s + o, is_number x
+        = map (apply_scale s o) x;
+}
+
+scaleps x
+    = oo_unary_function scale_op x, is_class x
+    = vips_scale [$log => true] x, is_image x
+    = error (_ "bad arguments to " ++ "scaleps")
+{
+    scale_op = Operator "scaleps" scaleps Operator_type.COMPOUND_REWRAP false;
+}
+
+fwfft x
+    = oo_unary_function fwfft_op x, is_class x
+    = vips_fwfft [] x, is_image x
+    = error (_ "bad arguments to " ++ "fwfft")
+{
+    fwfft_op = Operator "fwfft" fwfft Operator_type.COMPOUND_REWRAP false;
+}
+
+invfft x
+    = oo_unary_function invfft_op x, is_class x
+    = vips_invfft [$real => true] x, is_image x
+    = error (_ "bad arguments to " ++ "invfft")
+{
+    invfft_op = Operator "invfft" invfft Operator_type.COMPOUND_REWRAP false;
+}
+
+falsecolour x
+    = oo_unary_function falsecolour_op x, is_class x
+    = copy [$interpretation => "srgb"] (vips_falsecolour [] x), is_image x
+    = error (_ "bad arguments to " ++ "falsecolour")
+{
+    falsecolour_op = Operator "falsecolour" falsecolour
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+polar x
+    = oo_unary_function polar_op x, is_class x
+    = vips_complex [] x $polar, is_image x
+    = polar_cmplx x, is_complex x
+    = error (_ "bad arguments to " ++ "polar")
+{
+    polar_op = Operator "polar" polar Operator_type.COMPOUND false;
+
+    polar_cmplx (x, y)
+        = (l, a)
+    {
+        a
+            = 270, x == 0 && y < 0
+            = 90, x == 0 && y >= 0
+            = 360 + atan (y / x), x > 0 && y < 0
+            = atan (y / x), x > 0 && y >= 0
+            = 180 + atan (y / x);
+
+        l = (x ** 2 + y ** 2) ** 0.5;
+    }
+}
+
+rectangular x
+    = oo_unary_function rectangular_op x, is_class x
+    = vips_complex [] x $rect, is_image x
+    = rectangular_cmplx x, is_complex x
+    = error (_ "bad arguments to " ++ "rectangular")
+{
+    rectangular_op = Operator "rectangular" rectangular
+        Operator_type.COMPOUND false;
+
+    rectangular_cmplx (l, a) = (l * cos a, l * sin a);
+}
+
+// we can't use colour_unary: that likes 3 band only
+recomb matrix x
+    = oo_unary_function recomb_op x, is_class x
+    = vips_recomb [] x matrix, is_image x
+    = recomb_real_list x, is_real_list x
+    = map recomb_real_list x, is_matrix x
+    = error (_ "bad arguments to " ++ "recomb")
+{
+    // COMPOUND_REWRAP ... signal to the colour class to go to image and
+    // back
+    recomb_op = Operator "recomb" (recomb matrix)
+        Operator_type.COMPOUND_REWRAP false;
+
+    // process [1,2,3 ..] as an image
+    recomb_real_list l
+        = (to_matrix im').value?0
+    {
+        im = (float) (to_image (Vector l)).value;
+        im' = recomb matrix im;
+    }
+}
+
+crop x y w h obj
+    = oo_unary_function crop_op obj, is_class obj
+    = vips_crop [] obj x' y' w' h', is_image obj
+    = map (crop_range x' w') (crop_range y' h' obj), is_matrix obj
+    = error (_ "bad arguments to " ++ "crop")
+{
+    x' = to_real x;
+    y' = to_real y;
+    w' = to_real w;
+    h' = to_real h;
+
+    crop_op = Operator "crop" (crop x y w h) Operator_type.COMPOUND_REWRAP false;
+
+    crop_range from length list = (take length @ drop from) list;
+}
+
+extract_band b obj = subscript obj b;
+
+blend cond in1 in2
+    = oo_binary_function blend_op cond [in1,in2], is_class cond
+    = vips_ifthenelse [$blend => true]
+        (get_image cond) (get_image in1) (get_image in2),
+            has_image cond && has_image in1 && has_image in2
+    = error (_ "bad arguments to " ++ "blend" ++ ": " ++
+        joinsep ", " (map print [cond, in1, in2]))
+{
+    blend_op = Operator "blend" blend_obj
+        Operator_type.COMPOUND_REWRAP false;
+
+    blend_obj cond x
+        = blend_result_image
+    {
+        [then_part, else_part] = x;
+
+        // get things about our output from inputs in this order
+        objects = [then_part, else_part, cond];
+
+        // properties of our output image
+        target_width = get_member_list has_width get_width objects;
+        target_height = get_member_list has_height get_height objects;
+        target_bands = get_member_list has_bands get_bands objects;
+        target_format = get_member_list has_format get_format objects;
+        target_interpretation
+            = get_member_list has_interpretation get_interpretation objects;
+
+        to_image x
+            = to_image_size target_width target_height target_bands
+                target_format x;
+
+        [then_image, else_image] = map to_image [then_part, else_part];
+
+        blend_result_image = copy [$interpretation => target_interpretation]
+            (blend cond then_image else_image);
+    }
+}
+
+insert options x y small big
+    // do big first: we want to keep big's class, if possible
+    // eg. big is a Plot, small is a 1x1 Image
+    = oo_binary'_function insert_op small big, is_class big
+    = oo_binary_function insert_op small big, is_class small
+    = vips_insert options big small (to_real x) (to_real y),
+        is_image small && is_image big
+    = error (_ "bad arguments to " ++ "insert")
+{
+    insert_op = Operator "insert" (insert options x y)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+decode im
+    = oo_unary_function decode_op im, is_class im
+    = decode_im im, is_image im
+    = error (_ "bad arguments to " ++ "decode")
+{
+    decode_op = Operator "decode" decode
+        Operator_type.COMPOUND_REWRAP false;
+
+    decode_im im
+        = vips_LabQ2Lab [] im, get_coding im == Coding.LABPACK
+        = vips_rad2float [] im, get_coding im == Coding.RAD
+        = im;
+}
+
+extract_bands b n obj
+    = oo_unary_function extract_bands_op obj, is_class obj
+    = vips_extract_band [$n => to_real n] obj (to_real b), is_image obj
+    = error (_ "bad arguments to " ++ "extract_bands")
+{
+    extract_bands_op = Operator "extract_bands" (extract_bands b n)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+invert x
+    = oo_unary_function invert_op x, is_class x
+    = vips_invert [] x, is_image x
+    = 255 - x, is_real x
+    = error (_ "bad arguments to " ++ "invert")
+{
+    invert_op = Operator "invert" invert Operator_type.COMPOUND false;
+}
+
+transform options params image
+    = oo_unary_function transform_op image, is_class image
+    = vips_quadratic options image (to_matrix params), is_image image
+    = error (_ "bad arguments to " ++ "transform")
+{
+    transform_op = Operator "transform" (transform options params)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+rotate interp angle x
+    = oo_binary_function rotate_op angle x, is_class angle
+    = oo_binary'_function rotate_op angle x, is_class x
+    = vips_affine [$interpolate => interp] x [a, -b, b, a],
+        is_real angle && is_image x
+    = error (_ "bad arguments to " ++ "rotate")
+{
+    rotate_op = Operator "rotate" (rotate interp)
+        Operator_type.COMPOUND_REWRAP false;
+    a = cos angle;
+    b = sin angle;
+}
+
+cast format x
+    = oo_unary_function cast_op x, is_class x
+    = vips_cast [] x (to_real format), is_image x
+    = cast_real (to_real format) x, is_real x
+    = error (_ "bad arguments to " ++ "cast")
+{
+    cast_op = Operator "cast" (cast format)
+        Operator_type.COMPOUND_REWRAP false;
+
+    cast_real format x
+        = cast_unsigned_char x, format == Format.UCHAR
+        = cast_signed_char x, format == Format.CHAR
+        = cast_unsigned_short x, format == Format.USHORT
+        = cast_signed_short x, format == Format.SHORT
+        = cast_unsigned_int x, format == Format.UINT
+        = cast_signed_int x, format == Format.INT
+        = cast_float x, format == Format.FLOAT
+        = cast_double x, format == Format.DOUBLE
+        = cast_complex x, format == Format.COMPLEX
+        = cast_double_complex x, format == Format.DPCOMPLEX
+        = error (_ "bad arguments to " ++ "cast");
+}
+
+embed type x y w h im
+    = oo_unary_function embed_op im, is_class im
+    = vips_embed [$extend => type] im
+        (to_real x) (to_real y) (to_real w) (to_real h), is_image im
+    = error (_ "bad arguments to " ++ "embed")
+{
+    embed_op = Operator "embed" (embed type x y w h)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+/* Morph a mask with a [[real]] matrix ... turn m2 into an image, morph it
+ * with m1, turn it back to a matrix again.
+ */
+_morph_2_masks fn m1 m2
+    = m''
+{
+    // The [[real]] can contain 128 values ... squeeze them out!
+    image = vips_image_from_matrix (Matrix m2) == 255;
+    m2_width = get_width image;
+    m2_height = get_height image;
+
+    // need to embed m2 in an image large enough for us to be able to
+    // position m1 all around the edges, with a 1 pixel overlap
+    image' = embed 0
+        (m1.width / 2) (m1.height / 2)
+        (m2_width + (m1.width - 1)) (m2_height + (m1.height - 1))
+        image;
+
+    // morph!
+    image'' = fn m1 image';
+
+    // back to mask
+    m' = vips_matrix_from_image ((double) image'');
+
+    // Turn 0 in output to 128 (don't care).
+    m''
+        = map (map fn) m'.value
+    {
+        fn a
+            = 128, a == 0;
+            = a;
+    }
+}
+
+dilate mask image
+    = oo_unary_function dilate_op image, is_class image
+    = vips_morph [] image (to_matrix mask) "dilate", is_image image
+    = error (_ "bad arguments to " ++ "dilate")
+{
+    dilate_op = Operator "dilate" dilate_object
+        Operator_type.COMPOUND_REWRAP false;
+
+    dilate_object x
+        = _morph_2_masks dilate mask x, is_matrix x
+        = dilate mask x;
+}
+
+erode mask image
+    = oo_unary_function erode_op image, is_class image
+    = vips_morph [] image (to_matrix mask) "erode", is_image image
+    = error (_ "bad arguments to " ++ "erode")
+{
+    erode_op = Operator "erode" erode_object
+        Operator_type.COMPOUND_REWRAP false;
+
+    erode_object x
+        = _morph_2_masks erode mask x, is_matrix x
+        = erode mask x;
+}
+
+conv options mask image
+    = oo_unary_function conv_op image, is_class image
+    = vips_conv options image (to_matrix mask), is_image image
+    = error (_ "bad arguments to " ++ "conv" ++ ": " ++
+        "conv (" ++ print mask ++ ") (" ++ print image ++ ")")
+{
+    conv_op = Operator "conv" (conv options mask)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+convsep options mask image
+    = oo_unary_function convsep_op image, is_class image
+    = vips_convsep options image (to_matrix mask), is_image image
+    = error (_ "bad arguments to " ++ "convsep")
+{
+    convsep_op = Operator "convsep" (convsep options mask)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+rank w h n image
+    = oo_unary_function rank_op image, is_class image
+    = vips_rank [] image (to_real w) (to_real h) (to_real n), is_image image
+    = error (_ "bad arguments to " ++ "rank")
+{
+    rank_op = Operator "rank" (rank w h n) Operator_type.COMPOUND_REWRAP false;
+}
+
+rank_image n x
+    = rlist x.value, is_Group x
+    = rlist x, is_list x
+    = error (_ "bad arguments to " ++ "rank_image")
+{
+    rlist l
+        = wrapper ranked, has_wrapper
+        = ranked
+    {
+        has_wrapper = has_member_list (has_member "Image") l;
+        wrapper = get_member_list (has_member "Image") (get_member "Image") l;
+        ranked = vips_bandrank [$index => to_real n] (map get_image l);
+    }
+}
+
+// find the correlation surface for a small image within a big one
+correlate small big
+    = oo_binary_function correlate_op small big, is_class small
+    = oo_binary'_function correlate_op small big, is_class big
+    = vips_spcor [] big small, is_image small && is_image big
+    = error (_ "bad arguments to " ++ "correlate")
+{
+    correlate_op = Operator "correlate" correlate
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+// just sum-of-squares-of-differences
+correlate_fast small big
+    = oo_binary_function correlate_fast_op small big, is_class small
+    = oo_binary'_function correlate_fast_op small big, is_class big
+    = vips_fastcor [] big small, is_image small && is_image big
+    = error (_ "bad arguments to " ++ "correlate_fast")
+{
+    correlate_fast_op = Operator "correlate_fast" correlate_fast
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+// set interpretation, wrap as Plot_hist if it's a class
+hist_tag x
+    = oo_unary_function hist_tag_op x, is_class x
+    = set_header $interpretation $histogram x, is_image x
+    = error (_ "bad arguments to " ++ "hist_tag")
+{
+    hist_tag_op = Operator "hist_tag" (Plot_histogram @ hist_tag)
+        Operator_type.COMPOUND false;
+}
+
+hist_find x
+    = oo_unary_function hist_find_op x, is_class x
+    = vips_hist_find [] x, is_image x
+    = error (_ "bad arguments to " ++ "hist_find")
+{
+    hist_find_op = Operator "hist_find" (Plot_histogram @ hist_find)
+        Operator_type.COMPOUND false;
+}
+
+hist_find_nD bins image
+    = oo_unary_function hist_find_nD_op image, is_class image
+    = vips_hist_find_ndim [$bins => to_real bins] image, is_image image
+    = error (_ "bad arguments to " ++ "hist_find_nD")
+{
+    hist_find_nD_op = Operator "hist_find_nD" (hist_find_nD bins)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+hist_find_indexed mode index value
+    = oo_binary_function hist_find_indexed_op index value, is_class index
+    = oo_binary'_function hist_find_indexed_op index value, is_class value
+    = indexed index value, is_image index && is_image value
+    = error (_ "bad arguments to " ++ "hist_find_indexed")
+{
+    hist_find_indexed_op = Operator "hist_find_indexed"
+        (compose (compose Plot_histogram) (hist_find_indexed mode))
+            Operator_type.COMPOUND false;
+
+    indexed index value
+        = vips_hist_find_indexed [$combine => mode] value index;
+}
+
+hist_entropy x
+    = oo_unary_function hist_entropy_op x, is_class x
+    = entropy x, is_image x
+    = error (_ "bad arguments to " ++ "hist_entropy")
+{
+    hist_entropy_op = Operator "hist_entropy" hist_entropy
+        Operator_type.COMPOUND_REWRAP false;
+
+    entropy x = vips_hist_entropy [] x;
+}
+
+maplut options hist image
+    = oo_binary_function maplut_op hist image, is_class hist
+    = oo_binary'_function maplut_op hist image, is_class image
+    = vips_maplut options image hist, is_image hist && is_image image
+    = error (_ "bad arguments to " ++ "maplut")
+{
+    // can't use rewrap, as we want to always wrap as image
+    maplut_op = Operator "maplut" (compose (compose Image) (maplut options))
+        Operator_type.COMPOUND false;
+}
+
+hist_cum hist
+    = oo_unary_function hist_cum_op hist, is_class hist
+    = vips_hist_cum [] hist, is_image hist
+    = error (_ "bad arguments to " ++ "hist_cum")
+{
+    hist_cum_op = Operator "hist_cum" hist_cum
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+hist_norm hist
+    = oo_unary_function hist_norm_op hist, is_class hist
+    = vips_hist_norm [] hist, is_image hist
+    = error (_ "bad arguments to " ++ "hist_norm " ++ print hist)
+{
+    hist_norm_op = Operator "hist_norm" hist_norm
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+hist_inv hist
+    = oo_unary_function hist_inv_op hist, is_class hist
+    = inv hist, is_image hist
+    = error (_ "bad arguments to " ++ "hist_inv")
+{
+    hist_inv_op = Operator "hist_inv" hist_inv
+        Operator_type.COMPOUND_REWRAP false;
+
+    inv im
+        = vips_invertlut [$size => len] (to_matrix im''')
+    {
+        // need a vertical doublemask
+        im'
+            = rot90 im, get_width im > 1 && get_height im == 1
+            = im, get_width im == 1 && get_height im > 1
+            = error (_ "not a hist");
+        len = get_height im';
+
+        // values must be scaled to 0 - 1
+        im'' = im' / (max im');
+
+        // add an index column on the left
+        // again, must be in 0-1
+        y = ((xyz [] 1 len)?1) / len;
+        im''' = y ++ im'';
+    }
+}
+
+hist_match in ref
+    = oo_binary_function hist_match_op in ref, is_class in
+    = oo_binary'_function hist_match_op in ref, is_class ref
+    = vips_hist_match [] in' ref', is_image in && is_image ref
+    = error (_ "bad arguments to " ++ "hist_match")
+{
+    hist_match_op = Operator "hist_match" hist_match
+        Operator_type.COMPOUND_REWRAP false;
+
+    in' = (hist_norm @ hist_cum) in;
+    ref' = (hist_norm @ hist_cum) ref;
+}
+
+hist_equalize x = maplut [] ((hist_norm @ hist_cum @ hist_find) x) x;
+
+hist_equalize_local w h l image
+    = oo_unary_function hist_equalize_local_op image, is_class image
+    = out, is_image image
+    = error (_ "bad arguments to " ++ "hist_equalize_local")
+{
+    hist_equalize_local_op = Operator "hist_equalize_local"
+        (hist_equalize_local w h l)
+        Operator_type.COMPOUND_REWRAP false;
+
+    out = vips_hist_local [$max_slope => to_real l]
+        image (to_real w) (to_real h);
+}
+
+/* Sometimes useful, despite plotting now being built in, for making
+ * diagnostic images.
+ */
+hist_plot hist
+    = oo_unary_function hist_plot_op hist, is_class hist
+    = vips_hist_plot [] hist, is_image hist
+    = error (_ "bad arguments to " ++ "hist_plot")
+{
+    hist_plot_op = Operator "hist_plot" (Image @ hist_plot)
+        Operator_type.COMPOUND false;
+}
+
+reduce kernel xshr yshr image
+    = oo_unary_function reduce_op image, is_class image
+    = reduce_im image, is_image image
+    = error (_ "bad arguments to " ++ "reduce")
+{
+    reduce_op = Operator "reduce" reduce_im Operator_type.COMPOUND_REWRAP false;
+
+    reduce_im im
+        = vips_reduce [$kernel => kernel.value] im xshr yshr;
+}
+
+similarity interpolate scale angle image
+    = oo_unary_function similarity_op image, is_class image
+    = similarity_im image, is_image image
+    = error (_ "bad arguments to " ++ "similarity")
+{
+    similarity_op = Operator "similarity" similarity_im
+        Operator_type.COMPOUND_REWRAP false;
+
+    similarity_im im
+        = vips_similarity [
+            $interpolate => interpolate.value,
+            $scale => scale,
+            $angle => angle
+        ] im;
+}
+
+resize kernel xfac yfac image
+    = oo_unary_function resize_op image, is_class image
+    = resize_im image, is_image image
+    = error (_ "bad arguments to " ++ "resize")
+{
+    resize_op = Operator "resize" resize_im
+        Operator_type.COMPOUND_REWRAP false;
+
+    xfac' = to_real xfac;
+    yfac' = to_real yfac;
+
+    rxfac' = 1 / xfac';
+    ryfac' = 1 / yfac';
+
+    is_nn = kernel == Kernel.NEAREST_NEIGHBOUR;
+
+    resize_im im
+        // upscale by integer factor, nearest neighbour
+        = vips_zoom [] im xfac' yfac',
+            is_int xfac' && is_int yfac' &&
+            xfac' >= 1 && yfac' >= 1 &&
+            is_nn
+
+        // downscale by integer factor, nearest neighbour
+        = vips_subsample [] im rxfac' ryfac',
+            is_int rxfac' && is_int ryfac' &&
+            rxfac' >= 1 && ryfac' >= 1 &&
+            is_nn
+
+        // everything else ... we just pass on to vips_resize()
+        = vips_resize [$vscale => yfac', $kernel => kernel] im xfac';
+}
+
+sharpen radius x1 y2 y3 m1 m2 in
+    = oo_unary_function sharpen_op in, is_class in
+    = sharpen_im in (to_real radius)
+        (to_real x1) (to_real y2) (to_real y3)
+        (to_real m1) (to_real m2), is_image in
+    = error (_ "bad arguments to " ++ "sharpen")
+{
+    sharpen_op = Operator "sharpen" (sharpen radius x1 y2 y3 m1 m2)
+        Operator_type.COMPOUND_REWRAP false;
+
+    sharpen_im in mask_size x1 y2 y3 m1 m2
+        = vips_sharpen [
+            $sigma => mask_size / 4,
+            $x1 => x1,
+            $y2 => y2,
+            $y3 => y3,
+            $m1 => m1,
+            $m2 => m2
+        ] in;
+}
+
+tone_build fmt b w s m h sa ma ha
+    = (Plot_histogram @ cast fmt)
+        (tone_build_im mx mx
+            (to_real b) (to_real w)
+            (to_real s) (to_real m) (to_real h)
+            (to_real sa) (to_real ma) (to_real ha))
+{
+    mx = Format._maxval fmt;
+
+    tone_build_im in_max out_max Lb Lw Ps Pm Ph S M H
+        = vips_tonelut [
+            $in_max => in_max,
+            $out_max => out_max,
+            $Lb => Lb,
+            $Lw => Lw,
+            $Ps => Ps,
+            $Pm => Pm,
+            $Ph => Ph,
+            $S => S,
+            $M => M,
+            $H => H
+        ];
+}
+
+icc_export depth profile intent in
+    = oo_unary_function icc_export_op in, is_class in
+    = icc_export_im in (to_real depth) (expand profile) (to_real intent),
+        is_image in
+    = error (_ "bad arguments to " ++ "icc_export")
+{
+    icc_export_op = Operator "icc_export" (icc_export depth profile intent)
+        Operator_type.COMPOUND_REWRAP false;
+
+    icc_export_im in depth profile intent
+        = vips_icc_export [
+            $depth => depth,
+            $intent => intent,
+            $output_profile => profile
+        ] in;
+}
+
+icc_import profile intent in
+    = oo_unary_function icc_import_op in, is_class in
+    = icc_import_im in (expand profile) (to_real intent), is_image in
+    = error (_ "bad arguments to " ++ "icc_import")
+{
+    icc_import_op = Operator "icc_import" (icc_import profile intent)
+        Operator_type.COMPOUND_REWRAP false;
+
+    icc_import_im in profile intent
+        = vips_icc_import [$intent => intent, $input_profile => profile] in;
+}
+
+icc_import_embedded intent in
+    = oo_unary_function icc_import_embedded_op in, is_class in
+    = icc_import_embedded_im in (to_real intent), is_image in
+    = error (_ "bad arguments to " ++ "icc_import_embedded")
+{
+    icc_import_embedded_op = Operator "icc_import_embedded"
+        (icc_import_embedded intent)
+        Operator_type.COMPOUND_REWRAP false;
+
+    icc_import_embedded_im in intent
+        = vips_icc_import [$intent => intent, $embedded => true] in;
+}
+
+icc_transform in_profile out_profile intent in
+    = oo_unary_function icc_transform_op in, is_class in
+    = icc_transform_im in
+        (expand in_profile) (expand out_profile)
+        (to_real intent), is_image in
+    = error (_ "bad arguments to " ++ "icc_transform")
+{
+    icc_transform_op = Operator "icc_transform"
+        (icc_transform in_profile out_profile intent)
+        Operator_type.COMPOUND_REWRAP false;
+
+    icc_transform_im in input_profile output_profile intent
+        = vips_icc_transform [
+            $intent => intent,
+            $input_profile => output_profile
+        ] in output_profile;
+}
+
+// Given a xywh rect, flip it around so wh are always positive
+rect_normalise x y w h
+    = [x', y', w', h']
+{
+    x'
+        = x + w, w < 0
+        = x;
+    y'
+        = y + h, h < 0
+        = y;
+    w' = abs w;
+    h' = abs h;
+}
+
+draw_flood_blob x y ink image
+    = oo_unary_function draw_flood_blob_op image, is_class image
+    = draw_flood_blob_im image (to_real x) (to_real y) ink, is_image image
+    = error (_ "bad arguments to " ++ "draw_flood_blob")
+{
+    draw_flood_blob_op = Operator "draw_flood_blob" (draw_flood_blob x y ink)
+        Operator_type.COMPOUND_REWRAP false;
+
+    draw_flood_blob_im in start_x start_y ink
+        = vips_draw_flood [$equal => true] in ink start_x start_y;
+}
+
+draw_flood x y ink image
+    = oo_unary_function draw_flood_op image, is_class image
+    = draw_flood_im image (to_real x) (to_real y) ink, is_image image
+    = error (_ "bad arguments to " ++ "draw_flood")
+{
+    draw_flood_op = Operator "draw_flood" (draw_flood x y ink)
+        Operator_type.COMPOUND_REWRAP false;
+
+    draw_flood_im in start_x start_y ink
+       = vips_draw_flood [$equal => false] in ink start_x start_y;
+}
+
+/* This version of draw_rect uses insert and should be fast, even for
+ * huge images.
+ */
+draw_rect_width x y w h f t ink image
+    = oo_unary_function draw_rect_width_op image, is_class image
+    = my_draw_rect_width image (to_int x) (to_int y)
+        (to_int w) (to_int h) (to_int f) (to_int t) ink,
+        is_image image
+    = error (_ "bad arguments to " ++ "draw_rect_width")
+{
+    draw_rect_width_op = Operator "draw_rect_width"
+        (draw_rect_width x y w h f t ink)
+        Operator_type.COMPOUND_REWRAP false;
+
+    my_draw_rect_width image x y w h f t ink
+        = insert [] x' y' (block w' h') image, f == 1
+        = (insert [] x' y' (block w' t) @
+            insert [] (x' + w' - t) y' (block t h') @
+            insert [] x' (y' + h' - t) (block w' t) @
+            insert [] x' y' (block t h')) image
+    {
+        block w h = image_new_from_image [$pixel => ink'] image w h;
+
+        ink'
+            = Vector ink, is_list ink
+            = ink;
+        [x', y', w', h'] = rect_normalise x y w h;
+    }
+}
+
+/* Default to 1 pixel wide edges.
+ */
+draw_rect x y w h f ink image
+    = draw_rect_width x y w h f 1 ink image;
+
+/* This version of draw_rect uses the paintbox rect draw operation. It is an
+ * inplace operation and will use bucketloads of memory.
+ */
+draw_rect_paintbox x y w h f ink image
+    = oo_unary_function draw_rect_op image, is_class image
+    = draw_rect_im image (to_real x) (to_real y)
+        (to_real w) (to_real h) (to_real f) ink, is_image image
+    = error (_ "bad arguments to " ++ "draw_rect_paintbox")
+{
+    draw_rect_op = Operator "draw_rect" (draw_rect x y w h f ink)
+        Operator_type.COMPOUND_REWRAP false;
+
+    draw_rect_im image left top width height fill ink
+       = vips_draw_rect [$fill => fill != 0] image ink left top width height;
+}
+
+draw_circle x y r f ink image
+    = oo_unary_function draw_circle_op image, is_class image
+    = draw_circle_im image (to_real x) (to_real y)
+        (to_real r) (to_real f) ink, is_image image
+    = error (_ "bad arguments to " ++ "draw_circle")
+{
+    draw_circle_op = Operator "draw_circle" (draw_circle x y r f ink)
+        Operator_type.COMPOUND_REWRAP false;
+
+    draw_circle_im image cx cy radius fill ink
+       = vips_draw_circle [$fill => fill != 0] image ink cx cy radius;
+}
+
+draw_line x1 y1 x2 y2 ink image
+    = oo_unary_function draw_line_op image, is_class image
+    = draw_line_im image (to_real x1) (to_real y1)
+        (to_real x2) (to_real y2) ink, is_image image
+    = error (_ "bad arguments to " ++ "draw_line")
+{
+    draw_line_op = Operator "draw_line" (draw_line x1 y1 x2 y2 ink)
+        Operator_type.COMPOUND_REWRAP false;
+
+    draw_line_im image x1 y1 x2 y2 ink
+       = vips_draw_line [] image ink x1 y1 x2 y2;
+}
+
+print_base base in
+    = oo_unary_function print_base_op in, is_class in
+    = map (print_base base) in, is_list in
+    = print_base_real, is_real in
+    = error (_ "bad arguments to " ++ "print_base")
+{
+    print_base_op = Operator "print_base" (print_base base)
+        Operator_type.COMPOUND false;
+
+    print_base_real
+        = error "print_base: bad base", base < 2 || base > 16
+        = "0", in < 0 || chars == []
+        = reverse chars
+    {
+        digits = map (\x x % base)
+            (takewhile (not_equal 0)
+                (iterate (\x idivide x base) in));
+        chars = map tohd digits;
+
+        tohd x
+            = (char) ((int) '0' + x), x < 10
+            = (char) ((int) 'A' + (x - 10));
+    }
+}
+
+/* id x: the identity function
+ *
+ * id :: * -> *
+ */
+id x = x;
+
+/* const x y: junk y, return x
+ *
+ * (const 3) is the function that always returns 3.
+ * const :: * -> ** -> *
+ */
+const x y = x;
+
+/* converse fn a b: swap order of args to fn
+ *
+ * converse fn a b == fn b a
+ * converse :: (* -> ** -> ***) -> ** -> * -> ***
+ */
+converse fn a b = fn b a;
+
+/* fix fn x: find the fixed point of a function
+ */
+fix fn x = limit (iterate fn x);
+
+/* until pred fn n: apply fn to n until pred succeeds; return that value
+ *
+ * until (more 1000) (multiply 2) 1 = 1024
+ * until :: (* -> bool) -> (* -> *) -> * -> *
+ */
+until pred fn n
+    = n, pred n
+    = until pred fn (fn n);
+
+/* Infinite list of primes.
+ */
+primes
+    = 1 : (sieve [2 ..])
+{
+    sieve a:x = a : sieve (filter (nmultiple a) x);
+    nmultiple n x = x / n != (int) (x / n);
+}
+
+/* Map an n-ary function (pass the args as a list) over groups of objects.
+ * The objects can be single objects or groups. If more than one
+ * object is a group, we iterate for the length of the smallest group.
+ * Don't loop over plain lists, since we want (eg.) "mean [1, 2, 3]" to work.
+ * Treat [] as no-value --- ie. if any of the inputs are [] we put [] into the
+ * output and don't apply the function.
+
+        copy-pasted into _types, keep in sync
+
+ */
+map_nary fn args
+    = fn args, groups == []
+    = Group (map process [0, 1 .. shortest - 1])
+{
+    // find all the group arguments
+    groups = filter is_Group args;
+
+    // what's the length of the shortest group arg?
+    shortest = foldr1 minpair (map (len @ get_value) groups);
+
+    // process index n ... pull that member from each argument
+    // recurse to handle application, so we work for nested groups too
+    process n
+        = NULL, any (map (is_noval n) args)
+        = map_nary fn (map (extract n) args)
+    {
+        extract n arg
+            = arg.value?n, is_Group arg
+            = arg;
+
+        is_noval n arg = is_Group arg && arg.value?n == NULL;
+    }
+}
+
+/* Map a 1-ary function over an object.
+ */
+map_unary fn a = map_nary (list_1ary fn) [a];
+
+/* Map a 2-ary function over a pair of objects.
+ */
+map_binary fn a b = map_nary (list_2ary fn) [a, b];
+
+/* Map a 3-ary function over three objects.
+ */
+map_trinary fn a b c = map_nary (list_3ary fn) [a, b, c];
+
+/* Map a 4-ary function over three objects.
+ */
+map_quaternary fn a b c d = map_nary (list_4ary fn) [a, b, c, d];
+
+/* Same as map_nary, but for lists. Handy for (eg.) implementing arith ops on
+ * vectors and matricies.
+ */
+map_nary_list fn args
+    = fn args, lists == []
+    = map process [0, 1 .. shortest - 1]
+{
+    // find all the list arguments
+    lists = filter is_list args;
+
+    // what's the length of the shortest list arg?
+    shortest = foldr1 minpair (map len lists);
+
+    // process index n ... pull that member from each argument
+    // recurse to handle application, so we work for nested lists too
+    process n
+        = map_nary_list fn (map (extract n) args)
+    {
+        extract n arg
+            = arg?n, is_list arg
+            = arg;
+    }
+}
+
+map_unaryl fn a = map_nary_list (list_1ary fn) [a];
+
+map_binaryl fn a b = map_nary_list (list_2ary fn) [a, b];
+
+/* Remove features smaller than x pixels across from an image. This used to be
+ * rather complex ... convsep is now good enough to use.
+ */
+smooth x image
+    = convsep [$precision => "integer"]
+        (gaussmat [$precision => "integer", $separable => true] x 0.1) image;
+
+/* Chop up an image into a list of lists of smaller images. Pad edges with
+ * black.
+ */
+imagearray_chop tile_width tile_height hoverlap voverlap i
+    = map chop' [0, vstep .. last_y]
+{
+    width = get_width i;
+    height = get_height i;
+    bands = get_bands i;
+    format = get_format i;
+    interpretation = get_interpretation i;
+
+    tile_width' = to_real tile_width;
+    tile_height' = to_real tile_height;
+    hoverlap' = to_real hoverlap;
+    voverlap' = to_real voverlap;
+
+    /* Unique pixels per tile.
+     */
+    hstep = tile_width' - hoverlap';
+    vstep = tile_height' - voverlap';
+
+    /* Number of tiles across and down. Remember the case where width ==
+     * hstep.
+     */
+    across = (int) ((width - 1) / hstep) + 1;
+    down = (int) ((height - 1) / vstep) + 1;
+
+    /* top/left of final tile.
+     */
+    last_x = hstep * (across - 1);
+    last_y = vstep * (down - 1);
+
+    /* How much do we need to pad by?
+     */
+    sx = last_x + tile_width';
+    sy = last_y + tile_height';
+
+    /* Expand image with black to pad size.
+     */
+    pad = embed 0 0 0 sx sy i;
+
+    /* Chop up a row.
+     */
+    chop' y
+        = map chop'' [0, hstep .. last_x]
+    {
+        chop'' x = crop x y tile_width' tile_height' pad;
+    }
+}
+
+/* Reassemble image.
+ */
+imagearray_assemble hoverlap voverlap il
+    = (copy [$xoffset => 0, $yoffset => 0] @ foldl1 tbj @ map (foldl1 lrj)) il
+{
+    lrj l r = insert [$expand => true] (get_width l + hoverlap) 0 r l;
+    tbj t b = insert [$expand => true] 0 (get_height t + voverlap) b t;
+}
+
+/* Generate an nxn identity matrix.
+ */
+identity_matrix n
+    = error "identity_matrix: n > 0", n < 1
+    = map line [0 .. n - 1]
+{
+    line p = take p [0, 0 ..] ++ [1] ++ take (n - p - 1) [0, 0 ..];
+}
+
+/* Incomplete gamma function P(a, x) evaluated as series representation. Also
+ * return ln(gamma(a)) ... nr in c, pp 218
+ */
+gser a x
+    = [gamser, gln]
+{
+    gln = gammln a;
+    gamser
+        = error "bad args", x < 0
+        = 0, x == 0
+        = 1     // fix this
+    {
+        // maximum iterations
+        maxit = 100;
+
+        ap = List [a + 1, a + 2 ..];
+        xoap = x / ap;
+
+        del = map product (prefixes xoap.value);
+
+        /* Generate all prefixes of a list ... [1,2,3] -> [[1], [1, 2], [1, 2,
+         * 3], [1, 2, 3, 4] ..]
+         */
+        prefixes l = map (converse take l) [1 ..];
+    }
+}
+
+/* ln(gamma(xx)) ... nr in c, pp 214
+ */
+gammln xx
+    = gln
+{
+    cof = [76.18009172947146, -86.50532032941677, 24.01409824083091,
+        -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5];
+    y = take 6 (iterate (add 1) (xx + 1));
+    ser = 1.000000000190015 + sum (map2 divide cof y);
+    tmp = xx + 0.5;
+    tmp' = tmp - ((xx + 0.5) * log tmp);
+    gln = -tmp + log (2.5066282746310005 * ser / xx);
+}
+
+/* make a LUT from a scatter
+ */
+buildlut x
+    = Plot_histogram (vips_buildlut [] x), is_Matrix x && x.width > 1
+    = vips_buildlut [] (Matrix x), is_matrix x && is_list_len_more 1 x?0
+    = error (_ "bad arguments to " ++ "buildlut");
+
+/* Linear regression. Return a class with the stuff we need in.
+ * from s15.2, p 665 NR in C
+ *
+ * Also calculate R2, see eg.:
+ * https://en.wikipedia.org/wiki/Coefficient_of_determination
+ */
+linreg xes yes
+    = obj
+{
+    obj = class {
+        // in case we ever get shown in the workspace
+        _vislevel = 2;
+
+        slope = sum [t * y :: [t, y] <- zip2 tes yes] / st2;
+        intercept = (sy - sx * slope) / ss;
+
+        chi2 = sum [(y - intercept - slope * x) ** 2 :: [x, y] <- zip2 xes yes];
+
+        siga = (chi2 / (ss - 2)) ** 0.5 *
+            ((1 + sx ** 2 / (ss * st2)) / ss) ** 0.5;
+        sigb = (chi2 / (ss - 2)) ** 0.5 * (1 / st2) ** 0.5;
+
+        // for compat with linregw, see below
+        q = 1.0;
+
+        R2 = 1 - chi2 / sum [(y - my) ** 2 :: y <- yes];
+    }
+
+    ss = len xes;
+    sx = sum xes;
+    sy = sum yes;
+    my = sy / ss;
+    sxoss = sx / ss;
+
+    tes = [x - sxoss :: x <- xes];
+    st2 = sum [t ** 2 :: t <- tes];
+}
+
+/* Weighted linear regression. Xes, yes and a list of deviations.
+ */
+linregw xes yes devs
+    = obj
+{
+    obj = class {
+        // in case we ever get shown in the workspace
+        _vislevel = 2;
+
+        slope = sum [(t * y) / sd :: [t, y, sd] <- zip3 tes yes devs] / st2;
+        intercept = (sy - sx * slope) / ss;
+
+        chi2 = sum [((y - intercept - slope * x) / sd) ** 2 ::
+            [x, y, sd] <- zip3 xes yes devs];
+
+        siga = ((1 + sx * sx / (ss * st2)) / ss) ** 0.5;
+        sigb = (1 / st2) ** 0.5;
+
+        q = gammq (0.5 * (len xes - 2)) (0.5 * chi2);
+
+        R2 = 1 - chi2 / sum [(y - my) ** 2 :: y <- yes];
+    }
+
+    wt = [sd ** -0.5 :: sd <- devs];
+
+    ss = sum wt;
+    sx = sum [x * w :: [x, w] <- zip2 xes wt];
+    sy = sum [y * w :: [y, w] <- zip2 yes wt];
+    my = sy / len xes;
+    sxoss = sx / ss;
+
+    tes = [(x - sxoss) / sd :: [x, sd] <- zip2 xes devs];
+    st2 = sum [t ** 2 :: t <- tes];
+}
+
+/* Clustering: pass in a list of points, repeatedly merge the
+ * closest two points until no two points are closer than the threshold.
+ * Return [merged-points, corresponding-weights]. A weight is a list of the
+ * indexes we merged to make that point, ie. len weight == how significant
+ * this point is.
+ *
+ * eg.:
+ *
+ *  cluster 12 [152,154,155,42,159] == [[155,42],[[1,2,0,4],[3]]]
+ */
+cluster thresh points
+    = oo_unary_function cluster_op points, is_class points
+    // can't use [0..len points - 1], in case len points == 0
+    = merge [points, map (converse cons []) (take (len points) [0 ..])],
+        is_list points
+    = error (_ "bad arguments to " ++ "cluster")
+{
+    cluster_op = Operator "cluster" (cluster thresh)
+        Operator_type.COMPOUND false;
+
+    merge x
+        = x, m < 2 || d > thresh
+        = merge [points', weights']
+    {
+        [points, weights] = x;
+        m = len points;
+
+        // generate indexes of all possible pairs, avoiding comparing a thing
+        // to itself, and assuming that dist is reflexive
+        // first index is always less than 2nd index
+        // the +1,+2 makes sure we have an increasing generator, otherwise we
+        // can get [3 .. 4] (for example), which will make a decreasing
+        // sequence
+        pairs = [[x, y] :: x <- [0 .. m - 1]; y <- [x + 1, x + 2 .. m - 1]];
+
+        // distance function
+        // arg is eg. [3,1], meaning get distance from point 3 to point 1
+        dist [i, j] = abs (points?i - points?j);
+
+        // smallest distance, then the two points we merge
+        p = minpos (map dist pairs);
+        d = dist pairs?p;
+        [i, j] = pairs?p;
+
+        // new point and new weight
+        nw = weights?i ++ weights?j;
+        np = (points?i * len weights?i + points?j * len weights?j) / len nw;
+
+        // remove element i from a list
+        remove i l = take i l ++ drop (i + 1) l;
+
+        // remove two old points, add the new merged one
+        // i < j (see "pairs", above)
+        points' = np : remove i (remove j points);
+        weights' = nw : remove i (remove j weights);
+    }
+}
+
+/* Extract the area of an image around an arrow.
+ *
+ * Transform the image to make the arrow horizontal, then displace by hd and
+ * vd pxels, then cut out a bit h pixels high centered on the arrow.
+ */
+extract_arrow hd vd h arrow
+    = crop (re p' + hd) (im p' - h / 2 + vd) (re pv) h im'
+{
+    // the line as a polar vector
+    pv = polar (arrow.width, arrow.height);
+    a = im pv;
+
+    // smallest rotation that will make the line horizontal
+    a'
+        = 360 - a, a > 270
+        = 180 - a, a > 90
+        = -a;
+
+    im' = rotate (Interpolate._new [] Interpolate.BILINEAR) a' arrow.image;
+
+    // look at the start and end of the arrow, pick the leftmost
+    p
+        = (arrow.left, arrow.top), arrow.left <= arrow.right
+        = (arrow.right, arrow.bottom);
+
+    // transform that point to im' space
+    p' = rectangular (polar p + (0, a')) + (im'.xoffset, im'.yoffset);
+}
+
+/* You'd think these would go in _convert, but they are not really colour ops,
+ * so put them here.
+ */
+rad2float image
+    = oo_unary_function rad2float_op image, is_class image
+    = vips_rad2float [] image, is_image image
+    = error (_ "bad arguments to " ++ "rad2float")
+{
+    rad2float_op = Operator "rad2float" rad2float
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+uhdr2scRGB image
+    = oo_unary_function uhdr2scRGB_op image, is_class image
+    = vips_uhdr2scRGB [] image, is_image image
+    = error (_ "bad arguments to " ++ "uhdr2scRGB")
+{
+    uhdr2scRGB_op = Operator "uhdr2scRGB" uhdr2scRGB
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+float2rad image
+    = oo_unary_function float2rad_op image, is_class image
+    = vips_float2rad [] image, is_image image
+    = error (_ "bad arguments to " ++ "float2rad")
+{
+    float2rad_op = Operator "float2rad" float2rad
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+segment x
+    = oo_unary_function segment_op x, is_class x
+    = image', is_image x
+    = error (_ "bad arguments to " ++ "segment")
+{
+    segment_op = Operator "segment" segment Operator_type.COMPOUND_REWRAP false;
+
+    [image, nsegs] = vips_labelregions [$segments => true] x;
+    image' = set_meta "n-segments" nsegs image;
+}
+
+point a b
+    = oo_binary_function point_op a b, is_class a
+    = oo_binary'_function point_op a b, is_class b
+    = vips_getpoint [] b x y, is_image b
+    = [b?x?y], is_matrix b
+    = [b?x], is_real_list b && y == 0
+    = [b?y], is_real_list b && x == 0
+    = error (_ "bad arguments to " ++ "point")
+{
+    point_op = Operator "point" (\a\b Vector (point a b))
+        Operator_type.COMPOUND false;
+
+    (x, y)
+        = a, is_complex a;
+        = (a?0, a?1), is_real_list a && is_list_len 2 a
+        = error "bad position format";
+}
+
+mosaic options direction xref yref xsec ysec a b
+    = oo_binary_function mosaic_op a b, is_class a
+    = oo_binary'_function mosaic_op a b, is_class b
+    = vips_mosaic options a b direction xref yref xsec ysec,
+        is_image a && is_image b
+    = error_bad_args "mosaic"
+        ["[option]", "Direction", "real", "real", "real", "real",
+            "Image|image", "Image|image"]
+        [options, direction, xref, yref, xsec, ysec, a, b]
+{
+    mosaic_op = Operator "mosaic" (mosaic options direction xref yref xsec ysec)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+merge options direction dx dy a b
+    = oo_binary_function merge_op a b, is_class a
+    = oo_binary'_function merge_op a b, is_class b
+    = vips_merge options a b direction dx dy, is_image a && is_image b
+    = error_bad_args "merge"
+        ["[option]", "Direction", "real", "real", "Image|image", "Image|image"]
+        [options, direction, dx, dy, a, b]
+{
+    merge_op = Operator "merge" (merge options direction dx dy)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+mosaic1 options direction xr1 yr1 xs1 ys1 xr2 yr2 xs2 ys2 a b
+    = oo_binary_function mosaic1_op a b, is_class a
+    = oo_binary'_function mosaic1_op a b, is_class b
+    = vips_mosaic1 options a b direction xr1 yr1 xs1 ys1 xr2 yr2 xs2 ys2,
+        is_image a && is_image b
+    = error_bad_args "mosaic1"
+        ["[option]", "Direction", "real", "real", "real", "real", "real", "real", "real", "real",
+            "Image|image", "Image|image"]
+        [options, direction, xr1, yr1, xs1, ys1, xr2, yr2, xs2, ys2, a, b]
+{
+    mosaic1_op = Operator "mosaic" (mosaic1 options direction xr1 yr1 xs1 ys1 xr2 yr2 xs2 ys2)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+globalbalance options x
+    = oo_unary_function globalbalance_op x, is_class x
+    = vips_globalbalance options x, is_image x
+    = error_bad_args "globalbalance" ["[option]", "image|Image"] [options, x]
+{
+    globalbalance_op = Operator "globalbalance"
+        (globalbalance options) Operator_type.COMPOUND_REWRAP false;
+}
+
+countlines options direction x
+    = oo_unary_function countlines_op x, is_class x
+    = vips_countlines options x direction, is_image x
+    = error_bad_args "countlines"
+        ["[option]", "Direction", "image|Image"] [options, direction, x]
+{
+    countlines_op = Operator "countlines"
+        (countlines options direction) Operator_type.COMPOUND false;
+}
+
+/* One image in, one out.
+ */
+system_image command x
+    = oo_unary_function system_image_op x, is_class x
+    = system x, is_image x
+    = error (_ "bad arguments to " ++ "system_image")
+{
+    system_image_op = Operator "system_image" (system_image command)
+        Operator_type.COMPOUND_REWRAP false;
+
+    system im
+        = image_out
+    {
+        [image_out, log] = vips_system [
+             $in => [im],
+             $out => true,
+             $in_format => "%s.tif",
+             $out_format => "%s.tif",
+             $cache => true,
+             $log => true
+        ] command;
+    }
+}
+
+/* Two images in, one out.
+ */
+system_image2 command x1 x2
+    = oo_binary_function system_image2_op x1 x2, is_class x1
+    = oo_binary'_function system_image2_op x1 x2, is_class x2
+    = system x1 x2, is_image x1 && is_image x2
+    = error (_ "bad arguments to " ++ "system_image2")
+{
+    system_image2_op = Operator "system_image2" (system_image2 command)
+        Operator_type.COMPOUND_REWRAP false;
+
+    system x1 x2
+        = vips_system [
+            $in => [x1, x2],
+            $out => true,
+            $in_format => "%s.tif",
+            $out_format => "%s.tif",
+            $cache => true
+        ] command;
+}
+
+/* Three images in, one out.
+ */
+system_image3 command x1 x2 x3
+    = oo_binary_function system_image2_op x2 x3, is_class x2
+    = oo_binary'_function system_image2_op x2 x3, is_class x3
+    = system x1 x2 x3, is_image x1 && is_image x2 && is_image x3
+    = error (_ "bad arguments to " ++ "system_image3")
+{
+    system_image2_op = Operator "system_image2" (system_image3 command x1)
+        Operator_type.COMPOUND_REWRAP false;
+
+    system x1 x2 x3
+        = vips_system [
+            $in => [x1, x2, x3],
+            $out => true,
+            $in_format => "%s.tif",
+            $out_format => "%s.tif",
+            $cache => true
+        ] command;
+}
+
+/* Zero images in, one out.
+ */
+system_image0 command
+    = Image image_out
+{
+    image_out = vips_system [
+        $out => true,
+        $out_format => "%s.tif",
+        $cache => true
+    ] command;
+}
+
+hough_line w h x
+    = oo_unary_function hough_line_op x, is_class x
+    = hline (to_real w) (to_real h) x, is_image x
+    = error (_ "bad arguments to " ++ "hough_line")
+{
+    hough_line_op = Operator "hough_line" (hough_line w h)
+        Operator_type.COMPOUND_REWRAP false;
+
+    hline w h x = vips_hough_line [$width => w, $height => h] x;
+}
+
+hough_circle s mn mx x
+    = oo_unary_function hough_circle_op x, is_class x
+    = hcircle (to_real s) (to_real mn) (to_real mx) x, is_image x
+    = error (_ "bad arguments to " ++ "hough_circle")
+{
+    hough_circle_op = Operator "hough_circle" (hough_circle s mn mx)
+        Operator_type.COMPOUND_REWRAP false;
+
+    hcircle s mn mx x
+        = vips_hough_circle [
+            $scale => s,
+            $min_radius => mn,
+            $max_radius => mx
+        ] x;
+}
+
+mapim options ind in
+    = oo_binary_function mapim_op ind in, is_class ind
+    = oo_binary'_function mapim_op ind in, is_class in
+    = vips_mapim options in ind, is_image ind && is_image in
+    = error (_ "bad arguments to " ++ "mapim")
+{
+    mapim_op = Operator "mapim" (mapim options)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+perlin cell width height
+    = vips_perlin [
+        $cell_size => to_real cell
+    ] (to_real width) (to_real height);
+
+worley cell width height
+    = vips_worley [
+        $cell_size => to_real cell
+    ] (to_real width) (to_real height);
+
+gaussnoise width height mean sigma
+    = vips_gaussnoise [
+        $mean => to_real mean,
+        $sigma => to_real sigma
+    ] (to_real width) (to_real height);
+
+flattenimage bg x
+    = oo_unary_function flatten_op x, is_class x
+    = flt (to_vector bg) x, is_image x
+    = error (_ "bad arguments to " ++ "flattenimage")
+{
+    flatten_op = Operator "flatten" (flattenimage bg)
+        Operator_type.COMPOUND_REWRAP false;
+
+    flt bg x = vips_flatten [$background => bg.value] x;
+}
+
+premultiply x
+    = oo_unary_function premultiply_op x, is_class x
+    = prem x, is_image x
+    = error (_ "bad arguments to " ++ "premultiply")
+{
+    premultiply_op = Operator "premultiply" premultiply
+        Operator_type.COMPOUND_REWRAP false;
+
+    prem x = vips_premultiply [] x;
+}
+
+unpremultiply x
+    = oo_unary_function unpremultiply_op x, is_class x
+    = unprem x, is_image x
+    = error (_ "bad arguments to " ++ "unpremultiply")
+{
+    unpremultiply_op = Operator "unpremultiply" unpremultiply
+        Operator_type.COMPOUND_REWRAP false;
+
+    unprem x = vips_unpremultiply [] x;
+}
+
+canny sigma precision x
+    = oo_unary_function canny_op x, is_class x
+    = canny_im (to_real sigma) (to_int precision) x, is_image x
+    = error (_ "bad arguments to " ++ "canny")
+{
+    canny_op = Operator "canny" (canny sigma precision)
+        Operator_type.COMPOUND_REWRAP false;
+
+    canny_im sigma precision x
+        = vips_canny [$sigma => sigma, $precision => precision] x;
+}
+
+sobel x
+    = oo_unary_function sobel_op x, is_class x
+    = sobel_im x, is_image x
+    = error (_ "bad arguments to " ++ "sobel")
+{
+    sobel_op = Operator "sobel" sobel
+        Operator_type.COMPOUND_REWRAP false;
+
+    sobel_im = vips_sobel [];
+}
+
+minpair a b
+    = oo_binary_function minpair_op a b, is_class a
+    = oo_binary'_function minpair_op a b, is_class b
+    = minpair_im a b, has_image a && has_image b
+    = a, a < b
+    = b
+{
+    minpair_op = Operator "minpair" minpair Operator_type.ARITHMETIC false;
+
+    minpair_im a b = vips_minpair [] (get_image a) (get_image b);
+}
+
+maxpair a b
+    = oo_binary_function maxpair_op a b, is_class a
+    = oo_binary'_function maxpair_op a b, is_class b
+    = maxpair_im a b, has_image a && has_image b
+    = a, a > b
+    = b
+{
+    maxpair_op = Operator "maxpair" maxpair Operator_type.ARITHMETIC false;
+
+    maxpair_im a b = vips_maxpair [] (get_image a) (get_image b);
+}
+
+clamp min max x
+    = oo_unary_function clamp_op x, is_class x
+    = clamp_im min max x, has_image x
+    = max, x > max
+    = min, x < min
+    = x
+{
+    clamp_op = Operator "clamp" (clamp min max)
+        Operator_type.ARITHMETIC false;
+
+    clamp_im min max x = vips_clamp [
+        $min => to_real min,
+        $max => to_real max
+    ] (get_image x);
+}
+
+switch tests
+    = oo_unary_function switch_op tests, is_class tests
+    = vips_switch [] tests, is_image_list tests
+    = switch_wrapped tests, is_list tests
+    = bad_args
+{
+    switch_op = Operator "switch" switch
+        Operator_type.COMPOUND_REWRAP false;
+
+    switch_wrapped l
+        = Image (switch l'), all (map is_image l')
+        = bad_args
+    {
+        unwrap x
+            = get_image x, has_image x
+            = x;
+
+        l' = map unwrap l;
+    }
+
+    bad_args = error_bad_args "switch" ["[image|Image]"] [tests];
+}
+
+case index cases
+    = oo_binary_function case_op index cases, is_class index
+    = oo_binary'_function case_op index cases, is_class cases
+    = vips_case [] index cases', is_image index && is_image_list cases
+    = case_wrapped index cases, is_list cases
+    = bad_args
+{
+    case_op = Operator "case" case Operator_type.COMPOUND_REWRAP false;
+
+    // expand constants in cases list ... take width/height from the
+    // first image in ([index] ++ cases)
+
+    objects = [index] ++ cases;
+    target_width = get_member_list has_width get_width objects;
+    target_height = get_member_list has_height get_height objects;
+    target_bands = get_member_list has_bands get_bands objects;
+    target_format = get_member_list has_format get_format objects;
+
+    to_image x
+        = to_image_size target_width target_height target_bands target_format x;
+
+    expand x
+        = to_image x, not (is_image x)
+        = x;
+
+    cases' = map expand cases;
+
+    // cases is a list ... unwrap any Image objects in the list, expand any
+    // constants, and recurse
+    case_wrapped index cases
+        = Image (case index cases'), all (map is_image cases')
+        = bad_args
+    {
+        cases' = map (expand @ unwrap) cases;
+
+        unwrap x
+            = get_image x, has_image x
+            = x;
+    }
+
+    bad_args = error_bad_args "case"
+        ["image|Image", "[image|Image|constant]"] [index, cases];
+}
+
+fill_nearest x
+    = oo_unary_function nearest_op x, is_class x
+    = near x, is_image x
+    = error (_ "bad arguments to " ++ "fill_nearest")
+{
+    nearest_op = Operator "fill_nearest"
+        fill_nearest Operator_type.COMPOUND_REWRAP false;
+
+    near x
+        = [out, distance]
+    {
+          [out, distance] = vips_fill_nearest [$distance => true] x;
+    }
+}
+
+linear options a b x
+    = oo_unary_function linear_op x, is_class x
+    = vips_linear options (get_image x) (to_real_list a) (to_real_list b),
+        has_image x
+    = a * x + b
+{
+    linear_op = Operator "linear" (linear options a b)
+        Operator_type.ARITHMETIC false;
+
+    to_real_list x = (to_vector x).value;
+}
+
+sdf options width height shape
+    = vips_sdf options (to_real width) (to_real height) shape;
+
+xyz options width height
+    = vips_xyz options (to_real width) (to_real height);
+
+grey options width height
+    = vips_grey options (to_real width) (to_real height);
+
+zone options width height
+    = vips_zone options (to_real width) (to_real height);
+
+eye options width height
+    = vips_eye options (to_real width) (to_real height);
+
+fractsurf options dimension width height
+    = vips_fractsurf options
+        (to_real width) (to_real height) (to_real dimension);
+
+/* simple unit tester ... use with eg.
+ *
+ * main = unit_test [
+ *    [true != false, "bool comparison"],
+ *    [1 != 2, "int comparison"]
+ * ];
+ *
+ */
+unit_test test_list
+     = body ++ footer
+{
+    body
+        = concat (map print_list test_list), list
+        = map (const '.') pass ++ "\n";
+
+    footer
+        = "\ntests failed:\n" ++
+            concat (map print_fail fail) ++
+            error "abort", len fail > 0
+        = [];
+
+    list = any (map (member ["--list", "-L"]) argv);
+
+    split fn l
+        = foldr split_item [[], []] l
+    {
+        split_item x [pass, fail]
+            = [pass', fail']
+        {
+            pass'
+                = x : pass, fn x
+                = pass;
+            fail'
+                = x : fail, !fn x
+                = fail;
+        }
+    }
+
+    [pass, fail] = split (extract 0) test_list;
+    print_fail [pass, fail] = "FAIL: " ++ fail ++ "\n";
+
+    print_list [test, name]
+        = name ++ ": " ++ label ++ "\n"
+    {
+        label
+            = "ok", test
+            = "FAIL";
+    }
+}
+
+bandfold options in
+    = oo_unary_function bandfold_op in, is_class in
+    = vips_bandfold options in, is_image in
+    = error_bad_args "bandfold" ["[option]", "image|Image"] [options, in]
+{
+    bandfold_op = Operator "bandfold" (bandfold options)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+bandunfold options in
+    = oo_unary_function bandunfold_op in, is_class in
+    = vips_bandunfold options in, is_image in
+    = error_bad_args "bandunfold" ["[option]", "image|Image"] [options, in]
+{
+    bandunfold_op = Operator "bandunfold" (bandunfold options)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+colourspace options to in
+    = oo_unary_function colourspace_op in, is_class in
+    = mat1 (colourspace options to) in, is_matrix in
+    = vips_colourspace options in (to_enum to), is_image in
+    = error_bad_args "colourspace"
+        ["[option]", "Interpretation", "image|Image|Matrix|Vector"] [options, to, in]
+{
+    colourspace_op = Operator "colourspace" (colourspace options to)
+        Operator_type.COMPOUND_REWRAP false;
+
+    mat1 fn = get_value @
+        vips_matrix_from_image @
+        bandunfold [] @ fn @
+        set_header $interpretation $multiband @
+        bandfold [] @
+        vips_image_from_matrix @
+        Matrix;
+}
+
+dE76 a b
+    = oo_binary_function dE76_op a b, is_class a
+    = oo_binary'_function dE76_op a b, is_class b
+    = vips_dE76 [] a b, is_image a && is_image b
+    = error (_ "bad arguments to " ++ "dE76")
+{
+    dE76_op = Operator "dE76" dE76 Operator_type.COMPOUND_REWRAP false;
+}
+
+dE00 a b
+    = oo_binary_function dE00_op a b, is_class a
+    = oo_binary'_function dE00_op a b, is_class b
+    = vips_dE00 [] a b, is_image a && is_image b
+    = error (_ "bad arguments to " ++ "dE00")
+{
+    dE00_op = Operator "dE00" dE00 Operator_type.COMPOUND_REWRAP false;
+}
+
+dECMC a b
+    = oo_binary_function dECMC_op a b, is_class a
+    = oo_binary'_function dECMC_op a b, is_class b
+    = vips_dECMC [] a b, is_image a && is_image b
+    = error (_ "bad arguments to " ++ "dECMC")
+{
+    dECMC_op = Operator "dECMC" dECMC Operator_type.COMPOUND_REWRAP false;
+}
+
+composite options mode a b
+    = oo_binary_function composite_op a b, is_class a
+    = oo_binary'_function composite_op a b, is_class b
+    = vips_composite2 options a b mode, is_image a && is_image b
+    = error (_ "bad arguments to " ++ "composite")
+{
+    composite_op = Operator "composite" (composite options mode)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+Fourier = class {
+    Sense = class Enum {
+        PASS = 0;
+        REJECT = 1;
+
+        _description = [
+            [PASS, "Pass"],
+            [REJECT, "Reject"]
+        ];
+    }
+
+    Type = class Enum {
+        IDEAL = 0;
+        GAUSSIAN = 1;
+        BUTTERWORTH = 2;
+
+        _description = [
+            [IDEAL, "Ideal"],
+            [GAUSSIAN, "Gaussian"],
+            [BUTTERWORTH, "Butterworth"]
+        ];
+    }
+
+    Order = class Enum {
+        HIGH_LOW = 0;
+        RING = 1;
+        BAND = 2;
+
+        _description = [
+            [HIGH_LOW, "High/low"],
+            [RING, "Ring"],
+            [BAND, "Band"]
+        ];
+    }
+
+    options sense = [$reject => sense == Sense.REJECT];
+
+    // func to make a visualisation image
+    visualise
+        = Image @ set_header $interpretation $fourier @ rotquad;
+
+    // use a mask generation function to filter an image
+    process mask_generator image
+        = Image (set_header $interpretation interpretation
+            (vips_freqmult [] image mask))
+    {
+        interpretation = get_interpretation image;
+        width = get_width image;
+        height = get_height image;
+        mask = mask_generator width height;
+    }
+
+    Ideal = class {
+        High_low default_sense = class {
+            _vislevel = 2;
+
+            sense = Sense.picker default_sense;
+            fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
+
+            _generate width height
+                = vips_mask_ideal (options sense) width height
+                    fc.value;
+        }
+
+        Ring default_sense = class {
+            _vislevel = 2;
+
+            sense = Sense.picker default_sense;
+            fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
+            rw = Scale "Ring width" 0.01 0.99 0.5;
+
+            _generate width height
+                = vips_mask_ideal_ring (options sense) width height
+                    fc.value rw.value;
+        }
+
+        Band default_sense = class {
+            _vislevel = 2;
+
+            sense = Sense.picker default_sense;
+            fcx = Scale "Horizontal frequency cutoff" 0.01 0.99 0.5;
+            fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
+            r = Scale "Radius" 0.01 0.99 0.5;
+
+            _generate width height
+                = vips_mask_ideal_band (options sense) width height
+                    fcx.value fcy.value r.value;
+        }
+    }
+
+    Gaussian = class {
+        High_low default_sense = class {
+            _vislevel = 2;
+
+            sense = Sense.picker default_sense;
+            fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
+            ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
+
+            _generate width height
+                = vips_mask_gaussian (options sense) width height
+                    fc.value ac.value;
+        }
+
+        Ring default_sense = class {
+            _vislevel = 2;
+
+            sense = Sense.picker default_sense;
+            fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
+            ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
+            rw = Scale "Ring width" 0.01 0.99 0.5;
+
+            _generate width height
+                = vips_mask_gaussian_ring (options sense) width height
+                    fc.value rw.value ac.value;
+        }
+
+        Band default_sense = class {
+            _vislevel = 2;
+
+            sense = Sense.picker default_sense;
+            fcx = Scale "Horizontal frequency cutoff" 0.01 0.99 0.5;
+            fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
+            r = Scale "Radius" 0.01 0.99 0.5;
+            ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
+
+            _generate width height
+                = vips_mask_gaussian_band (options sense) width height
+                    fcx.value fcy.value r.value ac.value;
+        }
+    }
+
+    Butterworth = class {
+        High_low default_sense = class {
+            _vislevel = 2;
+
+            sense = Sense.picker default_sense;
+            fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
+            ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
+            o = Scale "Order" 1 10 2;
+
+            _generate width height
+                = vips_mask_butterworth (options sense) width height
+                    o.value fc.value ac.value;
+        }
+
+        Ring default_sense = class {
+            _vislevel = 2;
+
+            sense = Sense.picker default_sense;
+            fc = Scale "Frequency cutoff" 0.01 0.99 0.5;
+            ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
+            rw = Scale "Ring width" 0.01 0.99 0.5;
+            o = Scale "Order" 1 10 2;
+
+            _generate width height
+                = vips_mask_butterworth_ring (options sense) width height
+                    o.value fc.value rw.value ac.value;
+        }
+
+        Band default_sense = class {
+            _vislevel = 2;
+
+            sense = Sense.picker default_sense;
+            fcx = Scale "Horizontal frequency cutoff" 0.01 0.99 0.5;
+            fcy = Scale "Vertical frequency cutoff" 0.01 0.99 0.5;
+            r = Scale "Radius" 0.01 0.99 0.5;
+            ac = Scale "Amplitude cutoff" 0.01 0.99 0.5;
+            o = Scale "Order" 1 10 2;
+
+            _generate width height
+                = vips_mask_butterworth_band (options sense) width height
+                    o.value fcx.value fcy.value r.value ac.value;
+        }
+    }
+}
+
+Text rgba message = class {
+    _vislevel = 2;
+
+    text = String "Text to paint" message;
+    font = Fontname "Use font" Workspaces.Preferences.PAINTBOX_FONT;
+    align = Align.picker $LOW;
+    dpi = Expression "DPI" 500;
+    spacing = Expression "Line spacing" 1;
+    wrap = Toggle "Wrap lines on character boundaries" false;
+    justify = Toggle "Justify" false;
+    autodpi = Toggle "Fit text within width and height" false;
+
+    _generate width height = vips_text [
+        $font => font.value,
+        $width => width,
+        $height => height,
+        $align => align.value_key,
+        $justify => justify.value,
+        $dpi => if autodpi then 0 else to_real dpi,
+        $spacing => to_real spacing,
+        $rgba => rgba,
+        $wrap => wrap.value
+      ] text.value;
+}

@@ -1,3 +1,19 @@
+- add _vips8.def
+
+    make a set of vips8 defs which follow the vips8 API exactly
+
+    rework _stdenv.def (and the others) in terms of these
+
+    reached icc_export
+
+
+
+    all the vips8 wrappoers together, grid etc.
+
+    leave higher level funcs and helpers in _stdenv
+
+    maybe instead of get_width etc., use get $width ?
+
 - misspelled or incorrect options don't raise errors
 
 	maybe have a strict mode?
