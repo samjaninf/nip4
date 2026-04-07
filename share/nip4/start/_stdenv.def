@@ -126,15 +126,15 @@ error_bad_args name types args
     = error (
         _ "bad arguments to" ++ " \"" ++ name ++ "\"\n" ++
         _ "expected" ++ ":\n" ++
-        concat (map (\type "   " ++ type ++ "\n") types) ++
+        concat (map (\type "\t" ++ type ++ "\n") types) ++
         _ "you passed" ++ ":\n" ++
-        concat (map (\arg "   " ++ print arg ++ "\n") args)
+        concat (map (\arg "\t" ++ print arg ++ "\n") args)
     );
 
 bandsplit x
     = oo_unary_function bandsplit_op x, is_class x
     = map (subscript x) [0 .. bands - 1], is_image x
-    = error (_ "bad arguments to " ++ "bandsplit")
+    = error_bad_args "bandsplit" ["Image|image"] [x]
 {
     bands = get_header "bands" x;
     bandsplit_op = Operator "bandsplit" (map Image @ bandsplit)
@@ -144,7 +144,7 @@ bandsplit x
 bandjoin l
     = wrapper joined, has_wrapper
     = joined, is_listof has_image l
-    = error (_ "bad arguments to " ++ "bandjoin")
+    = error_bad_args "bandjoin" ["[Image|image]"] [l]
 {
     has_wrapper = has_member_list (has_member "Image") l;
     wrapper = get_member_list (has_member "Image") (get_member "Image") l;
@@ -154,7 +154,7 @@ bandjoin l
 bandjoin_const c x
     = oo_unary_function bandjoin_const_op x, is_class x
     = vips_bandjoin_const [] x (to_vector c).value, is_image x
-    = error (_ "bad arguments to " ++ "bandjoin_const")
+    = error_bad_args "bandjoin_const" ["[real]|Vector", "[Image|image]"] [c, x]
 {
     bandjoin_const_op = Operator "bandjoin_const" (bandjoin_const c)
         Operator_type.COMPOUND_REWRAP false;
@@ -162,8 +162,8 @@ bandjoin_const c x
 
 bandbool op x
     = oo_unary_function bandbool_op x, is_class x
-    = vips_bandbool [] x op, is_image x
-    = error (_ "bad arguments to " ++ "bandbool")
+    = vips_bandbool [] x (to_enum op), is_image x
+    = error_bad_args "bandbool" ["OperationBoolean", "[Image|image]"] [op, x]
 {
     bandbool_op = Operator "bandbool" (bandbool op)
         Operator_type.COMPOUND_REWRAP false;
@@ -178,7 +178,7 @@ sum x
     // don't use "mean" here, it'd create a circular dependency
     = vips_avg [] x * get_width x * get_height x * get_bands x, is_image x
     = sum_list x, is_list x
-    = error (_ "bad arguments (" ++ print x ++ ") to " ++ "sum")
+    = error_bad_args "sum" ["Image|image|Vector|[real]"] [x]
 {
     sum_op = Operator "sum" sum Operator_type.COMPOUND false;
 
@@ -196,7 +196,7 @@ product x
     = oo_unary_function product_op x, is_class x
     = product_list x, is_list x
     // (product image) doesn't make much sense :(
-    = error (_ "bad arguments (" ++ print x ++ ") to " ++ "product")
+    = error_bad_args "product" ["Image|image|Vector|[real]"] [x]
 {
     product_op = Operator "product" product Operator_type.COMPOUND false;
 
@@ -213,7 +213,7 @@ mean x
     = oo_unary_function mean_op x, is_class x
     = vips_avg [] x, is_image x
     = mean_list x, is_list x
-    = error (_ "bad arguments (" ++ print x ++ ") to " ++ "mean")
+    = error_bad_args "mean" ["Image|image|Vector|[real]"] [x]
 {
     mean_op = Operator "mean" mean Operator_type.COMPOUND false;
 
@@ -242,7 +242,7 @@ skew x
     = oo_unary_function skew_op x, is_class x
     = sum ((x - m) ** 3) / ((N - 1) * s ** 3), is_image x
     = sum ((Group x' - m) ** 3).value / ((N - 1) * s ** 3), is_list x
-    = error (_ "bad arguments (" ++ print x ++ ") to " ++ "skew")
+    = error_bad_args "skew" ["Image|image|Vector|[real]"] [x]
 {
     skew_op = Operator "skew" skew Operator_type.COMPOUND false;
 
@@ -266,7 +266,7 @@ kurtosis x
     = oo_unary_function kurtosis_op x, is_class x
     = sum ((x - m) ** 4) / ((N - 1) * s ** 4), is_image x
     = sum ((Group x' - m) ** 4).value / ((N - 1) * s ** 4), is_list x
-    = error (_ "bad arguments (" ++ print x ++ ") to " ++ "kurtosis")
+    = error_bad_args "kurtosis" ["Image|image|Vector|[real]"] [x]
 {
     kurtosis_op = Operator "kurtosis" kurtosis Operator_type.COMPOUND false;
 
@@ -293,7 +293,7 @@ meanze x
         (fmt == Format.UCHAR || fmt == Format.USHORT)
     = meanze_image x, is_image x
     = meanze_list x, is_list x
-    = error (_ "bad arguments (" ++ print x ++ ") to " ++ "meanze")
+    = error_bad_args "meanze" ["Image|image|Vector|[real]"] [x]
 {
     fmt = get_format x;
 
@@ -367,7 +367,7 @@ deviation x
     = oo_unary_function deviation_op x, is_class x
     = vips_deviate [] x, is_image x
     = deviation_list x, is_real_list x || is_matrix x
-    = error (_ "bad arguments to " ++ "deviation")
+    = error_bad_args "deviation" ["Image|image|Vector|Matrix|[real]"] [x]
 {
     deviation_op = Operator "deviation" deviation
         Operator_type.COMPOUND false;
@@ -397,7 +397,7 @@ deviationze x
     = oo_unary_function deviationze_op x, is_class x
     = deviationze_image x, is_image x
     = deviationze_list x, is_real_list x || is_matrix x
-    = error (_ "bad arguments to " ++ "deviationze")
+    = error_bad_args "deviationze" ["Image|image|Vector|[real]"] [x]
 {
     deviationze_op = Operator "deviationze" deviationze
         Operator_type.COMPOUND false;
@@ -448,7 +448,7 @@ gravity x
     = oo_unary_function gravity_op x, is_class x
     = gravity_hist x, is_hist x
     = gravity_list x, is_list x
-    = error (_ "bad arguments to " ++ "gravity")
+    = error_bad_args "gravity" ["Image|image|Vector|[real]"] [x]
 {
     gravity_op = Operator "gravity" gravity Operator_type.COMPOUND false;
 
@@ -503,7 +503,7 @@ gravity x
 project x
     = oo_unary_function project_op x, is_class x
     = vips_project [] x, is_image x
-    = error (_ "bad arguments to " ++ "project")
+    = error_bad_args "project" ["Image|image"] [x]
 {
     project_op = Operator "project" project Operator_type.COMPOUND false;
 }
@@ -515,7 +515,7 @@ abs x
     = abs_num x, is_real x
     = abs_list x, is_real_list x
     = abs_list (map abs_list x), is_matrix x
-    = error (_ "bad arguments to " ++ "abs")
+    = error_bad_args "abs" ["Image|image|Vector|[real]|complex"] [x]
 {
     abs_op = Operator "abs" abs Operator_type.COMPOUND false;
 
@@ -538,7 +538,7 @@ abs_vec x
     = abs_vec_num x, is_real x
     = abs_vec_list x, is_real_list x
     = mean (map abs_vec_list x), is_matrix x
-    = error (_ "bad arguments to " ++ "abs_vec")
+    = error_bad_args "abs_vec" ["Image|image|Vector|[real]"] [x]
 {
     abs_vec_op = Operator "abs_vec" abs_vec
         Operator_type.COMPOUND false;
@@ -574,7 +574,7 @@ apply_matim_operation name fn in
     = oo_unary_function class_op in, is_class in
     = fn in, is_image in
     = apply_matrix_as_image fn in, is_matrix in
-    = error (_ "bad arguments to " ++ name)
+    = error_bad_args name ["Image|image|Matrix|[[real]]"] [x]
 {
     class_op = Operator name (apply_matim_operation name fn)
         Operator_type.COMPOUND_REWRAP false;
@@ -596,7 +596,7 @@ transpose x
     = oo_unary_function transpose_op x, is_class x
     = transpose_image x, is_image x
     = transpose_list x, is_listof is_list x
-    = error (_ "bad arguments to " ++ "transpose")
+    = error_bad_args "transpose" ["Image|image|Matrix|[[*]]"] [x]
 {
     transpose_op = Operator "transpose"
         transpose Operator_type.COMPOUND_REWRAP false;
@@ -625,7 +625,8 @@ matmul a b
     = oo_binary_function matmul_op a b, is_class a
     = apply_matim_binary (vips_matrixmultiply []) a b,
         is_matrix_image a && is_matrix_image b
-    = error (_ "bad arguments to " ++ "matmul")
+    = error_bad_args "matmul"
+        ["Image|image|Matrix", "Image|image|Matrix"] [a, b]
 {
     matmul_op = Operator "matmul" matmul Operator_type.COMPOUND_REWRAP false;
 }
@@ -640,7 +641,9 @@ cache tile_width tile_height max_tiles x
         $persistent => true,
         $threaded => true
       ] x, is_image x
-    = error (_ "bad arguments to " ++ "cache")
+    = error_bad_args "cache"
+        ["real", "real", "real", "Image|image"]
+        [tile_width, tile_height, max_tiles, x]
 {
     cache_op = Operator "cache" (cache tile_width tile_height max_tiles)
         Operator_type.COMPOUND_REWRAP false;
@@ -649,7 +652,8 @@ cache tile_width tile_height max_tiles x
 tile across down x
     = oo_unary_function tile_op x, is_class x
     = vips_replicate [] x (to_real across) (to_real down), is_image x
-    = error (_ "bad arguments to " ++ "tile")
+    = error_bad_args "cache"
+        ["real", "real", "Image|image"] [across, down, x]
 {
     tile_op = Operator "tile" (tile across down)
         Operator_type.COMPOUND_REWRAP false;
@@ -659,7 +663,8 @@ grid options tile_height across down x
     = oo_unary_function grid_op x, is_class x
     = vips_grid options x (to_real tile_height) (to_real across) (to_real down),
         is_image x
-    = error (_ "bad arguments to " ++ "grid")
+    = error_bad_args "grid"
+        ["real", "real", "real", "Image|image"] [tile_height, across, down, x]
 {
     grid_op = Operator "grid" (grid options tile_height across down)
         Operator_type.COMPOUND_REWRAP false;
@@ -679,7 +684,7 @@ max x
     = vips_max [] x, is_image x
     = max_list x, is_list x
     = x, is_number x
-    = error (_ "bad arguments to " ++ "max")
+    = error_bad_args "max" ["Image|image|Matrix|[[real]]"] [x]
 {
     max_op = Operator "max" max Operator_type.COMPOUND false;
 
@@ -695,7 +700,7 @@ min x
     = vips_min [] x, is_image x
     = min_list x, is_list x
     = x, is_number x
-    = error (_ "bad arguments to " ++ "min")
+    = error_bad_args "min" ["Image|image|Matrix|[[real]]"] [x]
 {
     min_op = Operator "min" min Operator_type.COMPOUND false;
 
@@ -711,7 +716,7 @@ maxpos x
     = maxpos_im x, is_image x
     = maxpos_matrix x, is_matrix x
     = maxpos_list x, is_list x
-    = error (_ "bad arguments to " ++ "maxpos")
+    = error_bad_args "maxpos" ["Image|image|Matrix|[[real]]"] [x]
 {
     maxpos_op = Operator "maxpos" maxpos Operator_type.COMPOUND false;
 
@@ -739,7 +744,7 @@ minpos x
     = minpos_im x, is_image x
     = minpos_matrix x, is_matrix x
     = minpos_list x, is_list x
-    = error (_ "bad arguments to " ++ "minpos")
+    = error_bad_args "minpos" ["Image|image|Matrix|[[real]]"] [x]
 {
     minpos_op = Operator "minpos" minpos Operator_type.COMPOUND false;
 
@@ -766,7 +771,7 @@ stats x
     = oo_unary_function stats_op x, is_class x
     = to_matrix (vips_stats [] x), is_image x
     = to_matrix (vips_stats [] (to_image x)), is_matrix x
-    = error (_ "bad arguments to " ++ "stats")
+    = error_bad_args "stats" ["Image|image|Matrix|[[real]]"] [x]
 {
     stats_op = Operator "stats" stats Operator_type.COMPOUND false;
 }
@@ -784,7 +789,7 @@ sign x
     = vips_sign [] x, is_image x
     = sign_cmplx x, is_complex x
     = sign_num x, is_real x
-    = error (_ "bad arguments to " ++ "sign")
+    = error_bad_args "sign" ["Image|image|Matrix|[[real]]"] [x]
 {
     sign_op = Operator "sign" sign Operator_type.COMPOUND_REWRAP false;
 
@@ -805,7 +810,7 @@ rint x
     = oo_unary_function rint_op x, is_class x
     = vips_round [] x "rint", is_image x
     = rint_value x, is_number x
-    = error (_ "bad arguments to " ++ "rint")
+    = error_bad_args "rint" ["Image|image|real"] [x]
 {
     rint_op = Operator "rint" rint Operator_type.ARITHMETIC false;
 
@@ -819,7 +824,7 @@ scale x
     = (unsigned char) x, is_number x
     = vips_scale [] x, is_image x
     = scale_list x, is_real_list x || is_matrix x
-    = error (_ "bad arguments to " ++ "scale")
+    = error_bad_args "scale" ["Image|image|Matrix|[real]"] [x]
 {
     scale_op = Operator "scale" scale Operator_type.COMPOUND_REWRAP false;
 
@@ -844,7 +849,7 @@ scale x
 scaleps x
     = oo_unary_function scale_op x, is_class x
     = vips_scale [$log => true] x, is_image x
-    = error (_ "bad arguments to " ++ "scaleps")
+    = error_bad_args "scaleps" ["Image|image"] [x]
 {
     scale_op = Operator "scaleps" scaleps Operator_type.COMPOUND_REWRAP false;
 }
@@ -852,7 +857,7 @@ scaleps x
 fwfft x
     = oo_unary_function fwfft_op x, is_class x
     = vips_fwfft [] x, is_image x
-    = error (_ "bad arguments to " ++ "fwfft")
+    = error_bad_args "fwfft" ["Image|image"] [x]
 {
     fwfft_op = Operator "fwfft" fwfft Operator_type.COMPOUND_REWRAP false;
 }
@@ -860,15 +865,15 @@ fwfft x
 invfft x
     = oo_unary_function invfft_op x, is_class x
     = vips_invfft [$real => true] x, is_image x
-    = error (_ "bad arguments to " ++ "invfft")
+    = error_bad_args "invfft" ["Image|image"] [x]
 {
     invfft_op = Operator "invfft" invfft Operator_type.COMPOUND_REWRAP false;
 }
 
 falsecolour x
     = oo_unary_function falsecolour_op x, is_class x
-    = copy [$interpretation => "srgb"] (vips_falsecolour [] x), is_image x
-    = error (_ "bad arguments to " ++ "falsecolour")
+    = vips_falsecolour [] x, is_image x
+    = error_bad_args "falsecolour" ["Image|image"] [x]
 {
     falsecolour_op = Operator "falsecolour" falsecolour
         Operator_type.COMPOUND_REWRAP false;
@@ -878,7 +883,7 @@ polar x
     = oo_unary_function polar_op x, is_class x
     = vips_complex [] x $polar, is_image x
     = polar_cmplx x, is_complex x
-    = error (_ "bad arguments to " ++ "polar")
+    = error_bad_args "polar" ["Image|image|complex"] [x]
 {
     polar_op = Operator "polar" polar Operator_type.COMPOUND false;
 
@@ -900,7 +905,7 @@ rectangular x
     = oo_unary_function rectangular_op x, is_class x
     = vips_complex [] x $rect, is_image x
     = rectangular_cmplx x, is_complex x
-    = error (_ "bad arguments to " ++ "rectangular")
+    = error_bad_args "rectangular" ["Image|image|complex"] [x]
 {
     rectangular_op = Operator "rectangular" rectangular
         Operator_type.COMPOUND false;
@@ -914,7 +919,8 @@ recomb matrix x
     = vips_recomb [] x matrix, is_image x
     = recomb_real_list x, is_real_list x
     = map recomb_real_list x, is_matrix x
-    = error (_ "bad arguments to " ++ "recomb")
+    = error_bad_args "recomb"
+        ["Matrix|[[real]]", "Image|image|matrix"] [matrix, x]
 {
     // COMPOUND_REWRAP ... signal to the colour class to go to image and
     // back
@@ -934,7 +940,9 @@ crop x y w h obj
     = oo_unary_function crop_op obj, is_class obj
     = vips_crop [] obj x' y' w' h', is_image obj
     = map (crop_range x' w') (crop_range y' h' obj), is_matrix obj
-    = error (_ "bad arguments to " ++ "crop")
+    = error_bad_args "crop"
+        ["real", "real", "real", "real", "Image|image|Matrix|[[real]]"]
+        [x, y, w, h, obj]
 {
     x' = to_real x;
     y' = to_real y;
@@ -952,7 +960,8 @@ extract_row y obj
     = oo_unary_function extract_row_op obj, is_class obj
     = crop 0 y' (get_width obj) 1 obj, is_image obj
     = [obj?y'], is_matrix obj
-    = error (_ "bad arguments to " ++ "extract_row")
+    = error_bad_args "extract_row"
+        ["real", "Image|image|Matrix|[[real]]"] [y, obj]
 {
     y' = to_real y;
 
@@ -964,7 +973,8 @@ extract_column x obj
     = oo_unary_function extract_column_op obj, is_class obj
     = crop x' 0 1 height obj, is_image obj
     = map (\row [row?x']) obj, is_matrix obj
-    = error (_ "bad arguments to " ++ "extract_column")
+    = error_bad_args "extract_column"
+        ["real", "Image|image|Matrix|[[real]]"] [x, obj]
 {
     x' = to_real x;
     height = get_header "Ysize" obj;
@@ -974,12 +984,13 @@ extract_column x obj
 }
 
 blend cond in1 in2
-    = oo_binary_function blend_op cond [in1,in2], is_class cond
+    = oo_binary_function blend_op cond [in1, in2], is_class cond
     = vips_ifthenelse [$blend => true]
         (get_image cond) (get_image in1) (get_image in2),
             has_image cond && has_image in1 && has_image in2
-    = error (_ "bad arguments to " ++ "blend" ++ ": " ++
-        joinsep ", " (map print [cond, in1, in2]))
+    = error_bad_args "blend"
+        ["Image|image", "Image|image|constant", "Image|image|constant"]
+        [cond, in1, in2]
 {
     blend_op = Operator "blend" blend_obj
         Operator_type.COMPOUND_REWRAP false;
@@ -1018,7 +1029,9 @@ insert options x y small big
     = oo_binary_function insert_op small big, is_class small
     = vips_insert options big small (to_real x) (to_real y),
         is_image small && is_image big
-    = error (_ "bad arguments to " ++ "insert")
+    = error_bad_args "insert"
+        ["[option]", "real", "real", "Image|image", "Image|image"]
+        [options, x, y, small, big]
 {
     insert_op = Operator "insert" (insert options x y)
         Operator_type.COMPOUND_REWRAP false;
@@ -1027,7 +1040,7 @@ insert options x y small big
 decode im
     = oo_unary_function decode_op im, is_class im
     = decode_im im, is_image im
-    = error (_ "bad arguments to " ++ "decode")
+    = error_bad_args "decode" ["Image|image"] [im]
 {
     decode_op = Operator "decode" decode
         Operator_type.COMPOUND_REWRAP false;
@@ -1093,7 +1106,7 @@ measure_sample across down measure image
 extract_bands b n obj
     = oo_unary_function extract_bands_op obj, is_class obj
     = vips_extract_band [$n => to_real n] obj (to_real b), is_image obj
-    = error (_ "bad arguments to " ++ "extract_bands")
+    = error_bad_args "extract_bands" ["real", "real", "Image|image"] [b, n, obj]
 {
     extract_bands_op = Operator "extract_bands" (extract_bands b n)
         Operator_type.COMPOUND_REWRAP false;
@@ -1103,7 +1116,7 @@ invert x
     = oo_unary_function invert_op x, is_class x
     = vips_invert [] x, is_image x
     = 255 - x, is_real x
-    = error (_ "bad arguments to " ++ "invert")
+    = error_bad_args "invert" ["Image|image|real"] [x]
 {
     invert_op = Operator "invert" invert Operator_type.COMPOUND false;
 }

@@ -1,18 +1,14 @@
-- add _vips8.def
+- adding bad_args to _stdenv.def
 
-    make a set of vips8 defs which follow the vips8 API exactly
+	reached transform
 
-    rework _stdenv.def (and the others) in terms of these
+- list unresolved has some errors
 
-    reached icc_export
-
-
-
-    all the vips8 wrappoers together, grid etc.
-
-    leave higher level funcs and helpers in _stdenv
-
-    maybe instead of get_width etc., use get $width ?
+	Filter_morphology_item.Threshold_item ($SAVEDIR/start/Filter.def:266)  refers to undefined symbol Select_item
+	Hist_find_item.Segment_item ($SAVEDIR/start/Histogram.def:56)  refers to undefined symbol Select_item
+	Image_draw_item.Draw_scalebar_item.action._result.process.d ($SAVEDIR/start/Image.def:1888)  refers to undefined symbol dpi
+	unit_test.list ($SAVEDIR/start/_stdenv.def:2706)  refers to undefined symbol argv
+	Enum.has_index ($SAVEDIR/start/_types.def:312)  refers to undefined symbol names
 
 - misspelled or incorrect options don't raise errors
 

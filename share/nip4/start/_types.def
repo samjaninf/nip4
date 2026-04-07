@@ -999,8 +999,6 @@ Image value = class
 
         join_result_image
             // don't use "++" or "join", we don't have eg image ++ real
-            //= bandjoin [value, new_stuff], op.op_name == "join"
-            //= bandjoin [new_stuff, value]
             = op.fn this.value new_stuff
         {
             new_stuff = image_new [
