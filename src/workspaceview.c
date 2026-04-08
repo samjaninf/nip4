@@ -1043,8 +1043,9 @@ workspaceview_drag_begin(GtkEventControllerMotion *self,
 	gdouble start_x, gdouble start_y, gpointer user_data)
 {
 	Workspaceview *wview = WORKSPACEVIEW(user_data);
-	Mainwindow *main = MAINWINDOW(view_get_window(VIEW(wview)));
-	guint modifiers = mainwindow_get_modifiers(main);
+	GtkEventController *controller = GTK_EVENT_CONTROLLER(self);
+	GdkModifierType modifiers =
+		gtk_event_controller_get_current_event_state(controller);
 
 	Columnview *title;
 	Columnview *cview;

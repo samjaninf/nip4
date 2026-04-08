@@ -5,6 +5,8 @@
 - add ctrl-M shortcut to show/hide the toolkit menu
 - rewritten vips8 menus
 - new test suite
+- better ctrl / shift modifier handling
+- doubleclick on a graphicview no longer selects that row (use the label)
 
 ## 9.0.18 2026/03/25
 

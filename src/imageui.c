@@ -1151,8 +1151,10 @@ static void
 imageui_drag_begin(GtkEventControllerMotion *self,
 	gdouble start_x, gdouble start_y, gpointer user_data)
 {
+	GtkEventController *controller = GTK_EVENT_CONTROLLER(self);
+	GdkModifierType modifiers =
+		gtk_event_controller_get_current_event_state(controller);
 	Imageui *imageui = IMAGEUI(user_data);
-	Imagewindow *win = IMAGEWINDOW(gtk_widget_get_root(GTK_WIDGET(imageui)));
 
 	Regionview *regionview;
 
@@ -1172,7 +1174,7 @@ imageui_drag_begin(GtkEventControllerMotion *self,
 			g_object_ref(regionview);
 			regionview->start_area = regionview->our_area;
 		}
-		else if (imagewindow_get_modifiers(win) & GDK_CONTROL_MASK) {
+		else if (modifiers & GDK_CONTROL_MASK) {
 			imageui->state = IMAGEUI_CREATE;
 			double left;
 			double top;
@@ -1220,9 +1222,11 @@ static void
 imageui_drag_update(GtkEventControllerMotion *self,
 	gdouble offset_x, gdouble offset_y, gpointer user_data)
 {
+	GtkEventController *controller = GTK_EVENT_CONTROLLER(self);
+	GdkModifierType modifiers =
+		gtk_event_controller_get_current_event_state(controller);
 	Imageui *imageui = IMAGEUI(user_data);
 	double zoom = imageui_get_zoom(imageui);
-	Imagewindow *win = IMAGEWINDOW(gtk_widget_get_root(GTK_WIDGET(imageui)));
 
 #ifdef DEBUG_VERBOSE
 	printf("imageui_drag_update: offset_x = %g, offset_y = %g\n",
@@ -1237,7 +1241,7 @@ imageui_drag_update(GtkEventControllerMotion *self,
 		break;
 
 	case IMAGEUI_SELECT:
-		regionview_resize(imageui->grabbed, imagewindow_get_modifiers(win),
+		regionview_resize(imageui->grabbed, modifiers,
 			imageui->tilesource->image_width, imageui->tilesource->image_height,
 			offset_x / zoom, offset_y / zoom);
 
@@ -1253,7 +1257,7 @@ imageui_drag_update(GtkEventControllerMotion *self,
 		break;
 
 	case IMAGEUI_CREATE:
-		regionview_resize(imageui->floating, imagewindow_get_modifiers(win),
+		regionview_resize(imageui->floating, modifiers,
 			imageui->tilesource->image_width, imageui->tilesource->image_height,
 			offset_x / zoom, offset_y / zoom);
 		imageui_regionview_update(imageui, imageui->floating);

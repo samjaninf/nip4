@@ -270,8 +270,10 @@ static void
 rowview_pressed(GtkGestureClick *gesture,
 	guint n_press, double x, double y, Rowview *rview)
 {
+	GtkEventController *controller = GTK_EVENT_CONTROLLER(gesture);
+	GdkModifierType modifiers =
+		gtk_event_controller_get_current_event_state(controller);
 	Row *row = ROW(VOBJECT(rview)->iobject);
-	Mainwindow *main = MAINWINDOW(view_get_window(VIEW(rview)));
 
 	if (n_press == 1) {
 		if (row->err &&
@@ -280,7 +282,7 @@ rowview_pressed(GtkGestureClick *gesture,
 			// click on a row with an error displays the error
 			workspace_show_error(row->ws);
 
-		row_select_modifier(row, mainwindow_get_modifiers(main));
+		row_select_modifier(row, modifiers);
 	}
 	else
 		rowview_edit(rview);

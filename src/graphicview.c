@@ -51,17 +51,6 @@ graphicview_link(View *view, Model *model, View *parent)
 		graphicview->sview = SUBCOLUMNVIEW(v);
 }
 
-static Rowview *
-graphicview_rowview(Graphicview *graphicview)
-{
-	View *p;
-
-	for (p = VIEW(graphicview); !IS_ROWVIEW(p); p = p->parent)
-		;
-
-	return ROWVIEW(p);
-}
-
 void
 graphicview_pressed(GtkGestureClick *gesture,
 	guint n_press, double x, double y, Graphicview *graphicview)
@@ -70,7 +59,7 @@ graphicview_pressed(GtkGestureClick *gesture,
 
 	// don't do single-click-select, it'll trigger for doublelick too and be
 	// very annoying
-	if (n_press < 1) {
+	if (n_press > 1) {
 		Model *model = MODEL(VOBJECT(graphicview)->iobject);
 
 		model_edit(model, GTK_WINDOW(main));

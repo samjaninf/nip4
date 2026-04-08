@@ -56,13 +56,6 @@ struct _Mainwindow {
 	 */
 	GSettings *settings;
 
-	/* We need to detect ctrl-click and shift-click for range selecting.
-	 *
-	 * Windows doesn't seem to support device polling, so we record ctrl and
-	 * shift state here in the keyboard handler.
-	 */
-	guint modifiers;
-
 };
 
 // current autocalc state
@@ -796,60 +789,6 @@ mainwindow_close_request(GtkWindow *self, gpointer user_data)
 		return FALSE;
 }
 
-static gboolean
-mainwindow_key_pressed(GtkEventControllerKey *self,
-	guint keyval, guint keycode, GdkModifierType state, gpointer user_data)
-{
-	Mainwindow *main = MAINWINDOW(user_data);
-
-	switch (keyval) {
-	case GDK_KEY_Control_L:
-	case GDK_KEY_Control_R:
-		main->modifiers |= GDK_CONTROL_MASK;
-		break;
-
-	case GDK_KEY_Shift_L:
-	case GDK_KEY_Shift_R:
-		main->modifiers |= GDK_SHIFT_MASK;
-		break;
-
-	default:
-		break;
-	}
-
-	return FALSE;
-}
-
-static gboolean
-mainwindow_key_released(GtkEventControllerKey *self,
-	guint keyval, guint keycode, GdkModifierType state, gpointer user_data)
-{
-	Mainwindow *main = MAINWINDOW(user_data);
-
-	switch (keyval) {
-	case GDK_KEY_Control_L:
-	case GDK_KEY_Control_R:
-		main->modifiers &= ~GDK_CONTROL_MASK;
-		break;
-
-	case GDK_KEY_Shift_L:
-	case GDK_KEY_Shift_R:
-		main->modifiers &= ~GDK_SHIFT_MASK;
-		break;
-
-	default:
-		break;
-	}
-
-	return FALSE;
-}
-
-guint
-mainwindow_get_modifiers(Mainwindow *main)
-{
-	return main->modifiers;
-}
-
 static void
 mainwindow_class_init(MainwindowClass *class)
 {
@@ -867,8 +806,6 @@ mainwindow_class_init(MainwindowClass *class)
 
 	BIND_CALLBACK(mainwindow_progress_cancel_clicked);
 	BIND_CALLBACK(mainwindow_close_request);
-	BIND_CALLBACK(mainwindow_key_pressed);
-	BIND_CALLBACK(mainwindow_key_released);
 }
 
 static void

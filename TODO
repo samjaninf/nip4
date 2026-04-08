@@ -1,23 +1,4 @@
 
-- try:
-
-    move mouse pointer out of image window
-    hold down ctrl
-    move back into image window
-    left click
-    mark is not created
-
-    very annoying while mosaicing!
-
-  poll button state on window enter?
-
-    probably won't work on windows
-
-    at least linux would work I guess
-
-
-
-
 - adding bad_args to _stdenv.def
 
     reached transform
