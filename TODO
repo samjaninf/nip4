@@ -1,3 +1,30 @@
+## C
+
+- we heap_copy() the world when we make a row (all funcs copied), is this
+  necessary?
+
+    should be able to link functions, I'd think?
+
+- add #include to snip? probably necessary if we want to use it as a
+  scripting language
+
+    #include "banana/x.def"
+
+  filename found relative to current file
+
+  done in lexer, so can be used anywhere
+
+- after Reset on a row, mark dirty and recalc
+
+    seems to all work, find a case where it fails
+
+- class params missing value display
+
+    can't find a case where this fails
+
+    just a laptop bug? there are some small rendering issues elsewhere
+
+## menus
 
 - adding bad_args to _stdenv.def
 
@@ -14,33 +41,14 @@
 
     look for Horizontal or vertical enums, eg. in join?
 
-- after Reset on a row, mark dirty and recalc
-
-- class params missing value display
-
 - menus say "Mono", captions say "b-w"
 
     make captions show mono?
 
     we should probably just use b-w (libvips terminology) everywhere
 
-- use error_bad_arg everywhere
-
 - now that image_new sets interp to sRGB for many band pixels, perhaps we can
   remove some (set_header $interpretation $srgb)?
-
-    what about
-
-        image_new [
-            $pixel => 100,
-            $interpretation => $srgb
-        ]
-
-    will that make a three band image?
-
-- vips8 wrappers in _stdenv.def should all take options params
-
-    last chance to add this, will be important for extensibility
 
 - improve image finding
 
@@ -58,13 +66,9 @@
     we have $CWD for current dir, perhaps we should have $WORKSPACE_DIR for
     directory the workspace was read from?
 
-- add to_enum
-
-    takes an enum and a string or value (not a key), returns a value
-
 - try to reproduce that macOS crash
 
-  for macOS, see this for codesigning tips
+  for macOS, see this for code signing tips
 
     https://www.reddit.com/r/macosprogramming/comments/1rpe0mx/macos_app_development_outside_of_app_store/
 
@@ -112,37 +116,7 @@
 
 - remove Table?
 
-# menu redesign
-
-- add #include to snip? probably necessary if we want to use it as a
-  scripting language
-
-    #include "banana/x.def"
-
-  filename found relative to current file
-
-  done in lexer, so can be used anywhere
-
 - infobar in pages-as-bands just shows the first value
-
-- naming convention
-
-    always use "_" to separate words, except when one or both
-    words are abbreviated
-
-        matmul
-        matrix_multiply
-
-- vips_object_new has options at the end :(
-
-- do we need vips_header_int as a builtin? we can define as
-
-    vips_header_int field image
-        = to_int value, is_int value
-        = error ...
-    {
-        value = vips_header_get field image;
-    }
 
 - maxpos, then create mark from coordinate should be two clicks
 
@@ -169,9 +143,6 @@
 
 - the nip4 menus need reworking to use max_alpha 255 for scrgb
 
-- perspective distort could have an "interpolate" option (always bilinear
-  right now)
-
 - try:
 
     Matrix_build_item.Matrix_laplacian_item.action
@@ -186,13 +157,9 @@
 
   translate, rotate etc? need xyz for that
 
-- Grey ramp, checkerboard, grid CIELAB slice -> Test Images
-
 - magic kernel
 
 - use vips_addalpha() operation
-
-- remove use of cache (it's tilecache only now)
 
 - prewitt and scharr edge detectors
 
@@ -201,13 +168,6 @@
 - "nip4 try.def x.ws" ought to work
 
     only images and workspaces as CLI args right now
-
-- improve row layout (see notebook)
-
-- we heap_copy() the world when we make a row (all funcs copied), is this
-  necessary?
-
-    should be able to link functions, I'd think?
 
 - linear match
 
@@ -272,8 +232,6 @@
   equivalent to
 
     fred a:b:x = a + b;
-
-- remove remove prefs workspace stuff?
 
 - we could allow
 
@@ -346,7 +304,7 @@
 - load ws with locked tab, rightclick menu on locked tab does not
   have tick selected
 
-  two tabs, lock one, p4menu on other also shows lock
+  two tabs, lock one, menu on other also shows lock
 
     a bit tricky to fix
 
@@ -378,18 +336,6 @@
 
   see imagewindow_set_tilesource() and uncomment the call to
   imageui_set_bestfit() to work on this again
-
-- need preferences?
-
-    or just remove it all
-
-- iimage.h has:
-
-    gboolean show_status;
-    gboolean show_paintbox;
-    gboolean show_convert;
-
-  do we use these?
 
 - investigate behaviour with updated iimage_update_heap() ... there will be
   quite a few cases which now fail (I expect)

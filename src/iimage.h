@@ -54,12 +54,6 @@ struct _iImage {
 	 */
 	GSList *views;
 
-	/* View attachments.
-	 */
-	gboolean show_status;
-	gboolean show_paintbox;
-	gboolean show_convert;
-
 	/* Bar settings we apply.
 	 */
 	ViewSettings view_settings;

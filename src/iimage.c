@@ -146,12 +146,6 @@ iimage_save(Model *model, xmlNode *xnode)
 	if (!(xthis = MODEL_CLASS(iimage_parent_class)->save(model, xnode)))
 		return NULL;
 
-	/* We always rebuild the value from the expr ... don't save.
-	 */
-	if (!set_sprop(xthis, "show_status", bool_to_char(iimage->show_status)) ||
-		!set_sprop(xthis, "show_convert", bool_to_char(iimage->show_convert)))
-		return NULL;
-
 	if (iimage->view_settings.valid &&
 		 (!set_dprop(xthis, "scale", iimage->view_settings.scale) ||
 		  !set_dprop(xthis, "offset", iimage->view_settings.offset) ||
@@ -172,10 +166,6 @@ iimage_load(Model *model,
 	iImage *iimage = IIMAGE(model);
 
 	g_assert(IS_RHS(parent));
-
-	(void) get_bprop(xnode, "show_status", &iimage->show_status);
-	(void) get_bprop(xnode, "show_paintbox", &iimage->show_paintbox);
-	(void) get_bprop(xnode, "show_convert", &iimage->show_convert);
 
 	char mode[64];
 	if (get_dprop(xnode, "scale", &iimage->view_settings.scale) &&
@@ -401,10 +391,6 @@ iimage_init(iImage *iimage)
 	iimage->classmodels = NULL;
 
 	iimage->views = NULL;
-
-	iimage->show_status = FALSE;
-	iimage->show_paintbox = FALSE;
-	iimage->show_convert = FALSE;
 
 	vips_buf_init_dynamic(&iimage->caption_buffer, MAX_LINELENGTH);
 
