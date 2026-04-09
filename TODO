@@ -1,9 +1,28 @@
 ## C
 
-- we heap_copy() the world when we make a row (all funcs copied), is this
-  necessary?
+- custom blur / sharpen, square mask
 
-    should be able to link functions, I'd think?
+    seems not to work!
+
+- we heap_copy() far too often!
+
+    see reduce.c:1213
+
+  enable trace in heap_copy(), then:
+
+    foldr add 0 [1..100]
+
+  we copy every loop!
+
+  after compile, we should link locals, so that copying foldr automatically
+  copies all foldr locals
+
+  or perhaps when we heap_copy() we should recursively copy locals, but not
+  refs to other top levels?
+
+  what does nip2 do?
+
+    yup, copies on each loop as well
 
 - add #include to snip? probably necessary if we want to use it as a
   scripting language
@@ -30,12 +49,8 @@
         does this work for testing workspaces?
 
             - can copy test/workspaces somewhere new
-
             - can run from any cwd, even after copy
-
-        is it just the snip tests that fail? can we use $CWD there
-
-        maybe $CWD is a bad idea?
+            - if we remove $CWD, then yes!
 
 - after Reset on a row, mark dirty and recalc
 
@@ -46,6 +61,8 @@
     can't find a case where this fails
 
     just a laptop bug? there are some small rendering issues elsewhere
+
+    maybe the text for a param began with a newline?
 
 ## menus
 

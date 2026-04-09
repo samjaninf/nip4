@@ -286,14 +286,6 @@ main_startup(int argc, char **argv)
     }
 #endif /*G_OS_WIN32*/
 
-	/* Used to rewrite paths to subdirectories.
-	 */
-	if (!g_getenv("CWD")) {
-		g_autofree char *cwd = g_get_current_dir();
-
-        setenvf("CWD", "%s", cwd);
-    }
-
 #ifdef HAVE_GETRLIMIT
     /* Make sure we have lots of file descriptors. Some platforms have cur
      * as 256 and max at 1024 to keep stdio happy.

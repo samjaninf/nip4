@@ -586,7 +586,6 @@ path_init(void)
 
 	path_rewrite_add(get_prefix(), "$VIPSHOME", TRUE);
 	g_autofree char *cwd = g_get_current_dir();
-	path_rewrite_add(cwd, "$CWD", TRUE);
 	path_rewrite_add(g_get_home_dir(), "$HOME", TRUE);
 	path_rewrite_add(get_savedir(), "$SAVEDIR", TRUE);
 
