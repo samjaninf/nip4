@@ -14,6 +14,29 @@
 
   done in lexer, so can be used anywhere
 
+- related to image finding in workspaces
+
+    Image_file "zzzz" in a workspace needs to resolve relative to the
+    workspace location
+
+    we do this by comparing the filename recorded in the .ws file during save
+    to the directory the workspace is loaded from
+
+        contract filenames during rewrite for save
+
+        on load, expand all filenames again, compare save and load locations,
+        rewrite incorporating changes, compact again
+
+        does this work for testing workspaces?
+
+            - can copy test/workspaces somewhere new
+
+            - can run from any cwd, even after copy
+
+        is it just the snip tests that fail? can we use $CWD there
+
+        maybe $CWD is a bad idea?
+
 - after Reset on a row, mark dirty and recalc
 
     seems to all work, find a case where it fails
