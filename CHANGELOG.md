@@ -7,6 +7,7 @@
 - new test suite
 - better ctrl / shift modifier handling
 - doubleclick on a graphicview no longer selects that row (use the label)
+- fix "meson test"
 
 ## 9.0.18 2026/03/25
 

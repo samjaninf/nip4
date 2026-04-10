@@ -466,8 +466,8 @@ apply_image_call(BuiltinInfo *builtin,
 	PEPOINTRIGHT(arg[0], &rhs);
 	(void) reduce_get_string(rc, &rhs, buf, VIPS_PATH_MAX);
 
-	/* The buf might be something like n3862.pyr.tif:1, ie. contain some
-	 * load options. Split and search just for the filename component.
+	/* The buf might be something like n3862.pyr.tif[page=12], ie. contain
+	 * some load options. Split and search just for the filename component.
 	 */
 	vips__filename_split8(buf, filename, mode);
 

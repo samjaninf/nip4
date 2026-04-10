@@ -12,7 +12,7 @@
 
     foldr add 0 [1..100]
 
-  we copy every loop!
+  we copy every loop! nip2 does the same
 
   after compile, we should link locals, so that copying foldr automatically
   copies all foldr locals
@@ -20,9 +20,9 @@
   or perhaps when we heap_copy() we should recursively copy locals, but not
   refs to other top levels?
 
-  what does nip2 do?
+  how should we handle cycles?
 
-    yup, copies on each loop as well
+
 
 - add #include to snip? probably necessary if we want to use it as a
   scripting language
@@ -32,25 +32,6 @@
   filename found relative to current file
 
   done in lexer, so can be used anywhere
-
-- related to image finding in workspaces
-
-    Image_file "zzzz" in a workspace needs to resolve relative to the
-    workspace location
-
-    we do this by comparing the filename recorded in the .ws file during save
-    to the directory the workspace is loaded from
-
-        contract filenames during rewrite for save
-
-        on load, expand all filenames again, compare save and load locations,
-        rewrite incorporating changes, compact again
-
-        does this work for testing workspaces?
-
-            - can copy test/workspaces somewhere new
-            - can run from any cwd, even after copy
-            - if we remove $CWD, then yes!
 
 - after Reset on a row, mark dirty and recalc
 

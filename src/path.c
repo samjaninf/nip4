@@ -564,14 +564,27 @@ path_find_file(const char *filename)
 
 	/* Try file name exactly.
 	 */
-	if (existsf("%s", filename))
+	if (existsf("%s", filename)) {
+#ifdef DEBUG_SEARCH
+		printf("\tfound exact match\n");
+#endif /*DEBUG_SEARCH*/
 		return g_strdup(filename);
+	}
 
 	/* Search everywhere.
 	 */
-	if ((fname = path_map(PATH_SEARCH, filename,
-			 (path_map_fn) g_strdup, NULL)))
+	if ((fname =
+		path_map(PATH_SEARCH, filename, (path_map_fn) g_strdup, NULL))) {
+#ifdef DEBUG_SEARCH
+		printf("\tfound by search: %s\n", fname);
+#endif /*DEBUG_SEARCH*/
+
 		return fname;
+	}
+
+#ifdef DEBUG_SEARCH
+	printf("\tnot found\n");
+#endif /*DEBUG_SEARCH*/
 
 	error_top(_("Not found"));
 	error_sub(_("file \"%s\" not found on path"), filename);

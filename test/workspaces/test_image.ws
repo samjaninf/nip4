@@ -7,7 +7,7 @@
           <Rhs vislevel="2" flags="5">
             <iImage window_x="0" window_y="30" window_width="512" window_height="729" show_status="true" show_convert="true" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Image_file &quot;$CWD/images/slanted_oval_vase2.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/slanted_oval_vase2.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="B18">

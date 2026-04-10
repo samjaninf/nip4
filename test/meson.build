@@ -64,8 +64,9 @@ foreach name : should_fail_tests
 endforeach
 
 foreach name : snip_tests
+  test_image = files('snip/images/slanted_oval_vase2.jpg')
   test(name, nip4_snip,
-    args: [files('snip/' + name)]
+    args: [files('snip/' + name), test_image],
   )
 endforeach
 

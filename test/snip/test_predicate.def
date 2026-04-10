@@ -2,7 +2,7 @@
 
 // test the _list lib functions
 
-sample_image = Image_file "slanted_oval_vase2.jpg";
+sample_image = Image_file argv?1;
 
 main = unit_test [
     [is_colour_space "sRGB", "is_colour_space"],
