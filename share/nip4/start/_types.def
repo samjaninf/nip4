@@ -919,7 +919,7 @@ Interpretation_nary = class Interpretation_3ary {
     GREY16 = 26;
 
     _description = [
-        [B_W, _ "Mono"],
+        [B_W, _ "b-w"],
         [LABQ, _ "LabQ"],
         [LABS, _ "LabS"],
         [RGB16, _ "16-bit RGB"],

@@ -54,34 +54,8 @@
 
     second does a lookup to get the key name
 
-- use Direction enum
-
-    look for Horizontal or vertical enums, eg. in join?
-
-- menus say "Mono", captions say "b-w"
-
-    make captions show mono?
-
-    we should probably just use b-w (libvips terminology) everywhere
-
 - now that image_new sets interp to sRGB for many band pixels, perhaps we can
   remove some (set_header $interpretation $srgb)?
-
-- improve image finding
-
-    because it can't find the test image
-
-        Not found, file "../images/slanted_oval_vase2.jpg" not found on path
-
-    script argv[0] is
-
-        /home/john/GIT/nip4/build/../test/snip/test_object.def
-
-    Image_file with a relative path should be relative to the script or
-    workspace directory?
-
-    we have $CWD for current dir, perhaps we should have $WORKSPACE_DIR for
-    directory the workspace was read from?
 
 - try to reproduce that macOS crash
 
@@ -126,12 +100,6 @@
 
 - scroll is very slow in macOS, so navigating the Magick menu with no
   scrollbar is painful
-
-- don't use Option_enum directly, instead use eg.
-
-    Interpretation_3ary.picker "sRGB"
-
-- remove Table?
 
 - infobar in pages-as-bands just shows the first value
 
