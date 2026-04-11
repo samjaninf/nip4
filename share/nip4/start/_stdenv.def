@@ -1124,23 +1124,21 @@ invert x
 transform options params image
     = oo_unary_function transform_op image, is_class image
     = vips_quadratic options image (to_matrix params), is_image image
-    = error (_ "bad arguments to " ++ "transform")
+    = error_bad_args "transform"
+        ["[option]", "Matrix|[real]", "Image|image"] [options, params, image]
 {
     transform_op = Operator "transform" (transform options params)
         Operator_type.COMPOUND_REWRAP false;
 }
 
-rotate interp angle x
-    = oo_binary_function rotate_op angle x, is_class angle
-    = oo_binary'_function rotate_op angle x, is_class x
-    = vips_affine [$interpolate => interp] x [a, -b, b, a],
-        is_real angle && is_image x
-    = error (_ "bad arguments to " ++ "rotate")
+rotate options angle x
+    = oo_unary_function rotate_op x, is_class x
+    = vips_rotate options x (to_real angle), is_image x
+    = error_bad_args "rotate"
+        ["[options]", "Real|real", "Image|image"] [options, angle, x]
 {
-    rotate_op = Operator "rotate" (rotate interp)
+    rotate_op = Operator "rotate" (rotate options angle)
         Operator_type.COMPOUND_REWRAP false;
-    a = cos angle;
-    b = sin angle;
 }
 
 joinlr a b
@@ -2226,7 +2224,7 @@ extract_arrow hd vd h arrow
         = 180 - a, a > 90
         = -a;
 
-    im' = rotate (Interpolate._new [] Interpolate.BILINEAR) a' arrow.image;
+    im' = rotate [] a' arrow.image;
 
     // look at the start and end of the arrow, pick the leftmost
     p

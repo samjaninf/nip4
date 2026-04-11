@@ -18,8 +18,6 @@
 
   how should we handle cycles?
 
-
-
 - add #include to snip? probably necessary if we want to use it as a
   scripting language
 
@@ -45,7 +43,7 @@
 
 - adding bad_args to _stdenv.def
 
-    reached transform
+    reached rotate
 
 - Enum.picker could allow string or numeric arg
 
@@ -120,8 +118,6 @@
     see https://iquilezles.org/articles/distfunctions/
 
   translate, rotate etc? need xyz for that
-
-- magic kernel
 
 - use vips_addalpha() operation
 

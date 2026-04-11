@@ -1079,8 +1079,9 @@ Image_transform_item = class
                     = map_unary process x
                 {
                     process image
-                        = rotate inter angle image;
-                    inter = Interpolate._new [] interp.value_key;
+                        = rotate [
+                            $interpolate => Interpolate._new [] interp.value_key
+                          ] angle image;
                 }
             }
         }
@@ -1098,10 +1099,10 @@ Image_transform_item = class
                 _result
                     = map_unary straighten x
                 {
-                    inter = Interpolate._new [] interp.value_key;
-
                     straighten arrow
-                        = rotate inter angle'' arrow.image
+                        = rotate [
+                            $interpolate => Interpolate._new [] interp.value_key
+                          ] angle'' arrow.image
                     {
                         x = arrow.width;
                         y = arrow.height;
