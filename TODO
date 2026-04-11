@@ -125,8 +125,6 @@
 
 - use vips_addalpha() operation
 
-- prewitt and scharr edge detectors
-
 - can we improve Group[]?
 
 - "nip4 try.def x.ws" ought to work
