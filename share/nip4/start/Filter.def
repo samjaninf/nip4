@@ -111,7 +111,7 @@ Kirk
     sep1 = Menuseparator;
 
     Custom_blur_item = class
-        Menuaction "Custom B_lur / Sharpen"
+        Menuaction "Custom Blur / Sharpen"
             "blur or sharpen with tuneable parameters" {
         action x = class
             _result {

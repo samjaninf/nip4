@@ -389,9 +389,10 @@ split_lines n l = take n l : split_lines n (drop n l);
 /* take n l: take the first n elements from list l
  * take :: num -> [*] -> [*]
  */
-take 0 l = [];
 take n [] = [];
-take n a:x = a : take (n - 1) x;
+take n a:x
+	= [], n <= 0
+	= a : take (n - 1) x;
 
 /* takewhile fn l: take from the front of a list while predicate fn holds
  *

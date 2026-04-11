@@ -1,9 +1,5 @@
 ## C
 
-- custom blur / sharpen, square mask
-
-    seems not to work!
-
 - we heap_copy() far too often!
 
     see reduce.c:1213
