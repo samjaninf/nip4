@@ -9,6 +9,7 @@
 - doubleclick on a graphicview no longer selects that row (use the label)
 - fix "meson test"
 - maxpair, minpair handle constants correctly
+- add prewitt, scharr edge detectors
 
 ## 9.0.18 2026/03/25
 

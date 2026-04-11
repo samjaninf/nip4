@@ -2542,6 +2542,28 @@ sobel x
     sobel_im = vips_sobel [];
 }
 
+prewitt x
+    = oo_unary_function prewitt_op x, is_class x
+    = prewitt_im x, is_image x
+    = error (_ "bad arguments to " ++ "prewitt")
+{
+    prewitt_op = Operator "prewitt" prewitt
+        Operator_type.COMPOUND_REWRAP false;
+
+    prewitt_im = vips_prewitt [];
+}
+
+scharr x
+    = oo_unary_function scharr_op x, is_class x
+    = scharr_im x, is_image x
+    = error (_ "bad arguments to " ++ "scharr")
+{
+    scharr_op = Operator "scharr" scharr
+        Operator_type.COMPOUND_REWRAP false;
+
+    scharr_im = vips_scharr [];
+}
+
 minpair a b
     = oo_binary_function minpair_op a b, is_class a
     = oo_binary'_function minpair_op a b, is_class b

@@ -7,7 +7,6 @@ Filter_conv_item = class
     filter_emboss = Matrix_con 1 128 [[-1, 0], [0, 1]];
     filter_laplacian = Matrix_con 1 128
         [[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]];
-    filter_sobel = Matrix_con 1 128 [[1, 2, 1], [0, 0, 0], [-1, -2, -1]];
     filter_lindet = Matrix_con 1 0 [[1, 1, 1], [-2, -2, -2], [1, 1, 1]];
 
     Blur_item = class
@@ -69,6 +68,16 @@ Filter_conv_item = class
     Sobel_item = class
         Menuaction "So_bel" "3x3 Sobel edge detect" {
         action x = map_unary sobel x;
+    }
+
+    Prewitt_item = class
+        Menuaction "Prewitt" "3x3 Prewitt edge detect" {
+        action x = map_unary prewitt x;
+    }
+
+    Scharr_item = class
+        Menuaction "Scharr" "3x3 Scharr edge detect" {
+        action x = map_unary scharr x;
     }
 
 /* 3x3 line detect of image
