@@ -422,10 +422,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
 
                 nwidth = Expression "Image width (pixels)" 64;
                 nheight = Expression "Image height (pixels)" 64;
-                orientation = Option "Orientation" [
-                    "Horizontal",
-                    "Vertical"
-                ] 0;
+                direction = Direction.picker $HORIZONTAL;
                 foption = Option "Format" ["8 bit", "float"] 0;
 
                 _result
@@ -435,7 +432,7 @@ Image_new_item = class Menupullright "_New" "make new things" {
                     h = to_real nheight;
                     gen = grey [$uchar => foption == 0];
                     im
-                        = gen w h, orientation == 0
+                        = gen w h, direction.value_key == 0
                         = rot90 (gen h w);
                 }
             }
@@ -1553,16 +1550,15 @@ Image_band_item = class
             _result {
             _vislevel = 3;
 
-            orientation = Option "Orientation" [
-                "Horizontal",
-                "Vertical"
-            ] 0;
+            direction = Direction.picker $HORIZONTAL;
 
             _result
                 = map_unary process x
             {
+                join = [joinlr, jointb]?(direction.value_key);
+
                 process im
-                    = foldl1 [joinlr, jointb]?orientation (bandsplit im);
+                    = foldl1 join (bandsplit im);
             }
         }
     }
@@ -1573,17 +1569,14 @@ Image_band_item = class
             _result {
             _vislevel = 3;
 
-            orientation = Option "Orientation" [
-                "Horizontal",
-                "Vertical"
-            ] 0;
+            direction = Direction.picker $HORIZONTAL;
 
             _result
                 = map_unary process x
             {
                 process im
                     = bandjoin (map extract_column [0 .. im.width - 1]),
-                        orientation == 0
+                        direction.value_key == 0
                     = bandjoin (map extract_row [0 .. im.height - 1])
                 {
                     extract_column n = crop n 0 1 im.height im;
