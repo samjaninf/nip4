@@ -968,10 +968,15 @@ Image value = class
     // operator overloading
     // (op Image Vector) done in Vector class
     oo_binary_table op x = [
-        // handle image ++ constant here
-        [wrap join_result_image,
-            (has_real x || is_real_list x || is_Vector x) &&
-            (op.op_name == "join" || op.op_name == "join'")],
+        // handle (this.op constant), where op only works for
+        // (this.op image)
+        [wrap twoary_result_image,
+            (has_real x ||
+             is_real_list x ||
+             is_Vector x) &&
+            (is_prefix "join" op.op_name ||
+             is_prefix "maxpair" op.op_name ||
+             is_prefix "minpair" op.op_name)],
         [wrap ite_result_image,
             op.op_name == "if_then_else"],
         [wrap (op.fn this.value (get_image x)),
@@ -997,8 +1002,9 @@ Image value = class
                 !is_image x
             = this.Image x;
 
-        join_result_image
-            // don't use "++" or "join", we don't have eg image ++ real
+        // things like (Image ++ constant) or (maxpair Image constant)
+        // where constants are real or realvec
+        twoary_result_image
             = op.fn this.value new_stuff
         {
             new_stuff = image_new [
@@ -1032,7 +1038,8 @@ Image value = class
                 has_member_list has_format x
             = NULL;
 
-        to_image_target x = to_image_size width height target_bands target_format x;
+        to_image_target x
+            = to_image_size width height target_bands target_format x;
 
         [then', else'] = map to_image_target x;
 
