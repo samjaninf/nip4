@@ -60,7 +60,7 @@
 
 - adding bad_args to _stdenv.def
 
-    reached correlate_fast
+    reached hist_cum
 
 - Enum.picker could allow string or numeric arg
 
