@@ -13,7 +13,7 @@
         string interpolation expression: name
         string fragment:  "!"
 
-  then compile to:
+  then codegen to:
 
     ("hello " ++ print (name) ++ "!")
 
@@ -57,9 +57,6 @@
     maybe the text for a param began with a newline?
 
 ## menus
-
-- inbad_args, only show "Image", not "Image|image"? the unwrapped type can
-  always be implicit
 
 - adding bad_args to _stdenv.def
 

@@ -1363,36 +1363,34 @@ hist_find_nD bins image
         Operator_type.COMPOUND_REWRAP false;
 }
 
-hist_find_indexed mode index value
+hist_find_indexed options index value
     = oo_binary_function hist_find_indexed_op index value, is_class index
     = oo_binary'_function hist_find_indexed_op index value, is_class value
-    = indexed index value, is_image index && is_image value
-    = error (_ "bad arguments to " ++ "hist_find_indexed")
+    = vips_hist_find_indexed options index value,
+        is_image index && is_image value
+    = error_bad_args "hist_find_indexed"
+        ["[option]", "Image", "Image"] [options, index, value]
 {
     hist_find_indexed_op = Operator "hist_find_indexed"
-        (compose (compose Plot_histogram) (hist_find_indexed mode))
+        (compose (compose Plot_histogram) (hist_find_indexed options))
             Operator_type.COMPOUND false;
-
-    indexed index value
-        = vips_hist_find_indexed [$combine => mode] value index;
 }
 
 hist_entropy x
     = oo_unary_function hist_entropy_op x, is_class x
-    = entropy x, is_image x
-    = error (_ "bad arguments to " ++ "hist_entropy")
+    = vips_hist_entropy [] x, is_image x
+    = error_bad_args "hist_entropy" ["Image"] [image]
 {
     hist_entropy_op = Operator "hist_entropy" hist_entropy
         Operator_type.COMPOUND_REWRAP false;
-
-    entropy x = vips_hist_entropy [] x;
 }
 
 maplut options hist image
     = oo_binary_function maplut_op hist image, is_class hist
     = oo_binary'_function maplut_op hist image, is_class image
     = vips_maplut options image hist, is_image hist && is_image image
-    = error (_ "bad arguments to " ++ "maplut")
+    = error_bad_args "maplut"
+        ["[option]", "Image", "Image"] [options, hist, image]
 {
     // can't use rewrap, as we want to always wrap as image
     maplut_op = Operator "maplut" (compose (compose Image) (maplut options))

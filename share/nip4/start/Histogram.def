@@ -94,15 +94,18 @@ Hist_find_item = class
             combine = Combine.picker $SUM;
 
             _result
-                = map_binary map x y
+                = map_binary process x y
             {
-                map a b
-                    = hist_find_indexed combine.value_key index im
+                process a b
+                    = hist_find_indexed [
+                        $combine => combine.value_key
+                      ] index im
                 {
                     [im, index] = sortc (const is_index) [a, b];
 
                     is_index x
-                        = has_image x && b == 1 &&
+                        = has_image x &&
+                            b == 1 &&
                             (f == Format.UCHAR || f == Format.USHORT)
                     {
                         im = get_image x;
