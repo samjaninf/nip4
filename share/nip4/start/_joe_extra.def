@@ -44,7 +44,7 @@ Frame_item = class
                 _a
                     = a, _sf == 1;
                     = a, _sf == 0;
-                    = Image (resize Kernel.LINEAR _sf _sf a.value);
+                    = Image (resize [$kernel => $linear] _sf a.value);
 
                 _im_w = b.width;
                 _im_h
@@ -107,7 +107,7 @@ Frame_item = class
                 _a
                     = a, _sf == 1;
                     = a, _sf == 0;
-                    = Image (resize Kernel.LINEAR _sf _sf a.value);
+                    = Image (resize [$kernel => $linear] _sf a.value);
 
                 _im_w = b.width;
                 _im_h
@@ -173,7 +173,7 @@ Frame_item = class
 
             _a = a, _sf == 1;
                = a, _sf == 0;
-               = Image (resize Kernel.LINEAR _sf _sf a.value);
+               = Image (resize [$kernel => $linear] _sf a.value);
 
             _im_w = b.width;
             _im_h
@@ -264,11 +264,11 @@ Perspective_match_item = class
                 = transform [$interpolate => inter] trans b2
             {
                 b2
-                    = resize Kernel.LINEAR f1 f2 b,
+                    = resize [$kernel => $linear, $vscale => f2] f1 b,
                         (f1 >= 1 && f2 >= 1) || (f1 >= 1 && f2 >= 1)
-                    = resize Kernel.LINEAR f1 1 b1
+                    = resize [$kernel => $linear, $vscale => 1] f1 b1
                 {
-                    b1 = resize Kernel.LINEAR 1 f2 b;
+                    b1 = resize [$kernel => $linear, $vscale => f2] 1 b;
                 }
             }
         }

@@ -238,7 +238,10 @@ Hist_graph_item = class
                     displace.value vdisplace.value width.value arrow;
 
                 // squish vertically to get an average
-                area' = resize Kernel.LINEAR 1 (1 / width.value) area;
+                area' = resize [
+                    $kernel => $linear,
+                    $vscale => 1 / width.value
+                ] 1 area;
             }
         }
     }

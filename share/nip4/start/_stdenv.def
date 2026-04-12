@@ -1536,53 +1536,23 @@ reduce options xshr yshr image
         Operator_type.COMPOUND_REWRAP false;
 }
 
-similarity interpolate scale angle image
+similarity options image
     = oo_unary_function similarity_op image, is_class image
-    = similarity_im image, is_image image
-    = error (_ "bad arguments to " ++ "similarity")
+    = vips_similarity options image, is_image image
+    = error_bad_args "similarity" ["[options]", "Image"] [options, image]
 {
-    similarity_op = Operator "similarity" similarity_im
+    similarity_op = Operator "similarity" (similarity options)
         Operator_type.COMPOUND_REWRAP false;
-
-    similarity_im im
-        = vips_similarity [
-            $interpolate => interpolate.value,
-            $scale => scale,
-            $angle => angle
-        ] im;
 }
 
-resize kernel xfac yfac image
+resize options scale image
     = oo_unary_function resize_op image, is_class image
-    = resize_im image, is_image image
-    = error (_ "bad arguments to " ++ "resize")
+    = vips_resize options image (to_real scale), is_image image
+    = error_bad_args "resize"
+        ["[options]", "real", "Image"] [options, scale image]
 {
-    resize_op = Operator "resize" resize_im
+    resize_op = Operator "resize" (resize options scale)
         Operator_type.COMPOUND_REWRAP false;
-
-    xfac' = to_real xfac;
-    yfac' = to_real yfac;
-
-    rxfac' = 1 / xfac';
-    ryfac' = 1 / yfac';
-
-    is_nn = kernel == Kernel.NEAREST_NEIGHBOUR;
-
-    resize_im im
-        // upscale by integer factor, nearest neighbour
-        = vips_zoom [] im xfac' yfac',
-            is_int xfac' && is_int yfac' &&
-            xfac' >= 1 && yfac' >= 1 &&
-            is_nn
-
-        // downscale by integer factor, nearest neighbour
-        = vips_subsample [] im rxfac' ryfac',
-            is_int rxfac' && is_int ryfac' &&
-            rxfac' >= 1 && ryfac' >= 1 &&
-            is_nn
-
-        // everything else ... we just pass on to vips_resize()
-        = vips_resize [$vscale => yfac', $kernel => kernel] im xfac';
 }
 
 sharpen radius x1 y2 y3 m1 m2 in

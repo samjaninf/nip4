@@ -729,11 +729,19 @@ Manual_balance_item = class
             Image value {
             _vislevel = 1;
 
-            xfactor = im_in.width/scale_im.width;
-            yfactor = im_in.height/scale_im.height;
+            xfactor = im_in.width / scale_im.width;
+            yfactor = im_in.height / scale_im.height;
 
-            _scale_im = resize Kernel.LINEAR xfactor yfactor scale_im;
-            _offset_im = resize Kernel.LINEAR xfactor yfactor offset_im;
+            _scale_im
+                = resize [
+                    $kernel => $linear,
+                    $vscale => yfactor
+                  ] xfactor scale_im;
+            _offset_im
+                = resize [
+                    $kernel => $linear,
+                    $vscale => yfactor
+                  ] xfactor offset_im;
 
             value = get_image (cast im_in.format ((im_in * _scale_im) + _offset_im));
         }

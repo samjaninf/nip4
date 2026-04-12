@@ -1152,7 +1152,10 @@ Image_transform_item = class
                     = map_unary process x
                 {
                     process image
-                        = resize kernel.value_key xfactor yfactor image;
+                        = resize [
+                            $kernel => kernel.value_key,
+                            $vscale => to_real yfactor
+                          ] xfactor image;
                 }
             }
         }
@@ -1177,8 +1180,13 @@ Image_transform_item = class
                     = map_unary process x
                 {
                     process image
-                        = resize kernel.value_key h v image, aspect
-                        = resize kernel.value_key fac fac image
+                        = resize [
+                            $kernel => kernel.value_key,
+                            $vscale => v
+                          ] h image, aspect
+                        = resize [
+                            $kernel => kernel.value_key
+                          ] fac image
                     {
                         xfac = to_real size / image.width;
                         yfac = to_real size / image.height;
@@ -1192,7 +1200,8 @@ Image_transform_item = class
                             max_factor,
                             min_factor,
                             [xfac, 1],
-                            [1, yfac]]?which;
+                            [1, yfac]
+                        ]?which;
 
                         fac
                             = h, v == 1
@@ -1236,7 +1245,9 @@ Image_transform_item = class
                     [width, height] = allrect?within;
 
                     process x
-                        = resize kernel.value_key fac fac x, fac < 1
+                        = resize [
+                            $kernel => kernel.value_key
+                          ] fac image, fac < 1
                         = x
                     {
                         xfac = (width / xdiv) / x.width;
