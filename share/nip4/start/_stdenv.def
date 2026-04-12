@@ -1247,7 +1247,7 @@ _morph_2_masks fn m1 m2
 dilate mask image
     = oo_unary_function dilate_op image, is_class image
     = vips_morph [] image (to_matrix mask) "dilate", is_image image
-    = error (_ "bad arguments to " ++ "dilate")
+    = error_bad_args "dilate" ["Matrix", "Image"] [mask, image]
 {
     dilate_op = Operator "dilate" dilate_object
         Operator_type.COMPOUND_REWRAP false;
@@ -1260,7 +1260,7 @@ dilate mask image
 erode mask image
     = oo_unary_function erode_op image, is_class image
     = vips_morph [] image (to_matrix mask) "erode", is_image image
-    = error (_ "bad arguments to " ++ "erode")
+    = error_bad_args "erode" ["Matrix", "Image"] [mask, image]
 {
     erode_op = Operator "erode" erode_object
         Operator_type.COMPOUND_REWRAP false;
@@ -1273,8 +1273,8 @@ erode mask image
 conv options mask image
     = oo_unary_function conv_op image, is_class image
     = vips_conv options image (to_matrix mask), is_image image
-    = error (_ "bad arguments to " ++ "conv" ++ ": " ++
-        "conv (" ++ print mask ++ ") (" ++ print image ++ ")")
+    = error_bad_args "conv"
+        ["[options]", "Matrix", "Image"] [options, mask, image]
 {
     conv_op = Operator "conv" (conv options mask)
         Operator_type.COMPOUND_REWRAP false;
@@ -1283,7 +1283,8 @@ conv options mask image
 convsep options mask image
     = oo_unary_function convsep_op image, is_class image
     = vips_convsep options image (to_matrix mask), is_image image
-    = error (_ "bad arguments to " ++ "convsep")
+    = error_bad_args "convsep"
+        ["[options]", "Matrix", "Image"] [options, mask, image]
 {
     convsep_op = Operator "convsep" (convsep options mask)
         Operator_type.COMPOUND_REWRAP false;
@@ -1292,7 +1293,7 @@ convsep options mask image
 rank w h n image
     = oo_unary_function rank_op image, is_class image
     = vips_rank [] image (to_real w) (to_real h) (to_real n), is_image image
-    = error (_ "bad arguments to " ++ "rank")
+    = error_bad_args "rank" ["real", "real", "real", "Image"] [w, h, n, im]
 {
     rank_op = Operator "rank" (rank w h n) Operator_type.COMPOUND_REWRAP false;
 }
@@ -1300,7 +1301,7 @@ rank w h n image
 rank_image n x
     = rlist x.value, is_Group x
     = rlist x, is_list x
-    = error (_ "bad arguments to " ++ "rank_image")
+    = error_bad_args "rank_image" ["real", "[Image]|Group"] [n, x]
 {
     rlist l
         = wrapper ranked, has_wrapper
@@ -1317,7 +1318,7 @@ correlate small big
     = oo_binary_function correlate_op small big, is_class small
     = oo_binary'_function correlate_op small big, is_class big
     = vips_spcor [] big small, is_image small && is_image big
-    = error (_ "bad arguments to " ++ "correlate")
+    = error_bad_args "correlate" ["Image", "Image"] [small, big]
 {
     correlate_op = Operator "correlate" correlate
         Operator_type.COMPOUND_REWRAP false;
