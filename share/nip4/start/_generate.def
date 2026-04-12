@@ -4,7 +4,7 @@
  * back.
  */
 image_new options w h
-    = embed 1 0 0 w h image'''
+    = embed [$extend => $copy] 0 0 w h image'''
 {
     // set most defaults from the pixel option (if any)
     pixel = get_option options [$pixel => 0] $pixel;

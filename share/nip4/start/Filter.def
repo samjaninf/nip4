@@ -1246,7 +1246,7 @@ Filter_drop_shadow_item = class
                         $interpretation => Interpretation.B_W,
                         $pixel => 255
                     ] image.width image.height;
-                mask' = embed 0 shadow_rect'.left shadow_rect'.top
+                mask' = embed [] shadow_rect'.left shadow_rect'.top
                         final_rect.width final_rect.height mask;
                 mask'' = convsep [] blur_matrix mask';
 
@@ -1260,7 +1260,7 @@ Filter_drop_shadow_item = class
                 bg = blend mask'' shadow_image bg_image;
 
                 // make a full size mask
-                fg_mask = embed 0
+                fg_mask = embed []
                     (image_rect.left - final_rect.left)
                     (image_rect.top - final_rect.top)
                     final_rect.width final_rect.height mask;

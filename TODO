@@ -1,5 +1,22 @@
 ## C
 
+- ruby string interpolation would be useful
+
+  it needs to be in the syntax, so:
+
+    "hello #{name}!"
+
+  needs to parse as:
+
+    string:
+        string fragment:  "hello "
+        string interpolation expression: name
+        string fragment:  "!"
+
+  then compile to:
+
+    ("hello " ++ print (name) ++ "!")
+
 - we heap_copy() far too often!
 
     see reduce.c:1213
@@ -41,9 +58,12 @@
 
 ## menus
 
+- inbad_args, only show "Image", not "Image|image"? the unwrapped type can
+  always be implicit
+
 - adding bad_args to _stdenv.def
 
-    reached rotate
+    reached dilate
 
 - Enum.picker could allow string or numeric arg
 

@@ -67,6 +67,7 @@ foreach name : snip_tests
   test_image = files('snip/images/slanted_oval_vase2.jpg')
   test(name, nip4_snip,
     args: [files('snip/' + name), test_image],
+    timeout: 60,
   )
 endforeach
 

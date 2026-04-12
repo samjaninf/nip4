@@ -1421,3 +1421,21 @@ Direction = class Enum {
         [VERTICAL, _ "Vertical"]
     ];
 }
+
+Extend = class Enum {
+    BLACK = 0;
+    COPY = 1;
+    REPEAT = 2;
+    MIRROR = 3;
+    WHITE = 4;
+    BACKGROUND = 5;
+
+    _description = [
+        [BLACK, _ "Black"],
+        [COPY, _ "Copy"],
+        [REPEAT, _ "Repeat"],
+        [MIRROR, _ "Mirror"],
+        [WHITE, _ "White"],
+        [BACKGROUND, _ "Background"]
+    ];
+}
