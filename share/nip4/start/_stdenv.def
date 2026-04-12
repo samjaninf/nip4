@@ -1329,7 +1329,7 @@ correlate_fast small big
     = oo_binary_function correlate_fast_op small big, is_class small
     = oo_binary'_function correlate_fast_op small big, is_class big
     = vips_fastcor [] big small, is_image small && is_image big
-    = error (_ "bad arguments to " ++ "correlate_fast")
+    = error_bad_args "correlate_fast" ["Image", "Image"] [small, big]
 {
     correlate_fast_op = Operator "correlate_fast" correlate_fast
         Operator_type.COMPOUND_REWRAP false;
@@ -1339,7 +1339,7 @@ correlate_fast small big
 hist_tag x
     = oo_unary_function hist_tag_op x, is_class x
     = set_header $interpretation $histogram x, is_image x
-    = error (_ "bad arguments to " ++ "hist_tag")
+    = error_bad_args "hist_tag" ["Image"] [x]
 {
     hist_tag_op = Operator "hist_tag" (Plot_histogram @ hist_tag)
         Operator_type.COMPOUND false;
@@ -1348,7 +1348,7 @@ hist_tag x
 hist_find x
     = oo_unary_function hist_find_op x, is_class x
     = vips_hist_find [] x, is_image x
-    = error (_ "bad arguments to " ++ "hist_find")
+    = error_bad_args "hist_find" ["Image"] [x]
 {
     hist_find_op = Operator "hist_find" (Plot_histogram @ hist_find)
         Operator_type.COMPOUND false;
@@ -1357,7 +1357,7 @@ hist_find x
 hist_find_nD bins image
     = oo_unary_function hist_find_nD_op image, is_class image
     = vips_hist_find_ndim [$bins => to_real bins] image, is_image image
-    = error (_ "bad arguments to " ++ "hist_find_nD")
+    = error_bad_args "hist_find_nD" ["real", "Image"] [bins, image]
 {
     hist_find_nD_op = Operator "hist_find_nD" (hist_find_nD bins)
         Operator_type.COMPOUND_REWRAP false;
@@ -1526,15 +1526,14 @@ hist_plot hist
         Operator_type.COMPOUND false;
 }
 
-reduce kernel xshr yshr image
+reduce options xshr yshr image
     = oo_unary_function reduce_op image, is_class image
-    = reduce_im image, is_image image
-    = error (_ "bad arguments to " ++ "reduce")
+    = vips_reduce options image (to_real xshr) (to_real yshr), is_image image
+    = error_bad_args "reduce"
+        ["[options]", "real", "real", "Image"] [options, xshr, yshr, image]
 {
-    reduce_op = Operator "reduce" reduce_im Operator_type.COMPOUND_REWRAP false;
-
-    reduce_im im
-        = vips_reduce [$kernel => kernel.value] im xshr yshr;
+    reduce_op = Operator "reduce" (reduce options xshr yshr)
+        Operator_type.COMPOUND_REWRAP false;
 }
 
 similarity interpolate scale angle image
