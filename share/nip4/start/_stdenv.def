@@ -2558,7 +2558,7 @@ case index cases
 fill_nearest x
     = oo_unary_function nearest_op x, is_class x
     = near x, is_image x
-    = error (_ "bad arguments to " ++ "fill_nearest")
+    = error_bad_args "fill_nearest" ["Image"] [x]
 {
     nearest_op = Operator "fill_nearest"
         fill_nearest Operator_type.COMPOUND_REWRAP false;
@@ -2692,7 +2692,7 @@ dE76 a b
     = oo_binary_function dE76_op a b, is_class a
     = oo_binary'_function dE76_op a b, is_class b
     = vips_dE76 [] a b, is_image a && is_image b
-    = error (_ "bad arguments to " ++ "dE76")
+    = error_bad_args "dE76" ["Image", "Image"] [a, b]
 {
     dE76_op = Operator "dE76" dE76 Operator_type.COMPOUND_REWRAP false;
 }
@@ -2701,7 +2701,7 @@ dE00 a b
     = oo_binary_function dE00_op a b, is_class a
     = oo_binary'_function dE00_op a b, is_class b
     = vips_dE00 [] a b, is_image a && is_image b
-    = error (_ "bad arguments to " ++ "dE00")
+    = error_bad_args "dE00" ["Image", "Image"] [a, b]
 {
     dE00_op = Operator "dE00" dE00 Operator_type.COMPOUND_REWRAP false;
 }
@@ -2710,7 +2710,7 @@ dECMC a b
     = oo_binary_function dECMC_op a b, is_class a
     = oo_binary'_function dECMC_op a b, is_class b
     = vips_dECMC [] a b, is_image a && is_image b
-    = error (_ "bad arguments to " ++ "dECMC")
+    = error_bad_args "dECMC" ["Image", "Image"] [a, b]
 {
     dECMC_op = Operator "dECMC" dECMC Operator_type.COMPOUND_REWRAP false;
 }
@@ -2719,7 +2719,8 @@ composite options mode a b
     = oo_binary_function composite_op a b, is_class a
     = oo_binary'_function composite_op a b, is_class b
     = vips_composite2 options a b mode, is_image a && is_image b
-    = error (_ "bad arguments to " ++ "composite")
+    = error_bad_args "composite"
+        ["[option]", "Blend", "Image", "Image"] [options, mode, a, b]
 {
     composite_op = Operator "composite" (composite options mode)
         Operator_type.COMPOUND_REWRAP false;

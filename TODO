@@ -58,16 +58,12 @@
 
 ## menus
 
-- adding bad_args to _stdenv.def
-
-    reached fill_nearest
-
 - Enum.picker could allow string or numeric arg
 
-            style = Plot_style.picker $LINE;
-            style = Plot_style.picker Plot_style.LINE;
+    style = Plot_style.picker $LINE;
+    style = Plot_style.picker Plot_style.LINE;
 
-    second does a lookup to get the key name
+  second does a lookup to get the key name
 
 - now that image_new sets interp to sRGB for many band pixels, perhaps we can
   remove some (set_header $interpretation $srgb)?
