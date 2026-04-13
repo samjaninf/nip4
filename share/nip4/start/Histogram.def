@@ -40,7 +40,16 @@ Hist_new_item = class
             ha = Scale "Highlight adjust" (-15) 15 0;
 
             _result
-                = tone_build fmt b w sp mp hp sa ma ha
+                = tone_build [
+                    $Lb => to_real b,
+                    $Lw => to_real w,
+                    $Ps => to_real sp,
+                    $Pm => to_real mp,
+                    $Ph => to_real hp,
+                    $S => to_real sa,
+                    $M => to_real ma,
+                    $H => to_real ha
+                  ] fmt
             {
                 fmt = [Format.UCHAR, Format.USHORT]?d;
             }

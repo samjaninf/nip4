@@ -1000,7 +1000,17 @@ Image_levels_item = class
             _result {
             _vislevel = 3;
 
-            curve = tone_build x.format b w sp mp hp sa ma ha;
+            curve
+                = tone_build [
+                    $Lb => to_real b,
+                    $Lw => to_real w,
+                    $Ps => to_real sp,
+                    $Pm => to_real mp,
+                    $Ph => to_real hp,
+                    $S => to_real sa,
+                    $M => to_real ma,
+                    $H => to_real ha
+                  ] x.format;
 
             sa = Scale "Shadow adjust" (-15) 15 0;
             ma = Scale "Mid-tone adjust" (-30) 30 0;
@@ -1247,7 +1257,7 @@ Image_transform_item = class
                     process x
                         = resize [
                             $kernel => kernel.value_key
-                          ] fac image, fac < 1
+                          ] fac x, fac < 1
                         = x
                     {
                         xfac = (width / xdiv) / x.width;

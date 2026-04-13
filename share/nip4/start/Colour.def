@@ -383,7 +383,7 @@ Colour_icc_item = class
             has_bands image &&
             get_bands image >= 4
         = monitor_profile;
-    render_intents = Intent.picker "ABSOLUTE";
+    render_intents = Intent.picker $ABSOLUTE;
 
     Export_item = class
         Menuaction (_ "Export") (_ "export from PCS to device space") {
@@ -399,8 +399,11 @@ Colour_icc_item = class
                 = map_unary process x
             {
                 process image
-                    = icc_export [8, 16]?depth profile.value
-                        intent.value_key lab
+                    = icc_export [
+                        $output_profile => expand profile.value,
+                        $depth => [8, 16]?depth,
+                        $intent => intent.value_key
+                      ] lab
                 {
                     lab = colourspace [] Interpretation.LABQ image;
                 }
@@ -422,10 +425,11 @@ Colour_icc_item = class
                 = map_unary process x
             {
                 process image
-                    = icc_import_embedded intent.value_key image,
-                        get_header_type "icc-profile-data" image != 0 &&
-                        embedded
-                    = icc_import profile.value intent.value_key image;
+                    = icc_import [
+                        $input_profile => expand profile.value,
+                        $intent => intent.value_key,
+                        $embedded => to_real embedded
+                      ] image;
             }
         }
     }
@@ -444,8 +448,10 @@ Colour_icc_item = class
                 = map_unary process x
             {
                 process image
-                    = icc_transform in_profile.value out_profile.value
-                        intent.value_key image;
+                    = icc_transform [
+                        $input_profile => expand in_profile.value,
+                        $intent => intent.value_key
+                      ] out_profile.value image;
             }
         }
     }

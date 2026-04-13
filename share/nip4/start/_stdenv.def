@@ -1132,7 +1132,7 @@ rotate options angle x
     = oo_unary_function rotate_op x, is_class x
     = vips_rotate options x (to_real angle), is_image x
     = error_bad_args "rotate"
-        ["[options]", "real", "Image"] [options, angle, x]
+        ["[option]", "real", "Image"] [options, angle, x]
 {
     rotate_op = Operator "rotate" (rotate options angle)
         Operator_type.COMPOUND_REWRAP false;
@@ -1274,7 +1274,7 @@ conv options mask image
     = oo_unary_function conv_op image, is_class image
     = vips_conv options image (to_matrix mask), is_image image
     = error_bad_args "conv"
-        ["[options]", "Matrix", "Image"] [options, mask, image]
+        ["[option]", "Matrix", "Image"] [options, mask, image]
 {
     conv_op = Operator "conv" (conv options mask)
         Operator_type.COMPOUND_REWRAP false;
@@ -1284,7 +1284,7 @@ convsep options mask image
     = oo_unary_function convsep_op image, is_class image
     = vips_convsep options image (to_matrix mask), is_image image
     = error_bad_args "convsep"
-        ["[options]", "Matrix", "Image"] [options, mask, image]
+        ["[option]", "Matrix", "Image"] [options, mask, image]
 {
     convsep_op = Operator "convsep" (convsep options mask)
         Operator_type.COMPOUND_REWRAP false;
@@ -1526,7 +1526,7 @@ reduce options xshr yshr image
     = oo_unary_function reduce_op image, is_class image
     = vips_reduce options image (to_real xshr) (to_real yshr), is_image image
     = error_bad_args "reduce"
-        ["[options]", "real", "real", "Image"] [options, xshr, yshr, image]
+        ["[option]", "real", "real", "Image"] [options, xshr, yshr, image]
 {
     reduce_op = Operator "reduce" (reduce options xshr yshr)
         Operator_type.COMPOUND_REWRAP false;
@@ -1535,7 +1535,7 @@ reduce options xshr yshr image
 similarity options image
     = oo_unary_function similarity_op image, is_class image
     = vips_similarity options image, is_image image
-    = error_bad_args "similarity" ["[options]", "Image"] [options, image]
+    = error_bad_args "similarity" ["[option]", "Image"] [options, image]
 {
     similarity_op = Operator "similarity" (similarity options)
         Operator_type.COMPOUND_REWRAP false;
@@ -1545,7 +1545,7 @@ resize options scale image
     = oo_unary_function resize_op image, is_class image
     = vips_resize options image (to_real scale), is_image image
     = error_bad_args "resize"
-        ["[options]", "real", "Image"] [options, scale, image]
+        ["[option]", "real", "Image"] [options, scale, image]
 {
     resize_op = Operator "resize" (resize options scale)
         Operator_type.COMPOUND_REWRAP false;
@@ -1554,94 +1554,49 @@ resize options scale image
 sharpen options in
     = oo_unary_function sharpen_op in, is_class in
     = vips_sharpen options in, is_image in
-    = error_bad_args "sharpen" ["[options]", "Image"] [options, in]
+    = error_bad_args "sharpen" ["[option]", "Image"] [options, in]
 {
     sharpen_op = Operator "sharpen" (sharpen options)
         Operator_type.COMPOUND_REWRAP false;
 }
 
-tone_build fmt b w s m h sa ma ha
-    = (Plot_histogram @ cast fmt)
-        (tone_build_im mx mx
-            (to_real b) (to_real w)
-            (to_real s) (to_real m) (to_real h)
-            (to_real sa) (to_real ma) (to_real ha))
+tone_build options format
+    = (Plot_histogram @ cast format)
+        (vips_tonelut (options ++ [
+            $in_max => mx,
+            $out_max => mx
+         ]))
 {
-    mx = Format._maxval fmt;
-
-    tone_build_im in_max out_max Lb Lw Ps Pm Ph S M H
-        = vips_tonelut [
-            $in_max => in_max,
-            $out_max => out_max,
-            $Lb => Lb,
-            $Lw => Lw,
-            $Ps => Ps,
-            $Pm => Pm,
-            $Ph => Ph,
-            $S => S,
-            $M => M,
-            $H => H
-        ];
+    mx = Format._maxval format;
 }
 
-icc_export depth profile intent in
+icc_export options in
     = oo_unary_function icc_export_op in, is_class in
-    = icc_export_im in
-        (to_real depth) (expand profile) (to_real intent), is_image in
-    = error (_ "bad arguments to " ++ "icc_export")
+    = vips_icc_export options in, is_image in
+    = error_bad_args "icc_export" ["[option]", "Image"] [options, in]
 {
-    icc_export_op = Operator "icc_export" (icc_export depth profile intent)
+    icc_export_op = Operator "icc_export" (icc_export options)
         Operator_type.COMPOUND_REWRAP false;
-
-    icc_export_im in depth profile intent
-        = vips_icc_export [
-            $depth => depth,
-            $intent => intent,
-            $output_profile => profile
-        ] in;
 }
 
-icc_import profile intent in
+icc_import options in
     = oo_unary_function icc_import_op in, is_class in
-    = icc_import_im in (expand profile) (to_real intent), is_image in
-    = error (_ "bad arguments to " ++ "icc_import")
+    = vips_icc_import options in, is_image in
+    = error_bad_args "icc_import" ["[option]", "Image"] [options, in]
 {
-    icc_import_op = Operator "icc_import" (icc_import profile intent)
+    icc_import_op = Operator "icc_import" (icc_import options)
         Operator_type.COMPOUND_REWRAP false;
-
-    icc_import_im in profile intent
-        = vips_icc_import [$intent => intent, $input_profile => profile] in;
 }
 
-icc_import_embedded intent in
-    = oo_unary_function icc_import_embedded_op in, is_class in
-    = icc_import_embedded_im in (to_real intent), is_image in
-    = error (_ "bad arguments to " ++ "icc_import_embedded")
-{
-    icc_import_embedded_op = Operator "icc_import_embedded"
-        (icc_import_embedded intent)
-        Operator_type.COMPOUND_REWRAP false;
-
-    icc_import_embedded_im in intent
-        = vips_icc_import [$intent => intent, $embedded => true] in;
-}
-
-icc_transform in_profile out_profile intent in
+icc_transform options output_profile in
     = oo_unary_function icc_transform_op in, is_class in
-    = icc_transform_im in
-        (expand in_profile) (expand out_profile)
-        (to_real intent), is_image in
-    = error (_ "bad arguments to " ++ "icc_transform")
+    = vips_icc_transform options in (expand output_profile), is_image in
+    = error_bad_args "icc_transform"
+        ["[option]", "[char]", "Image"] [options, output_profile, in]
 {
     icc_transform_op = Operator "icc_transform"
-        (icc_transform in_profile out_profile intent)
+        (icc_transform options output_profile)
         Operator_type.COMPOUND_REWRAP false;
-
-    icc_transform_im in input_profile output_profile intent
-        = vips_icc_transform [
-            $intent => intent,
-            $input_profile => output_profile
-        ] in output_profile;
 }
 
 // Given a xywh rect, flip it around so wh are always positive
