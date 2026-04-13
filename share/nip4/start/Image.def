@@ -1911,15 +1911,9 @@ Image_draw_item = class
             y1 = Expression "Start y" 0;
             x2 = Expression "End x" 100;
             y2 = Expression "End y" 100;
-
             i = Expression "Ink" [0];
 
-            _result
-                = map_unary line x
-            {
-                line im
-                    = draw_line x1 y1 x2 y2 i.expr im;
-            }
+            _result = draw_line [] x1 y1 x2 y2 i x;
         }
     }
 
@@ -1932,19 +1926,15 @@ Image_draw_item = class
             ry = Expression "Top" 50;
             rw = Expression "Width" 100;
             rh = Expression "Height" 100;
-
             f = Toggle "Fill" true;
-
             t = Scale "Line thickness" 1 50 3;
-
             i = Expression "Ink" [0];
 
             _result
-                = map_unary rect x
-            {
-                rect im
-                    = draw_rect_width rx ry rw rh f t i.expr im;
-            }
+                = draw_rect [
+                    $fill => to_bool f,
+                    $thickness => to_real t
+                  ] rx ry rw rh i x;
         }
     }
 
@@ -1956,17 +1946,10 @@ Image_draw_item = class
             cx = Expression "Centre x" 100;
             cy = Expression "Centre y" 100;
             r = Expression "Radius" 50;
-
             f = Toggle "Fill" true;
-
             i = Expression "Ink" [0];
 
-            _result
-                = map_unary circle x
-            {
-                circle im
-                    = draw_circle cx cy r f i.expr im;
-            }
+            _result = draw_circle [$fill => to_bool f] cx cy r i x;
         }
     }
 
@@ -1983,7 +1966,7 @@ Image_draw_item = class
                 "Equal to start point"
             ] 0;
 
-            // pick a default ink that won't flood, if we can
+            // try to pick a default ink that won't flood, if we can
             i
                 = Expression "Ink" default_ink
             {
@@ -1994,13 +1977,7 @@ Image_draw_item = class
                 im = get_image x;
             }
 
-            _result
-                = map_unary flood x
-            {
-                flood im
-                    = draw_flood sx sy i.expr im, e == 0
-                    = draw_flood_blob sx sy i.expr im;
-            }
+            _result = draw_flood [$equal => e != 0] sx sy i x;
         }
     }
 
@@ -2011,8 +1988,8 @@ Image_draw_item = class
 
             px = Expression "Left" 50;
             py = Expression "Top" 50;
-            wid = Expression "Width" 100;
-            thick = Scale "Line thickness" 1 50 3;
+            wid = Expression "Width" 500;
+            thick = Scale "Line thickness" 1 50 15;
             text = Text false "50μm";
             pos = Option "Position Text" ["Above", "Below"] 1;
             vp = Option "Dimension by" [
@@ -2020,7 +1997,7 @@ Image_draw_item = class
                 "Centre of Vertical",
                 "Outer Vertical Edge"
             ] 1;
-            ink = Colour "Lab" [50,0,0];
+            ink = Colour $LAB [50, 0, 0];
 
             _result
                 = map_unary process x
@@ -2038,8 +2015,9 @@ Image_draw_item = class
                     t = floor thick;
 
                     bg = image_new_from_image [] im (get_width im) (get_height im);
-                    draw_block x y w t im =
-                        draw_rect_width x y w t true 1 [255] im;
+                    draw_block x y w t im
+                        = draw_rect [$fill => true] x y w t 255 im;
+
                     label = text._generate w 1;
                     lw = get_width label;
                     lh = get_height label;

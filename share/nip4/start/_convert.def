@@ -215,6 +215,14 @@ to_enum x
         = c;
 }
 
+to_bool x
+    = x, is_bool x
+    = oo_unary_function to_bool_op x, is_class x
+    = to_int x != 0
+{
+    to_bool_op = Operator "to_bool" to_bool Operator_type.COMPOUND false;
+}
+
 /* Try to make a list ... ungroup, basically. We remove the innermost layer of
  * Groups.
  */
