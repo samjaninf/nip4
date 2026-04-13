@@ -60,7 +60,7 @@
 
 - adding bad_args to _stdenv.def
 
-    reached hist_cum
+    reached tone_build
 
 - Enum.picker could allow string or numeric arg
 

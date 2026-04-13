@@ -1366,7 +1366,7 @@ hist_find_nD bins image
 hist_find_indexed options index value
     = oo_binary_function hist_find_indexed_op index value, is_class index
     = oo_binary'_function hist_find_indexed_op index value, is_class value
-    = vips_hist_find_indexed options index value,
+    = vips_hist_find_indexed options value index,
         is_image index && is_image value
     = error_bad_args "hist_find_indexed"
         ["[option]", "Image", "Image"] [options, index, value]
@@ -1400,7 +1400,7 @@ maplut options hist image
 hist_cum hist
     = oo_unary_function hist_cum_op hist, is_class hist
     = vips_hist_cum [] hist, is_image hist
-    = error (_ "bad arguments to " ++ "hist_cum")
+    = error_bad_args "hist_cum" ["Image"] [hist]
 {
     hist_cum_op = Operator "hist_cum" hist_cum
         Operator_type.COMPOUND_REWRAP false;
@@ -1409,7 +1409,7 @@ hist_cum hist
 hist_diff hist
     = oo_unary_function hist_diff_op hist, is_class hist
     = hist_diff_im hist, is_image hist
-    = error (_ "bad arguments to " ++ "hist_diff")
+    = error_bad_args "hist_diff" ["Image"] [hist]
 {
     hist_diff_op = Operator "hist_diff" hist_diff
         Operator_type.COMPOUND_REWRAP false;
@@ -1431,7 +1431,7 @@ hist_diff hist
 hist_norm hist
     = oo_unary_function hist_norm_op hist, is_class hist
     = vips_hist_norm [] hist, is_image hist
-    = error (_ "bad arguments to " ++ "hist_norm " ++ print hist)
+    = error_bad_args "hist_norm" ["Image"] [hist]
 {
     hist_norm_op = Operator "hist_norm" hist_norm
         Operator_type.COMPOUND_REWRAP false;
@@ -1440,7 +1440,7 @@ hist_norm hist
 hist_inv hist
     = oo_unary_function hist_inv_op hist, is_class hist
     = inv hist, is_image hist
-    = error (_ "bad arguments to " ++ "hist_inv")
+    = error_bad_args "hist_inv" ["Image"] [hist]
 {
     hist_inv_op = Operator "hist_inv" hist_inv
         Operator_type.COMPOUND_REWRAP false;
@@ -1469,7 +1469,7 @@ hist_match in ref
     = oo_binary_function hist_match_op in ref, is_class in
     = oo_binary'_function hist_match_op in ref, is_class ref
     = vips_hist_match [] in' ref', is_image in && is_image ref
-    = error (_ "bad arguments to " ++ "hist_match")
+    = error_bad_args "hist_match" ["Image", "Image"] [in, ref]
 {
     hist_match_op = Operator "hist_match" hist_match
         Operator_type.COMPOUND_REWRAP false;
@@ -1480,17 +1480,15 @@ hist_match in ref
 
 hist_equalize x = maplut [] ((hist_norm @ hist_cum @ hist_find) x) x;
 
-hist_equalize_local w h l image
+hist_equalize_local options w h image
     = oo_unary_function hist_equalize_local_op image, is_class image
-    = out, is_image image
-    = error (_ "bad arguments to " ++ "hist_equalize_local")
+    = vips_hist_local options image (to_real w) (to_real h), is_image image
+    = error_bad_args "hist_equalize_local"
+        ["[option]", "real", "real", "Image"] [options, w, h, image]
 {
     hist_equalize_local_op = Operator "hist_equalize_local"
-        (hist_equalize_local w h l)
+        (hist_equalize_local options w h)
         Operator_type.COMPOUND_REWRAP false;
-
-    out = vips_hist_local [$max_slope => to_real l]
-        image (to_real w) (to_real h);
 }
 
 // find the threshold below which are percent of the image (percent in [0,1])
@@ -1518,7 +1516,7 @@ hist_thresh percent image
 hist_plot hist
     = oo_unary_function hist_plot_op hist, is_class hist
     = vips_hist_plot [] hist, is_image hist
-    = error (_ "bad arguments to " ++ "hist_plot")
+    = error_bad_args "hist_plot" ["Image"] [hist]
 {
     hist_plot_op = Operator "hist_plot" (Image @ hist_plot)
         Operator_type.COMPOUND false;
@@ -1547,31 +1545,19 @@ resize options scale image
     = oo_unary_function resize_op image, is_class image
     = vips_resize options image (to_real scale), is_image image
     = error_bad_args "resize"
-        ["[options]", "real", "Image"] [options, scale image]
+        ["[options]", "real", "Image"] [options, scale, image]
 {
     resize_op = Operator "resize" (resize options scale)
         Operator_type.COMPOUND_REWRAP false;
 }
 
-sharpen radius x1 y2 y3 m1 m2 in
+sharpen options in
     = oo_unary_function sharpen_op in, is_class in
-    = sharpen_im in (to_real radius)
-        (to_real x1) (to_real y2) (to_real y3)
-        (to_real m1) (to_real m2), is_image in
-    = error (_ "bad arguments to " ++ "sharpen")
+    = vips_sharpen options in, is_image in
+    = error_bad_args "sharpen" ["[options]", "Image"] [options, in]
 {
-    sharpen_op = Operator "sharpen" (sharpen radius x1 y2 y3 m1 m2)
+    sharpen_op = Operator "sharpen" (sharpen options)
         Operator_type.COMPOUND_REWRAP false;
-
-    sharpen_im in mask_size x1 y2 y3 m1 m2
-        = vips_sharpen [
-            $sigma => mask_size / 4,
-            $x1 => x1,
-            $y2 => y2,
-            $y3 => y3,
-            $m1 => m1,
-            $m2 => m2
-        ] in;
 }
 
 tone_build fmt b w s m h sa ma ha

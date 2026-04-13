@@ -47,7 +47,14 @@ Filter_conv_item = class
                     = Image in'''
                 {
                     in' = colourspace [] Interpretation.LABS in.value;
-                    in'' = sharpen [3, 5, 7, 9, 11, 51]?size st bm dm fs js in';
+                    in'' = sharpen [
+                        $sigma => [1, 1.5, 2, 3, 4, 10]?size,
+                        $x1 => to_real st,
+                        $y2 => to_real bm,
+                        $y3 => to_real dm,
+                        $m1 => to_real fs,
+                        $m2 => to_real js
+                    ] in';
                     in''' = colourspace [] (get_interpretation in) in'';
                 }
             }
@@ -592,10 +599,9 @@ Filter_enhance_item = class
                     = map_unary process x
                 {
                     process in
-                        = hist_equalize_local
-                            window_width
-                            window_height
-                            max_slope in;
+                        = hist_equalize_local [
+                            $max_slope => to_real max_slope
+                          ] window_width window_height in;
                 }
             }
         }

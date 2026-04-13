@@ -803,20 +803,14 @@ Tasks_print_item = class
                 = map_unary process x
             {
                 process image
-                    = sharpen params?0 params?1
-                        params?2 params?3 params?4 params?5
-                        (colourspace [] Interpretation.LABQ image)
-                {
-                    // sharpen params for various dpi
-                    // just change the size of the area we search
-                    param_table = [
-                        [7, 2.5, 40, 20, 0.5, 1.5],
-                        [5, 2.5, 40, 20, 0.5, 1.5],
-                        [3, 2.5, 40, 20, 0.5, 1.5],
-                        [11, 2.5, 40, 20, 0.5, 1.5]
-                    ];
-                    params = param_table?target_dpi;
-                }
+                    = sharpen [
+                        $sigma => [2, 1.5, 1, 1]?target_dpi,
+                        $x1 => 2.5,
+                        $y2 => 40,
+                        $y3 => 20,
+                        $m1 => 0.5,
+                        $m2 => 1.5
+                    ] (colourspace [] Interpretation.LABQ image);
             }
         }
     }
