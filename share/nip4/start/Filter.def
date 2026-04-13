@@ -101,7 +101,7 @@ Kirk
             {
                 masks = take 4 (iterate rot45 filter_lindet);
                 images
-                    = map (converse (conv [$precision => "integer"]) im) masks;
+                    = map (converse (conv [$precision => $integer]) im) masks;
             }
         }
     }
@@ -116,11 +116,10 @@ Kirk
             prec = Precision.picker $INTEGER;
 
             _result
-                = map_unary process x
-            {
-                process in
-                    = canny sigma prec.value_key in;
-            }
+                = canny [
+                    $sigma => to_real sigma,
+                    $precision => prec.value_key
+                  ] x;
         }
     }
 

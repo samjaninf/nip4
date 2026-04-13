@@ -1630,7 +1630,7 @@ Image_alpha_item = class
 
             bg = Expression "Background" 0;
 
-            _result = map_unary (flattenimage bg) x;
+            _result = flattenimage [$background => (to_vector bg).value] x;
         }
     }
 

@@ -60,7 +60,7 @@
 
 - adding bad_args to _stdenv.def
 
-    reached draw_flood_blob
+    reached fill_nearest
 
 - Enum.picker could allow string or numeric arg
 
