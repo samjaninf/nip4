@@ -58,6 +58,8 @@
 
 ## menus
 
+- look for missing vips8 features
+
 - Enum.picker could allow string or numeric arg
 
     style = Plot_style.picker $LINE;

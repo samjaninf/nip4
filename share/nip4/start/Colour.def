@@ -392,8 +392,9 @@ Colour_icc_item = class
             _vislevel = 3;
 
             profile = Pathname (_ "Output profile") print_profile;
-            intent = render_intents;
             depth = Option (_ "Output depth") [_ "8 bit", _ "16 bit"] 0;
+            intent = render_intents;
+            bpc = Toggle (_ "Black point compensation") false;
 
             _result
                 = map_unary process x
@@ -402,6 +403,7 @@ Colour_icc_item = class
                     = icc_export [
                         $output_profile => expand profile.value,
                         $depth => [8, 16]?depth,
+                        $black_point_compensation => bpc.value,
                         $intent => intent.value_key
                       ] lab
                 {
@@ -420,17 +422,17 @@ Colour_icc_item = class
             embedded = Toggle (_ "Use embedded profile if possible") false;
             profile = Pathname (_ "Default input profile") (guess_profile x);
             intent = render_intents;
+            pcs = PCS.picker $LAB;
+            bpc = Toggle (_ "Black point compensation") false;
 
             _result
-                = map_unary process x
-            {
-                process image
-                    = icc_import [
-                        $input_profile => expand profile.value,
-                        $intent => intent.value_key,
-                        $embedded => to_real embedded
-                      ] image;
-            }
+                = icc_import [
+                    $input_profile => expand profile.value,
+                    $intent => intent.value_key,
+                    $pcs => pcs.value_key,
+                    $black_point_compensation => bpc.value,
+                    $embedded => to_real embedded
+                  ] x;
         }
     }
 
@@ -440,19 +442,22 @@ Colour_icc_item = class
             _result {
             _vislevel = 3;
 
+            embedded = Toggle (_ "Use embedded profile if possible") false;
             in_profile = Pathname (_ "Input profile") (guess_profile x);
             out_profile = Pathname (_ "Output profile") print_profile;
+            depth = Option (_ "Output depth") [_ "8 bit", _ "16 bit"] 0;
             intent = render_intents;
+            bpc = Toggle (_ "Black point compensation") false;
 
             _result
-                = map_unary process x
-            {
-                process image
-                    = icc_transform [
-                        $input_profile => expand in_profile.value,
-                        $intent => intent.value_key
-                      ] out_profile.value image;
-            }
+                = icc_transform [
+                    $embedded => to_real embedded,
+                    $input_profile => expand in_profile.value,
+                    $output_profile => expand out_profile.value,
+                    $depth => [8, 16]?depth,
+                    $black_point_compensation => bpc.value,
+                    $intent => intent.value_key
+                  ] out_profile.value x;
         }
     }
 }

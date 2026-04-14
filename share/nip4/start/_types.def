@@ -1439,3 +1439,13 @@ Extend = class Enum {
         [BACKGROUND, _ "Background"]
     ];
 }
+
+PCS = class Enum {
+    LAB = 0;
+    XYZ = 1;
+
+    _description = [
+        [LAB, _ "Lab"],
+        [XYZ, _ "XYZ"]
+    ];
+}

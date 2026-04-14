@@ -1379,7 +1379,7 @@ hist_find_indexed options index value
 hist_entropy x
     = oo_unary_function hist_entropy_op x, is_class x
     = vips_hist_entropy [] x, is_image x
-    = error_bad_args "hist_entropy" ["Image"] [image]
+    = error_bad_args "hist_entropy" ["Image"] [x]
 {
     hist_entropy_op = Operator "hist_entropy" hist_entropy
         Operator_type.COMPOUND_REWRAP false;
