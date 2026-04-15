@@ -1,5 +1,89 @@
 ## C
 
+- try
+
+	map f l
+	  = [], l == []
+	  = (f a) : (map f x)
+	{
+	  a = hd l;
+	  x = tl l;
+	}
+
+    add a b = a + b;
+
+    Markup_macbeth pair = class {
+      line
+        = map (add 2) l
+      {
+        l = pair;
+      }
+    }
+
+    main = Markup_macbeth [1..10];
+
+  then
+
+    start nip4 in local mode
+    A1: main
+    program window, edit the "add 2" to be "add 3", |>
+    segv
+
+#0  0x00007ffff7e603a8 in g_type_check_instance_cast ()
+    at /lib/x86_64-linux-gnu/libgobject-2.0.so.0
+#1  0x00005555555d6a00 in itext_add_element
+    (buf=0x555555ffeb50, base=0x5555560699b8, top=1, bracket=0)
+    at ../src/itext.c:376
+#2  0x00005555555d6db5 in itext_value
+    (rc=0x7fffef3fe010, buf=0x555555ffeb50, root=0x5555560699b8)
+    at ../src/itext.c:448
+#3  0x00005555555d6f75 in itext_value_toplevel
+    (rc=0x7fffef3fe010, buf=0x555555ffeb50, root=0x5555560699b8)
+    at ../src/itext.c:488
+#4  0x00005555555d70e0 in itext_make_value_string
+    (expr=0x555556069930, buf=0x555555ffeb50) at ../src/itext.c:552
+#5  0x00005555555d71aa in itext_update_model (heapmodel=0x555555ffeac0)
+    at ../src/itext.c:578
+#6  0x00005555555bcf0c in heapmodel_update_model (heapmodel=0x555555ffeac0)
+    at ../src/heapmodel.c:69
+
+    it's the itext for row A1
+
+    looks like the expr->root graph is corrupt
+
+  on |>
+
+    row_show_dependents: A1
+    row_hide_dependents: A1
+    row_show_dependents: A1
+    row_hide_dependents: A1
+    row_recomp_sort: took 1e-06s
+    row_recomp: sorted dirties are:
+    row_link_break: breaking link from A1.line to A1.pair
+    row_link_build: A1.pair
+    row_link_build: A1.this
+    row_link_build: A1.super
+    row_link_build: A1.line
+    row_link_build: A1
+    row_recomp_sort: took 0s
+    row_recomp: sorted dirties are:
+
+    (nip4:213343): GLib-GObject-CRITICAL **: 09:09:53.342: invalid unclassed pointer in cast to 'iContainer'
+
+  we have an old compile somewhere?o
+
+  crash still happens in itext_make_value_string()
+
+  looks like recomp is finishing, but leaving bad pointers in the heap, we
+  have a bad SYMREF pointer too
+
+
+
+
+
+
+
+
 - this causes stray param errors
 
 	Markup_macbeth pair = class {
