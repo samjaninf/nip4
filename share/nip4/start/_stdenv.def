@@ -574,7 +574,7 @@ apply_matim_operation name fn in
     = oo_unary_function class_op in, is_class in
     = fn in, is_image in
     = apply_matrix_as_image fn in, is_matrix in
-    = error_bad_args name ["Image|Matrix"] [x]
+    = error_bad_args name ["Image|Matrix"] [in]
 {
     class_op = Operator name (apply_matim_operation name fn)
         Operator_type.COMPOUND_REWRAP false;
@@ -2723,6 +2723,27 @@ composite options mode a b
         ["[option]", "Blend", "Image", "Image"] [options, mode, a, b]
 {
     composite_op = Operator "composite" (composite options mode)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+match options xr1 yr1 xs1 ys1 xr2 yr2 xs2 ys2 ref sec
+    = oo_binary_function match_op ref sec, is_class ref
+    = oo_binary'_function composite_op ref sec, is_class sec
+    = vips_match options ref sec
+        (to_real xr1) (to_real yr1) (to_real xs1) (to_real ys1)
+        (to_real xr2) (to_real yr2) (to_real xs2) (to_real ys2),
+        is_image ref && is_image sec
+    = error_bad_args "match"
+        ["[option]",
+         "Real", "Real", "Real", "Real",
+         "Real", "Real", "Real", "Real",
+         "Image", "Image"]
+        [options,
+         xr1, yr1, xs1, ys1,
+         xr2, yr2, xs2, ys2,
+         ref, sec]
+{
+    match_op = Operator "match" (match options xr1 yr1 xs1 ys1 xr2 yr2 xs2 ys2)
         Operator_type.COMPOUND_REWRAP false;
 }
 

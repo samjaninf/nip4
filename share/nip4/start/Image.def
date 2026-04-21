@@ -1441,15 +1441,16 @@ Image_transform_item = class
                     inter = Interpolate._new [] interp.value_key;
 
                     b'''
-                        = vips_match [
+                        = match [
                             $hwindow => object,
                             $harea => window,
                             // we can't search if lock is on
                             $search => refine.value && !lock.value,
                             $interpolate => inter
-                          ] a' b''
+                          ]
                             ap1.left ap1.top bp1.left bp1.top
-                            ap2''.left ap2''.top bp2''.left bp2''.top;
+                            ap2''.left ap2''.top bp2''.left bp2''.top
+                            a' b'';
                 }
             }
         }
