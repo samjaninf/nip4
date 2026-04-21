@@ -10,6 +10,7 @@
 - fix "meson test"
 - maxpair, minpair handle constants correctly
 - add prewitt, scharr edge detectors
+- better link creation
 
 ## 9.0.18 2026/03/25
 

@@ -371,10 +371,15 @@ symbol_is_leafable(Symbol *sym)
 void *
 symbol_sanity(Symbol *sym)
 {
+	if (sym->dirty) {
+		printf("symbol_sanity: %s dirty, %d dirty children\n",
+				symbol_name(sym), sym->ndirtychildren);
+
+	}
+
 	if (is_top(sym)) {
 		if (symbol_ndirty(sym) != sym->ndirtychildren)
-			error("sanity failure #1 for sym \"%s\"",
-				symbol_name(sym));
+			error("sanity failure #1 for sym \"%s\"", symbol_name(sym));
 	}
 
 	if (symbol_is_leafable(sym) && !sym->leaf)
@@ -402,12 +407,64 @@ symbol_leaf_set_sanity(void)
 			(icontainer_map_fn) symbol_sanity, NULL, NULL);
 
 	/* Commented out to reduce spam
+	printf("Leaf set: ");
+	slist_map(symbol_leaf_set, (SListMapFn) dump_tiny, NULL);
+	printf("\n");
 	 */
-	printf( "Leaf set: " );
-	slist_map( symbol_leaf_set, (SListMapFn) dump_tiny, NULL );
-	printf( "\n" );
 }
 #endif /*DEBUG*/
+
+#ifdef DEBUG_RECALC
+void *
+symbol_dirty_print(Symbol *sym, int *indent)
+{
+	/*
+	if (g_str_equal(IOBJECT(sym)->name, "main")) {
+		printf("checking main!!\n");
+		int indent = 0;
+		dump_symbol(sym, &indent);
+	}
+	 */
+
+	if (sym->dirty) {
+		printf("%*c", *indent, ' ');
+		printf("%s dirty, %d dirty children\n",
+			symbol_name_scope(sym), sym->ndirtychildren);
+
+		printf("%*c", *indent + 2, ' ');
+		printf("(");
+		for (GSList *p = sym->topchildren; p; p = p->next) {
+			Link *link = (Link *) (p->data);
+
+			if (link->child->dirty)
+				printf("*");
+			printf("%s, ", symbol_name_scope(link->child));
+		}
+		printf(")\n");
+	}
+
+	*indent += 2;
+
+	if (sym->expr &&
+		sym->expr->compile)
+		icontainer_map(ICONTAINER(sym->expr->compile),
+			(icontainer_map_fn) symbol_dirty_print, indent, NULL);
+
+	*indent -= 2;
+
+	return NULL;
+}
+
+static void
+symbol_dirties(void)
+{
+	int indent = 0;
+
+	printf("symbol_dirties:\n");
+	icontainer_map(ICONTAINER(symbol_root->expr->compile),
+		(icontainer_map_fn) symbol_dirty_print, &indent, NULL);
+}
+#endif /*DEBUG_RECALC*/
 
 /* Strip a symbol down, ready for redefinition.
  */
@@ -1174,7 +1231,7 @@ symbol_recalculate_leaf_sub(Symbol *sym)
 
 #ifdef DEBUG_RECALC
 			printf("\tsuccess: ");
-			//graph_pointer(&sym->expr->root);
+			graph_pointer(&sym->expr->root);
 #endif /*DEBUG_RECALC*/
 		}
 	}
@@ -1182,7 +1239,7 @@ symbol_recalculate_leaf_sub(Symbol *sym)
 	else {
 		printf("\t(found dirty children)\n");
 		int indent = 0;
-		//dump_symbol(sym, &indent);
+		dump_symbol(sym, &indent);
 	}
 #endif /*DEBUG_RECALC*/
 
@@ -1207,6 +1264,7 @@ symbol_recalculate_leaf(void)
 	printf("symbol_recalculate_leaves: Leaf set: ");
 	slist_map(symbol_leaf_set, (SListMapFn) dump_tiny, NULL);
 	printf("\n");
+	symbol_dirties();
 #endif /*DEBUG_RECALC*/
 
 	/* Grab stuff off the leaf set.

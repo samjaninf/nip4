@@ -558,7 +558,7 @@ expr_dirty(Expr *expr, int serial)
 
 #ifdef DEBUG
 	printf("expr_dirty: ");
-	symbol_name_print(expr->sym);
+	symbol_name_scope_print(expr->sym);
 	printf("\n");
 #endif /*DEBUG*/
 

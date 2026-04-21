@@ -299,13 +299,11 @@ program_parse(Program *program)
         IOBJECT(program->kit)->name, program->tool_pos);
 #endif /*DEBUG*/
 
-    /* We must remove the current tool or we'll see the text as a new RHS.
+    /* Strip the current tool so we don't see the new text as an extra RHS.
      */
     if (program->tool) {
-        Tool *tool = program->tool;
-
+        symbol_strip(program->tool->sym);
         WEAKREF_SET(program->tool, NULL);
-        IDESTROY(tool);
     }
 
     /* ... and parse the new text into it.
@@ -316,7 +314,7 @@ program_parse(Program *program)
         text_view_select_text(GTK_TEXT_VIEW(program->text_view),
             input_state.charpos - yyleng, input_state.charpos);
 		// in case we started something we couldn't finish
-		IDESTROY(compile->last_sym);
+		symbol_strip(compile->last_sym);
 
         return FALSE;
     }

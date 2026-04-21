@@ -493,7 +493,7 @@ itext_value_toplevel(Reduce *rc, VipsBuf *buf, PElement *root)
 
 /* Decompile an Expr.
  */
-static gboolean
+gboolean
 itext_make_decompiled_string(Expr *expr, VipsBuf *buf)
 {
 	/* Old error on this expression?
@@ -574,10 +574,12 @@ itext_update_model(Heapmodel *heapmodel)
 
 	vips_buf_set_dynamic(&itext->value, LINELENGTH);
 	vips_buf_set_dynamic(&itext->decompile, LINELENGTH);
-	if (expr) {
-		if (!itext_make_value_string(expr, &itext->value) ||
-			!itext_make_decompiled_string(expr, &itext->decompile))
-			expr_error_set(expr);
+
+	if (expr &&
+		(!itext_make_value_string(expr, &itext->value) ||
+		 !itext_make_decompiled_string(expr, &itext->decompile))) {
+		printf("itext_update_model: seen error!\n");
+		expr_error_set(expr);
 	}
 
 #ifdef DEBUG

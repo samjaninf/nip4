@@ -2185,8 +2185,7 @@ compile_resolve_top(Symbol *sym)
 		 enclosing = compile_get_parent(enclosing)) {
 		Symbol *outer_sym;
 
-		if ((outer_sym = compile_lookup(enclosing,
-				 IOBJECT(sym)->name)) &&
+		if ((outer_sym = compile_lookup(enclosing, IOBJECT(sym)->name)) &&
 			outer_sym->type != SYM_ZOMBIE)
 			return outer_sym;
 	}

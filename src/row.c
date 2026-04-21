@@ -1640,6 +1640,12 @@ row_recomp(Row *row)
 {
 	Row *top_row = row->top_row;
 
+#ifdef DEBUG
+	printf("row_recomp: starting for ");
+	row_name_print(top_row);
+	printf("\n");
+#endif /*DEBUG*/
+
 	/* Sort dirties into recomp order.
 	 */
 	row_recomp_sort(top_row);
@@ -1729,6 +1735,13 @@ row_recomp(Row *row)
 	if (!top_row->err)
 		symbol_dirty_clear(top_row->sym);
 
+#ifdef DEBUG
+	printf("row_recomp: value of ");
+	row_name_print(top_row);
+	printf("is ");
+	pgraph(&top_row->expr->root);
+#endif /*DEBUG*/
+
 	/* Now we're clean, all models can update from the heap. Rows
 	 * containing errors can have bad pointers in, so careful.
 	 */
@@ -1736,13 +1749,6 @@ row_recomp(Row *row)
 	   	icontainer_map_all(ICONTAINER(top_row),
 			(icontainer_map_fn) heapmodel_update_model, NULL))
 			expr_error_set(top_row->expr);
-
-#ifdef DEBUG
-	printf("row_recomp: value of ");
-	row_name_print(top_row);
-	printf("is ");
-	pgraph(&top_row->expr->root);
-#endif /*DEBUG*/
 }
 
 /* Test, suitable for mapping.

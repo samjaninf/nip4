@@ -65,10 +65,9 @@ tool_linkreport_sym_sym(Symbol *child, Symbol *parent, VipsBuf *buf)
 	if (child->type == SYM_ZOMBIE &&
 		!child->generated && !parent->generated &&
 		!compile_resolve_top(child)) {
-
 		symbol_name_error(parent, buf);
-
 		vips_buf_appendf(buf, " ");
+
 		/* used as in "fred refers to undefined symbol jim"
 		 */
 		vips_buf_appendf(buf, _("refers to undefined symbol"));

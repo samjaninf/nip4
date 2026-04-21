@@ -44,9 +44,9 @@ link_expr_destroy(LinkExpr *le)
 
 #ifdef DEBUG
 	printf("link_expr_destroy: removing expr ");
-	symbol_name_print(le->expr->sym);
+	symbol_name_scope_print(le->expr->sym);
 	printf("referencing link->child = ");
-	symbol_name_print(le->link->child);
+	symbol_name_scope_print(le->link->child);
 	printf("\n");
 #endif /*DEBUG*/
 
@@ -69,9 +69,9 @@ link_expr_new(Link *link, Expr *expr, gboolean dynamic)
 
 #ifdef DEBUG
 	printf("link_expr_new: expr ");
-	symbol_name_print(expr->sym);
-	printf("references link->child = ");
-	symbol_name_print(link->child);
+	symbol_name_scope_print(expr->sym);
+	printf(" references link->child = ");
+	symbol_name_scope_print(link->child);
 	printf("\n");
 #endif /*DEBUG*/
 
@@ -156,9 +156,9 @@ link_destroy(Link *link)
 {
 #ifdef DEBUG
 	printf("link_destroy: destroying link from ");
-	symbol_name_print(link->parent);
+	symbol_name_scope_print(link->parent);
 	printf("to ");
-	symbol_name_print(link->child);
+	symbol_name_scope_print(link->child);
 	printf("\n");
 #endif /*DEBUG*/
 
@@ -191,9 +191,9 @@ link_new(Symbol *child, Symbol *parent)
 
 #ifdef DEBUG
 	printf("link_new: making link from ");
-	symbol_name_print(parent);
-	printf("to ");
-	symbol_name_print(child);
+	symbol_name_scope_print(parent);
+	printf(" to ");
+	symbol_name_scope_print(child);
 	printf("\n");
 #endif /*DEBUG*/
 
@@ -261,8 +261,16 @@ void *
 link_add(Symbol *child, Expr *expr, gboolean dynamic)
 {
 	Expr *parent = expr_get_root_dynamic(expr);
-	Link *link;
-	LinkExpr *le;
+
+	/* child can be a zombie toplevel which we should resolve to an enclosing
+	 * table.
+	 */
+	if (child->type == SYM_ZOMBIE) {
+		Symbol *new_sym;
+
+		if ((new_sym = compile_resolve_top(child)))
+			child = new_sym;
+	}
 
 #ifdef DEBUG
 	printf("link_add: child = ");
@@ -276,6 +284,9 @@ link_add(Symbol *child, Expr *expr, gboolean dynamic)
 	g_assert(parent->sym);
 	g_assert(is_top(child) && is_top(parent->sym));
 	g_assert(child != parent->sym);
+
+	Link *link;
+	LinkExpr *le;
 
 	if (!(link = link_find_child(child, parent->sym))) {
 		if (!(link = link_new(child, parent->sym)))

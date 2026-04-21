@@ -69,6 +69,7 @@ iText *itext_new(Rhs *rhs);
 gboolean itext_value(Reduce *rc, VipsBuf *buf, PElement *root);
 void itext_value_ev(Reduce *rc, VipsBuf *buf, PElement *root);
 gboolean itext_make_value_string(Expr *expr, VipsBuf *buf);
+gboolean itext_make_decompiled_string(Expr *expr, VipsBuf *buf);
 
 void itext_set_edited(iText *text, gboolean edited);
 gboolean itext_set_formula(iText *text, const char *formula);
