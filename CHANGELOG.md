@@ -1,4 +1,6 @@
-## main
+## master
+
+## 9.1.0 2026/04/22
 
 - block -NaN in tslider when range == 0 [MvGulik]
 - fix crash in recover when no recover item selected [MvGulik]

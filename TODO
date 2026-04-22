@@ -1,41 +1,5 @@
 ## C
 
-- this causes stray param errors
-
-	Markup_macbeth pair = class {
-	  _vislevel = 2;
-
-	  straighten_image = copy [] pair.targets;
-	  line
-	    = Arrow straighten_image x y w h
-	  {
-	    x = pair.targets.width / 4;
-	    y = pair.targets.height / 2;
-	    w = pair.targets.width / 2;
-	    h = 0;
-	  }
-
-  after compilation, "line" contains Markup_macbeth.pair PARAM refs
-
-  make a minimal reproducer
-
-  why does it seem to work in compat mode? how odd
-
-- workspace defs
-
-	a = 1;
-	b = 2;
-
-	|>
-	make a syntax error
-	|>
-	fix the syntax error
-	|>
-
-  get
-
-	can't redefine a
-
 - ruby string interpolation would be useful
 
   it needs to be in the syntax, so:
@@ -95,8 +59,6 @@
 ## menus
 
 - look for more missing vips8 features
-
-- start charisma workspace
 
 - Enum.picker could allow string or numeric arg
 
@@ -165,6 +127,8 @@
 
   edit a cell and hit enter, lose the widgets, same happens in nip2
   do we need to define a Matrix_base member in Matrix_gaussian_item.action?
+
+  see Matrix_circular_item -- it handles this case, we'd need something similar
 
 - add "smooth" option to union/intersection/difference?
 

@@ -58,6 +58,18 @@
 
   <releases>
 
+    <release version="9.1.0" date="2026-04-22">
+      <description>
+        <p>
+
+            Completely rewritten toolkit menus are all vips8, ctrl-M
+            hides and shows the toolkit menu, new test suite, better modifier
+            handling, lots of small bugfixes.
+
+        </p>
+      </description>
+    </release>
+
     <release version="9.0.18" date="2026-03-25">
       <description>
         <p>
