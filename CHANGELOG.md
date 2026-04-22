@@ -3,6 +3,7 @@
 ## 9.1.1 2026/04/22
 
 - fix region delete [kmartinez]
+- fix embedded toggle on ICC import
 
 ## 9.1.0 2026/04/22
 

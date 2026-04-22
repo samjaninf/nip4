@@ -431,7 +431,7 @@ Colour_icc_item = class
                     $intent => intent.value_key,
                     $pcs => pcs.value_key,
                     $black_point_compensation => bpc.value,
-                    $embedded => to_real embedded
+                    $embedded => to_bool embedded
                   ] x;
         }
     }
@@ -451,7 +451,7 @@ Colour_icc_item = class
 
             _result
                 = icc_transform [
-                    $embedded => to_real embedded,
+                    $embedded => to_bool embedded,
                     $input_profile => expand in_profile.value,
                     $output_profile => expand out_profile.value,
                     $depth => [8, 16]?depth,
