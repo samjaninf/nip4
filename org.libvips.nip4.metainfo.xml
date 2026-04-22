@@ -58,6 +58,16 @@
 
   <releases>
 
+    <release version="9.1.1" date="2026-04-22">
+      <description>
+        <p>
+
+            Fix region delete.
+
+        </p>
+      </description>
+    </release>
+
     <release version="9.1.0" date="2026-04-22">
       <description>
         <p>
