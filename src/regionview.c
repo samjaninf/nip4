@@ -159,7 +159,8 @@ regionview_update_from_model(Regionview *regionview)
 	if (regionview->classmodel) {
 		Row *row = HEAPMODEL(regionview->classmodel)->row;
 
-		if (row->expr) {
+		if (row &&
+			row->expr) {
 			PElement *root = &row->expr->root;
 
 			regionview_set_type(regionview, root);
