@@ -60,7 +60,6 @@ itextview_refresh(vObject *vobject)
 	iTextview *itextview = ITEXTVIEW(vobject);
 	iText *itext = ITEXT(VOBJECT(itextview)->iobject);
 	Row *row = HEAPMODEL(itext)->row;
-	Expr *expr = row->expr;
 
 	const char *display;
 
