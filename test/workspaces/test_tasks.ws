@@ -26,7 +26,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1041" y="5" open="true" selected="false" sform="false" next="35" name="BC" caption="Tasks / Capture">
+    <Column x="1040" y="5" open="true" selected="false" sform="false" next="35" name="BC" caption="Tasks / Capture">
       <Subcolumn vislevel="3">
         <Row popup="false" name="BC2">
           <Rhs vislevel="2" flags="5">
@@ -67,7 +67,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2649" y="5" open="true" selected="false" sform="false" next="32" name="UB" caption="Tasks / Mosaic / Onepoint|Twopoint">
+    <Column x="2642" y="5" open="true" selected="false" sform="false" next="32" name="UB" caption="Tasks / Mosaic / Onepoint|Twopoint">
       <Subcolumn vislevel="3">
         <Row popup="false" name="UB1">
           <Rhs vislevel="2" flags="5">
@@ -298,7 +298,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="3331" y="5" open="true" selected="false" sform="false" next="38" name="IB" caption="Tasks / Mosaic / Manual Balance">
+    <Column x="3324" y="5" open="true" selected="false" sform="false" next="38" name="IB" caption="Tasks / Mosaic / Manual Balance">
       <Subcolumn vislevel="3">
         <Row popup="false" name="IB8">
           <Rhs vislevel="1" flags="4">
@@ -425,30 +425,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="4085" y="5" open="true" selected="false" sform="false" next="6" name="EC" caption="Tasks / Mosaic / Clone">
-      <Subcolumn vislevel="3">
-        <Row popup="false" name="EC4">
-          <Rhs vislevel="1" flags="4">
-            <iText formula="&quot;$VIPSHOME/share/nip4/data/examples/clone/&quot;"/>
-          </Rhs>
-        </Row>
-        <Row popup="false" name="EC1">
-          <Rhs vislevel="2" flags="5">
-            <iImage window_x="225" window_y="466" window_width="1108" window_height="532"/>
-            <Subcolumn vislevel="0"/>
-            <iText formula="Image_file (EC4 ++ &quot;example_im_01.png&quot;)"/>
-          </Rhs>
-        </Row>
-        <Row popup="false" name="EC2">
-          <Rhs vislevel="2" flags="5">
-            <iImage window_x="0" window_y="0" window_width="478" window_height="526"/>
-            <Subcolumn vislevel="0"/>
-            <iText formula="Image_file (EC4 ++ &quot;example_im_02.png&quot;)"/>
-          </Rhs>
-        </Row>
-      </Subcolumn>
-    </Column>
-    <Column x="1552" y="5" open="true" selected="false" sform="false" next="8" name="C" caption="Tasks / Capture / Calib">
+    <Column x="1549" y="5" open="true" selected="false" sform="false" next="8" name="C" caption="Tasks / Capture / Calib">
       <Subcolumn vislevel="3">
         <Row popup="false" name="C1">
           <Rhs vislevel="2" flags="5">
@@ -482,7 +459,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="411" y="5" open="true" selected="false" sform="false" next="3" name="A" caption="Tasks / Capture / CSV import">
+    <Column x="410" y="5" open="true" selected="false" sform="false" next="3" name="A" caption="Tasks / Capture / CSV import">
       <Subcolumn vislevel="3">
         <Row popup="false" name="A2">
           <Rhs vislevel="3" flags="7">
@@ -536,7 +513,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2208" y="5" open="true" selected="true" sform="false" next="5" name="D" caption="Tasks / Capture / Plot bands">
+    <Column x="2206" y="5" open="true" selected="false" sform="false" next="5" name="D" caption="Tasks / Capture / Plot bands">
       <Subcolumn vislevel="3">
         <Row popup="false" name="D1">
           <Rhs vislevel="2" flags="5">
@@ -636,54 +613,54 @@
           <Rhs vislevel="1" flags="1">
             <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/cd1.2.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/cd1.2.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A3">
           <Rhs vislevel="1" flags="1">
             <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/cd2.1.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/cd2.1.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A4">
           <Rhs vislevel="1" flags="1">
             <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/cd2.2.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/cd2.2.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A5">
           <Rhs vislevel="1" flags="1">
             <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/cd3.1.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/cd3.1.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A6">
           <Rhs vislevel="1" flags="1">
             <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/cd3.2.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/cd3.2.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A7">
           <Rhs vislevel="1" flags="1">
             <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/cd4.1.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/cd4.1.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A8">
           <Rhs vislevel="1" flags="1">
             <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/cd4.2.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/cd4.2.jpg&quot;"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="309" y="5" open="true" selected="false" sform="false" next="13" name="B" caption="left-right joins for all rows">
+    <Column x="220" y="5" open="true" selected="false" sform="false" next="13" name="B" caption="left-right joins for all rows">
       <Subcolumn vislevel="3">
         <Row popup="false" name="B1">
           <Rhs vislevel="1" flags="1">
@@ -787,7 +764,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="798" y="5" open="true" selected="false" sform="false" next="10" name="D" caption="top-bottom join of rows">
+    <Column x="430" y="5" open="true" selected="false" sform="false" next="10" name="D" caption="top-bottom join of rows">
       <Subcolumn vislevel="3">
         <Row popup="false" name="D1">
           <Rhs vislevel="1" flags="1">
@@ -866,7 +843,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1300" y="5" open="true" selected="false" sform="false" next="6" name="E" caption="balance mosaic">
+    <Column x="640" y="5" open="true" selected="false" sform="false" next="6" name="E" caption="balance mosaic">
       <Subcolumn vislevel="3">
         <Row popup="false" name="E1">
           <Rhs vislevel="2" flags="5">
@@ -938,7 +915,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1802" y="5" open="true" selected="true" sform="false" next="3" name="C" caption="sharpen">
+    <Column x="850" y="5" open="true" selected="true" sform="false" next="3" name="C" caption="sharpen">
       <Subcolumn vislevel="3">
         <Row popup="false" name="C1">
           <Rhs vislevel="2" flags="5">
@@ -1019,47 +996,47 @@
           <Rhs vislevel="1" flags="1">
             <iImage window_x="49" window_y="31" window_width="454" window_height="528"/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/example_im_01.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/example_im_01.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A2">
           <Rhs vislevel="1" flags="1">
             <iImage window_x="521" window_y="27" window_width="477" window_height="551"/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/example_im_02.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/example_im_02.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A3">
           <Rhs vislevel="1" flags="1">
             <iImage window_x="10" window_y="22" window_width="464" window_height="539"/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/example_im_03.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/example_im_03.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A4">
           <Rhs vislevel="1" flags="1">
             <iImage window_x="500" window_y="18" window_width="474" window_height="550"/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/example_im_04.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/example_im_04.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A5">
           <Rhs vislevel="1" flags="1">
             <iImage window_x="18" window_y="6" window_width="473" window_height="547"/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/example_im_05.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/example_im_05.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A6">
           <Rhs vislevel="1" flags="1">
             <iImage window_x="536" window_y="9" window_width="464" window_height="539"/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/example_im_06.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/example_im_06.jpg&quot;"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="364" y="5" open="true" selected="false" sform="false" next="27" name="B" caption="assemble mosaic">
+    <Column x="220" y="5" open="true" selected="false" sform="false" next="27" name="B" caption="assemble mosaic">
       <Subcolumn vislevel="3">
         <Row popup="false" name="B1">
           <Rhs vislevel="1" flags="1">
@@ -1278,7 +1255,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="695" y="5" open="true" selected="true" sform="false" next="3" name="C" caption="balance mosaic">
+    <Column x="430" y="5" open="true" selected="true" sform="false" next="3" name="C" caption="balance mosaic">
       <Subcolumn vislevel="3">
         <Row popup="false" name="C1">
           <Rhs vislevel="0" flags="4">
@@ -1304,33 +1281,33 @@
           <Rhs vislevel="1" flags="1">
             <iImage/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/framing_picture.jpg&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/framing_picture.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A2">
           <Rhs vislevel="1" flags="1">
             <iImage/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/framing_complex.png&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/framing_complex.png&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A3">
           <Rhs vislevel="1" flags="1">
             <iImage/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/framing_corner.png&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/framing_corner.png&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A4">
           <Rhs vislevel="1" flags="1">
             <iImage window_x="2172" window_y="197" window_width="664" window_height="802"/>
             <Subcolumn vislevel="0"/>
-	    <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/framing_distorted_frame.png&quot;"/>
+            <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/framing_distorted_frame.png&quot;"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="10" y="437" open="true" selected="false" sform="false" next="2" name="B" caption="Staighten Frame">
+    <Column x="10" y="65" open="true" selected="false" sform="false" next="2" name="B" caption="Staighten Frame">
       <Subcolumn vislevel="3">
         <Row popup="false" name="B1">
           <Rhs vislevel="3" flags="7">
@@ -1404,7 +1381,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="532" y="5" open="true" selected="false" sform="false" next="2" name="C" caption="Painting with Simple Frame">
+    <Column x="220" y="5" open="true" selected="false" sform="false" next="2" name="C" caption="Painting with Simple Frame">
       <Subcolumn vislevel="3">
         <Row popup="false" name="C1">
           <Rhs vislevel="3" flags="7">
@@ -1483,7 +1460,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="532" y="433" open="true" selected="false" sform="false" next="2" name="D" caption="Painting with Complex Frame, with adjusted variables">
+    <Column x="220" y="65" open="true" selected="false" sform="false" next="2" name="D" caption="Painting with Complex Frame, with adjusted variables">
       <Subcolumn vislevel="3">
         <Row popup="false" name="D1">
           <Rhs vislevel="3" flags="7">
@@ -1615,7 +1592,7 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1283" y="5" open="true" selected="false" sform="false" next="2" name="E" caption="Painting with frame corner, and coloured mount">
+    <Column x="430" y="5" open="true" selected="false" sform="false" next="2" name="E" caption="Painting with frame corner, and coloured mount">
       <Subcolumn vislevel="3">
         <Row popup="false" name="E1">
           <Rhs vislevel="3" flags="7">
