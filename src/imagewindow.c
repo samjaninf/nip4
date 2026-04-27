@@ -939,7 +939,7 @@ imagewindow_next_image(GSimpleAction *action,
 		return;
 
 	if (win->n_files > 0) {
-		win->transition = GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT;
+		win->transition = GTK_STACK_TRANSITION_TYPE_NONE;
 		win->current_file = (win->current_file + 1) % win->n_files;
 		iimage_replace(win->iimage, win->files[win->current_file]);
 		symbol_recalculate_all();
@@ -958,7 +958,7 @@ imagewindow_prev_image(GSimpleAction *action,
 		return;
 
 	if (win->n_files > 0) {
-		win->transition = GTK_STACK_TRANSITION_TYPE_SLIDE_RIGHT;
+		win->transition = GTK_STACK_TRANSITION_TYPE_NONE;
 		win->current_file =
 			(win->current_file + win->n_files - 1) % win->n_files;
 		iimage_replace(win->iimage, win->files[win->current_file]);
@@ -1245,7 +1245,7 @@ imagewindow_init(Imagewindow *win)
 #endif /*DEBUG*/
 
 	win->settings = g_settings_new(APPLICATION_ID);
-	win->transition = GTK_STACK_TRANSITION_TYPE_SLIDE_DOWN;
+	win->transition = GTK_STACK_TRANSITION_TYPE_NONE;
 
 	gtk_widget_init_template(GTK_WIDGET(win));
 
