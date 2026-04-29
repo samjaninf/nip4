@@ -2,6 +2,7 @@
 
 - remove UI update from graph reduce
 - allow sym redefinition in different parse units
+- ban rename of tabs to in-use names
 
 ## 9.1.1 2026/04/22
 

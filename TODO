@@ -6,15 +6,6 @@
 
 	can we keep xy zoom on image change?
 
-- have something to stop tab with the same names as syms in enclosing scope
-
-    causes intense confusion!! eg a tab called "falsecolour" will break with
-    compat stuff
-
-    just ban creation of tabs in UI layer?
-
-         we need to allow them in old workspaces
-
 - ruby string interpolation would be useful
 
   it needs to be in the syntax, so:

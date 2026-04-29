@@ -2173,24 +2173,24 @@ compile_resolve_static(Symbol *sym)
 	}
 }
 
-/* Hit a top-level zombie during reduction. Search outwards to root looking on
- * enclosing tables for a match.
- */
 Symbol *
-compile_resolve_top(Symbol *sym)
+compile_find(Compile *context, const char *name)
 {
-	Compile *enclosing;
+	for (Compile *scope = context; scope; scope = compile_get_parent(scope)) {
+		Symbol *sym;
 
-	for (enclosing = COMPILE(ICONTAINER(sym)->parent); enclosing;
-		 enclosing = compile_get_parent(enclosing)) {
-		Symbol *outer_sym;
-
-		if ((outer_sym = compile_lookup(enclosing, IOBJECT(sym)->name)) &&
-			outer_sym->type != SYM_ZOMBIE)
-			return outer_sym;
+		if ((sym = compile_lookup(scope, name)) &&
+			sym->type != SYM_ZOMBIE)
+			return sym;
 	}
 
 	return NULL;
+}
+
+Symbol *
+compile_resolve_top(Symbol *sym)
+{
+	return compile_find(COMPILE(ICONTAINER(sym)->parent), IOBJECT(sym)->name);
 }
 
 /* Search outwards for this sym.
@@ -2198,21 +2198,14 @@ compile_resolve_top(Symbol *sym)
 static void *
 compile_resolve_dynamic_sub(Symbol *sym, Compile *context)
 {
-	Compile *tab;
-
 	if (sym->type != SYM_ZOMBIE)
 		return NULL;
 
-	for (tab = context; tab; tab = compile_get_parent(tab)) {
-		Symbol *def = compile_lookup(tab, IOBJECT(sym)->name);
-
-		if (def && def->type != SYM_ZOMBIE) {
-			/* We've found a non-zombie! Bind and we're done.
-			 */
-			compile_resolve(def, sym);
-			break;
-		}
-	}
+	Symbol *enclosing = compile_find(context, IOBJECT(sym)->name);
+	if (enclosing)
+		/* We've found a non-zombie! Bind and we're done.
+		 */
+		compile_resolve(enclosing, sym);
 
 	return NULL;
 }

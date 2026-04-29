@@ -824,9 +824,7 @@ workspaceview_action(GSimpleAction *action, GVariant *parameter, View *view)
 		program_new(app, ws->kitg);
 	else if (g_str_equal(name, "tab-rename") &&
 		!ws->locked)
-		g_object_set(wview->label,
-			"edit", TRUE,
-			NULL);
+		g_object_set(wview->label, "edit", TRUE, NULL);
 	else if (g_str_equal(name, "tab-select-all") &&
 		!ws->locked)
 		workspace_select_all(ws);

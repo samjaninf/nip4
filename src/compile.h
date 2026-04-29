@@ -126,6 +126,7 @@ gboolean compile_check(Compile *compile);
 
 void compile_resolve_names(Compile *inner, Compile *outer);
 void compile_resolve_static(Symbol *sym);
+Symbol *compile_find(Compile *context, const char *name);
 Symbol *compile_resolve_top(Symbol *sym);
 void compile_resolve_dynamic(Compile *tab, Compile *context);
 

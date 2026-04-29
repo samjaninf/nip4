@@ -1753,8 +1753,23 @@ workspace_selected_save(Workspace *ws, const char *filename)
 gboolean
 workspace_rename(Workspace *ws, const char *name)
 {
+	/* Does this name appear on an enclosing scope? We don't let tab names
+	 * shadow definitions, it's much too confusing.
+	 */
+	Symbol *enclosing =
+		compile_find(COMPILE(ICONTAINER(ws->sym)->parent), name);
+	if (enclosing) {
+		error_top(_("Name clash"));
+		error_sub(_("can't rename %s \"%s\" as \"%s\", "
+					"the name is already in use"),
+			decode_SymbolType_user(ws->sym->type),
+			IOBJECT(ws->sym)->name,
+			name);
+		return FALSE;
+	}
 	if (!symbol_rename(ws->sym, name))
 		return FALSE;
+
 	iobject_set(IOBJECT(ws), IOBJECT(ws->sym)->name, NULL);
 	workspace_set_modified(ws, TRUE);
 
