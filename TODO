@@ -4,20 +4,11 @@
 
 	make the slide transition on image change linked to < > only?
 
-- still seeing stray param in graph for charisma
-
-	make reproducer (again)
-
-- still seeing random load failures on large workspaces eg, demo.ws
-
-	is it always the same defs? could there be an error in eg.
-	Hist_local_item or whatever it is that keeps not loading?
-
-	emable errors and see if something is making recomp fail?
+	can we keep xy zoom on image change?
 
 - allow redefinition between parse units?
 
-	have a sewrial number in the parser, allow strip and redef if the
+	have a serial number in the parser, allow strip and redef if the
 	parse serial number changes
 
 	would help compat with old charisma workspaces

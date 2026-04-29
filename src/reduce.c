@@ -67,10 +67,6 @@ Reduce *reduce_context;
  */
 static int nargs[] = { 3, 3, 3, 1, 2, 3 };
 
-/* Recomps this time.
- */
-int reduce_total_recomputations = 0;
-
 /* The current expr being reduced. Used for computation feedback messages.
  */
 static Expr *reduce_current_expr = NULL;
@@ -1090,17 +1086,6 @@ reduce_spine(Reduce *rc, PElement *out)
 	RSPUSHFRAME(rc, out);
 
 reduce_start:
-	reduce_total_recomputations += 1;
-	if ((reduce_total_recomputations % 100000) == 0) {
-		// helps keep the interface live
-		process_events();
-
-		if (progress_update_expr(reduce_current_expr)) {
-			error_top(_("Cancelled"));
-			error_sub(_("evaluation cancelled"));
-			reduce_throw(rc);
-		}
-	}
 
 #ifdef DEBUG_TRACE
 	{

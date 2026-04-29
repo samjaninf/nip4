@@ -262,16 +262,6 @@ link_add(Symbol *child, Expr *expr, gboolean dynamic)
 {
 	Expr *parent = expr_get_root_dynamic(expr);
 
-	/* child can be a zombie toplevel which we should resolve to an enclosing
-	 * table.
-	 */
-	if (child->type == SYM_ZOMBIE) {
-		Symbol *new_sym;
-
-		if ((new_sym = compile_resolve_top(child)))
-			child = new_sym;
-	}
-
 #ifdef DEBUG
 	printf("link_add: child = ");
 	symbol_name_print(child);

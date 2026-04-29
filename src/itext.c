@@ -578,8 +578,9 @@ itext_update_model(Heapmodel *heapmodel)
 	if (expr &&
 		(!itext_make_value_string(expr, &itext->value) ||
 		 !itext_make_decompiled_string(expr, &itext->decompile))) {
-		printf("itext_update_model: seen error!\n");
-		expr_error_set(expr);
+		// printf("itext_update_model: seen error!\n");
+		// don't set an expr error, it just causes confusion
+		// expr_error_set(expr);
 	}
 
 #ifdef DEBUG

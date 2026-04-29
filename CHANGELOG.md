@@ -1,5 +1,7 @@
 ## master
 
+- remove UI update from graph reduce
+
 ## 9.1.1 2026/04/22
 
 - fix region delete [kmartinez]
