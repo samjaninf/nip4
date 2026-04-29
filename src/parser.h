@@ -50,6 +50,8 @@ typedef struct {
 
 extern InputState input_state;
 
+extern int parse_serial_number;
+
 /* Function declarations for parse.y.
  */
 void nip2yyerror(const char *sub, ...)

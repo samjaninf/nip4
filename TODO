@@ -6,12 +6,14 @@
 
 	can we keep xy zoom on image change?
 
-- allow redefinition between parse units?
+- have something to stop tab with the same names as syms in enclosing scope
 
-	have a serial number in the parser, allow strip and redef if the
-	parse serial number changes
+    causes intense confusion!! eg a tab called "falsecolour" will break with
+    compat stuff
 
-	would help compat with old charisma workspaces
+    just ban creation of tabs in UI layer?
+
+         we need to allow them in old workspaces
 
 - ruby string interpolation would be useful
 

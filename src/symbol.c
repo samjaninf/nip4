@@ -816,29 +816,6 @@ symbol_rename(Symbol *sym, const char *new_name)
 
 extern Toolkit *current_kit;
 
-/* Can we add a new def to a sym?
- */
-static gboolean
-symbol_can_add_def(Symbol *sym)
-{
-	/* The sym is in current_kit? it must be in the same parse unit, so a new
-	 * def is OK
-	 */
-	if (sym->type == SYM_VALUE &&
-		sym->tool &&
-		sym->tool->kit == current_kit)
-		return TRUE;
-
-	/* Is this a local def? A second def is also OK, since we must still be
-	 * parsing.
-	 */
-	if (sym->type == SYM_VALUE &&
-		!is_top(sym))
-		return TRUE;
-
-	return FALSE;
-}
-
 /* Name in defining occurrence.
  *
  * If this is a redefinition of an existing def in this kit, add it as a local
@@ -868,9 +845,9 @@ symbol_new_defining(Compile *compile, const char *name)
 			 * symbol. Just return the ZOMBIE we made.
 			 */
 		}
-		else if (symbol_can_add_def(sym)) {
-			/* This is a new def for an existing def, either a local or a
-			 * top-level.
+		else if (sym->type == SYM_VALUE &&
+			sym->parse_serial_number == parse_serial_number) {
+			/* Within the same parse unit, so this must be a new RHS.
 			 *
 			 * This new def should be attached as a local of that first def,
 			 * and the whole thing needs tagging for a codegen pass.
@@ -890,9 +867,15 @@ symbol_new_defining(Compile *compile, const char *name)
 
 			sym = new_def;
 		}
+		else if (sym->type == SYM_VALUE &&
+			sym->parse_serial_number != parse_serial_number) {
+			/* A redefinition of a sym in a different parse unit. Strip it and
+			 * redefine.
+			 */
+			(void) symbol_strip(sym);
+		}
 		else {
-			/* Eg. redef of parameter, workspace, an existing def in
-			 * another kit.
+			/* Eg. redef of parameter, workspace, etc.
 			 */
 			char txt[200];
 			VipsBuf buf = VIPS_BUF_STATIC(txt);
@@ -919,6 +902,8 @@ symbol_new_defining(Compile *compile, const char *name)
 	}
 	else
 		sym = symbol_new(compile, name);
+
+	sym->parse_serial_number = parse_serial_number;
 
 #ifdef DEBUG_MAKE
 	printf("symbol_new_defining: ");

@@ -65,6 +65,11 @@ struct _Symbol {
      */
     GSList *patch;
 
+	/* The serial number of the parse unit we definned this in. We allow
+	 * redefinitions across parse units, but not within them.
+	 */
+	int parse_serial_number;
+
     /* Main expression for this sym. All expressions are icontainer
      * children of us.
      */

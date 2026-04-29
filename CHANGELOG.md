@@ -1,6 +1,7 @@
 ## master
 
 - remove UI update from graph reduce
+- allow sym redefinition in different parse units
 
 ## 9.1.1 2026/04/22
 

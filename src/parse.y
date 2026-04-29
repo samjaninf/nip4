@@ -106,6 +106,11 @@ void scope_reset(void);
  */
 void *parse_access_end(Symbol *sym, Symbol *main);
 
+/* The current parse serial number. This is incremented on every separate
+ * parser invocation, redefinition is allowed if the serial number changes.
+ */
+int parse_serial_number = 0;
+
 %}
 
 %union {
@@ -1484,6 +1489,7 @@ parse_input(int ch, Symbol *sym, Toolkit *kit, int pos)
 
     scope_reset();
     input_reset();
+    parse_serial_number += 1;
 
     /* Signal start nonterminal to parser.
      */
