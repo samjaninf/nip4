@@ -523,8 +523,7 @@ imagewindow_imageui_add(Imagewindow *win, Imageui *imageui)
 /* Change the image we are manipulating. The imageui is in the stack already.
  */
 static void
-imagewindow_imageui_set_visible(Imagewindow *win,
-	Imageui *imageui, GtkStackTransitionType transition)
+imagewindow_imageui_set_visible(Imagewindow *win, Imageui *imageui)
 {
 	Tilesource *old_tilesource = imagewindow_get_tilesource(win);
 	Tilesource *new_tilesource =
@@ -593,7 +592,8 @@ imagewindow_imageui_set_visible(Imagewindow *win,
 		gtk_label_set_text(GTK_LABEL(win->subtitle), "");
 
 	if (imageui) {
-		gtk_stack_set_transition_type(GTK_STACK(win->stack), transition);
+		gtk_stack_set_transition_type(GTK_STACK(win->stack), win->transition);
+		win->transition = GTK_STACK_TRANSITION_TYPE_NONE;
 		gtk_stack_set_visible_child(GTK_STACK(win->stack), GTK_WIDGET(imageui));
 
 		/* Enable the control settings, if the displaycontrolbar is on.
@@ -939,7 +939,7 @@ imagewindow_next_image(GSimpleAction *action,
 		return;
 
 	if (win->n_files > 0) {
-		win->transition = GTK_STACK_TRANSITION_TYPE_NONE;
+		win->transition = GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT;
 		win->current_file = (win->current_file + 1) % win->n_files;
 		iimage_replace(win->iimage, win->files[win->current_file]);
 		symbol_recalculate_all();
@@ -958,7 +958,7 @@ imagewindow_prev_image(GSimpleAction *action,
 		return;
 
 	if (win->n_files > 0) {
-		win->transition = GTK_STACK_TRANSITION_TYPE_NONE;
+		win->transition = GTK_STACK_TRANSITION_TYPE_SLIDE_RIGHT;
 		win->current_file =
 			(win->current_file + win->n_files - 1) % win->n_files;
 		iimage_replace(win->iimage, win->files[win->current_file]);
@@ -1457,7 +1457,7 @@ imagewindow_iimage_changed(iImage *iimage, Imagewindow *win)
 		const char *filenames = filename;
 		imagewindow_files_set(win, &filenames, 1, FALSE);
 
-		imagewindow_imageui_set_visible(win, imageui, win->transition);
+		imagewindow_imageui_set_visible(win, imageui);
 	}
 	else {
 		// not a file ... just display the single image
@@ -1469,8 +1469,7 @@ imagewindow_iimage_changed(iImage *iimage, Imagewindow *win)
 				"tilesource", tilesource,
 				NULL);
 
-			imagewindow_imageui_set_visible(win,
-				win->imageui, GTK_STACK_TRANSITION_TYPE_NONE);
+			imagewindow_imageui_set_visible(win, win->imageui);
 		}
 		else {
 			Imageui *imageui = imageui_new(tilesource, iimage);
@@ -1481,8 +1480,7 @@ imagewindow_iimage_changed(iImage *iimage, Imagewindow *win)
 
 			imagewindow_imageui_add(win, imageui);
 
-			imagewindow_imageui_set_visible(win,
-				imageui, GTK_STACK_TRANSITION_TYPE_NONE);
+			imagewindow_imageui_set_visible(win, imageui);
 		}
 
 		imagewindow_files_free(win);

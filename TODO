@@ -1,10 +1,18 @@
 ## C
 
-- look at nicholas' reprt again
+- look at nicholas' report again
 
 	make the slide transition on image change linked to < > only?
 
+        setting win->transition in imagewindow_next_image() but it doesn't
+        seem to work?
+
+
 	can we keep xy zoom on image change?
+
+- look at region drag in antoine lady again, is it still OK?
+
+    seems to be
 
 - ruby string interpolation would be useful
 
