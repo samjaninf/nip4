@@ -593,7 +593,6 @@ imagewindow_imageui_set_visible(Imagewindow *win, Imageui *imageui)
 
 	if (imageui) {
 		gtk_stack_set_transition_type(GTK_STACK(win->stack), win->transition);
-		win->transition = GTK_STACK_TRANSITION_TYPE_NONE;
 		gtk_stack_set_visible_child(GTK_STACK(win->stack), GTK_WIDGET(imageui));
 
 		/* Enable the control settings, if the displaycontrolbar is on.
