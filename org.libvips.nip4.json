@@ -288,8 +288,8 @@
                 {
                     "type" : "git",
                     "url" : "https://github.com/ImagingDataCommons/libdicom.git",
-                    "tag" : "v1.2.0",
-                    "commit" : "de8c1bbbdcb013948bc690b7024297ea9b61c2df"
+                    "tag" : "v1.2.1",
+                    "commit" : "04bf7d4267943ae60b8f3dd0159f4f75e9825af8"
                 }
             ]
         },
@@ -357,7 +357,7 @@
             "sources" : [
                 {
                     "type" : "archive",
-                    "url" : "https://www.libraw.org/data/LibRaw-0.22.0.tar.gz",
+                    "url" : "https://www.libraw.org/data/LibRaw-0.22.1.tar.gz",
                     "sha256" : "1071e6e8011593c366ffdadc3d3513f57c90202d526e133174945ec1dd53f2a1"
                 }
             ]
@@ -389,7 +389,7 @@
                 {
                     "type" : "git",
                     "url" : "https://github.com/libvips/libvips.git",
-                    "commit" : "a1e519ea407a2854ed02a4bac9a1cf0840870421"
+                    "commit" : "0e8946a77dc7efe3b6e3bb704d17a7adabeb32ca"
                 }
             ]
         },

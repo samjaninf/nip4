@@ -1,19 +1,5 @@
 ## C
 
-- look at nicholas' report again
-
-	make the slide transition on image change linked to < > only?
-
-        setting win->transition in imagewindow_next_image() but it doesn't
-        seem to work?
-
-
-	can we keep xy zoom on image change?
-
-- look at region drag in antoine lady again, is it still OK?
-
-    seems to be
-
 - ruby string interpolation would be useful
 
   it needs to be in the syntax, so:
@@ -84,9 +70,7 @@
 - now that image_new sets interp to sRGB for many band pixels, perhaps we can
   remove some (set_header $interpretation $srgb)?
 
-- try to reproduce that macOS crash
-
-  for macOS, see this for code signing tips
+- for macOS, see this for code signing tips
 
     https://www.reddit.com/r/macosprogramming/comments/1rpe0mx/macos_app_development_outside_of_app_store/
 

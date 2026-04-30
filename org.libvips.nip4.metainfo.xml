@@ -58,6 +58,20 @@
 
   <releases>
 
+    <release version="9.1.2" date="2026-04-30">
+      <description>
+        <p>
+
+            Fix load of large workspaces by removing UI update from graph
+            reduction, fix load of old workspaces by allowing redefinition of o
+            symbols across parse blocks, fix confusing errors by banning the
+            rename of tabs to names in an enclosing scope, improve image stack
+            transitions.
+
+        </p>
+      </description>
+    </release>
+
     <release version="9.1.1" date="2026-04-22">
       <description>
         <p>

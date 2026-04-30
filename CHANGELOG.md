@@ -1,8 +1,11 @@
 ## master
 
+## 9.1.2 2026/04/30
+
 - remove UI update from graph reduce
 - allow sym redefinition in different parse units
 - ban rename of tabs to in-use names
+- improve image stack transitions
 
 ## 9.1.1 2026/04/22
 
