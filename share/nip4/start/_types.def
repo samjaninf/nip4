@@ -358,7 +358,14 @@ Enum = class {
     // caption defaults to class name, can be overridden in subclasses
     _caption = _ this.name;
 
-    picker default = Option_enum this._caption this default;
+    // x can be a key or a value in the enum
+    picker x
+        = Option_enum this._caption this default
+    {
+        default
+            = this.get_key x, this.has_value x
+            = x;
+    }
 }
 
 /* A lookup table.

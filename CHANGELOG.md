@@ -1,5 +1,9 @@
 ## master
 
+- reorganised UHDR menu
+- Enum.picker can take a key as well as a value
+- fix "string" == not-a-string where "string" is a managedstring
+
 ## 9.1.2 2026/04/30
 
 - remove UI update from graph reduce

@@ -385,6 +385,29 @@ Colour_icc_item = class
         = monitor_profile;
     render_intents = Intent.picker $ABSOLUTE;
 
+    Import_item = class
+        Menuaction (_ "Import") (_ "import from device space to PCS") {
+        action x = class
+            _result {
+            _vislevel = 3;
+
+            embedded = Toggle (_ "Use embedded profile if possible") false;
+            profile = Pathname (_ "Default input profile") (guess_profile x);
+            intent = render_intents;
+            pcs = PCS.picker $LAB;
+            bpc = Toggle (_ "Black point compensation") false;
+
+            _result
+                = icc_import [
+                    $input_profile => expand profile.value,
+                    $intent => intent.value_key,
+                    $pcs => pcs.value_key,
+                    $black_point_compensation => bpc.value,
+                    $embedded => to_bool embedded
+                  ] x;
+        }
+    }
+
     Export_item = class
         Menuaction (_ "Export") (_ "export from PCS to device space") {
         action x = class
@@ -410,29 +433,6 @@ Colour_icc_item = class
                     lab = colourspace [] Interpretation.LABQ image;
                 }
             }
-        }
-    }
-
-    Import_item = class
-        Menuaction (_ "Import") (_ "import from device space to PCS") {
-        action x = class
-            _result {
-            _vislevel = 3;
-
-            embedded = Toggle (_ "Use embedded profile if possible") false;
-            profile = Pathname (_ "Default input profile") (guess_profile x);
-            intent = render_intents;
-            pcs = PCS.picker $LAB;
-            bpc = Toggle (_ "Black point compensation") false;
-
-            _result
-                = icc_import [
-                    $input_profile => expand profile.value,
-                    $intent => intent.value_key,
-                    $pcs => pcs.value_key,
-                    $black_point_compensation => bpc.value,
-                    $embedded => to_bool embedded
-                  ] x;
         }
     }
 
@@ -462,53 +462,17 @@ Colour_icc_item = class
     }
 }
 
-Colour_rad_item = class
-    Menupullright (_ "Radiance")
-        (_ "convert to and from Radiance packed format") {
-    Unpack_item = class
-        Menuaction (_ "Unpack")
-            (_ "unpack Radiance format to float") {
-        action x = map_unary rad2float x;
-    }
-
-    Pack_item = class
-        Menuaction (_ "Pack")
-            (_ "pack 3-band float to Radiance format") {
-        action x = map_unary float2rad x;
-    }
-}
-
 Colour_uhdr_item = class
-    Menupullright (_ "UHDR")
-        (_ "convert to and from UHDR format") {
+    Menupullright (_ "UHDR") (_ "convert to and from UHDR format") {
 
-    Apply_gainmap_item = class
-        Menuaction (_ "Apply embedded gainmap") (_ "apply gainmap to image") {
+    Import_item = class
+        Menuaction (_ "Import") (_ "import UltraHDR image to scRGB") {
         action x = map_unary uhdr2scRGB x;
     }
 
     sep1 = Menuseparator;
 
-    Get_gainmap_item = class
-        Menuaction (_ "Get embedded gainmap") (_ "get gainmap from image") {
-        action x = map_unary (get_header "gainmap") x;
-    }
-
-    Set_gainmap_item = class
-        Menuaction (_ "Set embedded gainmap") (_ "set gainmap on image") {
-        action x y
-            = result
-        {
-            result = map_binary (set_meta "gainmap") x' y';
-
-            // get the wider (probably the main one) image second
-            [x', y'] = sortc (\i\j get_width i <= get_width j) [x, y];
-        }
-    }
-
-    sep2 = Menuseparator;
-
-    Get_uhdr_metadata_item = class
+    Get_metadata_item = class
         Menuaction (_ "Get UHDR metadata") (_ "get UHDR metadata from image") {
         action x = class {
             _vislevel = 2;
@@ -535,7 +499,14 @@ Colour_uhdr_item = class
         }
     }
 
-    Set_uhdr_metadata_item = class
+    Get_gainmap_item = class
+        Menuaction (_ "Get embedded gainmap") (_ "get gainmap from image") {
+        action x = map_unary (get_header "gainmap") x;
+    }
+
+    sep2 = Menuseparator;
+
+    Set_metadata_item = class
         Menuaction (_ "Set UHDR metadata") (_ "set UHDR metadata from image") {
         action x y = class _result {
             _vislevel = 3;
@@ -560,6 +531,34 @@ Colour_uhdr_item = class
                 ];
             }
         }
+    }
+
+    Set_gainmap_item = class
+        Menuaction (_ "Set embedded gainmap") (_ "set gainmap on image") {
+        action x y
+            = result
+        {
+            result = map_binary (set_meta "gainmap") x' y';
+
+            // get the wider (probably the main one) image second
+            [x', y'] = sortc (\i\j get_width i <= get_width j) [x, y];
+        }
+    }
+
+}
+
+Colour_rad_item = class
+    Menupullright (_ "Radiance")
+        (_ "convert to and from Radiance packed format") {
+    Unpack_item = class
+        Menuaction (_ "Unpack") (_ "unpack Radiance format to float") {
+        action x = map_unary rad2float x;
+    }
+
+    Pack_item = class
+        Menuaction (_ "Pack")
+            (_ "pack 3-band float to Radiance format") {
+        action x = map_unary float2rad x;
     }
 }
 

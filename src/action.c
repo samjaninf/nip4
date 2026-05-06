@@ -638,15 +638,15 @@ action_image_equal(Reduce *rc, Imageinfo *a, Imageinfo *b)
  * performance issue.
  */
 static gboolean
-action_string_equal(Reduce *rc, PElement *p1, PElement *p2)
+action_string_equal(PElement *p1, PElement *p2)
 {
     char a_string[MAX_STRSIZE];
     char b_string[MAX_STRSIZE];
 
-    reduce_get_string(rc, p1, a_string, MAX_STRSIZE);
-    reduce_get_string(rc, p2, b_string, MAX_STRSIZE);
-
-    return g_str_equal(a_string, b_string);
+	return
+		heap_get_string(p1, a_string, MAX_STRSIZE) &&
+		heap_get_string(p2, b_string, MAX_STRSIZE) &&
+		g_str_equal(a_string, b_string);
 }
 
 /* Test two elements for equality. Force computation as required.
@@ -662,7 +662,7 @@ action_element_equal(Reduce *rc, PElement *p1, PElement *p2)
     /* We can often test for eg. "fred" == "fred" by just checking
      * pointers.
      */
-    if (PEGETTYPE(p1) == PEGETTYPE(p2)) {
+    if (PEGETTYPE(p1) == PEGETTYPE(p2))
         switch (PEGETTYPE(p1)) {
         case ELEMENT_CHAR:
         case ELEMENT_NODE:
@@ -674,14 +674,16 @@ action_element_equal(Reduce *rc, PElement *p1, PElement *p2)
 
         case ELEMENT_ELIST:
             return TRUE;
-        }
-    }
 
-    /* Special case if either is a managedstring.
+		default:
+			break;
+        }
+
+    /* Special case if one is a managedstring.
      */
     if (PEISMANAGEDSTRING(p1) ||
-        PEISMANAGEDSTRING(p2))
-        return action_string_equal(rc, p1, p2);
+		PEISMANAGEDSTRING(p2))
+        return action_string_equal(p1, p2);
 
     /* No other implicit conversions, so types must match.
      */
