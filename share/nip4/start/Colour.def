@@ -551,12 +551,12 @@ Colour_rad_item = class
     Menupullright (_ "Radiance")
         (_ "convert to and from Radiance packed format") {
     Unpack_item = class
-        Menuaction (_ "Unpack") (_ "unpack Radiance format to float") {
+        Menuaction (_ "Import") (_ "unpack Radiance format to float") {
         action x = map_unary rad2float x;
     }
 
     Pack_item = class
-        Menuaction (_ "Pack")
+        Menuaction (_ "Export")
             (_ "pack 3-band float to Radiance format") {
         action x = map_unary float2rad x;
     }
