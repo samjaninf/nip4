@@ -1198,7 +1198,7 @@
           <Rhs vislevel="1" flags="1">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Colour_uhdr_item.Apply_gainmap_item.action N1"/>
+            <iText formula="Colour_uhdr_item.Import_item.action N1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="N3">
@@ -1231,7 +1231,7 @@
           <Rhs vislevel="1" flags="1">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="0"/>
-            <iText formula="Colour_uhdr_item.Apply_gainmap_item.action N11"/>
+            <iText formula="Colour_uhdr_item.Import_item.action N11"/>
           </Rhs>
         </Row>
         <Row popup="false" name="N14">
@@ -1333,20 +1333,20 @@
                 </Rhs>
               </Row>
             </Subcolumn>
-            <iText formula="Colour_uhdr_item.Get_uhdr_metadata_item.action N1"/>
+            <iText formula="Colour_uhdr_item.Get_metadata_item.action N1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="N16">
           <Rhs vislevel="3" flags="7">
             <iImage show_status="false" show_convert="false"/>
             <Subcolumn vislevel="1"/>
-            <iText formula="Colour_uhdr_item.Set_uhdr_metadata_item.action N15 N1"/>
+            <iText formula="Colour_uhdr_item.Set_metadata_item.action N15 N1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="N17">
           <Rhs vislevel="2" flags="6">
             <Subcolumn vislevel="1"/>
-            <iText formula="Colour_uhdr_item.Get_uhdr_metadata_item.action N16"/>
+            <iText formula="Colour_uhdr_item.Get_metadata_item.action N16"/>
           </Rhs>
         </Row>
         <Row popup="false" name="N20">

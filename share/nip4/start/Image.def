@@ -888,7 +888,7 @@ Image_header_item = class
             nyoff = Expression "Yoffset" (get_prop has_yoffset get_yoffset 0 x);
 
             ninterpretation
-                = Interpretation.picker (Interpretation.get_key interp)
+                = Interpretation.picker interp
             {
                 interp
                     = get_interpretation x, has_interpretation x

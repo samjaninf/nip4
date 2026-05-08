@@ -68,7 +68,7 @@ Colour_convert_item = class
         _result {
         _vislevel = 3;
 
-        to = Interpretation_nary.picker (Interpretation.get_key dest);
+        to = Interpretation_nary.picker dest;
 
         _result = map_unary (colourspace [] to.value_key) x;
     }
@@ -160,7 +160,7 @@ Colour_tag_item = class
         _result {
         _vislevel = 3;
 
-        to = spaces.picker (spaces.get_key dest);
+        to = spaces.picker dest;
 
         _result = map_unary (set_header $interpretation to.value_key) x;
     }
@@ -507,7 +507,7 @@ Colour_uhdr_item = class
     sep2 = Menuseparator;
 
     Set_metadata_item = class
-        Menuaction (_ "Set UHDR metadata") (_ "set UHDR metadata from image") {
+        Menuaction (_ "Set UHDR metadata") (_ "set UHDR metadata on image") {
         action x y = class _result {
             _vislevel = 3;
 
