@@ -1,5 +1,7 @@
 ## master
 
+## 9.1.3 2026/05/09
+
 - reorganised UHDR menu
 - Enum.picker can take a key as well as a value
 - fix "string" == not-a-string where "string" is a managedstring
