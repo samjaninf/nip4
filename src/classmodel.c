@@ -239,6 +239,30 @@ classmodel_graphic_replace_cb(GObject *source_object,
 	}
 }
 
+static void
+classmodel_set_initial_folder(Classmodel *classmodel, GtkFileDialog *dialog)
+{
+	g_autoptr(GFile) folder = NULL;
+
+	if (classmodel->filename) {
+		// if we have a loaded file, start in that folder
+		char name2[VIPS_PATH_MAX];
+
+		// filenames can contain eg. $HOME etc.
+		expand_variables(classmodel->filename, name2);
+		g_autofree char *dirname = g_path_get_dirname(name2);
+		folder = g_file_new_for_path(dirname);
+	}
+	else {
+		// otherwise start in cwd (gtk will default to HOME if we don't do
+		// this)
+		g_autofree char *cwd = g_get_current_dir();
+		folder = g_file_new_for_path(cwd);
+	}
+
+	gtk_file_dialog_set_initial_folder(dialog, folder);
+}
+
 void
 classmodel_graphic_replace(Classmodel *classmodel, GtkWindow *window)
 {
@@ -266,12 +290,7 @@ classmodel_graphic_replace(Classmodel *classmodel, GtkWindow *window)
 
 	gtk_file_dialog_set_modal(dialog, TRUE);
 
-	if (classmodel->filename) {
-		g_autoptr(GFile) file = g_file_new_for_path(classmodel->filename);
-
-		if (file)
-			gtk_file_dialog_set_initial_file(dialog, file);
-	}
+	classmodel_set_initial_folder(classmodel, dialog);
 
 	g_object_set_data(G_OBJECT(dialog), "nip4-window", window);
 

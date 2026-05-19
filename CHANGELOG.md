@@ -1,5 +1,9 @@
 ## master
 
+## 9.1.4
+
+- better file dialog default location for computed images
+
 ## 9.1.3 2026/05/09
 
 - reorganised UHDR menu
