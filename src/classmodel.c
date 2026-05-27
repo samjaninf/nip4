@@ -163,7 +163,7 @@ classmodel_graphic_save(Classmodel *classmodel, GtkWindow *window)
 	row_qualified_name(HEAPMODEL(classmodel)->row, &buf);
 	char txt2[100];
 	VipsBuf buf2 = VIPS_BUF_STATIC(txt2);
-	vips_buf_appendf(&buf2, _("Save %s \"%s\""),
+	vips_buf_appendf(&buf2, _("Save %s %s"),
 		IOBJECT_GET_CLASS_NAME(classmodel), vips_buf_all(&buf));
 	gtk_file_dialog_set_title(dialog, vips_buf_all(&buf2));
 
