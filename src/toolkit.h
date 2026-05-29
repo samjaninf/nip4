@@ -71,7 +71,6 @@ Toolkit *toolkit_by_name(Toolkitgroup *kitg, const char *name);
 void toolkit_set_name(Toolkit *kit, const char *name);
 
 Toolkit *toolkit_new(Toolkitgroup *kitg, const char *filename);
-Toolkit *toolkit_new_filename(Toolkitgroup *kitg, const char *filename);
 Toolkit *toolkit_new_from_file(Toolkitgroup *kitg, const char *filename);
 Toolkit *toolkit_new_from_openfile(Toolkitgroup *kitg, iOpenFile *of);
 

@@ -151,6 +151,12 @@ mainwindow_load_path(Mainwindow *main, const char *path)
 		if (!mainwindow_open_workspace(main, path))
 			return FALSE;
 	}
+	else if (vips_iscasepostfix(path, ".def")) {
+		Workspace *ws = mainwindow_get_workspace(main);
+
+		if (!toolkit_new_from_file(ws->kitg, path))
+			return FALSE;
+	}
 	else {
 		// turn it into eg. (Image_file "filename")
 		char txt[MAX_STRSIZE];
@@ -260,6 +266,10 @@ mainwindow_open_action(GSimpleAction *action,
 	g_object_unref(filter);
 
 	filter = workspacegroup_filter_new(NULL);
+	g_list_store_append(filters, G_OBJECT(filter));
+	g_object_unref(filter);
+
+	filter = toolkit_filter_new(NULL);
 	g_list_store_append(filters, G_OBJECT(filter));
 	g_object_unref(filter);
 

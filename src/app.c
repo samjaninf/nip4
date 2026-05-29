@@ -295,10 +295,6 @@ app_open(GApplication *app, GFile **files, int n_files, const char *hint)
 
 	for (int i = 0; i < n_files; i++)
 		mainwindow_open(main, files[i]);
-
-	if (n_files > 0 &&
-		mainwindow_is_empty(main))
-		gtk_window_destroy(GTK_WINDOW(main));
 }
 
 static void

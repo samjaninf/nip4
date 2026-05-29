@@ -3,6 +3,7 @@
 ## 9.1.4
 
 - better file dialog default location for computed images
+- allow ".def" files in nip4 GUI CLI args
 
 ## 9.1.3 2026/05/09
 
