@@ -4,6 +4,7 @@
 
 - better file dialog default location for computed images
 - allow ".def" files in nip4 GUI CLI args
+- move region label down for off-screen regions
 
 ## 9.1.3 2026/05/09
 

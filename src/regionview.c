@@ -276,6 +276,9 @@ regionview_draw_init_region_label(Regionview *regionview)
 		2 * regionview_label_margin;
 	regionview->label.height = regionview->ink_rect.height +
 		2 * regionview_label_margin;
+
+	// move the label down to stay in view
+	regionview->label.top = VIPS_MAX(regionview->label.top, 0);
 }
 
 static void
