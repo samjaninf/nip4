@@ -67,6 +67,10 @@ nip4 is in [homebrew](https://brew.sh/), so just:
 brew install nip4
 ```
 
+Note: [ghostty has problems launching gtk
+applications](https://github.com/ghostty-org/ghostty/discussions/3633),
+so you might need to use terminal.app, or set `XDG_DATA_DIRS` by hand.
+
 ## Linux-like systems with flatpak
 
 Add flathub to your set of repositories:
