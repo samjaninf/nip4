@@ -58,6 +58,20 @@
 
   <releases>
 
+    <release version="9.1.4" date="2026-06-01">
+      <description>
+        <p>
+
+          Fix a bug where very old nip2 workspaces would lose their
+          compatibility settings on save. Three new features: you can give
+          ".def" files on the command-line; better file dialog start locations
+          for computed images; region labels stay visible during vertical
+          image scroll.
+
+        </p>
+      </description>
+    </release>
+
     <release version="9.1.3" date="2026-05-16">
       <description>
         <p>
