@@ -1035,6 +1035,12 @@ workspace_load_compat(Workspace *ws, int major, int minor)
 		printf("workspace_load_compat: loaded %d.%d\n",
 			best_major, best_minor);
 #endif /*DEBUG_COMPAT*/
+
+		/* We need to note the requested (not determined) version for this
+		 * workspace so it's tagged correctly on save.
+		 */
+		ws->major = major;
+		ws->minor = minor;
 	}
 
 	return TRUE;

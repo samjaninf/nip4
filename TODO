@@ -1,24 +1,3 @@
-- try:
-
-    - load charisma-bm-workspace-perugino.ws in bm-workspaces
-    - comes up as "compat mode 8.5"
-    - make a change
-    - ^S, ^Q
-    - load again
-    - fails!!
-
-  the file has compat mode set by this line:
-
-    <root xmlns="http://www.vips.ecs.soton.ac.uk/nip/8.5.0">
-
-  and no 'major="8"' etc on the workspace tabs
-
-  but then gets saved with
-
-    <root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.1.3">
-
-  and sets 'major="9"' on each tab, so it effectively looses back compat
-
 ## C
 
 - ruby string interpolation would be useful
