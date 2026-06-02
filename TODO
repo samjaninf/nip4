@@ -1,5 +1,9 @@
 ## C
 
+- column open/close state is not saved
+
+	see comment in column_save()
+
 - ruby string interpolation would be useful
 
   it needs to be in the syntax, so:

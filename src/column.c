@@ -193,12 +193,21 @@ column_save(Model *model, xmlNode *xnode)
 
 	/* Save sform for backwards compat with nip 7.8 ... now a workspace
 	 * property.
+	 *
+	 * We don't save column open state:
+	 *
+	 *	!set_sprop(xthis, "open", bool_to_char(col->open)) ||
+	 *
+	 * gtk 4.23 hates creating text widgets without a parent, which can happen
+	 * during load.
+	 *
+	 * FIXME ... Save the open/close state properly.
 	 */
 	if (!set_iprop(xthis, "x", col->x) ||
 		!set_iprop(xthis, "y", col->y) ||
-		!set_sprop(xthis, "open", bool_to_char(col->open)) ||
 		!set_sprop(xthis, "selected", bool_to_char(col->selected)) ||
 		!set_sprop(xthis, "sform", bool_to_char(FALSE)) ||
+	  	!set_sprop(xthis, "open", "true") ||
 		!set_iprop(xthis, "next", col->next) ||
 		!set_sprop(xthis, "name", IOBJECT(col)->name))
 		return NULL;

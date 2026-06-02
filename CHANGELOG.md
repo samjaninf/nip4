@@ -3,6 +3,7 @@
 ## 9.1.5
 
 - fix managedstring print in snip
+- don't save column open / closed state, loading a closed column can crash
 
 ## 9.1.4 2026/06/01
 
