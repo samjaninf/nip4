@@ -2867,10 +2867,8 @@ string_pelement(Reduce *rc, PElement *list)
 		fflush(stdout);
 	}
 
-	if (PEISMANAGEDSTRING(&e)) {
-		for(const char *p = PEGETMANAGEDSTRING(&e)->string; *p; p++)
-			pretty_char(*p);
-	}
+	if (PEISMANAGEDSTRING(&e))
+		printf("%s", PEGETMANAGEDSTRING(&e)->string);
 
 	fflush(stdout);
 

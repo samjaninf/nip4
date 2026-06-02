@@ -83,3 +83,6 @@ foreach name : demos
   )
 endforeach
 
+test('test-cli', files('test_cli.sh'),
+  args: [nip4_snip]
+)

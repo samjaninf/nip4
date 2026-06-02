@@ -1,6 +1,10 @@
 ## master
 
-## 9.1.4
+## 9.1.5
+
+- fix managedstring print in snip
+
+## 9.1.4 2026/06/01
 
 - better file dialog default location for computed images
 - allow ".def" files in nip4 GUI CLI args
