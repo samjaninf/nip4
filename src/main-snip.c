@@ -426,13 +426,16 @@ main(int argc, char **argv)
 		main_option_print = TRUE;
 	}
 	else {
-		// load args as workspaces ... the empty wsg is something for images
-		// etc to load into
+		// load args as workspaces/images/defs ... the empty wsg is something
+		// for images etc to load into
 		wsg = workspacegroup_new_blank(main_workspaceroot, "untitled");
 		Workspace *ws = workspacegroup_get_workspace(wsg);
 
 		for (int i = 1; i < argc; i++)
 			main_load_file(ws, argv[i]);
+
+		// always search for and print every main
+		main_option_print = TRUE;
 	}
 
 	if (main_option_set)

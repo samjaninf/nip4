@@ -1,9 +1,3 @@
-- try
-
-	snip -w x.ws main.def
-
-  should search for and print/save any `main` it finds
-
 ## C
 
 - column open/close state is not saved
