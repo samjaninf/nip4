@@ -453,6 +453,7 @@ main(int argc, char **argv)
 		symbol_recalculate_all_force(TRUE);
         if (expr_error_all)
             main_error_exit("--test: errors found");
+		main_option_print = FALSE;
     }
 
     if (main_option_expression) {
