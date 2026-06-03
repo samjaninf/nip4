@@ -62,6 +62,16 @@ else
 fi
 
 rm -f test/fred.jpg
+echo -n "snip -w save jpg with options from workspace: "
+$snip -w ../test/test_cli.ws --set main=Workspaces.tab2.A2 -o test/fred.jpg[Q=45]
+if [ ! -f test/fred.jpg ]; then
+  echo FAIL
+  exit=1
+else
+  echo pass
+fi
+
+rm -f test/fred.jpg
 rm -f test/fred1.jpg
 echo -n "snip -w save two jpgs from workspace: "
 $snip -w ../test/test_cli.ws --set main=[Workspaces.tab2.A2,Workspaces.tab2.A2] -o test/fred.jpg
