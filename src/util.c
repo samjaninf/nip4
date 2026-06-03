@@ -2401,7 +2401,8 @@ increment_filename(char *buf)
 	// ... and reassemble
 	buf[0] = '\0';
 	strcpy(buf, dirname);
-	strcpy(buf, basename);
+	strcat(buf, "/");
+	strcat(buf, basename);
 	strcat(buf, tail);
 	strcat(buf, suf);
 	strcat(buf, mode);

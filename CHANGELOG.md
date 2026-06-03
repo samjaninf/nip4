@@ -5,10 +5,10 @@
 - fix managedstring print in snip
 - don't save column open / closed state, loading a closed column can crash
 - fix print of list of strings
-- add tests for snip cli
 - remove -p option from snip (it's automatic now)
 - fix filename increment
 - fix [option] handling in filename expand
+- add tests for snip cli
 
 ## 9.1.4 2026/06/01
 

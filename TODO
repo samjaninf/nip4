@@ -1,3 +1,14 @@
+- test
+
+	snip save
+	filename increment on snip save
+	snip -w
+	snip -w --set
+
+
+	$ snip -w x.ws --set main=Workspaces.tab2.A3 --set 'Workspaces.tab2.A1=Image_file"/home/john/pics/k2.jpg"'
+
+
 ## C
 
 - column open/close state is not saved
