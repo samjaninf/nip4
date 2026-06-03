@@ -2727,7 +2727,7 @@ pretty_string(Reduce *rc, PElement *list, int indent, gboolean force_horizontal)
 
 	if (PEISMANAGEDSTRING(&e)) {
 		for(const char *p = PEGETMANAGEDSTRING(&e)->string; *p; p++)
-			pretty_char(*p);
+			pretty_char_str(*p);
 	}
 
 	printf("\"");
