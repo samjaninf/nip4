@@ -1,11 +1,3 @@
-- try
-
-	buf = "fred.jpg[Q=45]"
-
-	path_expand(buf)
-
-	buf == "fred.jpg[[Q=45]]"
-
 ## C
 
 - column open/close state is not saved

@@ -1366,10 +1366,7 @@ nativeize_path(char *buf)
 	else
 		swap_chars(filename, '/', '\\');
 
-	if (strcmp(mode, "") != 0)
-		g_snprintf(buf, VIPS_PATH_MAX, "%s[%s]", filename, mode);
-	else
-		g_snprintf(buf, VIPS_PATH_MAX, "%s", filename);
+	g_snprintf(buf, VIPS_PATH_MAX, "%s%s", filename, mode);
 }
 
 /* Change all occurrences of "from" into "to". This will loop if "to" contains
