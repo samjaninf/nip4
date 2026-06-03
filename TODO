@@ -1,5 +1,3 @@
-- snip still has a -p option, do we need this?
-
 ## C
 
 - column open/close state is not saved

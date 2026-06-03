@@ -57,8 +57,6 @@ static GOptionEntry main_batch_options[] = {
         N_("verbose error output"), NULL },
     { "set", '=', 0, G_OPTION_ARG_STRING_ARRAY, &main_option_set,
         N_("set values"), NULL },
-    { "print", 'p', 0, G_OPTION_ARG_NONE, &main_option_print,
-        N_("print \"main\""), NULL },
 
     { NULL }
 };
