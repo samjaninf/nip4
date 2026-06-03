@@ -58,6 +58,16 @@
 
   <releases>
 
+    <release version="9.1.5" date="2026-06-03">
+      <description>
+        <p>
+
+          Fix a range of issues in batch mode, see the changelog for details.
+
+        </p>
+      </description>
+    </release>
+
     <release version="9.1.4" date="2026-06-01">
       <description>
         <p>
