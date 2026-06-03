@@ -60,5 +60,5 @@ foreach name : snip_tests
 endforeach
 
 test('test-cli', files('test_cli.sh'),
-  args: [nip4_snip]
+  args: [nip4_snip, project_source_root]
 )

@@ -4,6 +4,7 @@ set -e
 #set -x
 
 snip=$1
+root=$2
 exit=0
 
 check_workspace_output() {
@@ -48,12 +49,12 @@ check_output "['a', 'b', 'c', 'd', 1, 2, 3]" "abcd ++ [1, 2, 3]"
 
 check_output '[1..5]' '[1, 2, 3, 4, 5]'
 
-check_workspace_output '../test/test_cli.ws ../test/test_cli.def' 111.4996
-check_workspace_output '../test/test_cli.ws --set main=Workspaces.tab2.A3' 111.4996
+check_workspace_output "$root/test/test_cli.ws $root/test/test_cli.def" 111.4996
+check_workspace_output "$root/test/test_cli.ws --set main=Workspaces.tab2.A3" 111.4996
 
 rm -f test/fred.jpg
 echo -n "snip -w save jpg from workspace: "
-$snip -w ../test/test_cli.ws --set main=Workspaces.tab2.A2 -o test/fred.jpg
+$snip -w $root/test/test_cli.ws --set main=Workspaces.tab2.A2 -o test/fred.jpg
 if [ ! -f test/fred.jpg ]; then
   echo FAIL
   exit=1
@@ -63,7 +64,7 @@ fi
 
 rm -f test/fred.jpg
 echo -n "snip -w save jpg with options from workspace: "
-$snip -w ../test/test_cli.ws --set main=Workspaces.tab2.A2 -o test/fred.jpg[Q=45]
+$snip -w $root/test/test_cli.ws --set main=Workspaces.tab2.A2 -o test/fred.jpg[Q=45]
 if [ ! -f test/fred.jpg ]; then
   echo FAIL
   exit=1
@@ -74,7 +75,7 @@ fi
 rm -f test/fred.jpg
 rm -f test/fred1.jpg
 echo -n "snip -w save two jpgs from workspace: "
-$snip -w ../test/test_cli.ws --set main=[Workspaces.tab2.A2,Workspaces.tab2.A2] -o test/fred.jpg
+$snip -w $root/test/test_cli.ws --set main=[Workspaces.tab2.A2,Workspaces.tab2.A2] -o test/fred.jpg
 if [ ! -f test/fred.jpg -o ! -f test/fred1.jpg ]; then
   echo FAIL
   exit=1
@@ -86,7 +87,7 @@ fi
 rm -f test/fred_012_crop.jpg
 rm -f test/fred_013_crop.jpg
 echo -n "snip -w middle save filename increment: "
-$snip -w ../test/test_cli.ws --set main=[Workspaces.tab2.A2,Workspaces.tab2.A2] -o test/fred_012_crop.jpg
+$snip -w $root/test/test_cli.ws --set main=[Workspaces.tab2.A2,Workspaces.tab2.A2] -o test/fred_012_crop.jpg
 if [ ! -f test/fred_012_crop.jpg -o ! -f test/fred_013_crop.jpg ]; then
   echo FAIL
   exit=1
