@@ -2370,44 +2370,47 @@ increment_name(char *buf)
  * "/home/jim/fred_01_tn.tif"
  */
 void
-increment_filename(char *filename)
+increment_filename(char *buf)
 {
-	char buf[VIPS_PATH_MAX];
-	char suf[VIPS_PATH_MAX];
-	char tail[VIPS_PATH_MAX];
 	char *p;
 
-	g_strlcpy(buf, filename, VIPS_PATH_MAX);
+	// remove any trailing [options] in the filename.
+	char filename[VIPS_PATH_MAX];
+	char mode[VIPS_PATH_MAX];
+	vips__filename_split8(buf, filename, mode);
 
-	/* Save and replace the suffix around an increment_name.
-	 */
-	char *basename = g_path_get_basename(buf);
+	// split to filename and dirname
+	char *basename = g_path_get_basename(filename);
+	char *dirname = g_path_get_dirname(filename);
+
+	// save and delete the suffix from the basename
 	if (!(p = strrchr(basename, '.')))
 		p = basename + strlen(basename);
+	char suf[VIPS_PATH_MAX];
 	g_strlcpy(suf, p, VIPS_PATH_MAX);
 	*p = '\0';
 
-	/* Also save any chars to the right of the number component (if any) of
-	 * the filename.
-	 */
+	// save and delete any non-numeric tail of the basename
 	p = (char *) my_strrcspn(basename, NUMERIC);
-
-	/* No numbers there? Take nothing as the tail and put the number at
-	 * the end.
-	 */
 	if (p == basename)
 		p = basename + strlen(basename);
-
+	char tail[VIPS_PATH_MAX];
 	g_strlcpy(tail, p, VIPS_PATH_MAX);
 	*p = '\0';
 
-	increment_name(buf);
+	// increment what's left
+	increment_name(basename);
 
-	strcpy(filename, buf);
-	strcat(filename, tail);
-	strcat(filename, suf);
+	// ... and reassemble
+	buf[0] = '\0';
+	strcpy(buf, dirname);
+	strcpy(buf, basename);
+	strcat(buf, tail);
+	strcat(buf, suf);
+	strcat(buf, mode);
 
 	g_free(basename);
+	g_free(dirname);
 }
 
 /* Extract the first line of a string in to buf, extract no more than len

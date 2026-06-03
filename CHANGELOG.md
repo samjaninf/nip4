@@ -7,6 +7,7 @@
 - fix print of list of strings
 - add tests for snip cli
 - remove -p option from snip (it's automatic now)
+- fix filename increment
 
 ## 9.1.4 2026/06/01
 
