@@ -41,10 +41,34 @@ A 10,000 node workspace that computes per-voxel Patlaks from PET-CT scans.
 
 ## Windows and macOS
 
-We have release binaries hosted on a separate repository, please see the
-README at:
+Look in [releases](releases) pick a version, then download
+(for example) `nip4-x64-9.1.5.zip` to get version 9.1.5 for x64 windows.
 
-https://github.com/libvips/nip4-releases
+Unzip somewhere and run `bin/nip4.exe`.
+
+By default, nip4 uses Vulkan to draw the UI, and this can be a bit wonky on
+some older versions of Windows. If you see something like a blank window on
+startup, try:
+
+```console
+> set GSK_RENDERER=cairo
+> nip4
+```
+
+That will make it use a software only fallback to draw the UI and should
+work on any version of Windows, though it will be a bit slower
+
+## macOS
+
+You can install using [homebrew](https://brew.sh/) with:
+
+```
+brew install nip4
+```
+
+[ghostty has problems launching gtk
+applications](https://github.com/ghostty-org/ghostty/discussions/3633),
+so you might need to use terminal.app, or set `XDG_DATA_DIRS` by hand.
 
 ## Linux-like systems with flatpak
 
