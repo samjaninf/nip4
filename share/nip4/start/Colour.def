@@ -473,7 +473,7 @@ Colour_uhdr_item = class
     sep1 = Menuseparator;
 
     Get_metadata_item = class
-        Menuaction (_ "Get UHDR metadata") (_ "get UHDR metadata from image") {
+        Menuaction (_ "Get metadata") (_ "get UHDR metadata from image") {
         action x = class {
             _vislevel = 2;
 
@@ -507,7 +507,7 @@ Colour_uhdr_item = class
     sep2 = Menuseparator;
 
     Set_metadata_item = class
-        Menuaction (_ "Set UHDR metadata") (_ "set UHDR metadata on image") {
+        Menuaction (_ "Set metadata") (_ "set UHDR metadata on image") {
         action x y = class _result {
             _vislevel = 3;
 
@@ -542,6 +542,75 @@ Colour_uhdr_item = class
 
             // get the wider (probably the main one) image second
             [x', y'] = sortc (\i\j get_width i <= get_width j) [x, y];
+        }
+    }
+
+}
+
+Colour_CICP_item = class
+    Menupullright (_ "CICP")
+        (_ "convert to and from CICP device space") {
+
+    Import_item = class
+        Menuaction (_ "Import") (_ "import a CICP tagged image to scRGB") {
+        action x = CICP2scRGB x;
+    }
+
+    Export_item = class
+        Menuaction (_ "Export") (_ "export an scRGB image to CICP") {
+        action x = class _result {
+            _vislevel = 3;
+
+            primaries = CICP_primaries.picker $BT709;
+            transfer = CICP_transfer.picker $SRGB;
+            matrix = CICP_matrix.picker $RGB;
+            depth = Option (_ "Output depth") [_ "8 bit", _ "16 bit"] 0;
+
+            _result =
+                scRGB2CICP [
+                    $colour_primaries => primaries.value_key,
+                    $transfer_characteristics => transfer.value_key,
+                    $matrix_coefficients => matrix.value_key,
+                    $depth => [8, 16]?depth
+                ] x;
+        }
+    }
+
+    sep1 = Menuseparator;
+
+    Get_metadata_item = class
+        Menuaction (_ "Get metadata") (_ "get CICP metadata from image") {
+        action x = class {
+            _vislevel = 2;
+
+            primaries = CICP_primaries.picker
+		(get_header "cicp-colour-primaries" x);
+            transfer = CICP_transfer.picker
+		(get_header "cicp-transfer-characteristics" x);
+            matrix = CICP_matrix.picker
+		(get_header "cicp-matrix-coefficients" x);
+        }
+    }
+
+
+    Set_metadata_item = class
+        Menuaction (_ "Set metadata") (_ "set CICP metadata on image") {
+        action x y = class _result {
+            _vislevel = 3;
+
+            _result
+                = foldr set image fields
+            {
+                [meta, image] = sortc (const is_Image) [x, y];
+
+                set [member, field] = set_meta field meta.(member).value_key;
+
+                fields = [
+                    $primaries => "cicp-colour-primaries",
+                    $transfer => "cicp-transfer-characteristics",
+                    $matrix => "cicp-matrix-coefficients"
+                ];
+            }
         }
     }
 

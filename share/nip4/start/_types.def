@@ -1456,3 +1456,90 @@ PCS = class Enum {
         [XYZ, _ "XYZ"]
     ];
 }
+
+CICP_primaries = class Enum {
+    BT709 = 1;
+    UNSPECIFIED = 2;
+    BT470M = 4;
+    BT470BG = 5;
+    BT601 = 6;
+    SMPTE240 = 7;
+    GENERIC_FILM = 8;
+    BT2020 = 9;
+    SMPTE428 = 10;
+    SMPTE431 = 11;
+    SMPTE432 = 12;
+    EBU3213 = 22;
+
+    _description = [
+        [BT709, "BT.709 (sRGB)"],
+        [UNSPECIFIED, "Unspecified"],
+        [BT470M, "BT.470M"],
+        [BT470BG, "BT.470BG"],
+        [BT601, "BT.601"],
+        [GENERIC_FILM, "Generic film"],
+        [BT2020, "BT.2020 (HDR10)"],
+        [SMPTE431, "SMPTE431 (dci-p3)"],
+        [SMPTE432, "SMPTE432 (display-p3)"]
+    ];
+
+}
+
+CICP_transfer = class Enum {
+    BT709 = 1;
+    UNSPECIFIED = 2;
+    BT470M = 4;
+    BT470BG = 5;
+    BT601 = 6;
+    SMPTE240 = 7;
+    LINEAR = 8;
+    LOG_100 = 9;
+    LOG_100_SQRT10 = 10;
+    IEC61966 = 11;
+    BT1361 = 12;
+    SRGB = 13;
+    BT2020_10BIT = 14;
+    BT2020_12BIT = 15;
+    PQ = 16;
+    SMPTE428 = 17;
+    HLG = 18;
+
+    _description = [
+        [BT709, "BT.709"],
+        [UNSPECIFIED, "Unspecified"],
+        [BT470M, "BT.470M (gamma 2.2)"],
+        [BT470BG, "BT.470BG (gamma 2.8)"],
+        [BT601, "BT.601"],
+        [LINEAR, "Linear"],
+        [LOG_100, "Log 100"],
+        [LOG_100_SQRT10, "Log 100, sqrt 10"],
+        [BT1361, "BT.1361"],
+        [SRGB, "sRGB"],
+        [BT2020_10BIT, "BT.2020 (10 bit)"],
+        [BT2020_12BIT, "BT.2020 (12 bit)"],
+        [PQ, "BT.2100 (ITU-R PQ)"],
+        [HLG, "BT.2100 (ITU-R HLG)"]
+    ];
+}
+
+CICP_matrix = class Enum {
+    RGB = 0;
+    BT709 = 1;
+    UNSPECIFIED = 2;
+    FCC = 4;
+    BT470BG = 5;
+    BT601 = 6;
+    SMPTE240 = 7;
+    YCGCO = 8;
+    BT2020_NCL = 9;
+    BT2020_CL = 10;
+    SMPTE2085 = 11;
+    CHROMA_NCL = 12;
+    CHROMA_CL = 13;
+    ICTCP = 14;
+
+    _description = [
+        [RGB, "Identity"],
+        [UNSPECIFIED, "Unspecified"]
+    ];
+}

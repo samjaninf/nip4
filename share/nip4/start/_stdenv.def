@@ -2747,6 +2747,24 @@ match options xr1 yr1 xs1 ys1 xr2 yr2 xs2 ys2 ref sec
         Operator_type.COMPOUND_REWRAP false;
 }
 
+scRGB2CICP options x
+    = oo_unary_function scRGB2CICP_op x, is_class x
+    = vips_scRGB2CICP options x, is_image x
+    = error_bad_args "scRGB2CICP" ["[option]", "Image"] [options, x]
+{
+    scRGB2CICP_op = Operator "scRGB2CICP" (scRGB2CICP options)
+        Operator_type.COMPOUND_REWRAP false;
+}
+
+CICP2scRGB x
+    = oo_unary_function CICP2scRGB_op x, is_class x
+    = vips_CICP2scRGB [] x, is_image x
+    = error_bad_args "CICP2scRGB" ["Image"] [x]
+{
+    CICP2scRGB_op = Operator "CICP2scRGB" CICP2scRGB
+        Operator_type.COMPOUND_REWRAP false;
+}
+
 Fourier = class {
     Sense = class Enum {
         PASS = 0;

@@ -1,5 +1,7 @@
 ## master
 
+- add Colour > CICP menu item
+
 ## 9.1.5
 
 - fix managedstring print in snip
