@@ -561,10 +561,10 @@ Colour_CICP_item = class
         action x = class _result {
             _vislevel = 3;
 
-            primaries = CICP_primaries.picker $BT709;
-            transfer = CICP_transfer.picker $SRGB;
+            primaries = CICP_primaries.picker $BT2020;
+            transfer = CICP_transfer.picker $HLG;
             matrix = CICP_matrix.picker $RGB;
-            depth = Option (_ "Output depth") [_ "8 bit", _ "16 bit"] 0;
+            depth = Option (_ "Output depth") [_ "8 bit", _ "16 bit"] 1;
 
             _result =
                 scRGB2CICP [
