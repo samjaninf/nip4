@@ -1,14 +1,3 @@
-- test
-
-	snip save
-	filename increment on snip save
-	snip -w
-	snip -w --set
-
-
-	$ snip -w x.ws --set main=Workspaces.tab2.A3 --set 'Workspaces.tab2.A1=Image_file"/home/john/pics/k2.jpg"'
-
-
 ## C
 
 - column open/close state is not saved
@@ -50,6 +39,16 @@
 
   how should we handle cycles?
 
+  branch
+
+	new-heap-copy
+
+  has a mostly-working replacement for heap_copy() that fixes this
+
+	- heap use about halves
+	- maybe 10% faster?
+	- some problems still be to be fixed in complex workspaces
+
 - add #include to snip? probably necessary if we want to use it as a
   scripting language
 
@@ -72,15 +71,6 @@
     maybe the text for a param began with a newline?
 
 ## menus
-
-- look for more missing vips8 features
-
-- Enum.picker could allow string or numeric arg
-
-    style = Plot_style.picker $LINE;
-    style = Plot_style.picker Plot_style.LINE;
-
-  second does a lookup to get the key name
 
 - now that image_new sets interp to sRGB for many band pixels, perhaps we can
   remove some (set_header $interpretation $srgb)?
@@ -153,30 +143,11 @@
 
 - can we improve Group[]?
 
-- "nip4 try.def x.ws" ought to work
-
-    only images and workspaces as CLI args right now
-
 - linear match
 
     allow refine tie points + no-resize atr the same time
 
     show computed transform
-
-- try
-
-    Edit toolkits ...
-    [a, b, c] = [1, 2, 3];
-    |>
-    add a space
-    |>
-
-  error: second def of "c"
-
-  probably OK -- we can always delete the three defs separately, and this has
-  to be a very rare case
-
-  add "delete tool"?
 
 - do row select on button up, and as part of the mainwindow event state
   machine
@@ -267,16 +238,6 @@
 
     tooltips around mouse do lookups on text
 
-
-
-- program: ^W should parse the text and block on error
-
-- program: don't get save-before-close box for modified toolkits?
-
-- program: add delete tool / toolkit?
-
-- program: needs "find"?
-
 - get judder with rotate and images smaller than the window
 
     draw on update, then draw again on relayout
@@ -325,9 +286,6 @@
   see imagewindow_set_tilesource() and uncomment the call to
   imageui_set_bestfit() to work on this again
 
-- investigate behaviour with updated iimage_update_heap() ... there will be
-  quite a few cases which now fail (I expect)
-
 - save as TIFF, pick a set of options which will fail (eg. deflate + float
   predictor), save, get error, fix options, save again, get:
 
@@ -335,6 +293,39 @@
     (nip4:3658140): VIPS-WARNING **: 12:51:27.408: ../libvips/iofuncs/object.c:1231: VipsForeignSaveTiffFile can only assign 'description' once
 
 ## program
+
+- for a click on a computed tool, could scroll to or highlight the text?
+
+- find and find all could be in a "uses" pane on the right?
+
+- drag in left to reorder tools and toolkits
+
+    argh!
+
+  I suppose we will need our own two-level tree view
+
+- program: ^W should parse the text and block on error
+
+- program: don't get save-before-close box for modified toolkits?
+
+- program: add delete tool / toolkit?
+
+- program: needs "find"?
+
+- try
+
+    Edit toolkits ...
+    [a, b, c] = [1, 2, 3];
+    |>
+    add a space
+    |>
+
+  error: second def of "c"
+
+  probably OK -- we can always delete the three defs separately, and this has
+  to be a very rare case
+
+  add "delete tool"?
 
 - restore scroll positions on menu path set
 
@@ -360,18 +351,6 @@
 
 - we have the css_name thing in several _refresh() methods ... should this be
   in the base class?
-
-## program window
-
-- for a click on a computed tool, could scroll to or highlight the text?
-
-- find and find all could be in a "uses" pane on the right?
-
-- drag in left to reorder tools and toolkits
-
-    argh!
-
-  I suppose we will need our own two-level tree view
 
 ## toolkit browser
 
