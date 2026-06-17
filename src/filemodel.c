@@ -735,22 +735,22 @@ filemodel_set_initial_file(Filemodel *filemodel, GtkFileDialog *dialog)
 void
 filemodel_set_filters(Filemodel *filemodel, GtkFileDialog *dialog)
 {
+	GListStore *filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
+
 	GtkFileFilter *filter;
 
+	filter = mainwindow_filter_all_new();
+	g_list_store_append(filters, G_OBJECT(filter));
+	g_object_unref(filter);
+
 	if ((filter = filemodel_filter_new(filemodel))) {
-		GListStore *filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
-
 		g_list_store_append(filters, G_OBJECT(filter));
 		g_object_unref(filter);
-
-		filter = mainwindow_filter_all_new();
-		g_list_store_append(filters, G_OBJECT(filter));
-		g_object_unref(filter);
-
-		gtk_file_dialog_set_filters(dialog, G_LIST_MODEL(filters));
-
-		g_object_unref(filters);
 	}
+
+	gtk_file_dialog_set_filters(dialog, G_LIST_MODEL(filters));
+
+	g_object_unref(filters);
 }
 
 static void
@@ -1046,14 +1046,20 @@ filemodel_new_from_file(GtkWindow *window,
 
 	// not quite the same as filemodel_set_filters, since we have no instance
 	// of the class
-	GtkFileFilter *filter = class->filter_new(NULL);
 	GListStore *filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
-	g_list_store_append(filters, G_OBJECT(filter));
-	g_object_unref(filter);
+
+	GtkFileFilter *filter;
+
 	filter = mainwindow_filter_all_new();
 	g_list_store_append(filters, G_OBJECT(filter));
 	g_object_unref(filter);
+
+	filter = class->filter_new(NULL);
+	g_list_store_append(filters, G_OBJECT(filter));
+	g_object_unref(filter);
+
 	gtk_file_dialog_set_filters(dialog, G_LIST_MODEL(filters));
+
 	g_object_unref(filters);
 
 	g_object_set_data(G_OBJECT(dialog), "nip4-window", window);

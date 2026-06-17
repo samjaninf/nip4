@@ -1,6 +1,7 @@
 ## master
 
 - add Colour > CICP menu item
+- all file dialog filters default to "all"
 
 ## 9.1.5
 

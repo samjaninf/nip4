@@ -261,6 +261,10 @@ mainwindow_open_action(GSimpleAction *action,
 	GListStore *filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
 	GtkFileFilter *filter;
 
+	filter = mainwindow_filter_all_new();
+	g_list_store_append(filters, G_OBJECT(filter));
+	g_object_unref(filter);
+
 	filter = imageinfo_filter_save_new();
 	g_list_store_append(filters, G_OBJECT(filter));
 	g_object_unref(filter);
@@ -270,10 +274,6 @@ mainwindow_open_action(GSimpleAction *action,
 	g_object_unref(filter);
 
 	filter = toolkit_filter_new(NULL);
-	g_list_store_append(filters, G_OBJECT(filter));
-	g_object_unref(filter);
-
-	filter = mainwindow_filter_all_new();
 	g_list_store_append(filters, G_OBJECT(filter));
 	g_object_unref(filter);
 
@@ -554,11 +554,13 @@ mainwindow_local_set_filters(GtkFileDialog *dialog)
 {
 	GListStore *filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
 
-	GtkFileFilter *filter = toolkit_filter_new(NULL);
+	GtkFileFilter *filter;
+
+	filter = mainwindow_filter_all_new();
 	g_list_store_append(filters, G_OBJECT(filter));
 	g_object_unref(filter);
 
-	filter = mainwindow_filter_all_new();
+	filter = toolkit_filter_new(NULL);
 	g_list_store_append(filters, G_OBJECT(filter));
 	g_object_unref(filter);
 

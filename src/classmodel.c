@@ -183,11 +183,11 @@ classmodel_graphic_save(Classmodel *classmodel, GtkWindow *window)
 
 		GtkFileFilter *filter;
 
-		filter = class->graphic_filter_save();
+		filter = mainwindow_filter_all_new();
 		g_list_store_append(filters, G_OBJECT(filter));
 		g_object_unref(filter);
 
-		filter = mainwindow_filter_all_new();
+		filter = class->graphic_filter_save();
 		g_list_store_append(filters, G_OBJECT(filter));
 		g_object_unref(filter);
 
@@ -299,11 +299,11 @@ classmodel_graphic_replace(Classmodel *classmodel, GtkWindow *window)
 
 		GtkFileFilter *filter;
 
-		filter = class->graphic_filter_replace();
+		filter = mainwindow_filter_all_new();
 		g_list_store_append(filters, G_OBJECT(filter));
 		g_object_unref(filter);
 
-		filter = mainwindow_filter_all_new();
+		filter = class->graphic_filter_replace();
 		g_list_store_append(filters, G_OBJECT(filter));
 		g_object_unref(filter);
 

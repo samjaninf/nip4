@@ -1,3 +1,5 @@
+- add something to open a dcraw image in 16 bits
+
 ## C
 
 - column open/close state is not saved
