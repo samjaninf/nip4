@@ -235,7 +235,7 @@ main_set(const char *str)
      * symbol.
      */
     attach_input_string(str +
-		VIPS_CLIP(0, input_state.charpos - 1, strlen(str)));
+		VIPS_CLIP(0, get_input_state()->charpos - 1, strlen(str)));
 
     if (!symbol_user_init(sym) ||
         !parse_rhs(sym->expr, PARSE_RHS)) {

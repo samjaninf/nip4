@@ -538,7 +538,7 @@ workspace_add_def(Workspace *ws, const char *str)
 		sym = symbol_new(ws->sym->expr->compile, name);
 		VIPS_FREE(name);
 		attach_input_string(str +
-			VIPS_CLIP(0, input_state.charpos - 1, strlen(str)));
+			VIPS_CLIP(0, get_input_state()->charpos - 1, strlen(str)));
 	}
 	else {
 		/* That didn't work. Make a sym from the col name.

@@ -157,6 +157,7 @@ read_char(void)
 
 \#separator { BEGIN 0; return TK_SEPARATOR; }
 \#dialog { BEGIN 0; return TK_DIALOG; }
+\#include { BEGIN 0; return TK_INCLUDE; }
 class { BEGIN 0; return TK_CLASS; }
 scope { BEGIN 0; return TK_SCOPE; }
 char { BEGIN 0; return TK_CHAR; }

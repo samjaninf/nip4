@@ -48,7 +48,13 @@ typedef struct {
 	int oldchar; /* unget buffer, -1 for no unget */
 } InputState;
 
-extern InputState input_state;
+#define MAX_INCLUDE (20)
+extern InputState input_state[MAX_INCLUDE];
+extern int input_state_p;
+
+InputState *get_input_state();
+void pop_input_state();
+void push_input_state();
 
 extern int parse_serial_number;
 

@@ -58,7 +58,11 @@
 
   filename found relative to current file
 
-  done in lexer, so can be used anywhere
+  we need a stack of InputState, parse.y has
+
+	InputState input_state;
+
+  have an array of these, push a new one on #include, pop on EOF
 
 - after Reset on a row, mark dirty and recalc
 

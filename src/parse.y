@@ -130,7 +130,7 @@ int parse_serial_number = 0;
 %token TK_IF TK_THEN TK_ELSE
 %token TK_CHAR TK_SHORT TK_CLASS TK_SCOPE
 %token TK_INT TK_FLOAT TK_DOUBLE TK_SIGNED TK_UNSIGNED TK_COMPLEX
-%token TK_SEPARATOR TK_DIALOG TK_LSHIFT TK_RSHIFT
+%token TK_SEPARATOR TK_DIALOG TK_INCLUDE TK_LSHIFT TK_RSHIFT
 
 %type <yy_node> expr binop uop rhs comma_list body
 %type <yy_node> list_expression list_expression_contents
@@ -251,15 +251,30 @@ directive:
             yyerror(_("not top level"));
 
         tool = tool_new_sep(current_kit, tool_position);
-        tool->lineno = input_state.lineno;
+        tool->lineno = get_input_state()->lineno;
 
         input_reset();
+    } |
+    TK_INCLUDE TK_CONST {
+        if (!is_top(current_symbol))
+            yyerror(_("not top level"));
+        if ($2.type != PARSE_CONST_STR)
+            yyerror(_("not string argument"));
+
+        iOpenFile *of = ifile_open_read("%s", $2.val.str);
+        if (!of)
+            yyerror(_("no such file"));
+
+        push_input_state();
+        attach_input_file(of);
+
+        // gets popped and freed on EOF
     }
     ;
 
 toplevel_definition:
     {
-        last_top_lineno = input_state.lineno;
+        last_top_lineno = get_input_state()->lineno;
         scope_reset();
         current_compile = root_symbol->expr->compile;
     }
@@ -1008,7 +1023,8 @@ VipsBuf lex_text = VIPS_BUF_STATIC(lex_text_buffer);
 
 /* State of input system.
  */
-InputState input_state;
+InputState input_state[MAX_INCLUDE];
+int input_state_p = 0;
 
 /* Defintions for the static decls at the top. We have to put the defs down
  * here to mkake sure they don't creep in to the generated parser.h.
@@ -1064,12 +1080,36 @@ yyerror(const char *msg)
     nip2yyerror("%s", msg);
 }
 
+InputState *
+get_input_state(void)
+{
+    return &input_state[input_state_p];
+}
+
+void
+push_input_state()
+{
+    if (input_state_p >= MAX_INCLUDE)
+        yyerror(_("too many nested includes"));
+    else
+        input_state_p += 1;
+}
+
+void
+pop_input_state()
+{
+    if (input_state_p <= 0)
+        yyerror(_("too many pops!"));
+    else
+        input_state_p -= 1;
+}
+
 /* Attach yyinput to a file.
  */
 void
 attach_input_file(iOpenFile *of)
 {
-    InputState *is = &input_state;
+    InputState *is = get_input_state();
 
 #ifdef DEBUG
     printf("attach_input_file: \"%s\"\n", of->fname);
@@ -1102,7 +1142,7 @@ attach_input_file(iOpenFile *of)
 void
 attach_input_string(const char *str)
 {
-    InputState *is = &input_state;
+    InputState *is = get_input_state();
 
 #ifdef DEBUG
     printf("attach_input_string: \"%s\"\n", str);
@@ -1132,7 +1172,7 @@ attach_input_string(const char *str)
 int
 ip_input(void)
 {
-    InputState *is = &input_state;
+    InputState *is = get_input_state();
     int ch;
 
     if (is->oldchar >= 0) {
@@ -1194,7 +1234,7 @@ ip_input(void)
 void
 ip_unput(int ch)
 {
-    InputState *is = &input_state;
+    InputState *is = get_input_state();
 
 #ifdef DEBUG_CHARACTER
     printf("ip_unput: ungetting '%c'\n", ch);
@@ -1239,7 +1279,7 @@ ip_unput(int ch)
 gboolean
 is_EOF(void)
 {
-    InputState *is = &input_state;
+    InputState *is = get_input_state();
 
     if (is->of)
         return feof(is->of->fp);
@@ -1253,7 +1293,7 @@ is_EOF(void)
 char *
 input_text(char *out)
 {
-    InputState *is = &input_state;
+    InputState *is = get_input_state();
     const char *buf = is->buf;
 
     int start = is->bsp[is->bspsp];
@@ -1287,7 +1327,7 @@ input_text(char *out)
 void
 input_reset(void)
 {
-    InputState *is = &input_state;
+    InputState *is = get_input_state();
 
 #ifdef DEBUG_CHARACTER
     printf("input_reset:\n");
@@ -1302,7 +1342,7 @@ input_reset(void)
 void
 input_push(int n)
 {
-    InputState *is = &input_state;
+    InputState *is = get_input_state();
 
 #ifdef DEBUG_CHARACTER
     printf("input_push(%d): going to level %d, %d bytes into buffer\n",
@@ -1341,7 +1381,7 @@ input_push(int n)
 void
 input_backtoch(char ch)
 {
-    InputState *is = &input_state;
+    InputState *is = get_input_state();
     int i;
 
     for (i = is->bsp[is->bspsp] - 1; i > 0 && is->buf[i] != ch; i--)
@@ -1356,7 +1396,7 @@ input_backtoch(char ch)
 void
 input_back1(void)
 {
-    InputState *is = &input_state;
+    InputState *is = get_input_state();
 
     if (is->bsp[is->bspsp] > 0)
         is->bsp[is->bspsp] -= 1;
@@ -1365,10 +1405,10 @@ input_back1(void)
 void
 input_pop(void)
 {
-    InputState *is = &input_state;
+    InputState *is = get_input_state();
 
 #ifdef DEBUG_CHARACTER
-    printf("input_pop: %d bytes into buffer\n", input_state.bwp);
+    printf("input_pop: %d bytes into buffer\n", is->bwp);
 #endif /*DEBUG_CHARACTER*/
 
     if (is->bspsp <= 0)
