@@ -2,6 +2,7 @@
 
 - add Colour > CICP menu item
 - all file dialog filters default to "all"
+- add #include
 
 ## 9.1.5
 

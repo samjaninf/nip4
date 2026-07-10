@@ -1167,10 +1167,10 @@ attach_input_string(const char *str)
     vips_buf_rewind(&lex_text);
 }
 
-/* Read a character from the input.
+/* Read a character from the input, 0 for EOF.
  */
-int
-ip_input(void)
+static int
+input_getc(void)
 {
     InputState *is = get_input_state();
     int ch;
@@ -1185,18 +1185,74 @@ ip_input(void)
         /* Input from file.
          */
         if ((ch = getc(is->of->fp)) == EOF)
-            return 0;
+            ch = 0;
     }
     else {
         /* Input from string.
          */
         if ((ch = *is->strpos))
             is->strpos++;
+    }
+
+    return ch;
+}
+
+/* Unget an input character.
+ */
+static void
+input_ungetc(int ch)
+{
+    InputState *is = get_input_state();
+
+    /* Nothing for unget EOF.
+     */
+    if (!ch)
+        return;
+
+    if (is->of) {
+        if (ungetc(ch, is->of->fp) == EOF)
+            error("unget buffer overflow");
+    }
+    else {
+        /* Save extra char here.
+         */
+        g_assert(is->oldchar == -1);
+        is->oldchar = ch;
+    }
+}
+
+/* Test for end-of-input.
+ */
+gboolean
+is_EOF(void)
+{
+    int ch = input_getc();
+
+    input_ungetc(ch);
+
+    return ch == 0;
+}
+
+/* Read a character from the input, including tracking the linenumber, backing
+ * out of the include stack, etc.
+ */
+int
+ip_input(void)
+{
+    int ch = input_getc();
+
+	if (ch == 0) {
+        if (input_state_p > 0) {
+            // this input_state is at EOF, step out one level and try again
+            pop_input_state();
+
+            return ip_input();
+        }
         else
-            /* No counts to update!
-             */
             return 0;
     }
+
+    InputState *is = get_input_state();
 
     /* Update counts.
      */
@@ -1229,7 +1285,7 @@ ip_input(void)
     return ch;
 }
 
-/* Unget an input character.
+/* Unget an input character, updating counts etc.
  */
 void
 ip_unput(int ch)
@@ -1245,14 +1301,7 @@ ip_unput(int ch)
     if (!ch)
         return;
 
-    if (is->of) {
-        if (ungetc(ch, is->of->fp) == EOF)
-            error("unget buffer overflow");
-    }
-    else
-        /* Save extra char here.
-         */
-        is->oldchar = ch;
+    input_ungetc(ch);
 
     /* Redo counts.
      */
@@ -1272,19 +1321,6 @@ ip_unput(int ch)
      */
     if (is->charno > 0)
         vips_buf_removec(&lex_text, ch);
-}
-
-/* Test for end-of-input.
- */
-gboolean
-is_EOF(void)
-{
-    InputState *is = get_input_state();
-
-    if (is->of)
-        return feof(is->of->fp);
-    else
-        return *is->str == '\0';
 }
 
 /* Return the text we have accumulated for the current definition. Remove

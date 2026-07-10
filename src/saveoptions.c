@@ -113,6 +113,11 @@ save_options_eval(VipsImage *image,
 	char str[256];
 	VipsBuf buf = VIPS_BUF_STATIC(str);
 
+	printf("save_options_eval: %d%%, last = %g, current = %g\n",
+		progress->percent,
+		options->last_progress_time,
+		g_timer_elapsed(options->progress_timer, NULL));
+
 	/* We can be ^Q'd during load. This is NULLed in _dispose.
 	 */
 	if (!options->progress_timer)
@@ -125,6 +130,8 @@ save_options_eval(VipsImage *image,
 	if (time_now - options->last_progress_time < 0.1)
 		return;
 	options->last_progress_time = time_now;
+
+	printf("save_options_eval: updating UI ..\n");
 
 	vips_buf_appendf(&buf, "%d%% complete, %d seconds to go",
 		progress->percent, progress->eta);

@@ -1,4 +1,13 @@
+- better #include file resolving
+
+    should be relative to enclosing file, if any
+
+
+
+
 - add something to open a dcraw image in 16 bits
+
+- text widget should have an rgba toggle
 
 ## C
 
