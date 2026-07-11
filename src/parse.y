@@ -261,14 +261,28 @@ directive:
         if ($2.type != PARSE_CONST_STR)
             yyerror(_("not string argument"));
 
-        iOpenFile *of = ifile_open_read("%s", $2.val.str);
+        iOpenFile *of;
+
+        /* Local paths are resolved relative to the enclosing file, if any.
+         */
+        InputState *is = get_input_state();
+        if (!is_absolute($2.val.str) &&
+            is->of &&
+            is->of->fname) {
+            g_autofree char *dirname = g_path_get_dirname(is->of->fname);
+            of = ifile_open_read("%s/%s", dirname, $2.val.str);
+        }
+        else
+            of = ifile_open_read("%s", $2.val.str);
+
         if (!of)
             yyerror(_("no such file"));
 
         push_input_state();
         attach_input_file(of);
 
-        // gets popped and freed on EOF
+        // close on pop
+        is->close = of;
     }
     ;
 
@@ -1023,7 +1037,7 @@ VipsBuf lex_text = VIPS_BUF_STATIC(lex_text_buffer);
 
 /* State of input system.
  */
-InputState input_state[MAX_INCLUDE];
+InputState input_state[MAX_INCLUDE] = { 0 };
 int input_state_p = 0;
 
 /* Defintions for the static decls at the top. We have to put the defs down
@@ -1048,10 +1062,10 @@ int parse_object_id = 0;
 /* Here for errors in parse.
  *
  * Bison calls yyerror with only a char* arg. This printf() version is called
- * from nip2 in a few places during parse.
+ * in a few places during parse.
  */
 void
-nip2yyerror(const char *sub, ...)
+nipyyerror(const char *sub, ...)
 {
     va_list ap;
     char buf[4096];
@@ -1077,7 +1091,7 @@ nip2yyerror(const char *sub, ...)
 void
 yyerror(const char *msg)
 {
-    nip2yyerror("%s", msg);
+    nipyyerror("%s", msg);
 }
 
 InputState *
@@ -1087,7 +1101,7 @@ get_input_state(void)
 }
 
 void
-push_input_state()
+push_input_state(void)
 {
     if (input_state_p >= MAX_INCLUDE)
         yyerror(_("too many nested includes"));
@@ -1096,12 +1110,28 @@ push_input_state()
 }
 
 void
-pop_input_state()
+pop_input_state(void)
 {
     if (input_state_p <= 0)
         yyerror(_("too many pops!"));
     else
         input_state_p -= 1;
+}
+
+void
+free_input_state(void)
+{
+    InputState *is = get_input_state();
+    VIPS_FREEF(ifile_close, is->close);
+}
+
+void
+reset_input_state(void)
+{
+    while (input_state_p > 0) {
+        free_input_state();
+        pop_input_state();
+    }
 }
 
 /* Attach yyinput to a file.
@@ -1244,6 +1274,7 @@ ip_input(void)
 	if (ch == 0) {
         if (input_state_p > 0) {
             // this input_state is at EOF, step out one level and try again
+            free_input_state();
             pop_input_state();
 
             return ip_input();
@@ -1572,6 +1603,8 @@ parse_input(int ch, Symbol *sym, Toolkit *kit, int pos)
     ip_unput(ch);
 
     if (setjmp(parse_error_point)) {
+        reset_input_state();
+
         /* Restore current_compile.
          */
         scope_pop_all();
@@ -1697,6 +1730,7 @@ parse_test_define(void)
     if (setjmp(parse_error_point)) {
         /* Here for yyerror in lex.
          */
+        reset_input_state();
         VIPS_FREE(ident);
 
         return NULL;
@@ -1736,6 +1770,7 @@ parse_set_symbol(void)
     if (setjmp(parse_error_point)) {
         /* Here for yyerror in lex.
          */
+        reset_input_state();
         VIPS_FREE(ident);
         return NULL;
     }
@@ -1753,11 +1788,11 @@ parse_set_symbol(void)
              * come. Look up this one and move to that context.
              */
             if (!(sym = compile_lookup(compile, ident)))
-                nip2yyerror(_("'%s' does not exist"),
+                nipyyerror(_("'%s' does not exist"),
                     ident);
             if (!sym->expr ||
                 !sym->expr->compile)
-                nip2yyerror(_("'%s' has no members"),
+                nipyyerror(_("'%s' has no members"),
                     ident);
             compile = sym->expr->compile;
             VIPS_FREE(ident);

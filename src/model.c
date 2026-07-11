@@ -309,6 +309,7 @@ model_loadstate_rewrite(ModelLoadState *state, char *old_rhs, char *new_rhs)
 		/* Here for yyerror in lex. Just ignore errors --- the parser
 		 * will spot them later anyway.
 		 */
+        reset_input_state();
 		model_loadstate = NULL;
 		return;
 	}

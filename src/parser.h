@@ -31,36 +31,40 @@
  * Keep track of the state of play here.
  */
 typedef struct {
-	iOpenFile *of; /* Non-NULL if we read from a file */
-	char *str;	   /* Non-NULL if we read from a string */
-	char *strpos;  /* Position in string */
+	iOpenFile *of;			/* Non-NULL if we read from a file */
+	char *str;				/* Non-NULL if we read from a string */
+	char *strpos;			/* Position in string */
 
-	char buf[MAX_STRSIZE]; /* Accumulate text of each definition here */
-	int bwp;			   /* Write point in the above */
-	int bsp[MAX_SSTACK];   /* Start point stack */
-	int bspsp;			   /* Stack pointer */
+	char buf[MAX_STRSIZE];	/* Accumulate text of each definition here */
+	int bwp;				/* Write point in the above */
+	int bsp[MAX_SSTACK];	/* Start point stack */
+	int bspsp;				/* Stack pointer */
 
-	int lineno;	 /* Current line number */
-	int charno;	 /* Character in line */
-	int pcharno; /* Characters in previous line */
-	int charpos; /* Characters read by lex so far */
+	int lineno;				/* Current line number */
+	int charno;				/* Character in line */
+	int pcharno;			/* Characters in previous line */
+	int charpos;			/* Characters read by lex so far */
 
-	int oldchar; /* unget buffer, -1 for no unget */
+	int oldchar;			/* unget buffer, -1 for no unget */
+
+	iOpenFile *close;		/* Close this iOpenFile on input_state close */
 } InputState;
 
 #define MAX_INCLUDE (20)
 extern InputState input_state[MAX_INCLUDE];
 extern int input_state_p;
 
-InputState *get_input_state();
-void pop_input_state();
-void push_input_state();
+InputState *get_input_state(void);
+void pop_input_state(void);
+void push_input_state(void);
+void free_input_state(void);
+void reset_input_state(void);
 
 extern int parse_serial_number;
 
 /* Function declarations for parse.y.
  */
-void nip2yyerror(const char *sub, ...)
+void nipyyerror(const char *sub, ...)
 	__attribute__((format(printf, 1, 2)));
 void yyerror(const char *msg);
 #ifdef YYLENG_IS_YY_SIZE_T

@@ -835,7 +835,7 @@ symbol_new_defining(Compile *compile, const char *name)
 	/* Block definition of "root" anywhere ... too confusing.
 	 */
 	if (strcmp(name, IOBJECT(symbol_root)->name) == 0)
-		nip2yyerror(_("Attempt to redefine root symbol \"%s\"."), name);
+		nipyyerror(_("Attempt to redefine root symbol \"%s\"."), name);
 
 	/* Is this a redefinition of an existing symbol in this scope?
 	 */
@@ -891,7 +891,7 @@ symbol_new_defining(Compile *compile, const char *name)
 			}
 			vips_buf_appendf(&buf, ".");
 
-			nip2yyerror("%s", vips_buf_all(&buf));
+			nipyyerror("%s", vips_buf_all(&buf));
 			/*NOTREACHED*/
 		}
 

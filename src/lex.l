@@ -274,7 +274,7 @@ FALSE {
 	BEGIN BINARY;
 
 	if (sscanf(yytext, "0x%x", &i ) != 1)
-		nip2yyerror(_( "bad number %s"), yytext);
+		nipyyerror(_( "bad number %s"), yytext);
 
 	yylval.yy_const.type = PARSE_CONST_NUM;
 	yylval.yy_const.val.num = i;
@@ -354,5 +354,5 @@ FALSE {
 [ \t\n\r\m\01] ;
 
 . {
-	nip2yyerror(_( "illegal character \"%c\"" ), *yytext);
+	nipyyerror(_( "illegal character \"%c\"" ), *yytext);
 }
