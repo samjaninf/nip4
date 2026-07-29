@@ -265,6 +265,7 @@ app_startup(GApplication *app)
 	PROPERTIES_TYPE;
 	DISPLAYBAR_TYPE;
 	INFOBAR_TYPE;
+	PAINTBOX_TYPE;
 	TSLIDER_TYPE;
 
 	/* Some custom CSS.

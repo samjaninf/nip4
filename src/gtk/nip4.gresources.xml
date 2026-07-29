@@ -10,6 +10,7 @@
     <file preprocess="xml-stripblanks">imageui.ui</file>
     <file preprocess="xml-stripblanks">imagewindow.ui</file>
     <file preprocess="xml-stripblanks">infobar.ui</file>
+    <file preprocess="xml-stripblanks">paintbox.ui</file>
     <file preprocess="xml-stripblanks">itextview.ui</file>
     <file preprocess="xml-stripblanks">mainwindow.ui</file>
     <file preprocess="xml-stripblanks">properties.ui</file>

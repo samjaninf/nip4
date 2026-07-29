@@ -62,6 +62,7 @@ sources = files(
   'imageui.c',
   'imagewindow.c',
   'infobar.c',
+  'paintbox.c',
   'iobject.c',
   'iregion.c',
   'iregiongroup.c',

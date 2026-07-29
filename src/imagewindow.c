@@ -92,6 +92,7 @@ struct _Imagewindow {
 	GtkWidget *properties;
 	GtkWidget *displaybar;
 	GtkWidget *info_bar;
+	GtkWidget *paintbox;
 	GtkWidget *region_menu;
 
 	/* The set of active images in the stack right now. These are not
@@ -910,6 +911,19 @@ imagewindow_info(GSimpleAction *action,
 	g_simple_action_set_state(action, state);
 }
 
+static void
+imagewindow_paintbox(GSimpleAction *action,
+	GVariant *state, gpointer user_data)
+{
+	Imagewindow *win = IMAGEWINDOW(user_data);
+
+	g_object_set(win->paintbox,
+		"revealed", g_variant_get_boolean(state),
+		NULL);
+
+	g_simple_action_set_state(action, state);
+}
+
 // is an image being background-loaded?
 static gboolean
 imagewindow_loading(Imagewindow *win)
@@ -1183,6 +1197,7 @@ static GActionEntry imagewindow_entries[] = {
 	{ "fullscreen", action_toggle, NULL, "false", imagewindow_fullscreen },
 	{ "control", action_toggle, NULL, "false", imagewindow_control },
 	{ "info", action_toggle, NULL, "false", imagewindow_info },
+	{ "paintbox", action_toggle, NULL, "false", imagewindow_paintbox },
 	{ "properties", action_toggle, NULL, "false", imagewindow_properties },
 
 	{ "next_image", imagewindow_next_image },
@@ -1254,6 +1269,9 @@ imagewindow_init(Imagewindow *win)
 	g_object_set(win->info_bar,
 		"image-window", win,
 		NULL);
+	g_object_set(win->paintbox,
+		"image-window", win,
+		NULL);
 
 	g_action_map_add_action_entries(G_ACTION_MAP(win),
 		imagewindow_entries, G_N_ELEMENTS(imagewindow_entries),
@@ -1274,6 +1292,11 @@ imagewindow_init(Imagewindow *win)
 
 	g_settings_bind(win->settings, "info",
 		G_OBJECT(win->info_bar),
+		"revealed",
+		G_SETTINGS_BIND_DEFAULT);
+
+	g_settings_bind(win->settings, "paintbox",
+		G_OBJECT(win->paintbox),
 		"revealed",
 		G_SETTINGS_BIND_DEFAULT);
 
@@ -1355,6 +1378,7 @@ imagewindow_class_init(ImagewindowClass *class)
 	BIND_VARIABLE(Imagewindow, properties);
 	BIND_VARIABLE(Imagewindow, displaybar);
 	BIND_VARIABLE(Imagewindow, info_bar);
+	BIND_VARIABLE(Imagewindow, paintbox);
 	BIND_VARIABLE(Imagewindow, region_menu);
 
 	BIND_CALLBACK(imagewindow_pressed);

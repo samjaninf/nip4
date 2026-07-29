@@ -222,6 +222,7 @@ typedef struct _Workspace Workspace;
 #include "imageui.h"
 #include "imagewindow.h"
 #include "infobar.h"
+#include "paintbox.h"
 #include "displaybar.h"
 #include "saveoptions.h"
 #include "recover.h"
