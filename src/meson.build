@@ -23,6 +23,7 @@ endif
 headers = files(
   'tilesource.h',
   'tilecache.h',
+  'paintbox.h',
 )
 
 sources = files(

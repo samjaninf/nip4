@@ -6,9 +6,59 @@
         <property name="revealed">false</property>
 
         <child type="start">
-          <object class="GtkLabel" id="label">
-            <property name="label">test</property>
-            <property name="yalign">0.5</property>
+	  <object class="GtkBox">
+            <child>
+              <object class="GtkButton" id="undo">
+                <property name="icon-name">edit-undo-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="redo">
+                <property name="icon-name">edit-redo-symbolic</property>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <child type="start">
+	  <object class="GtkBox">
+
+            <child>
+              <object class="GtkToggleButton" id="pointer">
+                <property name="icon-name">edit-delete-symbolic</property>
+                <property name="active">true</property>
+
+		<signal name="toggled" handler="paintbox_toggled"/>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkToggleButton" id="paint">
+                <property name="icon-name">document-edit-symbolic</property>
+                <property name="group">pointer</property>
+
+		<signal name="toggled" handler="paintbox_toggled"/>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkToggleButton" id="text">
+                <property name="icon-name">format-text-plaintext</property>
+                <property name="group">pointer</property>
+
+		<signal name="toggled" handler="paintbox_toggled"/>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkToggleButton" id="dropper">
+                <property name="icon-name">color-select-symbolic</property>
+                <property name="group">pointer</property>
+
+		<signal name="toggled" handler="paintbox_toggled"/>
+              </object>
+            </child>
+
           </object>
         </child>
 

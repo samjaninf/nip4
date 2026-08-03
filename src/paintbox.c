@@ -34,6 +34,15 @@
 #define DEBUG_VERBOSE
 #define DEBUG
 
+/* Map ids to paint states. The index is the enum value.
+ */
+static const char *paintbox_paintstate_ids[] = {
+	"pointer",		/* PAINTSTATE_SELECT */
+	"paint",		/* PAINTSTATE_BRUSH */
+	"text",			/* PAINTSTATE_TEXT */
+	"dropper",		/* PAINTSTATE_DROPPER */
+};
+
 struct _Paintbox {
 	GtkWidget parent_instance;
 
@@ -41,8 +50,9 @@ struct _Paintbox {
 	 */
 	Imagewindow *win;
 
+	Paintstate state;
+
 	GtkWidget *action_bar;
-	GtkWidget *label;
 
 };
 
@@ -51,6 +61,7 @@ G_DEFINE_TYPE(Paintbox, paintbox, GTK_TYPE_WIDGET);
 enum {
 	PROP_IMAGEWINDOW = 1,
 	PROP_REVEALED,
+	PROP_STATE,
 
 	SIG_LAST
 };
@@ -107,6 +118,10 @@ paintbox_set_property(GObject *object,
 			g_value_get_boolean(value));
 		break;
 
+	case PROP_STATE:
+		g_value_set_enum(value, paintbox->state);
+		break;
+
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
 		break;
@@ -129,6 +144,10 @@ paintbox_get_property(GObject *object,
 		g_value_set_boolean(value, gtk_action_bar_get_revealed(action_bar));
 		break;
 
+	case PROP_STATE:
+		paintbox->state = g_value_get_enum(value);
+		break;
+
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
 		break;
@@ -143,6 +162,28 @@ paintbox_init(Paintbox *paintbox)
 #endif /*DEBUG*/
 
 	gtk_widget_init_template(GTK_WIDGET(paintbox));
+
+	g_object_set(paintbox, "state", PAINTSTATE_SELECT, NULL);
+}
+
+static void
+paintbox_toggled(GtkToggleButton *button, Paintbox *paintbox)
+{
+	const char *id = gtk_buildable_get_buildable_id(GTK_BUILDABLE(button));
+
+#ifdef DEBUG
+	printf("paintbox_toggled: id = %s\n", id);
+#endif /*DEBUG*/
+
+	if (gtk_toggle_button_get_active(button)) {
+		int i;
+
+		for (i = 0; i < VIPS_NUMBER(paintbox_paintstate_ids); i++)
+			if (g_str_equal(paintbox_paintstate_ids[i], id))
+				break;
+		if (i < VIPS_NUMBER(paintbox_paintstate_ids))
+			g_object_set(paintbox, "state", i, NULL);
+	}
 }
 
 static void
@@ -158,7 +199,8 @@ paintbox_class_init(PaintboxClass *class)
 	BIND_LAYOUT();
 
 	BIND_VARIABLE(Paintbox, action_bar);
-	BIND_VARIABLE(Paintbox, label);
+
+	BIND_CALLBACK(paintbox_toggled);
 
 	gobject_class->dispose = paintbox_dispose;
 	gobject_class->set_property = paintbox_set_property;
@@ -177,6 +219,15 @@ paintbox_class_init(PaintboxClass *class)
 			_("Show the display control bar"),
 			FALSE,
 			G_PARAM_READWRITE));
+
+	g_object_class_install_property(gobject_class, PROP_STATE,
+		g_param_spec_enum("state",
+			_("State"),
+			_("The paint state"),
+			PAINTSTATE_TYPE,
+			PAINTSTATE_SELECT,
+			G_PARAM_READWRITE));
+
 }
 
 Paintbox *

@@ -30,6 +30,15 @@
 #ifndef __PAINTBOX_H
 #define __PAINTBOX_H
 
+/* The enum value is the index in paintbox_paintstate_ids.
+ */
+typedef enum _Paintstate {
+	PAINTSTATE_SELECT = 0,
+	PAINTSTATE_BRUSH = 1,
+	PAINTSTATE_TEXT = 2,
+	PAINTSTATE_DROPPER = 3,
+} Paintstate;
+
 #define PAINTBOX_TYPE (paintbox_get_type())
 
 G_DECLARE_FINAL_TYPE(Paintbox, paintbox, NIP4, PAINTBOX, GtkWidget)
