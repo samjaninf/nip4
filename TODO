@@ -1,3 +1,14 @@
+- reached imageui_key_pressed() in regionviewgroup.c
+
+	- finish stripping out non-regionview code
+
+	- rename to regionviewgroup_
+
+	- var name rvgroup?
+
+
+
+
 - add something to open a dcraw image in 16 bits
 
 ## C
