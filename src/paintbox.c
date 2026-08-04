@@ -41,7 +41,7 @@ struct _Paintbox {
 	 */
 	Imagewindow *win;
 
-	PaintboxState state;
+	PaintboxTool tool;
 
 	GtkWidget *action_bar;
 
@@ -52,7 +52,7 @@ G_DEFINE_TYPE(Paintbox, paintbox, GTK_TYPE_WIDGET);
 enum {
 	PROP_IMAGEWINDOW = 1,
 	PROP_REVEALED,
-	PROP_STATE,
+	PROP_TOOL,
 
 	SIG_LAST
 };
@@ -109,8 +109,8 @@ paintbox_set_property(GObject *object,
 			g_value_get_boolean(value));
 		break;
 
-	case PROP_STATE:
-		paintbox->state = g_value_get_enum(value);
+	case PROP_TOOL:
+		paintbox->tool = g_value_get_enum(value);
 		break;
 
 	default:
@@ -135,8 +135,8 @@ paintbox_get_property(GObject *object,
 		g_value_set_boolean(value, gtk_action_bar_get_revealed(action_bar));
 		break;
 
-	case PROP_STATE:
-		paintbox->state = g_value_get_enum(value);
+	case PROP_TOOL:
+		paintbox->tool = g_value_get_enum(value);
 		break;
 
 	default:
@@ -154,7 +154,7 @@ paintbox_init(Paintbox *paintbox)
 
 	gtk_widget_init_template(GTK_WIDGET(paintbox));
 
-	g_object_set(paintbox, "state", PAINTBOX_STATE_POINTER, NULL);
+	g_object_set(paintbox, "tool", PAINTBOX_TOOL_POINTER, NULL);
 }
 
 static void
@@ -168,14 +168,14 @@ paintbox_toggled(GtkToggleButton *button, Paintbox *paintbox)
 
 	if (gtk_toggle_button_get_active(button)) {
 		int value =
-			vips_enum_from_nick("paintbox_toggled", PAINTBOX_STATE_TYPE, id);
+			vips_enum_from_nick("paintbox_toggled", PAINTBOX_TOOL_TYPE, id);
 
 		if (value < 0) {
 			printf("paintbox_toggled: unknown id\n");
 			return;
 		}
 
-		g_object_set(paintbox, "state", value, NULL);
+		g_object_set(paintbox, "tool", value, NULL);
 	}
 }
 
@@ -213,12 +213,12 @@ paintbox_class_init(PaintboxClass *class)
 			FALSE,
 			G_PARAM_READWRITE));
 
-	g_object_class_install_property(gobject_class, PROP_STATE,
-		g_param_spec_enum("state",
-			_("State"),
-			_("The paint state"),
-			PAINTBOX_STATE_TYPE,
-			PAINTBOX_STATE_POINTER,
+	g_object_class_install_property(gobject_class, PROP_TOOL,
+		g_param_spec_enum("tool",
+			_("Tool"),
+			_("The paint tool"),
+			PAINTBOX_TOOL_TYPE,
+			PAINTBOX_TOOL_POINTER,
 			G_PARAM_READWRITE));
 
 }

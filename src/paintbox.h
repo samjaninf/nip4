@@ -30,14 +30,13 @@
 #ifndef __PAINTBOX_H
 #define __PAINTBOX_H
 
-/* The enum value is the index in paintbox_paintstate_ids.
- */
-typedef enum _PaintboxState {
-	PAINTBOX_STATE_POINTER = 0,
-	PAINTBOX_STATE_BRUSH = 1,
-	PAINTBOX_STATE_TEXT = 2,
-	PAINTBOX_STATE_DROPPER = 3,
-} PaintboxState;
+// currently selected tool
+typedef enum _PaintboxTool {
+	PAINTBOX_TOOL_POINTER,
+	PAINTBOX_TOOL_BRUSH,
+	PAINTBOX_TOOL_TEXT,
+	PAINTBOX_TOOL_DROPPER,
+} PaintboxTool;
 
 #define PAINTBOX_TYPE (paintbox_get_type())
 
