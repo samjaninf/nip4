@@ -34,15 +34,6 @@
 #define DEBUG_VERBOSE
 #define DEBUG
 
-/* Map ids to paint states. The index is the enum value.
- */
-static const char *paintbox_paintstate_ids[] = {
-	"pointer",		/* PAINTSTATE_SELECT */
-	"paint",		/* PAINTSTATE_BRUSH */
-	"text",			/* PAINTSTATE_TEXT */
-	"dropper",		/* PAINTSTATE_DROPPER */
-};
-
 struct _Paintbox {
 	GtkWidget parent_instance;
 
@@ -50,7 +41,7 @@ struct _Paintbox {
 	 */
 	Imagewindow *win;
 
-	Paintstate state;
+	PaintboxState state;
 
 	GtkWidget *action_bar;
 
@@ -119,7 +110,7 @@ paintbox_set_property(GObject *object,
 		break;
 
 	case PROP_STATE:
-		g_value_set_enum(value, paintbox->state);
+		paintbox->state = g_value_get_enum(value);
 		break;
 
 	default:
@@ -163,7 +154,7 @@ paintbox_init(Paintbox *paintbox)
 
 	gtk_widget_init_template(GTK_WIDGET(paintbox));
 
-	g_object_set(paintbox, "state", PAINTSTATE_SELECT, NULL);
+	g_object_set(paintbox, "state", PAINTBOX_STATE_POINTER, NULL);
 }
 
 static void
@@ -176,13 +167,15 @@ paintbox_toggled(GtkToggleButton *button, Paintbox *paintbox)
 #endif /*DEBUG*/
 
 	if (gtk_toggle_button_get_active(button)) {
-		int i;
+		int value =
+			vips_enum_from_nick("paintbox_toggled", PAINTBOX_STATE_TYPE, id);
 
-		for (i = 0; i < VIPS_NUMBER(paintbox_paintstate_ids); i++)
-			if (g_str_equal(paintbox_paintstate_ids[i], id))
-				break;
-		if (i < VIPS_NUMBER(paintbox_paintstate_ids))
-			g_object_set(paintbox, "state", i, NULL);
+		if (value < 0) {
+			printf("paintbox_toggled: unknown id\n");
+			return;
+		}
+
+		g_object_set(paintbox, "state", value, NULL);
 	}
 }
 
@@ -224,8 +217,8 @@ paintbox_class_init(PaintboxClass *class)
 		g_param_spec_enum("state",
 			_("State"),
 			_("The paint state"),
-			PAINTSTATE_TYPE,
-			PAINTSTATE_SELECT,
+			PAINTBOX_STATE_TYPE,
+			PAINTBOX_STATE_POINTER,
 			G_PARAM_READWRITE));
 
 }

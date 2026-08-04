@@ -33,7 +33,7 @@
             </child>
 
             <child>
-              <object class="GtkToggleButton" id="paint">
+              <object class="GtkToggleButton" id="brush">
                 <property name="icon-name">document-edit-symbolic</property>
                 <property name="group">pointer</property>
 

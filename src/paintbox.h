@@ -32,12 +32,12 @@
 
 /* The enum value is the index in paintbox_paintstate_ids.
  */
-typedef enum _Paintstate {
-	PAINTSTATE_SELECT = 0,
-	PAINTSTATE_BRUSH = 1,
-	PAINTSTATE_TEXT = 2,
-	PAINTSTATE_DROPPER = 3,
-} Paintstate;
+typedef enum _PaintboxState {
+	PAINTBOX_STATE_POINTER = 0,
+	PAINTBOX_STATE_BRUSH = 1,
+	PAINTBOX_STATE_TEXT = 2,
+	PAINTBOX_STATE_DROPPER = 3,
+} PaintboxState;
 
 #define PAINTBOX_TYPE (paintbox_get_type())
 
