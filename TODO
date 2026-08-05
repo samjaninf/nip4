@@ -1,10 +1,15 @@
-- reached imageui_key_pressed() in regionviewgroup.c
+- remove region handling from imageui
 
-	- finish stripping out non-regionview code
+- make imageui emit signals for UI events
 
-	- rename to regionviewgroup_
+	- "handled" should be a param? or return a "handled" bool?
 
-	- var name rvgroup?
+- scroll and zoom handling should attach to these signals
+
+- add imageuiregion to imageui for region interactions
+
+- .... finally, link on paintbox
+
 
 
 
