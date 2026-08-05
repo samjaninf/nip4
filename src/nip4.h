@@ -220,6 +220,7 @@ typedef struct _Workspace Workspace;
 #include "ientry.h"
 #include "tslider.h"
 #include "imageui.h"
+#include "imageuiregion.h"
 #include "imagewindow.h"
 #include "infobar.h"
 #include "paintbox.h"

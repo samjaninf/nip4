@@ -86,14 +86,14 @@ imageuiregion_add_regionview(Imageuiregion *imageuiregion,
 	Regionview *regionview)
 {
 	g_assert(!g_slist_find(imageuiregion->regionviews, regionview));
-	g_assert(!regionview->imageui);
+	g_assert(!regionview->imageuiregion);
 
 	imageuiregion->regionviews =
 		g_slist_prepend(imageuiregion->regionviews, regionview);
 	g_object_ref_sink(regionview);
 	regionview->imageuiregion = imageuiregion;
 
-	imageui_queue_draw(imageui);
+	imageui_queue_draw(imageuiregion->imageui);
 }
 
 void
@@ -107,7 +107,7 @@ imageuiregion_remove_regionview(Imageuiregion *imageuiregion,
 	regionview->imageuiregion = NULL;
 	g_object_unref(regionview);
 
-	imageui_queue_draw(imageui);
+	imageui_queue_draw(imageuiregion->imageui);
 }
 
 static void
@@ -163,11 +163,9 @@ imageuiregion_set_property(GObject *object,
 {
 	Imageuiregion *imageuiregion = (Imageuiregion *) object;
 
-	double zoom;
-
 	switch (prop_id) {
 	case PROP_IMAGEUI:
-		imageuiregion->imageui = TILESOURCE(g_value_get_object(value));
+		imageuiregion->imageui = IMAGEUI(g_value_get_object(value));
 		break;
 
 	default:
@@ -181,8 +179,6 @@ imageuiregion_get_property(GObject *object,
 	guint prop_id, GValue *value, GParamSpec *pspec)
 {
 	Imageuiregion *imageuiregion = IMAGEUIREGION(object);
-
-	double zoom;
 
 	switch (prop_id) {
 	case PROP_IMAGEUI:
@@ -245,6 +241,8 @@ imageuiregion_snap_sub(Regionview *regionview,
 static gboolean
 imageuiregion_snap(Imageuiregion *imageuiregion, ImageuiregionSnap *snap)
 {
+	Imageui *imageui = imageuiregion->imageui;
+
 	gboolean snapped;
 
 	// scale the snap threshold by the zoom factor
@@ -358,6 +356,7 @@ imageuiregion_drag_begin(GtkGestureDrag *self,
 	GdkModifierType modifiers =
 		gtk_event_controller_get_current_event_state(controller);
 	Imageuiregion *imageuiregion = IMAGEUIREGION(user_data);
+	Imageui *imageui = imageuiregion->imageui;
 
 	Regionview *regionview;
 
@@ -405,7 +404,7 @@ imageuiregion_regionview_update(Imageuiregion *imageuiregion,
 {
 	regionview->draw_area = regionview->our_area;
 	regionview->draw_type = regionview->type;
-	imageui_queue_draw(imageui);
+	imageui_queue_draw(imageuiregion->imageui);
 }
 
 static void
@@ -416,6 +415,9 @@ imageuiregion_drag_update(GtkGestureDrag *self,
 	GdkModifierType modifiers =
 		gtk_event_controller_get_current_event_state(controller);
 	Imageuiregion *imageuiregion = IMAGEUIREGION(user_data);
+	Imageui *imageui = imageuiregion->imageui;
+	Tilesource *tilesource  = imageui_get_tilesource(imageui);
+
 	double zoom = imageui_get_zoom(imageui);
 
 #ifdef DEBUG_VERBOSE
@@ -426,7 +428,7 @@ imageuiregion_drag_update(GtkGestureDrag *self,
 	switch (imageuiregion->state) {
 	case IMAGEUIREGION_STATE_SELECT:
 		regionview_resize(imageuiregion->grabbed, modifiers,
-			imageui->tilesource->image_width, imageui->tilesource->image_height,
+			tilesource->image_width, tilesource->image_height,
 			offset_x / zoom, offset_y / zoom);
 
 		/* Refresh immediately .. gives immediate feedback during drag in large
@@ -442,7 +444,7 @@ imageuiregion_drag_update(GtkGestureDrag *self,
 
 	case IMAGEUIREGION_STATE_CREATE:
 		regionview_resize(imageuiregion->floating, modifiers,
-			imageui->tilesource->image_width, imageui->tilesource->image_height,
+			tilesource->image_width, tilesource->image_height,
 			offset_x / zoom, offset_y / zoom);
 		imageuiregion_regionview_update(imageuiregion, imageuiregion->floating);
 		break;
@@ -456,7 +458,9 @@ static void
 imageuiregion_region_new(Imageuiregion *imageuiregion,
 	RegionviewType type, VipsRect *rect)
 {
-	Row *row = imageui->iimage ? HEAPMODEL(imageui->iimage)->row : NULL;
+	Imageui *imageui = imageuiregion->imageui;
+	iImage *iimage = imageui_get_iimage(imageui);
+	Row *row = iimage ? HEAPMODEL(iimage)->row : NULL;
 
 	if (row) {
 		char txt[MAX_STRSIZE];
@@ -521,6 +525,7 @@ imageuiregion_drag_end(GtkGestureDrag *self,
 	gdouble offset_x, gdouble offset_y, gpointer user_data)
 {
 	Imageuiregion *imageuiregion = IMAGEUIREGION(user_data);
+	Imageui *imageui = imageuiregion->imageui;
 
 #ifdef DEBUG_VERBOSE
 	printf("imageuiregion_drag_end: offset_x = %g, offset_y = %g\n",
@@ -570,11 +575,13 @@ imageuiregion_overlay_snapshot(Imagedisplay *imagedisplay,
 static void
 imageuiregion_init(Imageuiregion *imageuiregion)
 {
+	GtkWidget *imagedisplay = imageui_get_imagedisplay(imageuiregion->imageui);
+
 #ifdef DEBUG
 	printf("imageuiregion_init:\n");
 #endif /*DEBUG*/
 
-	g_signal_connect_object(G_OBJECT(imageui->imagedisplay), "snapshot",
+	g_signal_connect_object(G_OBJECT(imagedisplay), "snapshot",
 		G_CALLBACK(imageuiregion_overlay_snapshot), imageuiregion, 0);
 }
 
@@ -591,7 +598,7 @@ imageuiregion_class_init(ImageuiregionClass *class)
 	gobject_class->set_property = imageuiregion_set_property;
 	gobject_class->get_property = imageuiregion_get_property;
 
-	g_object_class_install_property(gobject_class, PROP_TILESOURCE,
+	g_object_class_install_property(gobject_class, PROP_IMAGEUI,
 		g_param_spec_object("imageui",
 			_("Imageui"),
 			_("The imageui we paint on"),

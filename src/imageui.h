@@ -49,6 +49,8 @@ void imageui_add_regionview(Imageui *imageui, Regionview *regionview);
 void imageui_remove_regionview(Imageui *imageui, Regionview *regionview);
 
 Tilesource *imageui_get_tilesource(Imageui *imageui);
+iImage *imageui_get_iimage(Imageui *imageui);
+GtkWidget *imageui_get_imagedisplay(Imageui *imageui);
 double imageui_get_scale(Imageui *imageui);
 void imageui_get_mouse_position(Imageui *imageui,
 	double *image_x, double *image_y);

@@ -95,6 +95,10 @@ struct _Regionview {
 	 */
 	Imageui *imageui;
 
+	/* The imageuiregion that's running our interactions.
+	 */
+	Imageuiregion *imageuiregion;
+
 	/* What's on the screen.
 	 */
 	PangoLayout *layout;	 /* What we draw the label with */
