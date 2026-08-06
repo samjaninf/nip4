@@ -1,7 +1,3 @@
-- get imageuiregion building
-
-- remove region handling from imageui
-
 - make imageui emit signals for UI events
 
 	- "handled" should be a param? or return a "handled" bool?

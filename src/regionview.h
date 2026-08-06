@@ -56,7 +56,7 @@ typedef enum {
 
 /* Resize types.
  */
-typedef enum {
+enum _RegionviewResize {
 	REGIONVIEW_RESIZE_NONE,
 	REGIONVIEW_RESIZE_MOVE,
 	REGIONVIEW_RESIZE_EDIT,
@@ -69,7 +69,7 @@ typedef enum {
 	REGIONVIEW_RESIZE_BOTTOMLEFT,
 	REGIONVIEW_RESIZE_LEFT,
 	REGIONVIEW_RESIZE_LAST
-} RegionviewResize;
+};
 
 struct _Regionview {
 	View view;

@@ -183,6 +183,7 @@ typedef struct _ParseNode ParseNode;
 typedef struct _Plot Plot;
 typedef struct _Reduce Reduce;
 typedef struct _Regionview Regionview;
+typedef enum _RegionviewResize RegionviewResize;
 typedef struct _Rhs Rhs;
 typedef struct _Rhsview Rhsview;
 typedef struct _Row Row;

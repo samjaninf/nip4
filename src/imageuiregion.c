@@ -560,6 +560,43 @@ imageuiregion_drag_end(GtkGestureDrag *self,
 	imageuiregion->state = IMAGEUIREGION_STATE_WAIT;
 }
 
+static void
+imageuiregion_set_cursor(Imageuiregion *imageuiregion)
+{
+	Imageui *imageui = imageuiregion->imageui;
+
+	RegionviewResize resize;
+
+	resize = REGIONVIEW_RESIZE_NONE;
+
+	if (imageuiregion->grabbed)
+		resize = imageuiregion->grabbed->resize;
+	else {
+		double x_gtk, y_gtk;
+		imageui_get_mouse_position_gtk(imageui, &x_gtk, &y_gtk);
+
+		Regionview *regionview =
+			imageuiregion_pick_regionview(imageuiregion, x_gtk, y_gtk);
+		if (regionview)
+			resize = regionview_hit(regionview, x_gtk, y_gtk);
+	}
+
+	imageui_set_cursor(imageui, resize);
+}
+
+static void
+imageuiregion_motion(GtkEventControllerMotion *self,
+	gdouble x, gdouble y, gpointer user_data)
+{
+	Imageuiregion *imageuiregion = IMAGEUIREGION(user_data);
+
+#ifdef DEBUG_VERBOSE
+	printf("imageui_motion: x = %g, y = %g\n", x, y);
+#endif /*DEBUG_VERBOSE*/
+
+	imageuiregion_set_cursor(imageuiregion);
+}
+
 // from the imagedisplay snapshot method: draw any visible regions
 static void
 imageuiregion_overlay_snapshot(Imagedisplay *imagedisplay,
