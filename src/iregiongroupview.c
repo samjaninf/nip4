@@ -55,8 +55,9 @@ iregiongroupview_get_classmodel(iRegiongroupview *iregiongroupview)
 static void *
 iregiongroupview_unref(Regionview *regionview)
 {
-	if (regionview->imageui)
-		imageui_remove_regionview(regionview->imageui, regionview);
+	Imageui *imageui = regionview_get_imageui(regionview);
+	if (imageui)
+		imageui_remove_regionview(imageui, regionview);
 
 	return NULL;
 }
@@ -97,8 +98,10 @@ static Regionview *
 iregiongroupview_refresh_imageview_test(Regionview *regionview,
 	iRegiongroupviewRefreshState *irs)
 {
+	Imageui *imageui = regionview_get_imageui(regionview);
+
 	if (regionview->classmodel == irs->classmodel &&
-		regionview->imageui == irs->imageui)
+		imageui == irs->imageui)
 		return regionview;
 
 	return NULL;

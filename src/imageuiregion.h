@@ -44,6 +44,8 @@
 
 G_DECLARE_FINAL_TYPE(Imageuiregion, imageuiregion, NIP4, IMAGEUIREGION, GObject)
 
+Imageui *imageuiregion_get_imageui(Imageuiregion *imageuiregion);
+
 void imageuiregion_add_regionview(Imageuiregion *imageuiregion,
 	Regionview *regionview);
 void imageuiregion_remove_regionview(Imageuiregion *imageuiregion,

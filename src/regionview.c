@@ -96,6 +96,14 @@ regionview_get_model(Regionview *regionview)
 	return model_area;
 }
 
+Imageui *
+regionview_get_imageui(Regionview *regionview)
+{
+	return regionview->imageuiregion ?
+		imageuiregion_get_imageui(regionview->imageuiregion) :
+		NULL;
+}
+
 /* Type we display for each of the classes. Order is important! Most derived
  * classes first.
  */
@@ -312,11 +320,12 @@ regionview_draw_init_guide_label(Regionview *regionview)
 static gboolean
 regionview_clip_frame(Regionview *regionview, VipsRect *frame)
 {
+	Imageui *imageui = regionview_get_imageui(regionview);
 	VipsRect window = {
 		0,
 		0,
-		gtk_widget_get_width(GTK_WIDGET(regionview->imageui)),
-		gtk_widget_get_height(GTK_WIDGET(regionview->imageui))
+		gtk_widget_get_width(GTK_WIDGET(imageui)),
+		gtk_widget_get_height(GTK_WIDGET(imageui))
 	};
 	int right = VIPS_RECT_RIGHT(frame);
 	int bottom = VIPS_RECT_BOTTOM(frame);
@@ -350,7 +359,7 @@ regionview_clip_frame(Regionview *regionview, VipsRect *frame)
 static void
 regionview_draw_region(Regionview *regionview, GtkSnapshot *snapshot)
 {
-	Imageui *imageui = regionview->imageui;
+	Imageui *imageui = regionview_get_imageui(regionview);
 	double zoom = imageui_get_zoom(imageui);
 
 	// main frame
@@ -480,7 +489,7 @@ regionview_draw_crosshair(Regionview *regionview, GtkSnapshot *snapshot,
 static void
 regionview_draw_mark(Regionview *regionview, GtkSnapshot *snapshot)
 {
-	Imageui *imageui = regionview->imageui;
+	Imageui *imageui = regionview_get_imageui(regionview);
 
 	// point we mark
 	double left;
@@ -506,11 +515,13 @@ static void
 regionview_draw_line(Regionview *regionview,
 	GtkSnapshot *snapshot, VipsRect *rect)
 {
+	Imageui *imageui = regionview_get_imageui(regionview);
+
 	VipsRect window = {
 		0,
 		0,
-		gtk_widget_get_width(GTK_WIDGET(regionview->imageui)),
-		gtk_widget_get_height(GTK_WIDGET(regionview->imageui))
+		gtk_widget_get_width(GTK_WIDGET(imageui)),
+		gtk_widget_get_height(GTK_WIDGET(imageui))
 	};
 
 	GskStroke *stroke;
@@ -542,7 +553,7 @@ regionview_draw_line(Regionview *regionview,
 static void
 regionview_draw_arrow(Regionview *regionview, GtkSnapshot *snapshot)
 {
-	Imageui *imageui = regionview->imageui;
+	Imageui *imageui = regionview_get_imageui(regionview);
 	double zoom = imageui_get_zoom(imageui);
 
 	// two points to mark
@@ -573,7 +584,7 @@ regionview_draw_arrow(Regionview *regionview, GtkSnapshot *snapshot)
 static void
 regionview_draw_guide(Regionview *regionview, GtkSnapshot *snapshot)
 {
-	Imageui *imageui = regionview->imageui;
+	Imageui *imageui = regionview_get_imageui(regionview);
 	Tilesource *tilesource = imageui_get_tilesource(imageui);
 
 	// the full width or height of the image
@@ -800,7 +811,7 @@ void
 regionview_resize(Regionview *regionview, guint modifiers,
 	int width, int height, int x, int y)
 {
-	Imageui *imageui = regionview->imageui;
+	Imageui *imageui = regionview_get_imageui(regionview);
 	VipsRect *our_area = &regionview->our_area;
 	VipsRect *start_area = &regionview->start_area;
 
@@ -1031,8 +1042,9 @@ regionview_model_changed(Classmodel *classmodel, Regionview *regionview)
 	regionview->draw_type = regionview->type;
 
 	// queue a redraw on our imageui to get us repainted
-	if (regionview->imageui)
-		imageui_queue_draw(regionview->imageui);
+	Imageui *imageui = regionview_get_imageui(regionview);
+	if (imageui)
+		imageui_queue_draw(imageui);
 }
 
 #ifdef EVENT

@@ -34,9 +34,9 @@
 #include "nip4.h"
 
 /*
- */
 #define DEBUG_VERBOSE
 #define DEBUG
+ */
 
 /* How much to zoom view by each frame.
  */
@@ -229,11 +229,13 @@ imageui_queue_draw(Imageui *imageui)
 void
 imageui_add_regionview(Imageui *imageui, Regionview *regionview)
 {
+	imageuiregion_add_regionview(imageui->imageuiregion, regionview);
 }
 
 void
 imageui_remove_regionview(Imageui *imageui, Regionview *regionview)
 {
+	imageuiregion_remove_regionview(imageui->imageuiregion, regionview);
 }
 
 static void
@@ -996,7 +998,7 @@ imageui_pick_regionview(Imageui *imageui, int x, int y)
 }
 
 static void
-imageui_drag_begin(GtkEventControllerMotion *self,
+imageui_drag_begin(GtkGestureDrag *drag,
 	gdouble start_x, gdouble start_y, gpointer user_data)
 {
 	Imageui *imageui = IMAGEUI(user_data);
@@ -1006,34 +1008,40 @@ imageui_drag_begin(GtkEventControllerMotion *self,
 		start_x, start_y);
 #endif /*DEBUG_VERBOSE*/
 
-	switch (imageui->state) {
-	case IMAGEUI_WAIT:
-		{
-			int window_left;
-			int window_top;
-			int window_width;
-			int window_height;
-			imageui_get_position(imageui,
-				&window_left, &window_top, &window_width, &window_height);
+	gboolean handled;
+	g_signal_emit(imageui, imageui_signals[SIG_DRAG_BEGIN], 0,
+		start_x, start_y, drag, &handled);
 
-			imageui->window_left = window_left;
-			imageui->window_top = window_top;
-			imageui->start_x = start_x;
-			imageui->start_y = start_y;
+	if (!handled) {
+		switch (imageui->state) {
+		case IMAGEUI_WAIT:
+			{
+				int window_left;
+				int window_top;
+				int window_width;
+				int window_height;
+				imageui_get_position(imageui,
+					&window_left, &window_top, &window_width, &window_height);
+
+				imageui->window_left = window_left;
+				imageui->window_top = window_top;
+				imageui->start_x = start_x;
+				imageui->start_y = start_y;
+			}
+
+			break;
+
+		case IMAGEUI_SCROLL:
+			break;
+
+		default:
+			break;
 		}
-
-		break;
-
-	case IMAGEUI_SCROLL:
-		break;
-
-	default:
-		break;
 	}
 }
 
 static void
-imageui_drag_update(GtkEventControllerMotion *self,
+imageui_drag_update(GtkGestureDrag *drag,
 	gdouble offset_x, gdouble offset_y, gpointer user_data)
 {
 	Imageui *imageui = IMAGEUI(user_data);
@@ -1043,25 +1051,31 @@ imageui_drag_update(GtkEventControllerMotion *self,
 		offset_x, offset_y);
 #endif /*DEBUG_VERBOSE*/
 
-	switch (imageui->state) {
-	case IMAGEUI_WAIT:
-		if (fabs(offset_x) > 5 ||
-			fabs(offset_y) > 5)
-			imageui->state = IMAGEUI_SCROLL;
-		break;
+	gboolean handled;
+	g_signal_emit(imageui, imageui_signals[SIG_DRAG_UPDATE], 0,
+		offset_x, offset_y, drag, &handled);
 
-	case IMAGEUI_SCROLL:
-		imageui_set_position(imageui,
-			imageui->window_left - offset_x, imageui->window_top - offset_y);
-		break;
+	if (!handled) {
+		switch (imageui->state) {
+		case IMAGEUI_WAIT:
+			if (fabs(offset_x) > 5 ||
+				fabs(offset_y) > 5)
+				imageui->state = IMAGEUI_SCROLL;
+			break;
 
-	default:
-		break;
+		case IMAGEUI_SCROLL:
+			imageui_set_position(imageui,
+				imageui->window_left - offset_x, imageui->window_top - offset_y);
+			break;
+
+		default:
+			break;
+		}
 	}
 }
 
 static void
-imageui_drag_end(GtkEventControllerMotion *self,
+imageui_drag_end(GtkGestureDrag *drag,
 	gdouble offset_x, gdouble offset_y, gpointer user_data)
 {
 	Imageui *imageui = IMAGEUI(user_data);
@@ -1071,18 +1085,24 @@ imageui_drag_end(GtkEventControllerMotion *self,
 		offset_x, offset_y);
 #endif /*DEBUG_VERBOSE*/
 
-	switch (imageui->state) {
-	case IMAGEUI_WAIT:
-		break;
+	gboolean handled;
+	g_signal_emit(imageui, imageui_signals[SIG_DRAG_END], 0,
+		offset_x, offset_y, drag, &handled);
 
-	case IMAGEUI_SCROLL:
-		break;
+	if (!handled) {
+		switch (imageui->state) {
+		case IMAGEUI_WAIT:
+			break;
 
-	default:
-		break;
+		case IMAGEUI_SCROLL:
+			break;
+
+		default:
+			break;
+		}
+
+		imageui->state = IMAGEUI_WAIT;
 	}
-
-	imageui->state = IMAGEUI_WAIT;
 }
 
 static void
@@ -1098,8 +1118,6 @@ imageui_motion(GtkEventControllerMotion *motion,
 	gboolean handled;
 	g_signal_emit(imageui, imageui_signals[SIG_MOTION], 0,
 		x, y, motion, &handled);
-
-	printf("imageui_motion: handled = %d\n", handled);
 
 	if (!handled) {
 		imageui->last_x_gtk = x;
@@ -1254,6 +1272,36 @@ imageui_class_init(ImageuiClass *class)
 		G_TYPE_NONE, 0);
 
 	imageui_signals[SIG_MOTION] = g_signal_new("motion",
+		G_TYPE_FROM_CLASS(class),
+		G_SIGNAL_RUN_LAST,
+		0,
+		imageui_event_accu,
+		NULL,
+		nip4_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
+		G_TYPE_BOOLEAN, 3,
+		G_TYPE_DOUBLE, G_TYPE_DOUBLE, G_TYPE_OBJECT);
+
+	imageui_signals[SIG_DRAG_BEGIN] = g_signal_new("drag-begin",
+		G_TYPE_FROM_CLASS(class),
+		G_SIGNAL_RUN_LAST,
+		0,
+		imageui_event_accu,
+		NULL,
+		nip4_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
+		G_TYPE_BOOLEAN, 3,
+		G_TYPE_DOUBLE, G_TYPE_DOUBLE, G_TYPE_OBJECT);
+
+	imageui_signals[SIG_DRAG_UPDATE] = g_signal_new("drag-update",
+		G_TYPE_FROM_CLASS(class),
+		G_SIGNAL_RUN_LAST,
+		0,
+		imageui_event_accu,
+		NULL,
+		nip4_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
+		G_TYPE_BOOLEAN, 3,
+		G_TYPE_DOUBLE, G_TYPE_DOUBLE, G_TYPE_OBJECT);
+
+	imageui_signals[SIG_DRAG_END] = g_signal_new("drag-end",
 		G_TYPE_FROM_CLASS(class),
 		G_SIGNAL_RUN_LAST,
 		0,

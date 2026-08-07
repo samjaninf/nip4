@@ -81,33 +81,10 @@ enum {
 	PROP_LAST
 };
 
-void
-imageuiregion_add_regionview(Imageuiregion *imageuiregion,
-	Regionview *regionview)
+Imageui *
+imageuiregion_get_imageui(Imageuiregion *imageuiregion)
 {
-	g_assert(!g_slist_find(imageuiregion->regionviews, regionview));
-	g_assert(!regionview->imageuiregion);
-
-	imageuiregion->regionviews =
-		g_slist_prepend(imageuiregion->regionviews, regionview);
-	g_object_ref_sink(regionview);
-	regionview->imageuiregion = imageuiregion;
-
-	imageui_queue_draw(imageuiregion->imageui);
-}
-
-void
-imageuiregion_remove_regionview(Imageuiregion *imageuiregion,
-	Regionview *regionview)
-{
-	g_assert(g_slist_find(imageuiregion->regionviews, regionview));
-
-	imageuiregion->regionviews =
-		g_slist_remove(imageuiregion->regionviews, regionview);
-	regionview->imageuiregion = NULL;
-	g_object_unref(regionview);
-
-	imageui_queue_draw(imageuiregion->imageui);
+	return imageuiregion->imageui;
 }
 
 static void
@@ -160,7 +137,7 @@ imageuiregion_dispose(GObject *object)
 static void
 imageuiregion_set_cursor(Imageuiregion *imageuiregion)
 {
-	Imageui *imageui = imageuiregion->imageui;
+	Imageui *imageui = imageuiregion_get_imageui(imageuiregion);
 
 	RegionviewResize resize;
 
@@ -185,13 +162,11 @@ static gboolean
 imageuiregion_motion(Imageui *imageui,
 	gdouble x, gdouble y, GtkEventControllerMotion *motion, void *user_data)
 {
+	Imageuiregion *imageuiregion = IMAGEUIREGION(user_data);
+
 #ifdef DEBUG_VERBOSE
 	printf("imageuiregion_motion: x = %g, y = %g\n", x, y);
 #endif /*DEBUG_VERBOSE*/
-
-	Imageui *imageu2 = IMAGEUI(imageui);
-	GtkEventControllerMotion *self2 = GTK_EVENT_CONTROLLER_MOTION(motion);
-	Imageuiregion *imageuiregion = IMAGEUIREGION(user_data);
 
 	imageuiregion_set_cursor(imageuiregion);
 
@@ -208,48 +183,6 @@ imageuiregion_overlay_snapshot(Imagedisplay *imagedisplay,
 		Regionview *regionview = REGIONVIEW(p->data);
 
 		regionview_draw(regionview, snapshot);
-	}
-}
-
-static void
-imageuiregion_set_property(GObject *object,
-	guint prop_id, const GValue *value, GParamSpec *pspec)
-{
-	Imageuiregion *imageuiregion = (Imageuiregion *) object;
-
-	switch (prop_id) {
-	case PROP_IMAGEUI:
-		Imageui *imageui = IMAGEUI(g_value_get_object(value));
-		imageuiregion->imageui = imageui;
-		GtkWidget *imagedisplay = imageui_get_imagedisplay(imageui);
-
-		g_signal_connect(imageui, "motion",
-			G_CALLBACK(imageuiregion_motion), imageuiregion);
-		g_signal_connect_object(G_OBJECT(imagedisplay), "snapshot",
-			G_CALLBACK(imageuiregion_overlay_snapshot), imageuiregion, 0);
-
-		break;
-
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
-		break;
-	}
-}
-
-static void
-imageuiregion_get_property(GObject *object,
-	guint prop_id, GValue *value, GParamSpec *pspec)
-{
-	Imageuiregion *imageuiregion = IMAGEUIREGION(object);
-
-	switch (prop_id) {
-	case PROP_IMAGEUI:
-		g_value_set_object(value, imageuiregion->imageui);
-		break;
-
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
-		break;
 	}
 }
 
@@ -303,7 +236,7 @@ imageuiregion_snap_sub(Regionview *regionview,
 static gboolean
 imageuiregion_snap(Imageuiregion *imageuiregion, ImageuiregionSnap *snap)
 {
-	Imageui *imageui = imageuiregion->imageui;
+	Imageui *imageui = imageuiregion_get_imageui(imageuiregion);
 
 	gboolean snapped;
 
@@ -418,7 +351,7 @@ imageuiregion_drag_begin(GtkGestureDrag *self,
 	GdkModifierType modifiers =
 		gtk_event_controller_get_current_event_state(controller);
 	Imageuiregion *imageuiregion = IMAGEUIREGION(user_data);
-	Imageui *imageui = imageuiregion->imageui;
+	Imageui *imageui = imageuiregion_get_imageui(imageuiregion);
 
 	Regionview *regionview;
 
@@ -477,7 +410,7 @@ imageuiregion_drag_update(GtkGestureDrag *self,
 	GdkModifierType modifiers =
 		gtk_event_controller_get_current_event_state(controller);
 	Imageuiregion *imageuiregion = IMAGEUIREGION(user_data);
-	Imageui *imageui = imageuiregion->imageui;
+	Imageui *imageui = imageuiregion_get_imageui(imageuiregion);
 	Tilesource *tilesource  = imageui_get_tilesource(imageui);
 
 	double zoom = imageui_get_zoom(imageui);
@@ -520,7 +453,7 @@ static void
 imageuiregion_region_new(Imageuiregion *imageuiregion,
 	RegionviewType type, VipsRect *rect)
 {
-	Imageui *imageui = imageuiregion->imageui;
+	Imageui *imageui = imageuiregion_get_imageui(imageuiregion);
 	iImage *iimage = imageui_get_iimage(imageui);
 	Row *row = iimage ? HEAPMODEL(iimage)->row : NULL;
 
@@ -587,7 +520,7 @@ imageuiregion_drag_end(GtkGestureDrag *self,
 	gdouble offset_x, gdouble offset_y, gpointer user_data)
 {
 	Imageuiregion *imageuiregion = IMAGEUIREGION(user_data);
-	Imageui *imageui = imageuiregion->imageui;
+	Imageui *imageui = imageuiregion_get_imageui(imageuiregion);
 
 #ifdef DEBUG_VERBOSE
 	printf("imageuiregion_drag_end: offset_x = %g, offset_y = %g\n",
@@ -620,6 +553,50 @@ imageuiregion_drag_end(GtkGestureDrag *self,
 	}
 
 	imageuiregion->state = IMAGEUIREGION_STATE_WAIT;
+}
+
+static void
+imageuiregion_set_property(GObject *object,
+	guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+	Imageuiregion *imageuiregion = (Imageuiregion *) object;
+
+	switch (prop_id) {
+	case PROP_IMAGEUI:
+		Imageui *imageui = IMAGEUI(g_value_get_object(value));
+		GtkWidget *imagedisplay = imageui_get_imagedisplay(imageui);
+
+		imageuiregion->imageui = imageui;
+
+		g_signal_connect_object(G_OBJECT(imagedisplay), "snapshot",
+			G_CALLBACK(imageuiregion_overlay_snapshot), imageuiregion, 0);
+
+		g_signal_connect(imageui, "motion",
+			G_CALLBACK(imageuiregion_motion), imageuiregion);
+
+		break;
+
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+imageuiregion_get_property(GObject *object,
+	guint prop_id, GValue *value, GParamSpec *pspec)
+{
+	Imageuiregion *imageuiregion = IMAGEUIREGION(object);
+
+	switch (prop_id) {
+	case PROP_IMAGEUI:
+		g_value_set_object(value, imageuiregion->imageui);
+		break;
+
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+		break;
+	}
 }
 
 static void
@@ -669,3 +646,31 @@ imageuiregion_new(Imageui *imageui)
 	return imageuiregion;
 }
 
+void
+imageuiregion_add_regionview(Imageuiregion *imageuiregion,
+	Regionview *regionview)
+{
+	g_assert(!g_slist_find(imageuiregion->regionviews, regionview));
+	g_assert(!regionview->imageuiregion);
+
+	imageuiregion->regionviews =
+		g_slist_prepend(imageuiregion->regionviews, regionview);
+	g_object_ref_sink(regionview);
+	regionview->imageuiregion = imageuiregion;
+
+	imageui_queue_draw(imageuiregion->imageui);
+}
+
+void
+imageuiregion_remove_regionview(Imageuiregion *imageuiregion,
+	Regionview *regionview)
+{
+	g_assert(g_slist_find(imageuiregion->regionviews, regionview));
+
+	imageuiregion->regionviews =
+		g_slist_remove(imageuiregion->regionviews, regionview);
+	regionview->imageuiregion = NULL;
+	g_object_unref(regionview);
+
+	imageui_queue_draw(imageuiregion->imageui);
+}

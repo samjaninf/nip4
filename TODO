@@ -1,50 +1,50 @@
+- move scroll etc. into class methods?
+
 - make imageui emit signals for UI events
 
-	- "handled" should be a param? or return a "handled" bool?
+	use a signal accumulator
 
-		use a signal accumulator
-
-guint g_signal_newv (const gchar        *signal_name,
-                     GType               itype,
-                     GSignalFlags        signal_flags,
-                     GClosure           *class_closure,
-                     GSignalAccumulator  accumulator,
-                     gpointer            accu_data,
-                     GSignalCMarshaller  c_marshaller,
-                     GType               return_type,
-                     guint               n_params,
-                     GType              *param_types);
+	guint g_signal_newv (const gchar        *signal_name,
+	     GType               itype,
+	     GSignalFlags        signal_flags,
+	     GClosure           *class_closure,
+	     GSignalAccumulator  accumulator,
+	     gpointer            accu_data,
+	     GSignalCMarshaller  c_marshaller,
+	     GType               return_type,
+	     guint               n_params,
+	     GType              *param_types);
 
 
-		accumulator: this is a function pointer which is invoked
-		after each closure has been invoked. If it returns FALSE,
-		signal emission is stopped. If it returns TRUE, signal
-		emission proceeds normally. It is also used to compute the
-		return value of the signal based on the return value of all
-		the invoked closures.
+	accumulator: this is a function pointer which is invoked
+	after each closure has been invoked. If it returns FALSE,
+	signal emission is stopped. If it returns TRUE, signal
+	emission proceeds normally. It is also used to compute the
+	return value of the signal based on the return value of all
+	the invoked closures.
 
-		accumulator_data: this pointer will be passed down to each
-		invocation of the accumulator during emission.
+	accumulator_data: this pointer will be passed down to each
+	invocation of the accumulator during emission.
 
-			gboolean
-			(* GSignalAccumulator) (
-			  GSignalInvocationHint* ihint,
-			  GValue* return_accu,
-			  const GValue* handler_return,
-			  gpointer data
-			)
+		gboolean
+		(* GSignalAccumulator) (
+		  GSignalInvocationHint* ihint,
+		  GValue* return_accu,
+		  const GValue* handler_return,
+		  gpointer data
+		)
 
-		TRUE continues emission, FALSE stops
+	TRUE continues emission, FALSE stops
 
-		return_accu accumnulator so far
+	return_accu accumnulator so far
 
-		handler_return return from latest handler
+	handler_return return from latest handler
 
-			struct GSignalInvocationHint {
-			  guint signal_id;
-			  GQuark detail;
-			  GSignalFlags run_type;
-			}
+		struct GSignalInvocationHint {
+		  guint signal_id;
+		  GQuark detail;
+		  GSignalFlags run_type;
+		}
 
 
 
