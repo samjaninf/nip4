@@ -1,61 +1,8 @@
-- move scroll etc. into class methods?
+- fix motion / drag class methods
 
-- make imageui emit signals for UI events
-
-	use a signal accumulator
-
-	guint g_signal_newv (const gchar        *signal_name,
-	     GType               itype,
-	     GSignalFlags        signal_flags,
-	     GClosure           *class_closure,
-	     GSignalAccumulator  accumulator,
-	     gpointer            accu_data,
-	     GSignalCMarshaller  c_marshaller,
-	     GType               return_type,
-	     guint               n_params,
-	     GType              *param_types);
+- add paintbox drag methods
 
 
-	accumulator: this is a function pointer which is invoked
-	after each closure has been invoked. If it returns FALSE,
-	signal emission is stopped. If it returns TRUE, signal
-	emission proceeds normally. It is also used to compute the
-	return value of the signal based on the return value of all
-	the invoked closures.
-
-	accumulator_data: this pointer will be passed down to each
-	invocation of the accumulator during emission.
-
-		gboolean
-		(* GSignalAccumulator) (
-		  GSignalInvocationHint* ihint,
-		  GValue* return_accu,
-		  const GValue* handler_return,
-		  gpointer data
-		)
-
-	TRUE continues emission, FALSE stops
-
-	return_accu accumnulator so far
-
-	handler_return return from latest handler
-
-		struct GSignalInvocationHint {
-		  guint signal_id;
-		  GQuark detail;
-		  GSignalFlags run_type;
-		}
-
-
-
-
-
-
-- scroll and zoom handling should attach to these signals
-
-- add imageuiregion to imageui for region interactions
-
-- .... finally, link on paintbox
 
 
 
