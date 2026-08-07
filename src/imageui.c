@@ -34,9 +34,9 @@
 #include "nip4.h"
 
 /*
+ */
 #define DEBUG_VERBOSE
 #define DEBUG
- */
 
 /* How much to zoom view by each frame.
  */
@@ -143,6 +143,15 @@ enum {
 enum {
 	SIG_CHANGED, /* New mouse position, magnification, etc. */
 
+	/* User input events.
+	 */
+	SIG_MOTION,
+	SIG_DRAG_BEGIN,
+	SIG_DRAG_UPDATE,
+	SIG_DRAG_END,
+	SIG_KEY_PRESS,
+	SIG_KEY_RELEASE,
+
 	SIG_LAST
 };
 
@@ -237,6 +246,7 @@ imageui_dispose(GObject *object)
 #endif /*DEBUG*/
 
 	imageui_set_iimage(imageui, NULL);
+	VIPS_UNREF(imageui->imageuiregion);
 	VIPS_FREEF(gtk_widget_unparent, imageui->scrolled_window);
 
 	G_OBJECT_CLASS(imageui_parent_class)->dispose(object);
@@ -1076,7 +1086,7 @@ imageui_drag_end(GtkEventControllerMotion *self,
 }
 
 static void
-imageui_motion(GtkEventControllerMotion *self,
+imageui_motion(GtkEventControllerMotion *motion,
 	gdouble x, gdouble y, gpointer user_data)
 {
 	Imageui *imageui = IMAGEUI(user_data);
@@ -1085,10 +1095,18 @@ imageui_motion(GtkEventControllerMotion *self,
 	printf("imageui_motion: x = %g, y = %g\n", x, y);
 #endif /*DEBUG_VERBOSE*/
 
-	imageui->last_x_gtk = x;
-	imageui->last_y_gtk = y;
+	gboolean handled;
+	g_signal_emit(imageui, imageui_signals[SIG_MOTION], 0,
+		x, y, motion, &handled);
 
-	imageui_changed(imageui);
+	printf("imageui_motion: handled = %d\n", handled);
+
+	if (!handled) {
+		imageui->last_x_gtk = x;
+		imageui->last_y_gtk = y;
+
+		imageui_changed(imageui);
+	}
 }
 
 static gboolean
@@ -1134,6 +1152,20 @@ imageui_init(Imageui *imageui)
 
 	// read the gtk animation setting preference
 	imageui->should_animate = widget_should_animate(GTK_WIDGET(imageui));
+
+	// attach the region handler
+	imageui->imageuiregion = imageuiregion_new(imageui);
+}
+
+static gboolean
+imageui_event_accu(GSignalInvocationHint *ihint,
+	GValue *return_accu, const GValue *handler_return, gpointer data)
+{
+	g_assert(G_VALUE_HOLDS_BOOLEAN(handler_return));
+
+	// FALSE if this handler returns FALSE ... ie. stop signal emission if a
+	// handler says so
+	return g_value_get_boolean(handler_return);
 }
 
 static void
@@ -1220,6 +1252,16 @@ imageui_class_init(ImageuiClass *class)
 		NULL, NULL,
 		g_cclosure_marshal_VOID__VOID,
 		G_TYPE_NONE, 0);
+
+	imageui_signals[SIG_MOTION] = g_signal_new("motion",
+		G_TYPE_FROM_CLASS(class),
+		G_SIGNAL_RUN_LAST,
+		0,
+		imageui_event_accu,
+		NULL,
+		nip4_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
+		G_TYPE_BOOLEAN, 3,
+		G_TYPE_DOUBLE, G_TYPE_DOUBLE, G_TYPE_OBJECT);
 
 	for (int i = 0; i < REGIONVIEW_RESIZE_LAST; i++)
 		imageui_cursors[i] =

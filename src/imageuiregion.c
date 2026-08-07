@@ -34,9 +34,9 @@
 #include "nip4.h"
 
 /*
+ */
 #define DEBUG_VERBOSE
 #define DEBUG
- */
 
 /* Snap if closer than this.
  */
@@ -76,7 +76,7 @@ struct _Imageuiregion {
 G_DEFINE_TYPE(Imageuiregion, imageuiregion, G_TYPE_OBJECT);
 
 enum {
-	PROP_IMAGEUI,
+	PROP_IMAGEUI = 1,
 
 	PROP_LAST
 };
@@ -158,6 +158,60 @@ imageuiregion_dispose(GObject *object)
 }
 
 static void
+imageuiregion_set_cursor(Imageuiregion *imageuiregion)
+{
+	Imageui *imageui = imageuiregion->imageui;
+
+	RegionviewResize resize;
+
+	resize = REGIONVIEW_RESIZE_NONE;
+
+	if (imageuiregion->grabbed)
+		resize = imageuiregion->grabbed->resize;
+	else {
+		double x_gtk, y_gtk;
+		imageui_get_mouse_position_gtk(imageui, &x_gtk, &y_gtk);
+
+		Regionview *regionview =
+			imageuiregion_pick_regionview(imageuiregion, x_gtk, y_gtk);
+		if (regionview)
+			resize = regionview_hit(regionview, x_gtk, y_gtk);
+	}
+
+	imageui_set_cursor(imageui, resize);
+}
+
+static gboolean
+imageuiregion_motion(Imageui *imageui,
+	gdouble x, gdouble y, GtkEventControllerMotion *motion, void *user_data)
+{
+#ifdef DEBUG_VERBOSE
+	printf("imageuiregion_motion: x = %g, y = %g\n", x, y);
+#endif /*DEBUG_VERBOSE*/
+
+	Imageui *imageu2 = IMAGEUI(imageui);
+	GtkEventControllerMotion *self2 = GTK_EVENT_CONTROLLER_MOTION(motion);
+	Imageuiregion *imageuiregion = IMAGEUIREGION(user_data);
+
+	imageuiregion_set_cursor(imageuiregion);
+
+	// always propagate the event
+	return FALSE;
+}
+
+// from the imagedisplay snapshot method: draw any visible regions
+static void
+imageuiregion_overlay_snapshot(Imagedisplay *imagedisplay,
+	GtkSnapshot *snapshot, Imageuiregion *imageuiregion)
+{
+	for (GSList *p = imageuiregion->regionviews; p; p = p->next) {
+		Regionview *regionview = REGIONVIEW(p->data);
+
+		regionview_draw(regionview, snapshot);
+	}
+}
+
+static void
 imageuiregion_set_property(GObject *object,
 	guint prop_id, const GValue *value, GParamSpec *pspec)
 {
@@ -165,7 +219,15 @@ imageuiregion_set_property(GObject *object,
 
 	switch (prop_id) {
 	case PROP_IMAGEUI:
-		imageuiregion->imageui = IMAGEUI(g_value_get_object(value));
+		Imageui *imageui = IMAGEUI(g_value_get_object(value));
+		imageuiregion->imageui = imageui;
+		GtkWidget *imagedisplay = imageui_get_imagedisplay(imageui);
+
+		g_signal_connect(imageui, "motion",
+			G_CALLBACK(imageuiregion_motion), imageuiregion);
+		g_signal_connect_object(G_OBJECT(imagedisplay), "snapshot",
+			G_CALLBACK(imageuiregion_overlay_snapshot), imageuiregion, 0);
+
 		break;
 
 	default:
@@ -561,65 +623,12 @@ imageuiregion_drag_end(GtkGestureDrag *self,
 }
 
 static void
-imageuiregion_set_cursor(Imageuiregion *imageuiregion)
-{
-	Imageui *imageui = imageuiregion->imageui;
-
-	RegionviewResize resize;
-
-	resize = REGIONVIEW_RESIZE_NONE;
-
-	if (imageuiregion->grabbed)
-		resize = imageuiregion->grabbed->resize;
-	else {
-		double x_gtk, y_gtk;
-		imageui_get_mouse_position_gtk(imageui, &x_gtk, &y_gtk);
-
-		Regionview *regionview =
-			imageuiregion_pick_regionview(imageuiregion, x_gtk, y_gtk);
-		if (regionview)
-			resize = regionview_hit(regionview, x_gtk, y_gtk);
-	}
-
-	imageui_set_cursor(imageui, resize);
-}
-
-static void
-imageuiregion_motion(GtkEventControllerMotion *self,
-	gdouble x, gdouble y, gpointer user_data)
-{
-	Imageuiregion *imageuiregion = IMAGEUIREGION(user_data);
-
-#ifdef DEBUG_VERBOSE
-	printf("imageui_motion: x = %g, y = %g\n", x, y);
-#endif /*DEBUG_VERBOSE*/
-
-	imageuiregion_set_cursor(imageuiregion);
-}
-
-// from the imagedisplay snapshot method: draw any visible regions
-static void
-imageuiregion_overlay_snapshot(Imagedisplay *imagedisplay,
-	GtkSnapshot *snapshot, Imageuiregion *imageuiregion)
-{
-	for (GSList *p = imageuiregion->regionviews; p; p = p->next) {
-		Regionview *regionview = REGIONVIEW(p->data);
-
-		regionview_draw(regionview, snapshot);
-	}
-}
-
-static void
 imageuiregion_init(Imageuiregion *imageuiregion)
 {
-	GtkWidget *imagedisplay = imageui_get_imagedisplay(imageuiregion->imageui);
-
 #ifdef DEBUG
 	printf("imageuiregion_init:\n");
 #endif /*DEBUG*/
 
-	g_signal_connect_object(G_OBJECT(imagedisplay), "snapshot",
-		G_CALLBACK(imageuiregion_overlay_snapshot), imageuiregion, 0);
 }
 
 static void
