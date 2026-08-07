@@ -124,6 +124,25 @@ struct _Imageui {
 
 };
 
+typedef struct _ImageuiClass {
+	GtkWidgetClass parent_class;
+
+	gboolean (*motion)(Imageui *imageui,
+		gdouble x, gdouble y, GtkEventControllerMotion *motion,
+		gpointer user_data);
+
+	gboolean (*drag_begin)(Imageui *imageui,
+		double start_x, double start_y, GtkGestureDrag *drag,
+		gpointer user_data);
+	gboolean (*drag_update)(Imageui *imageui,
+		double offset_x, double offset_y, GtkGestureDrag *drag,
+		gpointer user_data);
+	gboolean (*drag_end)(Imageui *imageui,
+		double offset_x, double offset_y, GtkGestureDrag *drag,
+		gpointer user_data);
+
+} ImageuiClass;
+
 G_DEFINE_TYPE(Imageui, imageui, GTK_TYPE_WIDGET);
 
 enum {
@@ -262,6 +281,69 @@ imageui_changed(Imageui *imageui)
 #endif /*DEBUG_VERBOSE*/
 
 	g_signal_emit(imageui, imageui_signals[SIG_CHANGED], 0);
+}
+
+static void
+imageui_motion(GtkEventControllerMotion *motion,
+	gdouble x, gdouble y, gpointer user_data)
+{
+	Imageui *imageui = IMAGEUI(user_data);
+
+#ifdef DEBUG_VERBOSE
+	printf("imageui_motion: x = %g, y = %g\n", x, y);
+#endif /*DEBUG_VERBOSE*/
+
+	gboolean handled;
+	g_signal_emit(imageui, imageui_signals[SIG_MOTION], 0,
+		x, y, motion, &handled);
+}
+
+static void
+imageui_drag_begin(GtkGestureDrag *drag,
+	gdouble start_x, gdouble start_y, gpointer user_data)
+{
+	Imageui *imageui = IMAGEUI(user_data);
+
+#ifdef DEBUG_VERBOSE
+	printf("imageui_drag_begin: start_x = %g, start_y = %g\n",
+		start_x, start_y);
+#endif /*DEBUG_VERBOSE*/
+
+	gboolean handled;
+	g_signal_emit(imageui, imageui_signals[SIG_DRAG_BEGIN], 0,
+		start_x, start_y, drag, &handled);
+}
+
+static void
+imageui_drag_update(GtkGestureDrag *drag,
+	gdouble offset_x, gdouble offset_y, gpointer user_data)
+{
+	Imageui *imageui = IMAGEUI(user_data);
+
+#ifdef DEBUG_VERBOSE
+	printf("imageui_drag_update: offset_x = %g, offset_y = %g\n",
+		offset_x, offset_y);
+#endif /*DEBUG_VERBOSE*/
+
+	gboolean handled;
+	g_signal_emit(imageui, imageui_signals[SIG_DRAG_UPDATE], 0,
+		offset_x, offset_y, drag, &handled);
+}
+
+static void
+imageui_drag_end(GtkGestureDrag *drag,
+	gdouble offset_x, gdouble offset_y, gpointer user_data)
+{
+	Imageui *imageui = IMAGEUI(user_data);
+
+#ifdef DEBUG_VERBOSE
+	printf("imageui_drag_end: offset_x = %g, offset_y = %g\n",
+		offset_x, offset_y);
+#endif /*DEBUG_VERBOSE*/
+
+	gboolean handled;
+	g_signal_emit(imageui, imageui_signals[SIG_DRAG_END], 0,
+		offset_x, offset_y, drag, &handled);
 }
 
 #ifdef DEBUG_VERBOSE
@@ -997,134 +1079,119 @@ imageui_pick_regionview(Imageui *imageui, int x, int y)
 	return NULL;
 }
 
-static void
-imageui_drag_begin(GtkGestureDrag *drag,
-	gdouble start_x, gdouble start_y, gpointer user_data)
+static gboolean
+imageui_drag_begin_real(Imageui *imageui,
+	gdouble start_x, gdouble start_y, GtkGestureDrag *drag, gpointer user_data)
 {
-	Imageui *imageui = IMAGEUI(user_data);
-
 #ifdef DEBUG_VERBOSE
-	printf("imageui_drag_begin: start_x = %g, start_y = %g\n",
+	printf("imageui_drag_begin_real: start_x = %g, start_y = %g\n",
 		start_x, start_y);
 #endif /*DEBUG_VERBOSE*/
 
-	gboolean handled;
-	g_signal_emit(imageui, imageui_signals[SIG_DRAG_BEGIN], 0,
-		start_x, start_y, drag, &handled);
+	gboolean handled = FALSE;
 
-	if (!handled) {
-		switch (imageui->state) {
-		case IMAGEUI_WAIT:
-			{
-				int window_left;
-				int window_top;
-				int window_width;
-				int window_height;
-				imageui_get_position(imageui,
-					&window_left, &window_top, &window_width, &window_height);
+	switch (imageui->state) {
+	case IMAGEUI_WAIT:
+		handled = TRUE;
+		int window_left;
+		int window_top;
+		int window_width;
+		int window_height;
+		imageui_get_position(imageui,
+			&window_left, &window_top, &window_width, &window_height);
 
-				imageui->window_left = window_left;
-				imageui->window_top = window_top;
-				imageui->start_x = start_x;
-				imageui->start_y = start_y;
-			}
+		imageui->window_left = window_left;
+		imageui->window_top = window_top;
+		imageui->start_x = start_x;
+		imageui->start_y = start_y;
 
-			break;
+		break;
 
-		case IMAGEUI_SCROLL:
-			break;
+	case IMAGEUI_SCROLL:
+		break;
 
-		default:
-			break;
-		}
+	default:
+		break;
 	}
+
+	return handled;
 }
 
-static void
-imageui_drag_update(GtkGestureDrag *drag,
-	gdouble offset_x, gdouble offset_y, gpointer user_data)
+static gboolean
+imageui_drag_update_real(Imageui *imageui,
+	gdouble offset_x, gdouble offset_y, GtkGestureDrag *drag,
+	gpointer user_data)
 {
-	Imageui *imageui = IMAGEUI(user_data);
-
 #ifdef DEBUG_VERBOSE
 	printf("imageui_drag_update: offset_x = %g, offset_y = %g\n",
 		offset_x, offset_y);
 #endif /*DEBUG_VERBOSE*/
 
-	gboolean handled;
-	g_signal_emit(imageui, imageui_signals[SIG_DRAG_UPDATE], 0,
-		offset_x, offset_y, drag, &handled);
+	gboolean handled = FALSE;
 
-	if (!handled) {
-		switch (imageui->state) {
-		case IMAGEUI_WAIT:
-			if (fabs(offset_x) > 5 ||
-				fabs(offset_y) > 5)
-				imageui->state = IMAGEUI_SCROLL;
-			break;
+	switch (imageui->state) {
+	case IMAGEUI_WAIT:
+		handled = TRUE;
 
-		case IMAGEUI_SCROLL:
-			imageui_set_position(imageui,
-				imageui->window_left - offset_x, imageui->window_top - offset_y);
-			break;
+		if (fabs(offset_x) > 5 ||
+			fabs(offset_y) > 5)
+			imageui->state = IMAGEUI_SCROLL;
+		break;
+
+	case IMAGEUI_SCROLL:
+		handled = TRUE;
+
+		imageui_set_position(imageui,
+			imageui->window_left - offset_x, imageui->window_top - offset_y);
+		break;
 
 		default:
 			break;
-		}
 	}
+
+	return handled;
 }
 
-static void
-imageui_drag_end(GtkGestureDrag *drag,
-	gdouble offset_x, gdouble offset_y, gpointer user_data)
+static gboolean
+imageui_drag_end_real(Imageui *imageui,
+	gdouble offset_x, gdouble offset_y, GtkGestureDrag *drag,
+	gpointer user_data)
 {
-	Imageui *imageui = IMAGEUI(user_data);
-
 #ifdef DEBUG_VERBOSE
-	printf("imageui_drag_end: offset_x = %g, offset_y = %g\n",
+	printf("imageui_drag_end_real: offset_x = %g, offset_y = %g\n",
 		offset_x, offset_y);
 #endif /*DEBUG_VERBOSE*/
 
-	gboolean handled;
-	g_signal_emit(imageui, imageui_signals[SIG_DRAG_END], 0,
-		offset_x, offset_y, drag, &handled);
+	switch (imageui->state) {
+	case IMAGEUI_WAIT:
+		break;
 
-	if (!handled) {
-		switch (imageui->state) {
-		case IMAGEUI_WAIT:
-			break;
+	case IMAGEUI_SCROLL:
+		break;
 
-		case IMAGEUI_SCROLL:
-			break;
-
-		default:
-			break;
-		}
-
-		imageui->state = IMAGEUI_WAIT;
+	default:
+		break;
 	}
+
+	imageui->state = IMAGEUI_WAIT;
+
+	return FALSE;
 }
 
-static void
-imageui_motion(GtkEventControllerMotion *motion,
-	gdouble x, gdouble y, gpointer user_data)
+static gboolean
+imageui_motion_real(Imageui *imageui,
+	gdouble x, gdouble y, GtkEventControllerMotion *motion, gpointer user_data)
 {
-	Imageui *imageui = IMAGEUI(user_data);
-
 #ifdef DEBUG_VERBOSE
-	printf("imageui_motion: x = %g, y = %g\n", x, y);
+	printf("imageui_motion_real: x = %g, y = %g\n", x, y);
 #endif /*DEBUG_VERBOSE*/
 
-	gboolean handled;
-	g_signal_emit(imageui, imageui_signals[SIG_MOTION], 0,
-		x, y, motion, &handled);
+	imageui->last_x_gtk = x;
+	imageui->last_y_gtk = y;
 
-	if (!handled) {
-		imageui->last_x_gtk = x;
-		imageui->last_y_gtk = y;
+	imageui_changed(imageui);
 
-		imageui_changed(imageui);
-	}
+	return TRUE;
 }
 
 static gboolean
@@ -1181,9 +1248,13 @@ imageui_event_accu(GSignalInvocationHint *ihint,
 {
 	g_assert(G_VALUE_HOLDS_BOOLEAN(handler_return));
 
-	// FALSE if this handler returns FALSE ... ie. stop signal emission if a
+	gboolean handled = g_value_get_boolean(handler_return);
+
+	g_value_set_boolean(return_accu, handled);
+
+	// FALSE if this handler returned FALSE ... ie. stop signal emission if a
 	// handler says so
-	return g_value_get_boolean(handler_return);
+	return handled;
 }
 
 static void
@@ -1212,6 +1283,11 @@ imageui_class_init(ImageuiClass *class)
 	gobject_class->dispose = imageui_dispose;
 	gobject_class->set_property = imageui_set_property;
 	gobject_class->get_property = imageui_get_property;
+
+	class->motion = imageui_motion_real;
+	class->drag_begin = imageui_drag_begin_real;
+	class->drag_update = imageui_drag_update_real;
+	class->drag_end = imageui_drag_end_real;
 
 	g_object_class_install_property(gobject_class, PROP_TILESOURCE,
 		g_param_spec_object("tilesource",
@@ -1274,7 +1350,7 @@ imageui_class_init(ImageuiClass *class)
 	imageui_signals[SIG_MOTION] = g_signal_new("motion",
 		G_TYPE_FROM_CLASS(class),
 		G_SIGNAL_RUN_LAST,
-		0,
+		G_STRUCT_OFFSET(ImageuiClass, motion),
 		imageui_event_accu,
 		NULL,
 		nip4_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
@@ -1284,7 +1360,7 @@ imageui_class_init(ImageuiClass *class)
 	imageui_signals[SIG_DRAG_BEGIN] = g_signal_new("drag-begin",
 		G_TYPE_FROM_CLASS(class),
 		G_SIGNAL_RUN_LAST,
-		0,
+		G_STRUCT_OFFSET(ImageuiClass, drag_begin),
 		imageui_event_accu,
 		NULL,
 		nip4_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
@@ -1294,7 +1370,7 @@ imageui_class_init(ImageuiClass *class)
 	imageui_signals[SIG_DRAG_UPDATE] = g_signal_new("drag-update",
 		G_TYPE_FROM_CLASS(class),
 		G_SIGNAL_RUN_LAST,
-		0,
+		G_STRUCT_OFFSET(ImageuiClass, drag_update),
 		imageui_event_accu,
 		NULL,
 		nip4_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
@@ -1304,7 +1380,7 @@ imageui_class_init(ImageuiClass *class)
 	imageui_signals[SIG_DRAG_END] = g_signal_new("drag-end",
 		G_TYPE_FROM_CLASS(class),
 		G_SIGNAL_RUN_LAST,
-		0,
+		G_STRUCT_OFFSET(ImageuiClass, drag_end),
 		imageui_event_accu,
 		NULL,
 		nip4_BOOLEAN__DOUBLE_DOUBLE_OBJECT,

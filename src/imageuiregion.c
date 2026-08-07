@@ -343,29 +343,30 @@ imageuiregion_pick_regionview(Imageuiregion *imageuiregion, int x, int y)
 	return NULL;
 }
 
-static void
-imageuiregion_drag_begin(GtkGestureDrag *self,
-	gdouble start_x, gdouble start_y, gpointer user_data)
+static gboolean
+imageuiregion_drag_begin(Imageui *imageui,
+	gdouble start_x, gdouble start_y, GtkGestureDrag *drag, gpointer user_data)
 {
-	GtkEventController *controller = GTK_EVENT_CONTROLLER(self);
+	GtkEventController *controller = GTK_EVENT_CONTROLLER(drag);
 	GdkModifierType modifiers =
 		gtk_event_controller_get_current_event_state(controller);
 	Imageuiregion *imageuiregion = IMAGEUIREGION(user_data);
-	Imageui *imageui = imageuiregion_get_imageui(imageuiregion);
-
-	Regionview *regionview;
 
 #ifdef DEBUG_VERBOSE
 	printf("imageuiregion_drag_begin: start_x = %g, start_y = %g\n",
 		start_x, start_y);
 #endif /*DEBUG_VERBOSE*/
 
+	gboolean handled = FALSE;
+
 	switch (imageuiregion->state) {
 	case IMAGEUIREGION_STATE_WAIT:
-		regionview =
+		Regionview *regionview =
 			imageuiregion_pick_regionview(imageuiregion, start_x, start_y);
 
 		if (regionview) {
+			handled = TRUE;
+
 			imageuiregion->state = IMAGEUIREGION_STATE_SELECT;
 			regionview->resize = regionview_hit(regionview, start_x, start_y);
 			imageuiregion->grabbed = regionview;
@@ -373,6 +374,8 @@ imageuiregion_drag_begin(GtkGestureDrag *self,
 			regionview->start_area = regionview->our_area;
 		}
 		else if (modifiers & GDK_CONTROL_MASK) {
+			handled = TRUE;
+
 			imageuiregion->state = IMAGEUIREGION_STATE_CREATE;
 			double left;
 			double top;
@@ -391,6 +394,8 @@ imageuiregion_drag_begin(GtkGestureDrag *self,
 	default:
 		break;
 	}
+
+	return handled;
 }
 
 static void
@@ -402,17 +407,16 @@ imageuiregion_regionview_update(Imageuiregion *imageuiregion,
 	imageui_queue_draw(imageuiregion->imageui);
 }
 
-static void
-imageuiregion_drag_update(GtkGestureDrag *self,
-	gdouble offset_x, gdouble offset_y, gpointer user_data)
+static gboolean
+imageuiregion_drag_update(Imageui *imageui,
+	gdouble offset_x, gdouble offset_y, GtkGestureDrag *drag,
+	gpointer user_data)
 {
-	GtkEventController *controller = GTK_EVENT_CONTROLLER(self);
+	GtkEventController *controller = GTK_EVENT_CONTROLLER(drag);
 	GdkModifierType modifiers =
 		gtk_event_controller_get_current_event_state(controller);
 	Imageuiregion *imageuiregion = IMAGEUIREGION(user_data);
-	Imageui *imageui = imageuiregion_get_imageui(imageuiregion);
 	Tilesource *tilesource  = imageui_get_tilesource(imageui);
-
 	double zoom = imageui_get_zoom(imageui);
 
 #ifdef DEBUG_VERBOSE
@@ -420,8 +424,12 @@ imageuiregion_drag_update(GtkGestureDrag *self,
 		offset_x, offset_y);
 #endif /*DEBUG_VERBOSE*/
 
+	gboolean handled = FALSE;
+
 	switch (imageuiregion->state) {
 	case IMAGEUIREGION_STATE_SELECT:
+		handled = TRUE;
+
 		regionview_resize(imageuiregion->grabbed, modifiers,
 			tilesource->image_width, tilesource->image_height,
 			offset_x / zoom, offset_y / zoom);
@@ -438,6 +446,8 @@ imageuiregion_drag_update(GtkGestureDrag *self,
 		break;
 
 	case IMAGEUIREGION_STATE_CREATE:
+		handled = TRUE;
+
 		regionview_resize(imageuiregion->floating, modifiers,
 			tilesource->image_width, tilesource->image_height,
 			offset_x / zoom, offset_y / zoom);
@@ -447,6 +457,8 @@ imageuiregion_drag_update(GtkGestureDrag *self,
 	default:
 		break;
 	}
+
+	return handled;
 }
 
 static void
@@ -515,28 +527,34 @@ imageuiregion_region_new(Imageuiregion *imageuiregion,
 	}
 }
 
-static void
-imageuiregion_drag_end(GtkGestureDrag *self,
-	gdouble offset_x, gdouble offset_y, gpointer user_data)
+static gboolean
+imageuiregion_drag_end(Imageui *imageui,
+	gdouble offset_x, gdouble offset_y, GtkGestureDrag *drag,
+	gpointer user_data)
 {
 	Imageuiregion *imageuiregion = IMAGEUIREGION(user_data);
-	Imageui *imageui = imageuiregion_get_imageui(imageuiregion);
 
 #ifdef DEBUG_VERBOSE
 	printf("imageuiregion_drag_end: offset_x = %g, offset_y = %g\n",
 		offset_x, offset_y);
 #endif /*DEBUG_VERBOSE*/
 
+	gboolean handled = FALSE;
+
 	switch (imageuiregion->state) {
 	case IMAGEUIREGION_STATE_WAIT:
 		break;
 
 	case IMAGEUIREGION_STATE_SELECT:
+		handled = TRUE;
+
 		regionview_model_update(imageuiregion->grabbed);
 		VIPS_UNREF(imageuiregion->grabbed);
 		break;
 
 	case IMAGEUIREGION_STATE_CREATE:
+		handled = TRUE;
+
 		if (imageuiregion->floating) {
 			imageuiregion_region_new(imageuiregion,
 				imageuiregion->floating->type,
@@ -553,6 +571,8 @@ imageuiregion_drag_end(GtkGestureDrag *self,
 	}
 
 	imageuiregion->state = IMAGEUIREGION_STATE_WAIT;
+
+	return handled;
 }
 
 static void
@@ -573,6 +593,13 @@ imageuiregion_set_property(GObject *object,
 
 		g_signal_connect(imageui, "motion",
 			G_CALLBACK(imageuiregion_motion), imageuiregion);
+
+		g_signal_connect(imageui, "drag-begin",
+			G_CALLBACK(imageuiregion_drag_begin), imageuiregion);
+		g_signal_connect(imageui, "drag-update",
+			G_CALLBACK(imageuiregion_drag_update), imageuiregion);
+		g_signal_connect(imageui, "drag-end",
+			G_CALLBACK(imageuiregion_drag_end), imageuiregion);
 
 		break;
 

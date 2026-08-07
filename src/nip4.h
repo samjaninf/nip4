@@ -163,6 +163,7 @@ typedef struct _iContainer iContainer;
 typedef struct _iImage iImage;
 typedef struct _Imageinfogroup Imageinfogroup;
 typedef struct _Imageinfo Imageinfo;
+typedef struct _Imageui Imageui;
 typedef struct _iRegiongroup iRegiongroup;
 typedef struct _iRegiongroupview iRegiongroupview;
 typedef struct _iRegion iRegion;

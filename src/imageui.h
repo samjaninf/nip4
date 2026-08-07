@@ -42,7 +42,7 @@
 #define IMAGEUI_GET_CLASS(obj) \
 	(G_TYPE_INSTANCE_GET_CLASS((obj), IMAGEUI_TYPE, ImageuiClass))
 
-G_DECLARE_FINAL_TYPE(Imageui, imageui, NIP4, IMAGEUI, GtkWidget)
+GType imageui_get_type(void);
 
 void imageui_set_cursor(Imageui *imageui, RegionviewResize resize);
 
