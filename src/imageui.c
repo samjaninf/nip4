@@ -1084,9 +1084,9 @@ imageui_drag_begin_real(Imageui *imageui,
 	gdouble start_x, gdouble start_y, GtkGestureDrag *drag, gpointer user_data)
 {
 #ifdef DEBUG_VERBOSE
-#endif /*DEBUG_VERBOSE*/
 	printf("imageui_drag_begin_real: start_x = %g, start_y = %g\n",
 		start_x, start_y);
+#endif /*DEBUG_VERBOSE*/
 
 	gboolean handled = FALSE;
 
@@ -1123,9 +1123,9 @@ imageui_drag_update_real(Imageui *imageui,
 	gpointer user_data)
 {
 #ifdef DEBUG_VERBOSE
-#endif /*DEBUG_VERBOSE*/
 	printf("imageui_drag_update_real: offset_x = %g, offset_y = %g\n",
 		offset_x, offset_y);
+#endif /*DEBUG_VERBOSE*/
 
 	gboolean handled = FALSE;
 
@@ -1158,9 +1158,9 @@ imageui_drag_end_real(Imageui *imageui,
 	gpointer user_data)
 {
 #ifdef DEBUG_VERBOSE
-#endif /*DEBUG_VERBOSE*/
 	printf("imageui_drag_end_real: offset_x = %g, offset_y = %g\n",
 		offset_x, offset_y);
+#endif /*DEBUG_VERBOSE*/
 
 	switch (imageui->state) {
 	case IMAGEUI_WAIT:
