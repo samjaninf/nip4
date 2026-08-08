@@ -1084,9 +1084,9 @@ imageui_drag_begin_real(Imageui *imageui,
 	gdouble start_x, gdouble start_y, GtkGestureDrag *drag, gpointer user_data)
 {
 #ifdef DEBUG_VERBOSE
+#endif /*DEBUG_VERBOSE*/
 	printf("imageui_drag_begin_real: start_x = %g, start_y = %g\n",
 		start_x, start_y);
-#endif /*DEBUG_VERBOSE*/
 
 	gboolean handled = FALSE;
 
@@ -1123,9 +1123,9 @@ imageui_drag_update_real(Imageui *imageui,
 	gpointer user_data)
 {
 #ifdef DEBUG_VERBOSE
-	printf("imageui_drag_update: offset_x = %g, offset_y = %g\n",
-		offset_x, offset_y);
 #endif /*DEBUG_VERBOSE*/
+	printf("imageui_drag_update_real: offset_x = %g, offset_y = %g\n",
+		offset_x, offset_y);
 
 	gboolean handled = FALSE;
 
@@ -1158,9 +1158,9 @@ imageui_drag_end_real(Imageui *imageui,
 	gpointer user_data)
 {
 #ifdef DEBUG_VERBOSE
+#endif /*DEBUG_VERBOSE*/
 	printf("imageui_drag_end_real: offset_x = %g, offset_y = %g\n",
 		offset_x, offset_y);
-#endif /*DEBUG_VERBOSE*/
 
 	switch (imageui->state) {
 	case IMAGEUI_WAIT:
@@ -1191,7 +1191,7 @@ imageui_motion_real(Imageui *imageui,
 
 	imageui_changed(imageui);
 
-	return TRUE;
+	return FALSE;
 }
 
 static gboolean
@@ -1252,9 +1252,9 @@ imageui_event_accu(GSignalInvocationHint *ihint,
 
 	g_value_set_boolean(return_accu, handled);
 
-	// FALSE if this handler returned FALSE ... ie. stop signal emission if a
-	// handler says so
-	return handled;
+	// gtk uses FALSE to abort signal processing, TRUE to continue
+	// therefore, continue if not handled
+	return !handled;
 }
 
 static void

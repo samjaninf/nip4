@@ -34,9 +34,9 @@
 #include "nip4.h"
 
 /*
- */
 #define DEBUG_VERBOSE
 #define DEBUG
+ */
 
 /* Snap if closer than this.
  */
@@ -170,7 +170,6 @@ imageuiregion_motion(Imageui *imageui,
 
 	imageuiregion_set_cursor(imageuiregion);
 
-	// always propagate the event
 	return FALSE;
 }
 
