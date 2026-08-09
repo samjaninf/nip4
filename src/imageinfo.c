@@ -1190,3 +1190,30 @@ imageinfo_filter_load_new(void)
 
 	return filter;
 }
+
+gboolean
+imageinfo_make_paintable(Imageinfo *imageinfo)
+{
+	if (!imageinfo->is_paintable) {
+		progress_begin();
+
+		if (vips_image_inplace(imageinfo->image)) {
+			progress_end();
+
+			error_top(_("Unable to paint on image."));
+			error_sub(_("Unable to get write permission for "
+				"file \"%s\".\nCheck permission settings."),
+				IOBJECT(imageinfo)->name);
+
+			error_vips();
+
+			return FALSE;
+		}
+
+		progress_end();
+
+		imageinfo->is_paintable = TRUE;
+	}
+
+	return TRUE;
+}

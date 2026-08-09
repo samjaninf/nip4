@@ -122,6 +122,10 @@ struct _Imageinfo {
 
     gboolean dfile;			/* delete_file on final close */
     char *delete_filename;  /* and the file we delete */
+
+	/* TRUE if we've made this image paintable.
+	 */
+	gboolean is_paintable;
 };
 
 typedef struct _ImageinfoClass {
@@ -171,3 +175,5 @@ void imageinfo_to_text(Imageinfo *imageinfo, VipsBuf *buf);
 
 GtkFileFilter *imageinfo_filter_load_new(void);
 GtkFileFilter *imageinfo_filter_save_new(void);
+
+gboolean imageinfo_make_paintable(Imageinfo *ii);

@@ -45,6 +45,8 @@
 G_DECLARE_FINAL_TYPE(Imagewindow, imagewindow,
 	NIP4, IMAGEWINDOW, GtkApplicationWindow)
 
+void imagewindow_error(Imagewindow *win);
+
 Imagewindow *imagewindow_new(App *app);
 
 double imagewindow_get_zoom(Imagewindow *win);

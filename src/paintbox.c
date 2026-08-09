@@ -41,9 +41,26 @@ struct _Paintbox {
 	 */
 	Imagewindow *win;
 
+	/* The imageui we are drawing on, and the signals we are watching.
+	 */
+	Imageui *imageui;
+	guint drag_begin_sid;
+	guint drag_update_sid;
+	guint drag_end_sid;
+
+	/* Currently selected tool.
+	 */
 	PaintboxTool tool;
 
+	/* Widgets.
+	 */
 	GtkWidget *action_bar;
+	// tool select toggles
+	GtkWidget *pointer;
+	GtkWidget *brush;
+	GtkWidget *text;
+	GtkWidget *dropper;
+	GtkWidget *tools[PAINTBOX_TOOL_LAST];
 
 };
 
@@ -52,10 +69,28 @@ G_DEFINE_TYPE(Paintbox, paintbox, GTK_TYPE_WIDGET);
 enum {
 	PROP_IMAGEWINDOW = 1,
 	PROP_REVEALED,
-	PROP_TOOL,
 
 	SIG_LAST
 };
+
+static void
+paintbox_disconnect(Paintbox *paintbox)
+{
+	if (paintbox->imageui) {
+		g_signal_handler_disconnect(paintbox->imageui,
+			paintbox->drag_begin_sid);
+		g_signal_handler_disconnect(paintbox->imageui,
+			paintbox->drag_update_sid);
+		g_signal_handler_disconnect(paintbox->imageui,
+			paintbox->drag_end_sid);
+
+		paintbox->drag_begin_sid = 0;
+		paintbox->drag_update_sid = 0;
+		paintbox->drag_end_sid = 0;
+
+		paintbox->imageui = NULL;
+	}
+}
 
 static void
 paintbox_dispose(GObject *object)
@@ -72,17 +107,127 @@ paintbox_dispose(GObject *object)
 }
 
 static void
+paintbox_refresh(Paintbox *paintbox)
+{
+	GtkToggleButton *button =
+		GTK_TOGGLE_BUTTON(paintbox->tools[paintbox->tool]);
+	gtk_toggle_button_set_active(button, TRUE);
+
+	// FIXME ... update undo/redo button sensitivity
+}
+
+static gboolean
+paintbox_drag_begin(Imageui *imageui,
+	gdouble start_x, gdouble start_y, GtkGestureDrag *drag, gpointer user_data)
+{
+	GtkEventController *controller = GTK_EVENT_CONTROLLER(drag);
+	GdkModifierType modifiers =
+		gtk_event_controller_get_current_event_state(controller);
+	Paintbox *paintbox = PAINTBOX(user_data);
+
+#ifdef DEBUG_VERBOSE
+	printf("paintbox_drag_begin: start_x = %g, start_y = %g\n",
+		start_x, start_y);
+#endif /*DEBUG_VERBOSE*/
+
+	gboolean handled = FALSE;
+
+	switch (paintbox->tool) {
+	case PAINTBOX_TOOL_BRUSH:
+		handled = TRUE;
+		break;
+
+	default:
+		break;
+	}
+
+	return handled;
+}
+
+static gboolean
+paintbox_drag_update(Imageui *imageui,
+	gdouble offset_x, gdouble offset_y, GtkGestureDrag *drag,
+	gpointer user_data)
+{
+	GtkEventController *controller = GTK_EVENT_CONTROLLER(drag);
+	GdkModifierType modifiers =
+		gtk_event_controller_get_current_event_state(controller);
+	Paintbox *paintbox = PAINTBOX(user_data);
+
+#ifdef DEBUG_VERBOSE
+	printf("paintbox_drag_update: offset_x = %g, offset_y = %g\n",
+		offset_x, offset_y);
+#endif /*DEBUG_VERBOSE*/
+
+	gboolean handled = FALSE;
+
+	switch (paintbox->tool) {
+	case PAINTBOX_TOOL_BRUSH:
+		handled = TRUE;
+		break;
+
+	default:
+		break;
+	}
+
+	return handled;
+}
+
+static gboolean
+paintbox_drag_end(Imageui *imageui,
+	gdouble offset_x, gdouble offset_y, GtkGestureDrag *drag,
+	gpointer user_data)
+{
+	Paintbox *paintbox = PAINTBOX(user_data);
+
+#ifdef DEBUG_VERBOSE
+	printf("paintbox_drag_end: offset_x = %g, offset_y = %g\n",
+		offset_x, offset_y);
+#endif /*DEBUG_VERBOSE*/
+
+	gboolean handled = FALSE;
+
+	switch (paintbox->tool) {
+	case PAINTBOX_TOOL_BRUSH:
+		handled = TRUE;
+		break;
+
+	default:
+		break;
+	}
+
+	return handled;
+}
+
+// win->imageui has changed
+static void
 paintbox_imagewindow_new_image(Imagewindow *win, Paintbox *paintbox)
 {
 #ifdef DEBUG
 	printf("paintbox_imagewindow_new_image:\n");
 #endif /*DEBUG*/
 
+	paintbox_disconnect(paintbox);
+
+	paintbox->imageui = imagewindow_get_imageui(win);
+	paintbox->drag_begin_sid = g_signal_connect(paintbox->imageui,
+		"drag-begin", G_CALLBACK(paintbox_drag_begin), paintbox);
+	paintbox->drag_update_sid = g_signal_connect(paintbox->imageui,
+		"drag-update", G_CALLBACK(paintbox_drag_update), paintbox);
+	paintbox->drag_end_sid = g_signal_connect(paintbox->imageui,
+		"drag-end", G_CALLBACK(paintbox_drag_end), paintbox);
+
+	// reset tool to SELECT, since the new imageui might not be paintable
+	paintbox->tool = PAINTBOX_TOOL_POINTER;
+	paintbox_refresh(paintbox);
 }
 
 static void
 paintbox_set_imagewindow(Paintbox *paintbox, Imagewindow *win)
 {
+	// only support set once
+	g_assert(!paintbox->win);
+
 	/* No need to ref ... win holds a ref to us.
 	 */
 	paintbox->win = win;
@@ -104,13 +249,8 @@ paintbox_set_property(GObject *object,
 		break;
 
 	case PROP_REVEALED:
-		gtk_action_bar_set_revealed(
-			GTK_ACTION_BAR(paintbox->action_bar),
+		gtk_action_bar_set_revealed(GTK_ACTION_BAR(paintbox->action_bar),
 			g_value_get_boolean(value));
-		break;
-
-	case PROP_TOOL:
-		paintbox->tool = g_value_get_enum(value);
 		break;
 
 	default:
@@ -135,10 +275,6 @@ paintbox_get_property(GObject *object,
 		g_value_set_boolean(value, gtk_action_bar_get_revealed(action_bar));
 		break;
 
-	case PROP_TOOL:
-		paintbox->tool = g_value_get_enum(value);
-		break;
-
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
 		break;
@@ -154,7 +290,12 @@ paintbox_init(Paintbox *paintbox)
 
 	gtk_widget_init_template(GTK_WIDGET(paintbox));
 
-	g_object_set(paintbox, "tool", PAINTBOX_TOOL_POINTER, NULL);
+	paintbox->tools[PAINTBOX_TOOL_POINTER] = paintbox->pointer;
+	paintbox->tools[PAINTBOX_TOOL_BRUSH] = paintbox->brush;
+	paintbox->tools[PAINTBOX_TOOL_TEXT] = paintbox->text;
+	paintbox->tools[PAINTBOX_TOOL_DROPPER] = paintbox->dropper;
+
+	paintbox_refresh(paintbox);
 }
 
 static void
@@ -175,7 +316,8 @@ paintbox_toggled(GtkToggleButton *button, Paintbox *paintbox)
 			return;
 		}
 
-		g_object_set(paintbox, "tool", value, NULL);
+		paintbox->tool = value;
+		paintbox_refresh(paintbox);
 	}
 }
 
@@ -192,6 +334,10 @@ paintbox_class_init(PaintboxClass *class)
 	BIND_LAYOUT();
 
 	BIND_VARIABLE(Paintbox, action_bar);
+	BIND_VARIABLE(Paintbox, pointer);
+	BIND_VARIABLE(Paintbox, brush);
+	BIND_VARIABLE(Paintbox, text);
+	BIND_VARIABLE(Paintbox, dropper);
 
 	BIND_CALLBACK(paintbox_toggled);
 
@@ -211,14 +357,6 @@ paintbox_class_init(PaintboxClass *class)
 			_("revealed"),
 			_("Show the display control bar"),
 			FALSE,
-			G_PARAM_READWRITE));
-
-	g_object_class_install_property(gobject_class, PROP_TOOL,
-		g_param_spec_enum("tool",
-			_("Tool"),
-			_("The paint tool"),
-			PAINTBOX_TOOL_TYPE,
-			PAINTBOX_TOOL_POINTER,
 			G_PARAM_READWRITE));
 
 }

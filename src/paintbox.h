@@ -36,6 +36,8 @@ typedef enum _PaintboxTool {
 	PAINTBOX_TOOL_BRUSH,
 	PAINTBOX_TOOL_TEXT,
 	PAINTBOX_TOOL_DROPPER,
+
+	PAINTBOX_TOOL_LAST
 } PaintboxTool;
 
 #define PAINTBOX_TYPE (paintbox_get_type())

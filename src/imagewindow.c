@@ -157,7 +157,7 @@ imagewindow_set_error(Imagewindow *win, const char *message)
 	gtk_action_bar_set_revealed(GTK_ACTION_BAR(win->error_bar), TRUE);
 }
 
-static void
+void
 imagewindow_error(Imagewindow *win)
 {
 	imagewindow_set_error(win, vips_error_buffer());

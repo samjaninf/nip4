@@ -1,3 +1,16 @@
+- paintbox is linked to imagewindow
+
+  imagewindow can display many imageui
+
+  imageui has an iImage model
+
+  iImage has an imageinfo
+
+  we paint on the imageinfo ....
+
+
+
+
 - add paintbox drag methods
 
 
