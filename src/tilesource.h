@@ -295,4 +295,6 @@ void tilesource_changed(Tilesource *tilesource);
 
 void tilesource_set_synchronous(Tilesource *source, gboolean synchronous);
 
+gboolean tilesource_make_paintable(Tilesource *tilesource);
+
 #endif /*__TILESOURCE_H*/

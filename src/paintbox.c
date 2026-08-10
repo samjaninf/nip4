@@ -62,6 +62,10 @@ struct _Paintbox {
 	GtkWidget *dropper;
 	GtkWidget *tools[PAINTBOX_TOOL_LAST];
 
+	/* TRUE if we've made this image paintable.
+	 */
+	gboolean is_paintable;
+
 };
 
 G_DEFINE_TYPE(Paintbox, paintbox, GTK_TYPE_WIDGET);
@@ -72,6 +76,42 @@ enum {
 
 	SIG_LAST
 };
+
+static gboolean
+paintbox_make_paintable(Paintbox *paintbox)
+{
+	if (!paintbox->is_paintable) {
+		progress_begin();
+
+		// FIXME ... this won't work if the image is being used by a
+		// background thread
+		//
+		// we'll need to make a new image, then wrap that in a new tilesource,
+		// then set that tilesource in the imageui
+		//
+		// making the new image could just be a reference change for eg. a
+		// memory source, or a mapped file we can set RW on
+
+		if (vips_image_inplace(paintbox->image)) {
+			progress_end();
+
+			error_top(_("Unable to paint on image."));
+			error_sub(_("Unable to get write permission for "
+				"file \"%s\".\nCheck permission settings."),
+				IOBJECT(tilesource)->name);
+
+			error_vips();
+
+			return FALSE;
+		}
+
+		progress_end();
+
+		paintbox->is_paintable = TRUE;
+	}
+
+	return TRUE;
+}
 
 static void
 paintbox_disconnect(Paintbox *paintbox)
@@ -185,33 +225,6 @@ paintbox_get_image(Paintbox *paintbox)
 		return image;
 
 		return NULL;
-}
-
-static gboolean
-paintbox_make_paintable(Imageinfo *imageinfo)
-{
-	if (!imageinfo->is_paintable) {
-		progress_begin();
-
-		if (vips_image_inplace(imageinfo->image)) {
-			progress_end();
-
-			error_top(_("Unable to paint on image."));
-			error_sub(_("Unable to get write permission for "
-				"file \"%s\".\nCheck permission settings."),
-				IOBJECT(imageinfo)->name);
-
-			error_vips();
-
-			return FALSE;
-		}
-
-		progress_end();
-
-		imageinfo->is_paintable = TRUE;
-	}
-
-	return TRUE;
 }
 
 static gboolean

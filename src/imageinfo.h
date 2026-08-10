@@ -123,9 +123,6 @@ struct _Imageinfo {
     gboolean dfile;			/* delete_file on final close */
     char *delete_filename;  /* and the file we delete */
 
-	/* TRUE if we've made this image paintable.
-	 */
-	gboolean is_paintable;
 };
 
 typedef struct _ImageinfoClass {

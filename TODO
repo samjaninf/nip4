@@ -48,6 +48,11 @@
 	- as bg render completes, it'll signal "collect" and update the
 	  windows asynchronously
 
+  tilesource needs:
+
+	- make_paintable
+
+		should rebuild pipeline with the new paintable image
 
 
 
