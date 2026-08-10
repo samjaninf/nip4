@@ -176,4 +176,3 @@ void imageinfo_to_text(Imageinfo *imageinfo, VipsBuf *buf);
 GtkFileFilter *imageinfo_filter_load_new(void);
 GtkFileFilter *imageinfo_filter_save_new(void);
 
-gboolean imageinfo_make_paintable(Imageinfo *ii);

@@ -173,12 +173,56 @@ paintbox_drag_update(Imageui *imageui,
 	return handled;
 }
 
+static VipsImage *
+paintbox_get_image(Paintbox *paintbox)
+{
+	Tilesource *tilesource;
+	VipsImage *image;
+
+	if (paintbox->imageui &&
+		(tilesource = imageui_get_tilesource(imageui)) &&
+		(image = tilesource_get_image(tilesource)))
+		return image;
+
+		return NULL;
+}
+
+static gboolean
+paintbox_make_paintable(Imageinfo *imageinfo)
+{
+	if (!imageinfo->is_paintable) {
+		progress_begin();
+
+		if (vips_image_inplace(imageinfo->image)) {
+			progress_end();
+
+			error_top(_("Unable to paint on image."));
+			error_sub(_("Unable to get write permission for "
+				"file \"%s\".\nCheck permission settings."),
+				IOBJECT(imageinfo)->name);
+
+			error_vips();
+
+			return FALSE;
+		}
+
+		progress_end();
+
+		imageinfo->is_paintable = TRUE;
+	}
+
+	return TRUE;
+}
+
 static gboolean
 paintbox_drag_end(Imageui *imageui,
 	gdouble offset_x, gdouble offset_y, GtkGestureDrag *drag,
 	gpointer user_data)
 {
 	Paintbox *paintbox = PAINTBOX(user_data);
+
+	double x = paintbox->start_x + offset_x;
+	double y = paintbox->start_y + offset_y;
 
 #ifdef DEBUG_VERBOSE
 	printf("paintbox_drag_end: offset_x = %g, offset_y = %g\n",
@@ -189,7 +233,19 @@ paintbox_drag_end(Imageui *imageui,
 
 	switch (paintbox->tool) {
 	case PAINTBOX_TOOL_BRUSH:
-		handled = TRUE;
+		Tilesource *tilesource = imageui_get_tilesource(imageui);
+		VipsImage *image = paintbox_get_image(paintbox);
+		if ((image = tilesource_get_image(tilesource))) {
+			handled = TRUE;
+
+			if (vips_draw_circle1(image, 0, x, y, 100,
+				"fill", TRUE,
+				NULL))
+
+			// how do we signal the area-changed in the tilesource?
+
+		}
+
 		break;
 
 	default:
@@ -234,6 +290,20 @@ paintbox_set_imagewindow(Paintbox *paintbox, Imagewindow *win)
 
 	g_signal_connect_object(win, "new-image",
 		G_CALLBACK(paintbox_imagewindow_new_image), paintbox, 0);
+}
+
+static voisd
+paintbox_set_tool(Paintbox *paintbox, PaintboxTool tool)
+{
+	if (paintbox->tool != tool) {
+		if (tool != PAINTBOX_TOOL_POINTER) {
+			imageinfo_make_paintable(
+		}
+
+		paintbox->tool = tool;
+
+		paintbox_refresh(paintbox);
+	}
 }
 
 static void
@@ -316,8 +386,7 @@ paintbox_toggled(GtkToggleButton *button, Paintbox *paintbox)
 			return;
 		}
 
-		paintbox->tool = value;
-		paintbox_refresh(paintbox);
+		paintbox_set_tool(paintbox, value);
 	}
 }
 

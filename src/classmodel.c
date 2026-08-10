@@ -81,7 +81,7 @@ image_value_set(ImageValue *image, Imageinfo *ii)
 	if (ii) {
 		MANAGED_REF(image->ii);
 		image->file_changed_sid = g_signal_connect(
-			G_OBJECT(image->ii), "file_changed",
+			G_OBJECT(image->ii), "file-changed",
 			G_CALLBACK(image_value_file_changed_cb), image);
 	}
 
