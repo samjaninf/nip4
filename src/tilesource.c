@@ -2134,3 +2134,20 @@ tilesource_set_synchronous(Tilesource *tilesource, gboolean synchronous)
 		tilesource_update_image(tilesource);
 	}
 }
+
+gboolean
+tilesource_draw_circle(Tilesource *tilesource,
+	double *ink, int n, int cx, int cy, int r, gboolean fill)
+{
+	VipsImage *image;
+
+	if ((image = tilesource_get_image(tilesource))) {
+		if (vips_draw_circle(image, ink, n, cx, cy, r, "fill", fill, NULL))
+			return FALSE;
+
+		// mark all the tiles this area touched as invalid, fetch them, and
+		// tilesource::collect will fire when they are ready to be painted
+	}
+
+	return TRUE;
+}

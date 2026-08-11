@@ -52,6 +52,9 @@ struct _Paintbox {
 	 */
 	PaintboxTool tool;
 
+	double start_x;
+	double start_y;
+
 	/* Widgets.
 	 */
 	GtkWidget *action_bar;
@@ -61,10 +64,6 @@ struct _Paintbox {
 	GtkWidget *text;
 	GtkWidget *dropper;
 	GtkWidget *tools[PAINTBOX_TOOL_LAST];
-
-	/* TRUE if we've made this image paintable.
-	 */
-	gboolean is_paintable;
 
 };
 
@@ -77,41 +76,6 @@ enum {
 	SIG_LAST
 };
 
-static gboolean
-paintbox_make_paintable(Paintbox *paintbox)
-{
-	if (!paintbox->is_paintable) {
-		progress_begin();
-
-		// FIXME ... this won't work if the image is being used by a
-		// background thread
-		//
-		// we'll need to make a new image, then wrap that in a new tilesource,
-		// then set that tilesource in the imageui
-		//
-		// making the new image could just be a reference change for eg. a
-		// memory source, or a mapped file we can set RW on
-
-		if (vips_image_inplace(paintbox->image)) {
-			progress_end();
-
-			error_top(_("Unable to paint on image."));
-			error_sub(_("Unable to get write permission for "
-				"file \"%s\".\nCheck permission settings."),
-				IOBJECT(tilesource)->name);
-
-			error_vips();
-
-			return FALSE;
-		}
-
-		progress_end();
-
-		paintbox->is_paintable = TRUE;
-	}
-
-	return TRUE;
-}
 
 static void
 paintbox_disconnect(Paintbox *paintbox)
@@ -216,15 +180,16 @@ paintbox_drag_update(Imageui *imageui,
 static VipsImage *
 paintbox_get_image(Paintbox *paintbox)
 {
+	Imageui *imageui;
 	Tilesource *tilesource;
 	VipsImage *image;
 
-	if (paintbox->imageui &&
+	if ((imageui = imagewindow_get_imageui(paintbox->win)) &&
 		(tilesource = imageui_get_tilesource(imageui)) &&
 		(image = tilesource_get_image(tilesource)))
 		return image;
 
-		return NULL;
+	return NULL;
 }
 
 static gboolean
@@ -246,17 +211,16 @@ paintbox_drag_end(Imageui *imageui,
 
 	switch (paintbox->tool) {
 	case PAINTBOX_TOOL_BRUSH:
-		Tilesource *tilesource = imageui_get_tilesource(imageui);
-		VipsImage *image = paintbox_get_image(paintbox);
-		if ((image = tilesource_get_image(tilesource))) {
+		Imageui *imageui;
+		Tilesource *tilesource;
+		if ((imageui = imagewindow_get_imageui(paintbox->win)) &&
+			(tilesource = imageui_get_tilesource(imageui))) {
 			handled = TRUE;
 
-			if (vips_draw_circle1(image, 0, x, y, 100,
-				"fill", TRUE,
-				NULL))
+			double ink[] = {0, 0, 0};
 
-			// how do we signal the area-changed in the tilesource?
-
+			if (!tilesource_draw_circle(tilesource, ink, 3, x, y, 100, TRUE))
+				imagewindow_error(paintbox->win);
 		}
 
 		break;
@@ -266,6 +230,25 @@ paintbox_drag_end(Imageui *imageui,
 	}
 
 	return handled;
+}
+
+static void
+paintbox_set_tool(Paintbox *paintbox, PaintboxTool tool)
+{
+	if (paintbox->tool != tool) {
+		if (tool != PAINTBOX_TOOL_POINTER) {
+			Imageui *imageui = imagewindow_get_imageui(paintbox->win);
+
+			if (!imageui_make_paintable(imageui)) {
+				imagewindow_error(paintbox->win);
+				return;
+			}
+		}
+
+		paintbox->tool = tool;
+
+		paintbox_refresh(paintbox);
+	}
 }
 
 // win->imageui has changed
@@ -287,8 +270,7 @@ paintbox_imagewindow_new_image(Imagewindow *win, Paintbox *paintbox)
 		"drag-end", G_CALLBACK(paintbox_drag_end), paintbox);
 
 	// reset tool to SELECT, since the new imageui might not be paintable
-	paintbox->tool = PAINTBOX_TOOL_POINTER;
-	paintbox_refresh(paintbox);
+	paintbox_set_tool(paintbox, PAINTBOX_TOOL_POINTER);
 }
 
 static void
@@ -303,20 +285,6 @@ paintbox_set_imagewindow(Paintbox *paintbox, Imagewindow *win)
 
 	g_signal_connect_object(win, "new-image",
 		G_CALLBACK(paintbox_imagewindow_new_image), paintbox, 0);
-}
-
-static voisd
-paintbox_set_tool(Paintbox *paintbox, PaintboxTool tool)
-{
-	if (paintbox->tool != tool) {
-		if (tool != PAINTBOX_TOOL_POINTER) {
-			imageinfo_make_paintable(
-		}
-
-		paintbox->tool = tool;
-
-		paintbox_refresh(paintbox);
-	}
 }
 
 static void

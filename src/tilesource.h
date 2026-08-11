@@ -295,6 +295,7 @@ void tilesource_changed(Tilesource *tilesource);
 
 void tilesource_set_synchronous(Tilesource *source, gboolean synchronous);
 
-gboolean tilesource_make_paintable(Tilesource *tilesource);
+gboolean tilesource_draw_circle(Tilesource *tilesource,
+	double *ink, int n, int cx, int cy, int r, gboolean fill);
 
 #endif /*__TILESOURCE_H*/

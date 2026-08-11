@@ -80,4 +80,6 @@ void imageui_gtk_to_image(Imageui *imageui,
 void imageui_image_to_gtk_rect(Imageui *imageui, VipsRect *in, VipsRect *out);
 void imageui_gtk_to_image_rect(Imageui *imageui, VipsRect *in, VipsRect *out);
 
+gboolean imageui_make_paintable(Imageui *imageui);
+
 #endif /* __IMAGEUI_H */

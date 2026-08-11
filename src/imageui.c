@@ -122,6 +122,10 @@ struct _Imageui {
 
 	gboolean should_animate;
 
+	/* TRUE if we've made this image paintable.
+	 */
+	gboolean is_paintable;
+
 };
 
 typedef struct _ImageuiClass {
@@ -1484,4 +1488,41 @@ imageui_gtk_to_image_rect(Imageui *imageui, VipsRect *in, VipsRect *out)
 	rect.height = ceil(y_image) - rect.top;
 
 	*out = rect;
+}
+
+gboolean
+imageui_make_paintable(Imageui *imageui)
+{
+	if (!imageui->is_paintable) {
+		// we can't use vips_image_inplace(), it'll fail with many threads on
+		// one image
+		//
+		// FIXME ... add something like copy_memory that maps VIPS images r/w
+		VipsImage *image;
+		if ((image = tilesource_get_image(imageui->tilesource))) {
+			progress_begin();
+
+			VipsImage *memory;
+			if (!(memory = vips_image_copy_memory(image))) {
+				progress_end();
+				return FALSE;
+			}
+
+			progress_end();
+
+			Tilesource *new_tilesource;
+			if (!(new_tilesource = tilesource_new_from_image(memory))) {
+				VIPS_UNREF(memory);
+				return FALSE;
+			}
+
+			VIPS_UNREF(memory);
+
+			g_object_set(G_OBJECT(imageui), "tilesource", new_tilesource, NULL);
+
+			imageui->is_paintable = TRUE;
+		}
+	}
+
+	return TRUE;
 }
