@@ -177,21 +177,6 @@ paintbox_drag_update(Imageui *imageui,
 	return handled;
 }
 
-static VipsImage *
-paintbox_get_image(Paintbox *paintbox)
-{
-	Imageui *imageui;
-	Tilesource *tilesource;
-	VipsImage *image;
-
-	if ((imageui = imagewindow_get_imageui(paintbox->win)) &&
-		(tilesource = imageui_get_tilesource(imageui)) &&
-		(image = tilesource_get_image(tilesource)))
-		return image;
-
-	return NULL;
-}
-
 static gboolean
 paintbox_drag_end(Imageui *imageui,
 	gdouble offset_x, gdouble offset_y, GtkGestureDrag *drag,
@@ -217,10 +202,14 @@ paintbox_drag_end(Imageui *imageui,
 			(tilesource = imageui_get_tilesource(imageui))) {
 			handled = TRUE;
 
-			double ink[] = {0, 0, 0};
+			double ink[] = {0, 255, 0};
+			int n_ink = VIPS_NUMBER(ink);
+			int r = 100;
 
-			if (!tilesource_draw_circle(tilesource, ink, 3, x, y, 100, TRUE))
+			if (!tilesource_draw_circle(tilesource,
+				ink, n_ink, x, y, r, TRUE))
 				imagewindow_error(paintbox->win);
+
 		}
 
 		break;

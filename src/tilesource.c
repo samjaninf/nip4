@@ -63,6 +63,7 @@ enum {
 	SIG_POSTEVAL,
 	SIG_CHANGED,
 	SIG_TILES_CHANGED,
+	SIG_INVALIDATE_AREA,
 	SIG_COLLECT,
 	SIG_PAGE_CHANGED,
 	SIG_LOADED,
@@ -115,6 +116,12 @@ static void
 tilesource_collect(Tilesource *tilesource, VipsRect *dirty, int z)
 {
 	g_signal_emit(tilesource, tilesource_signals[SIG_COLLECT], 0, dirty, z);
+}
+
+static void
+tilesource_invalidate_area(Tilesource *tilesource, VipsRect *area)
+{
+	g_signal_emit(tilesource, tilesource_signals[SIG_INVALIDATE_AREA], 0, area);
 }
 
 static void
@@ -255,6 +262,7 @@ tilesource_render_notify_idle(void *user_data)
 		 *
 		 * Things like the getpoint() we run for the infobar.
 		 */
+		printf("FIXME: should this invalidate be removed?\n");
 		vips_image_invalidate_all(update->image);
 	}
 
@@ -1412,6 +1420,15 @@ tilesource_class_init(TilesourceClass *class)
 		G_TYPE_POINTER,
 		G_TYPE_INT);
 
+	tilesource_signals[SIG_INVALIDATE_AREA] = g_signal_new("invalidate-area",
+		G_TYPE_FROM_CLASS(class),
+		G_SIGNAL_RUN_LAST,
+		0,
+		NULL, NULL,
+		g_cclosure_marshal_VOID__POINTER,
+		G_TYPE_NONE, 1,
+		G_TYPE_POINTER);
+
 	tilesource_signals[SIG_PAGE_CHANGED] = g_signal_new("page-changed",
 		G_TYPE_FROM_CLASS(class),
 		G_SIGNAL_RUN_LAST,
@@ -2142,11 +2159,19 @@ tilesource_draw_circle(Tilesource *tilesource,
 	VipsImage *image;
 
 	if ((image = tilesource_get_image(tilesource))) {
+		printf("vips_draw_circle: cx = %d, cy = %d, r = %d\n", cx, cy, r);
+
 		if (vips_draw_circle(image, ink, n, cx, cy, r, "fill", fill, NULL))
 			return FALSE;
 
-		// mark all the tiles this area touched as invalid, fetch them, and
-		// tilesource::collect will fire when they are ready to be painted
+		// signal to tilecache that it should repaint these parts
+		VipsRect dirty = {
+			.left = cx - r,
+			.top = cy - r,
+			.width = r * 2,
+			.height = r * 2,
+		};
+		tilesource_invalidate_area(tilesource, &dirty);
 	}
 
 	return TRUE;

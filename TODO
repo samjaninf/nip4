@@ -54,6 +54,7 @@
 
 		should rebuild pipeline with the new paintable image
 
+	- tilesource should emit invalidate-area
 
 
 
