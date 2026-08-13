@@ -210,6 +210,7 @@ paintbox_drag_end(Imageui *imageui,
 				ink, n_ink, x, y, r, TRUE))
 				imagewindow_error(paintbox->win);
 
+			imageui_queue_draw(imageui);
 		}
 
 		break;

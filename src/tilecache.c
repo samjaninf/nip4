@@ -501,10 +501,8 @@ tilecache_source_invalidate_area(Tilesource *tilesource,
 			VipsRect hit;
 
 			vips_rect_intersectrect(&tile->bounds0, dirty, &hit);
-			if (vips_rect_isempty(&hit)) {
+			if (vips_rect_isempty(&hit))
 				tile_invalidate(tile);
-				tilecache_area_changed(tilecache, &tile->bounds0, z);
-			}
 		}
 }
 

@@ -2159,7 +2159,8 @@ tilesource_draw_circle(Tilesource *tilesource,
 	VipsImage *image;
 
 	if ((image = tilesource_get_image(tilesource))) {
-		printf("vips_draw_circle: cx = %d, cy = %d, r = %d\n", cx, cy, r);
+		printf("vips_draw_circle: image = %p, cx = %d, cy = %d, r = %d\n",
+			image, cx, cy, r);
 
 		if (vips_draw_circle(image, ink, n, cx, cy, r, "fill", fill, NULL))
 			return FALSE;
