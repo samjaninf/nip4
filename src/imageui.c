@@ -28,8 +28,8 @@
  */
 
 /*
-#define DEBUG
  */
+#define DEBUG
 
 #include "nip4.h"
 
@@ -535,7 +535,7 @@ imageui_get_pixel_size(Imageui *imageui)
 Tilesource *
 imageui_get_tilesource(Imageui *imageui)
 {
-	return imageui->tilesource;
+	return imageui ? imageui->tilesource : NULL;
 }
 
 iImage *
@@ -1494,12 +1494,20 @@ gboolean
 imageui_make_paintable(Imageui *imageui)
 {
 	if (!imageui->is_paintable) {
-		// we can't use vips_image_inplace(), it'll fail with many threads on
-		// one image
-		//
-		// FIXME ... add something like copy_memory that maps VIPS images r/w
+		/* We can't use vips_image_inplace(), it'll fail with many threads on
+		 * one image.
+		 *
+		 * tilesource_new_from_image() takes the base image, so we must copy
+		 * that to memory.
+		 *
+		 * FIXME ... add something like copy_memory that maps VIPS images r/w
+		 */
 		VipsImage *image;
-		if ((image = tilesource_get_image(imageui->tilesource))) {
+		if ((image = tilesource_get_base_image(imageui->tilesource))) {
+#ifdef DEBUG
+			printf("imageui_make_paintable:\n");
+#endif /*DEBUG*/
+
 			progress_begin();
 
 			VipsImage *memory;
@@ -1520,7 +1528,13 @@ imageui_make_paintable(Imageui *imageui)
 
 			g_object_set(G_OBJECT(imageui), "tilesource", new_tilesource, NULL);
 
+			VIPS_UNREF(new_tilesource);
+
 			imageui->is_paintable = TRUE;
+
+#ifdef DEBUG
+			printf("\tnew writeable image is %p\n", memory);
+#endif /*DEBUG*/
 		}
 	}
 

@@ -139,6 +139,8 @@ paintbox_drag_begin(Imageui *imageui,
 	switch (paintbox->tool) {
 	case PAINTBOX_TOOL_BRUSH:
 		handled = TRUE;
+		paintbox->start_x = start_x;
+		paintbox->start_y = start_y;
 		break;
 
 	default:
@@ -157,6 +159,19 @@ paintbox_drag_update(Imageui *imageui,
 	GdkModifierType modifiers =
 		gtk_event_controller_get_current_event_state(controller);
 	Paintbox *paintbox = PAINTBOX(user_data);
+	Tilesource *tilesource = imageui_get_tilesource(imageui);
+
+	double gtk_x = paintbox->start_x + offset_x;
+	double gtk_y = paintbox->start_y + offset_y;
+	double image_x, image_y;
+	imageui_gtk_to_image(imageui, gtk_x, gtk_y, &image_x, &image_y);
+
+	/* FIXME fetch from widgets.
+	 */
+	double ink[] = {0, 255, 0};
+	int n_ink = VIPS_NUMBER(ink);
+	int r = 100;
+	gboolean fill = FALSE;
 
 #ifdef DEBUG_VERBOSE
 	printf("paintbox_drag_update: offset_x = %g, offset_y = %g\n",
@@ -167,7 +182,12 @@ paintbox_drag_update(Imageui *imageui,
 
 	switch (paintbox->tool) {
 	case PAINTBOX_TOOL_BRUSH:
-		handled = TRUE;
+		if (tilesource) {
+			handled = TRUE;
+			if (!tilesource_draw_circle(tilesource,
+				ink, n_ink, rint(image_x), rint(image_y), r, fill))
+				imagewindow_error(paintbox->win);
+		}
 		break;
 
 	default:
@@ -183,9 +203,19 @@ paintbox_drag_end(Imageui *imageui,
 	gpointer user_data)
 {
 	Paintbox *paintbox = PAINTBOX(user_data);
+	Tilesource *tilesource = imageui_get_tilesource(imageui);
 
-	double x = paintbox->start_x + offset_x;
-	double y = paintbox->start_y + offset_y;
+	double gtk_x = paintbox->start_x + offset_x;
+	double gtk_y = paintbox->start_y + offset_y;
+	double image_x, image_y;
+	imageui_gtk_to_image(imageui, gtk_x, gtk_y, &image_x, &image_y);
+
+	/* FIXME fetch from widgets.
+	 */
+	double ink[] = {0, 255, 0};
+	int n_ink = VIPS_NUMBER(ink);
+	int r = 100;
+	gboolean fill = TRUE;
 
 #ifdef DEBUG_VERBOSE
 	printf("paintbox_drag_end: offset_x = %g, offset_y = %g\n",
@@ -196,21 +226,11 @@ paintbox_drag_end(Imageui *imageui,
 
 	switch (paintbox->tool) {
 	case PAINTBOX_TOOL_BRUSH:
-		Imageui *imageui;
-		Tilesource *tilesource;
-		if ((imageui = imagewindow_get_imageui(paintbox->win)) &&
-			(tilesource = imageui_get_tilesource(imageui))) {
+		if (tilesource) {
 			handled = TRUE;
-
-			double ink[] = {0, 255, 0};
-			int n_ink = VIPS_NUMBER(ink);
-			int r = 100;
-
 			if (!tilesource_draw_circle(tilesource,
-				ink, n_ink, x, y, r, TRUE))
+				ink, n_ink, rint(image_x), rint(image_y), r, fill))
 				imagewindow_error(paintbox->win);
-
-			imageui_queue_draw(imageui);
 		}
 
 		break;

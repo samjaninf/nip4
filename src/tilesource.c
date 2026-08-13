@@ -254,17 +254,8 @@ tilesource_render_notify_idle(void *user_data)
 	/* Only bother fetching the updated tile if it's from our current
 	 * pipeline.
 	 */
-	if (update->image == tilesource->image) {
+	if (update->image == tilesource->image)
 		tilesource_collect(tilesource, &update->rect, update->z);
-
-		/* All operations which depend on this image need to be kicked out of
-		 * cache.
-		 *
-		 * Things like the getpoint() we run for the infobar.
-		 */
-		printf("FIXME: should this invalidate be removed?\n");
-		vips_image_invalidate_all(update->image);
-	}
 
 	/* Matches the g_new() in tilesource_render_notify().
 	 */
@@ -2158,9 +2149,12 @@ tilesource_draw_circle(Tilesource *tilesource,
 {
 	VipsImage *image;
 
-	if ((image = tilesource_get_image(tilesource))) {
+	// we paint on the base image
+	if ((image = tilesource_get_base_image(tilesource))) {
 		printf("vips_draw_circle: image = %p, cx = %d, cy = %d, r = %d\n",
 			image, cx, cy, r);
+
+		// fixme ... this is the base image, not the coordinates the user sees
 
 		if (vips_draw_circle(image, ink, n, cx, cy, r, "fill", fill, NULL))
 			return FALSE;

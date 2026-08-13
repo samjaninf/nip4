@@ -426,7 +426,7 @@ imagewindow_get_tilesource(Imagewindow *win)
 Imageui *
 imagewindow_get_imageui(Imagewindow *win)
 {
-	return win->imageui;
+	return win ? win->imageui : NULL;
 }
 
 static void

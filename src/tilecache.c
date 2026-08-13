@@ -498,12 +498,11 @@ tilecache_source_invalidate_area(Tilesource *tilesource,
 		for (GSList *p = tilecache->tiles[z]; p; p = p->next) {
 			Tile *tile = TILE(p->data);
 
-			VipsRect hit;
-
-			vips_rect_intersectrect(&tile->bounds0, dirty, &hit);
-			if (vips_rect_isempty(&hit))
+			if (vips_rect_overlapsrect(&tile->bounds0, dirty))
 				tile_invalidate(tile);
 		}
+
+	tilecache_tiles_changed(tilecache);
 }
 
 static void
