@@ -42,6 +42,15 @@
             </child>
 
             <child>
+              <object class="GtkToggleButton" id="line">
+                <property name="icon-name">document-edit-symbolic</property>
+                <property name="group">pointer</property>
+
+		<signal name="toggled" handler="paintbox_toggled"/>
+              </object>
+            </child>
+
+            <child>
               <object class="GtkToggleButton" id="text">
                 <property name="icon-name">format-text-plaintext</property>
                 <property name="group">pointer</property>

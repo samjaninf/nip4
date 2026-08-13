@@ -1,60 +1,9 @@
-- paintbox is linked to imagewindow
+- add tool option widgets
 
-  imagewindow can display many imageui
-
-  imageui has an iImage model
-
-  iImage has an imageinfo
-
-  we paint on the imageinfo ....
-
-
-
-
-- area changed:
-
-	imageinfo emits area-changed, but nothing listens to it
-
-		useless!
-
-	tilecache emits area-changed when a tile comes in from
-	background recomp
-
-	imagedisplay listens to that and repaints
-
-  new plan:
-
-	tilecache needs to emit area-changed on repaint
-
-	tilecache listens to tilesource
-
-		"changed",
-		"loaded",
-		"tiles-changed",
-		"collect",
-
-	tilesource "collect" is emitted when a tile has been computed by the
-	render pipeline and must be collected
-
-		void (*collect)(Tilesource *tilesource, VipsRect *area, int z);
-
-	so:
-
-	- paint on tilesource (after geometric conversion, before conversion
-	  to rgb)
-
-	- fetch regions for all affected tiles just after paint
-
-	- as bg render completes, it'll signal "collect" and update the
-	  windows asynchronously
-
-  tilesource needs:
-
-	- make_paintable
-
-		should rebuild pipeline with the new paintable image
-
-	- tilesource should emit invalidate-area
+	- colour
+	- brush width
+	- fill
+	- text
 
 
 

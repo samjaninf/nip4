@@ -34,19 +34,28 @@
 #define DEBUG_VERBOSE
 #define DEBUG
 
+typedef enum _PaintboxRubber {
+	PAINTBOX_RUBBER_NONE,
+	PAINTBOX_RUBBER_LINE,
+	PAINTBOX_RUBBER_CIRCLE,
+	PAINTBOX_RUBBER_BOX,
+} PaintboxRubber;
+
 struct _Paintbox {
 	GtkWidget parent_instance;
 
-	/* The imagewindow whose info we display.
+	/* The imagewindow we are on.
 	 */
 	Imagewindow *win;
 
 	/* The imageui we are drawing on, and the signals we are watching.
 	 */
 	Imageui *imageui;
+	GtkWidget *imagedisplay;
 	guint drag_begin_sid;
 	guint drag_update_sid;
 	guint drag_end_sid;
+	guint snapshot_sid;
 
 	/* Currently selected tool.
 	 */
@@ -61,10 +70,18 @@ struct _Paintbox {
 	// tool select toggles
 	GtkWidget *pointer;
 	GtkWidget *brush;
+	GtkWidget *line;
 	GtkWidget *text;
 	GtkWidget *dropper;
 	GtkWidget *tools[PAINTBOX_TOOL_LAST];
 
+	/* Our rubber-banding state. All in image cods.
+	 */
+	PaintboxRubber rubber;
+	int cx, cy;
+	int r;
+	int x0, y0;
+	int x1, y1;
 };
 
 G_DEFINE_TYPE(Paintbox, paintbox, GTK_TYPE_WIDGET);
@@ -76,6 +93,8 @@ enum {
 	SIG_LAST
 };
 
+GdkRGBA paintbox_border = { 0.9, 1.0, 0.9, 1 };
+GdkRGBA paintbox_shadow = { 0.2, 0.2, 0.2, 0.5 };
 
 static void
 paintbox_disconnect(Paintbox *paintbox)
@@ -93,6 +112,13 @@ paintbox_disconnect(Paintbox *paintbox)
 		paintbox->drag_end_sid = 0;
 
 		paintbox->imageui = NULL;
+	}
+
+	if (paintbox->imagedisplay) {
+		g_signal_handler_disconnect(paintbox->imagedisplay,
+			paintbox->snapshot_sid);
+
+		paintbox->imagedisplay = NULL;
 	}
 }
 
@@ -129,6 +155,12 @@ paintbox_drag_begin(Imageui *imageui,
 		gtk_event_controller_get_current_event_state(controller);
 	Paintbox *paintbox = PAINTBOX(user_data);
 
+	paintbox->start_x = start_x;
+	paintbox->start_y = start_y;
+
+	double image_x, image_y;
+	imageui_gtk_to_image(imageui, start_x, start_y, &image_x, &image_y);
+
 #ifdef DEBUG_VERBOSE
 	printf("paintbox_drag_begin: start_x = %g, start_y = %g\n",
 		start_x, start_y);
@@ -139,8 +171,13 @@ paintbox_drag_begin(Imageui *imageui,
 	switch (paintbox->tool) {
 	case PAINTBOX_TOOL_BRUSH:
 		handled = TRUE;
-		paintbox->start_x = start_x;
-		paintbox->start_y = start_y;
+		break;
+
+	case PAINTBOX_TOOL_LINE:
+		handled = TRUE;
+		paintbox->rubber = PAINTBOX_RUBBER_LINE;
+		paintbox->x0 = paintbox->x1 = rint(image_x);
+		paintbox->y0 = paintbox->y1 = rint(image_y);
 		break;
 
 	default:
@@ -190,6 +227,13 @@ paintbox_drag_update(Imageui *imageui,
 		}
 		break;
 
+	case PAINTBOX_TOOL_LINE:
+		handled = TRUE;
+		paintbox->x1 = rint(image_x);
+		paintbox->y1 = rint(image_y);
+		gtk_widget_queue_draw(paintbox->imagedisplay);
+		break;
+
 	default:
 		break;
 	}
@@ -226,12 +270,24 @@ paintbox_drag_end(Imageui *imageui,
 
 	switch (paintbox->tool) {
 	case PAINTBOX_TOOL_BRUSH:
-		if (tilesource) {
-			handled = TRUE;
-			if (!tilesource_draw_circle(tilesource,
-				ink, n_ink, rint(image_x), rint(image_y), r, fill))
-				imagewindow_error(paintbox->win);
-		}
+		handled = TRUE;
+
+		if (tilesource &&
+			!tilesource_draw_circle(tilesource, ink, n_ink,
+				rint(image_x), rint(image_y), r, fill))
+			imagewindow_error(paintbox->win);
+
+		break;
+
+	case PAINTBOX_TOOL_LINE:
+		handled = TRUE;
+		paintbox->rubber = PAINTBOX_RUBBER_NONE;
+		gtk_widget_queue_draw(paintbox->imagedisplay);
+
+		if (tilesource &&
+			!tilesource_draw_line(tilesource, ink, n_ink,
+				paintbox->x0, paintbox->y0, paintbox->x1, paintbox->y1))
+			imagewindow_error(paintbox->win);
 
 		break;
 
@@ -261,6 +317,59 @@ paintbox_set_tool(Paintbox *paintbox, PaintboxTool tool)
 	}
 }
 
+static void
+paintbox_snapshot(Imagedisplay *imagedisplay,
+	GtkSnapshot *snapshot, Paintbox *paintbox)
+{
+	Imageui *imageui = paintbox->imageui;
+
+	double x0_gtk, y0_gtk;
+	imageui_image_to_gtk(imageui, paintbox->x0, paintbox->y0, &x0_gtk, &y0_gtk);
+
+	double x1_gtk, y1_gtk;
+	imageui_image_to_gtk(imageui, paintbox->x1, paintbox->y1, &x1_gtk, &y1_gtk);
+
+	VipsRect window = {
+		0,
+		0,
+		gtk_widget_get_width(GTK_WIDGET(imageui)),
+		gtk_widget_get_height(GTK_WIDGET(imageui))
+	};
+
+	GskStroke *stroke;
+	int x0, y0;
+	int x1, y1;
+
+	switch (paintbox->rubber) {
+		case PAINTBOX_RUBBER_LINE:
+
+		if (line_clip(&window,
+			x0_gtk, y0_gtk, x1_gtk, y1_gtk, &x0, &y0, &x1, &y1)) {
+			GskPathBuilder *builder = gsk_path_builder_new();
+			gsk_path_builder_move_to(builder, x0, y0);
+			gsk_path_builder_line_to(builder, x1, y1);
+			g_autoptr(GskPath) path = gsk_path_builder_free_to_path(builder);
+
+			stroke = gsk_stroke_new(3);
+			gsk_stroke_set_dash(stroke, (float[1]){ 10 }, 1);
+			gtk_snapshot_append_stroke(snapshot,
+				path, stroke, &paintbox_border);
+			gsk_stroke_free(stroke);
+
+			stroke = gsk_stroke_new(3);
+			gsk_stroke_set_dash(stroke, (float[1]){ 10 }, 1);
+			gsk_stroke_set_dash_offset(stroke, 10);
+			gtk_snapshot_append_stroke(snapshot,
+				path, stroke, &paintbox_shadow);
+			gsk_stroke_free(stroke);
+		}
+		break;
+
+	default:
+		break;
+	}
+}
+
 // win->imageui has changed
 static void
 paintbox_imagewindow_new_image(Imagewindow *win, Paintbox *paintbox)
@@ -278,6 +387,10 @@ paintbox_imagewindow_new_image(Imagewindow *win, Paintbox *paintbox)
 		"drag-update", G_CALLBACK(paintbox_drag_update), paintbox);
 	paintbox->drag_end_sid = g_signal_connect(paintbox->imageui,
 		"drag-end", G_CALLBACK(paintbox_drag_end), paintbox);
+
+	paintbox->imagedisplay = imageui_get_imagedisplay(paintbox->imageui);
+	paintbox->snapshot_sid = g_signal_connect(paintbox->imagedisplay,
+		"snapshot", G_CALLBACK(paintbox_snapshot), paintbox);
 
 	// reset tool to SELECT, since the new imageui might not be paintable
 	paintbox_set_tool(paintbox, PAINTBOX_TOOL_POINTER);
@@ -353,6 +466,7 @@ paintbox_init(Paintbox *paintbox)
 
 	paintbox->tools[PAINTBOX_TOOL_POINTER] = paintbox->pointer;
 	paintbox->tools[PAINTBOX_TOOL_BRUSH] = paintbox->brush;
+	paintbox->tools[PAINTBOX_TOOL_LINE] = paintbox->line;
 	paintbox->tools[PAINTBOX_TOOL_TEXT] = paintbox->text;
 	paintbox->tools[PAINTBOX_TOOL_DROPPER] = paintbox->dropper;
 
@@ -396,6 +510,7 @@ paintbox_class_init(PaintboxClass *class)
 	BIND_VARIABLE(Paintbox, action_bar);
 	BIND_VARIABLE(Paintbox, pointer);
 	BIND_VARIABLE(Paintbox, brush);
+	BIND_VARIABLE(Paintbox, line);
 	BIND_VARIABLE(Paintbox, text);
 	BIND_VARIABLE(Paintbox, dropper);
 

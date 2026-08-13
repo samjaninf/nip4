@@ -2151,9 +2151,6 @@ tilesource_draw_circle(Tilesource *tilesource,
 
 	// we paint on the base image
 	if ((image = tilesource_get_base_image(tilesource))) {
-		printf("vips_draw_circle: image = %p, cx = %d, cy = %d, r = %d\n",
-			image, cx, cy, r);
-
 		// fixme ... this is the base image, not the coordinates the user sees
 
 		if (vips_draw_circle(image, ink, n, cx, cy, r, "fill", fill, NULL))
@@ -2166,6 +2163,29 @@ tilesource_draw_circle(Tilesource *tilesource,
 			.width = r * 2,
 			.height = r * 2,
 		};
+		tilesource_invalidate_area(tilesource, &dirty);
+	}
+
+	return TRUE;
+}
+
+gboolean
+tilesource_draw_line(Tilesource *tilesource, double *ink, int n,
+	int x0, int y0, int x1, int y1)
+{
+	VipsImage *image;
+
+	if ((image = tilesource_get_base_image(tilesource))) {
+		if (vips_draw_line(image, ink, n, x0, y0, x1, y1, NULL))
+			return FALSE;
+
+		VipsRect dirty = {
+			.left = x0,
+			.top = y0,
+			.width = x1 - x0,
+			.height = y1 - y0,
+		};
+		vips_rect_normalise(&dirty);
 		tilesource_invalidate_area(tilesource, &dirty);
 	}
 
