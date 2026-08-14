@@ -74,6 +74,10 @@ struct _Paintbox {
 	GtkWidget *text;
 	GtkWidget *dropper;
 	GtkWidget *tools[PAINTBOX_TOOL_LAST];
+	GtkWidget *ink;
+	GtkWidget *fill;
+	GtkWidget *width;
+	GtkWidget *text_string;
 
 	/* Our rubber-banding state. All in image cods.
 	 */
@@ -470,6 +474,13 @@ paintbox_init(Paintbox *paintbox)
 	paintbox->tools[PAINTBOX_TOOL_TEXT] = paintbox->text;
 	paintbox->tools[PAINTBOX_TOOL_DROPPER] = paintbox->dropper;
 
+	Tslider *width = TSLIDER(paintbox->width);
+	width->from = 0;
+	width->to = 100;
+	width->value = 5;
+	width->digits = 1;
+	tslider_changed(width);
+
 	paintbox_refresh(paintbox);
 }
 
@@ -513,6 +524,10 @@ paintbox_class_init(PaintboxClass *class)
 	BIND_VARIABLE(Paintbox, line);
 	BIND_VARIABLE(Paintbox, text);
 	BIND_VARIABLE(Paintbox, dropper);
+	BIND_VARIABLE(Paintbox, ink);
+	BIND_VARIABLE(Paintbox, fill);
+	BIND_VARIABLE(Paintbox, width);
+	BIND_VARIABLE(Paintbox, text_string);
 
 	BIND_CALLBACK(paintbox_toggled);
 

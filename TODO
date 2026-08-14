@@ -1,10 +1,22 @@
-- add tool option widgets
+- make brush tool use
 
-	- colour
-	- brush width
-	- fill
-	- text
+	width
 
+		note previous position and draw a line from there to the
+		new position
+
+		read width
+		if > 0
+			make a circle of that radius
+			draw with that brush
+		else
+			draw one pixel line
+
+
+
+- setting tslider digits to 0 doesn't seem to make it int-valued
+
+	how odd
 
 
 

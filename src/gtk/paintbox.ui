@@ -71,6 +71,39 @@
           </object>
         </child>
 
+        <child type="start">
+	  <object class="GtkBox">
+	    <property name="hexpand">true</property>
+
+            <child>
+              <object class="GtkColorButton" id="ink">
+		<property name="tooltip-text">Ink colour</property>
+              </object>
+            </child>
+
+            <child>
+	      <object class="GtkCheckButton" id="fill">
+                <property name="label">Fill</property>
+		<property name="tooltip-text">Fill shape</property>
+              </object>
+            </child>
+
+            <child>
+	      <object class="Tslider" id="width">
+		<property name="tooltip-text">Brush width</property>
+              </object>
+            </child>
+
+            <child>
+	      <object class="GtkEntry" id="text_string">
+                <property name="hexpand">true</property>
+		<property name="tooltip-text">Text to draw</property>
+              </object>
+            </child>
+
+          </object>
+        </child>
+
       </object>
     </child>
   </template>
