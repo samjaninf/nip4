@@ -76,7 +76,7 @@
 	    <property name="hexpand">true</property>
 
             <child>
-              <object class="GtkColorButton" id="ink">
+              <object class="GtkColorDialogButton" id="ink">
 		<property name="tooltip-text">Ink colour</property>
               </object>
             </child>

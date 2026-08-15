@@ -2123,7 +2123,7 @@ tilesource_get_image(Tilesource *tilesource)
 VipsImage *
 tilesource_get_base_image(Tilesource *tilesource)
 {
-	return tilesource->base;
+	return tilesource ? tilesource->base : NULL;
 }
 
 void
@@ -2170,31 +2170,39 @@ tilesource_draw_circle(Tilesource *tilesource,
 }
 
 typedef struct _DrawParams {
+	double *ink;
+	int n;
 	VipsImage *mask;
-	VipsPel *pink;
 } DrawParams;
 
 static void
-tilesource_draw_line_mask(VipsImage *image, int x, int y, DrawParams *params)
+tilesource_draw_line_mask(VipsImage *image, VipsPel pink,
+	int x, int y, void *client)
 {
-	vips__draw_mask_direct(image, params->mask, params->pink, x, y);
+	DrawParams *params = (DrawParams *) client;
+	VipsImage *mask = params->mask;
+
+	vips_draw_mask(image, params->ink, params->n, mask,
+		x - mask->Xsize / 2, y - mask->Ysize / 2, NULL);
 }
 
-gboolean
-tilesource_draw_line(Tilesource *tilesource, VipsImage *mask,
-	VipsPel *pink, int n, int x0, int y0, int x1, int y1)
+void
+tilesource_draw_line(Tilesource *tilesource,
+	double *ink, int n, VipsImage *mask,
+	int x0, int y0, int x1, int y1)
 {
+	DrawParams params = {
+		.ink = ink,
+		.n = n,
+		.mask = mask,
+	};
+
 	VipsImage *image;
-
 	if ((image = tilesource_get_base_image(tilesource))) {
-		DrawParams params = {
-			.mask = mask,
-			.pink = pink,
-		};
-
-		if (vips__draw_line_direct(image, x0, y0, x1, y1,
-			tilesource_draw_line_mask, &params))
-			return FALSE;
+		vips_draw_line(image, ink, n, x0, y0, x1, y1,
+			"draw-point", tilesource_draw_line_mask,
+			"client", &params,
+			NULL);
 
 		VipsRect dirty = {
 			.left = x0 - mask->Xsize / 2,
@@ -2205,6 +2213,4 @@ tilesource_draw_line(Tilesource *tilesource, VipsImage *mask,
 		vips_rect_normalise(&dirty);
 		tilesource_invalidate_area(tilesource, &dirty);
 	}
-
-	return TRUE;
 }

@@ -64,6 +64,15 @@ struct _Paintbox {
 	double start_x;
 	double start_y;
 
+	/* Last position seen for brush draw.
+	 */
+	int last_x;
+	int last_y;
+
+	/* Mask and for drawing.
+	 */
+	VipsImage *mask;
+
 	/* Widgets.
 	 */
 	GtkWidget *action_bar;
@@ -135,6 +144,8 @@ paintbox_dispose(GObject *object)
 	printf("paintbox_dispose:\n");
 #endif /*DEBUG*/
 
+	VIPS_UNREF(paintbox->mask);
+
 	VIPS_FREEF(gtk_widget_unparent, paintbox->action_bar);
 
 	G_OBJECT_CLASS(paintbox_parent_class)->dispose(object);
@@ -148,6 +159,25 @@ paintbox_refresh(Paintbox *paintbox)
 	gtk_toggle_button_set_active(button, TRUE);
 
 	// FIXME ... update undo/redo button sensitivity
+}
+
+static gboolean
+paintbox_make_mask(Paintbox *paintbox)
+{
+	int size = rint(TSLIDER(paintbox->width)->value);
+
+	VipsImage *mask;
+	if (vips_mask_ideal(&mask, size, size, 1.0,
+		"optical", TRUE,
+		"reject", TRUE,
+		"uchar", TRUE,
+		NULL))
+		return FALSE;
+
+	VIPS_UNREF(paintbox->mask);
+	paintbox->mask = mask;
+
+	return TRUE;
 }
 
 static gboolean
@@ -175,10 +205,15 @@ paintbox_drag_begin(Imageui *imageui,
 	switch (paintbox->tool) {
 	case PAINTBOX_TOOL_BRUSH:
 		handled = TRUE;
+
+		paintbox_make_mask(paintbox);
+		paintbox->last_x = image_x;
+		paintbox->last_y = image_y;
 		break;
 
 	case PAINTBOX_TOOL_LINE:
 		handled = TRUE;
+
 		paintbox->rubber = PAINTBOX_RUBBER_LINE;
 		paintbox->x0 = paintbox->x1 = rint(image_x);
 		paintbox->y0 = paintbox->y1 = rint(image_y);
@@ -191,6 +226,30 @@ paintbox_drag_begin(Imageui *imageui,
 	return handled;
 }
 
+static void
+paintbox_update_brush_draw(Paintbox *paintbox, int x, int y)
+{
+	Imageui *imageui = imagewindow_get_imageui(paintbox->win);
+	Tilesource *tilesource = imageui_get_tilesource(imageui);
+
+	const GdkRGBA *rgba =
+		gtk_color_dialog_button_get_rgba(
+			GTK_COLOR_DIALOG_BUTTON(paintbox->ink));
+	double rgb[3] = {
+		rgba->red * 255.0,
+		rgba->green * 255.0,
+		rgba->blue * 255.0,
+	};
+
+	if (tilesource &&
+		paintbox->mask)
+		tilesource_draw_line(tilesource, rgb, 3, paintbox->mask,
+			paintbox->last_x, paintbox->last_y, x, y);
+
+	paintbox->last_x = x;
+	paintbox->last_y = y;
+}
+
 static gboolean
 paintbox_drag_update(Imageui *imageui,
 	gdouble offset_x, gdouble offset_y, GtkGestureDrag *drag,
@@ -200,19 +259,11 @@ paintbox_drag_update(Imageui *imageui,
 	GdkModifierType modifiers =
 		gtk_event_controller_get_current_event_state(controller);
 	Paintbox *paintbox = PAINTBOX(user_data);
-	Tilesource *tilesource = imageui_get_tilesource(imageui);
 
 	double gtk_x = paintbox->start_x + offset_x;
 	double gtk_y = paintbox->start_y + offset_y;
 	double image_x, image_y;
 	imageui_gtk_to_image(imageui, gtk_x, gtk_y, &image_x, &image_y);
-
-	/* FIXME fetch from widgets.
-	 */
-	double ink[] = {0, 255, 0};
-	int n_ink = VIPS_NUMBER(ink);
-	int r = 100;
-	gboolean fill = FALSE;
 
 #ifdef DEBUG_VERBOSE
 	printf("paintbox_drag_update: offset_x = %g, offset_y = %g\n",
@@ -223,16 +274,13 @@ paintbox_drag_update(Imageui *imageui,
 
 	switch (paintbox->tool) {
 	case PAINTBOX_TOOL_BRUSH:
-		if (tilesource) {
-			handled = TRUE;
-			if (!tilesource_draw_circle(tilesource,
-				ink, n_ink, rint(image_x), rint(image_y), r, fill))
-				imagewindow_error(paintbox->win);
-		}
+		handled = TRUE;
+		paintbox_update_brush_draw(paintbox, image_x, image_y);
 		break;
 
 	case PAINTBOX_TOOL_LINE:
 		handled = TRUE;
+
 		paintbox->x1 = rint(image_x);
 		paintbox->y1 = rint(image_y);
 		gtk_widget_queue_draw(paintbox->imagedisplay);
@@ -258,13 +306,6 @@ paintbox_drag_end(Imageui *imageui,
 	double image_x, image_y;
 	imageui_gtk_to_image(imageui, gtk_x, gtk_y, &image_x, &image_y);
 
-	/* FIXME fetch from widgets.
-	 */
-	double ink[] = {0, 255, 0};
-	int n_ink = VIPS_NUMBER(ink);
-	int r = 100;
-	gboolean fill = TRUE;
-
 #ifdef DEBUG_VERBOSE
 	printf("paintbox_drag_end: offset_x = %g, offset_y = %g\n",
 		offset_x, offset_y);
@@ -275,12 +316,7 @@ paintbox_drag_end(Imageui *imageui,
 	switch (paintbox->tool) {
 	case PAINTBOX_TOOL_BRUSH:
 		handled = TRUE;
-
-		if (tilesource &&
-			!tilesource_draw_circle(tilesource, ink, n_ink,
-				rint(image_x), rint(image_y), r, fill))
-			imagewindow_error(paintbox->win);
-
+		paintbox_update_brush_draw(paintbox, image_x, image_y);
 		break;
 
 	case PAINTBOX_TOOL_LINE:
@@ -288,10 +324,12 @@ paintbox_drag_end(Imageui *imageui,
 		paintbox->rubber = PAINTBOX_RUBBER_NONE;
 		gtk_widget_queue_draw(paintbox->imagedisplay);
 
+		/*
 		if (tilesource &&
 			!tilesource_draw_line(tilesource, ink, n_ink,
 				paintbox->x0, paintbox->y0, paintbox->x1, paintbox->y1))
 			imagewindow_error(paintbox->win);
+		 */
 
 		break;
 
