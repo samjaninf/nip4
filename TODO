@@ -3,14 +3,22 @@
 	width
 
 		note previous position and draw a line from there to the
-		new position
+		new position with vips__draw_line_direct()
+
 
 		read width
 		if > 0
-			make a circle of that radius
+			make a circle of that radius, one band uchar, 0/not-0
 			draw with that brush
 		else
 			draw one pixel line
+
+	void vips__draw_line_direct(VipsImage *image,
+	    int x1, int y1, int x2, int y2,
+	    VipsDrawPoint draw_point, void *client)
+
+	int vips__draw_mask_direct(VipsImage *image, VipsImage *mask,
+	    VipsPel *ink, int x, int y)
 
 
 

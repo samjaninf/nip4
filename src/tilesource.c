@@ -2169,21 +2169,38 @@ tilesource_draw_circle(Tilesource *tilesource,
 	return TRUE;
 }
 
+typedef struct _DrawParams {
+	VipsImage *mask;
+	VipsPel *pink;
+} DrawParams;
+
+static void
+tilesource_draw_line_mask(VipsImage *image, int x, int y, DrawParams *params)
+{
+	vips__draw_mask_direct(image, params->mask, params->pink, x, y);
+}
+
 gboolean
-tilesource_draw_line(Tilesource *tilesource, double *ink, int n,
-	int x0, int y0, int x1, int y1)
+tilesource_draw_line(Tilesource *tilesource, VipsImage *mask,
+	VipsPel *pink, int n, int x0, int y0, int x1, int y1)
 {
 	VipsImage *image;
 
 	if ((image = tilesource_get_base_image(tilesource))) {
-		if (vips_draw_line(image, ink, n, x0, y0, x1, y1, NULL))
+		DrawParams params = {
+			.mask = mask,
+			.pink = pink,
+		};
+
+		if (vips__draw_line_direct(image, x0, y0, x1, y1,
+			tilesource_draw_line_mask, &params))
 			return FALSE;
 
 		VipsRect dirty = {
-			.left = x0,
-			.top = y0,
-			.width = x1 - x0,
-			.height = y1 - y0,
+			.left = x0 - mask->Xsize / 2,
+			.top = y0 - mask->Ysize / 2,
+			.width = x1 - x0 +  mask->Xsize,
+			.height = y1 - y0 +  mask->Ysize,
 		};
 		vips_rect_normalise(&dirty);
 		tilesource_invalidate_area(tilesource, &dirty);
