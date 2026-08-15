@@ -1,13 +1,23 @@
-- brush performance is woeful
 
-	move the custom draw func into nip4 (don't go via libvips func
-	dispatch)
+- fix colour widget
+
+	set initial colour to black maybe?
+
+		no idea why it's red
+
+	click to set colour fails
+
+- add straight line width
+
+- check brush performance against nip2?
 
 - use motion handler to rubber brush outline
 
 - setting tslider digits to 0 doesn't seem to make it int-valued
 
 	how odd
+
+- undo / redo
 
 
 

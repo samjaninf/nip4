@@ -2169,21 +2169,13 @@ tilesource_draw_circle(Tilesource *tilesource,
 	return TRUE;
 }
 
-typedef struct _DrawParams {
-	double *ink;
-	int n;
-	VipsImage *mask;
-} DrawParams;
-
 static void
-tilesource_draw_line_mask(VipsImage *image, VipsPel pink,
+tilesource_draw_line_mask(VipsImage *image, VipsPel *pink,
 	int x, int y, void *client)
 {
-	DrawParams *params = (DrawParams *) client;
-	VipsImage *mask = params->mask;
+	VipsImage *mask = VIPS_IMAGE(client);
 
-	vips_draw_mask(image, params->ink, params->n, mask,
-		x - mask->Xsize / 2, y - mask->Ysize / 2, NULL);
+	draw_mask(image, pink, mask, x - mask->Xsize / 2, y - mask->Ysize / 2);
 }
 
 void
@@ -2191,17 +2183,11 @@ tilesource_draw_line(Tilesource *tilesource,
 	double *ink, int n, VipsImage *mask,
 	int x0, int y0, int x1, int y1)
 {
-	DrawParams params = {
-		.ink = ink,
-		.n = n,
-		.mask = mask,
-	};
-
 	VipsImage *image;
 	if ((image = tilesource_get_base_image(tilesource))) {
 		vips_draw_line(image, ink, n, x0, y0, x1, y1,
 			"draw-point", tilesource_draw_line_mask,
-			"client", &params,
+			"client", mask,
 			NULL);
 
 		VipsRect dirty = {

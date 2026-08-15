@@ -39,6 +39,7 @@ sources = files(
   'compile.c',
   'displaybar.c',
   'dump.c',
+  'draw_mask.c',
   'editview.c',
   'expr.c',
   'expression.c',
