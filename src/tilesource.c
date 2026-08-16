@@ -2143,32 +2143,6 @@ tilesource_set_synchronous(Tilesource *tilesource, gboolean synchronous)
 	}
 }
 
-gboolean
-tilesource_draw_circle(Tilesource *tilesource,
-	double *ink, int n, int cx, int cy, int r, gboolean fill)
-{
-	VipsImage *image;
-
-	// we paint on the base image
-	if ((image = tilesource_get_base_image(tilesource))) {
-		// fixme ... this is the base image, not the coordinates the user sees
-
-		if (vips_draw_circle(image, ink, n, cx, cy, r, "fill", fill, NULL))
-			return FALSE;
-
-		// signal to tilecache that it should repaint these parts
-		VipsRect dirty = {
-			.left = cx - r,
-			.top = cy - r,
-			.width = r * 2,
-			.height = r * 2,
-		};
-		tilesource_invalidate_area(tilesource, &dirty);
-	}
-
-	return TRUE;
-}
-
 static void
 tilesource_draw_line_mask(VipsImage *image, VipsPel *pink,
 	int x, int y, void *client)
@@ -2198,5 +2172,51 @@ tilesource_draw_line(Tilesource *tilesource,
 		};
 		vips_rect_normalise(&dirty);
 		tilesource_invalidate_area(tilesource, &dirty);
+	}
+}
+
+void
+tilesource_draw_rect(Tilesource *tilesource,
+	double *ink, int n, gboolean fill,
+	int left, int top, int width, int height)
+{
+	VipsImage *image;
+	if ((image = tilesource_get_base_image(tilesource))) {
+		VipsRect rect = {
+			.left = left,
+			.top = top,
+			.width = width,
+			.height = height,
+		};
+		vips_rect_normalise(&rect);
+
+		vips_draw_rect(image, ink, n,
+			rect.left, rect.top, rect.width, rect.height,
+			"fill", fill,
+			NULL);
+
+		tilesource_invalidate_area(tilesource, &rect);
+	}
+}
+
+void
+tilesource_draw_circle(Tilesource *tilesource,
+	double *ink, int n, gboolean fill, int left, int top, int radius)
+{
+	VipsImage *image;
+	if ((image = tilesource_get_base_image(tilesource))) {
+		vips_draw_circle(image, ink, n, left, top, radius,
+			"fill", fill,
+			NULL);
+
+		VipsRect rect = {
+			.left = left - radius,
+			.top = top - radius,
+			.width = radius * 2,
+			.height = radius * 2,
+		};
+		vips_rect_normalise(&rect);
+
+		tilesource_invalidate_area(tilesource, &rect);
 	}
 }
