@@ -1,22 +1,6 @@
-- fix colour widget
+- implement other tools
 
-	set initial colour to black maybe?
-
-		no idea why it's red
-
-	click to set colour fails
-
-- two flood tools
-
-- text tool
-
-	need a font button too
-
-- smudge button
-
-- undo / redo
-
-- improve icons
+- add icons
 
 - mask drawing could draw the difference and do the four cardinal directions?
 

@@ -81,12 +81,18 @@ struct _Paintbox {
 	GtkWidget *pointer;
 	GtkWidget *brush;
 	GtkWidget *line;
+	GtkWidget *rect;
+	GtkWidget *circle;
+	GtkWidget *smudge;
+	GtkWidget *flood_while;
+	GtkWidget *flood_until;
 	GtkWidget *text;
 	GtkWidget *dropper;
 	GtkWidget *tools[PAINTBOX_TOOL_LAST];
 	GtkWidget *ink;
 	GtkWidget *fill;
 	GtkWidget *width;
+	GtkWidget *font;
 	GtkWidget *text_string;
 
 	/* Our rubber-banding state. All in image cods.
@@ -559,6 +565,11 @@ paintbox_init(Paintbox *paintbox)
 	paintbox->tools[PAINTBOX_TOOL_POINTER] = paintbox->pointer;
 	paintbox->tools[PAINTBOX_TOOL_BRUSH] = paintbox->brush;
 	paintbox->tools[PAINTBOX_TOOL_LINE] = paintbox->line;
+	paintbox->tools[PAINTBOX_TOOL_RECT] = paintbox->rect;
+	paintbox->tools[PAINTBOX_TOOL_CIRCLE] = paintbox->circle;
+	paintbox->tools[PAINTBOX_TOOL_SMUDGE] = paintbox->smudge;
+	paintbox->tools[PAINTBOX_TOOL_FLOOD_WHILE] = paintbox->flood_while;
+	paintbox->tools[PAINTBOX_TOOL_FLOOD_UNTIL] = paintbox->flood_until;
 	paintbox->tools[PAINTBOX_TOOL_TEXT] = paintbox->text;
 	paintbox->tools[PAINTBOX_TOOL_DROPPER] = paintbox->dropper;
 
@@ -610,11 +621,17 @@ paintbox_class_init(PaintboxClass *class)
 	BIND_VARIABLE(Paintbox, pointer);
 	BIND_VARIABLE(Paintbox, brush);
 	BIND_VARIABLE(Paintbox, line);
+	BIND_VARIABLE(Paintbox, rect);
+	BIND_VARIABLE(Paintbox, circle);
+	BIND_VARIABLE(Paintbox, smudge);
+	BIND_VARIABLE(Paintbox, flood_while);
+	BIND_VARIABLE(Paintbox, flood_until);
 	BIND_VARIABLE(Paintbox, text);
 	BIND_VARIABLE(Paintbox, dropper);
 	BIND_VARIABLE(Paintbox, ink);
 	BIND_VARIABLE(Paintbox, fill);
 	BIND_VARIABLE(Paintbox, width);
+	BIND_VARIABLE(Paintbox, font);
 	BIND_VARIABLE(Paintbox, text_string);
 
 	BIND_CALLBACK(paintbox_toggled);

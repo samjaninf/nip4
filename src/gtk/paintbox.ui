@@ -10,11 +10,13 @@
             <child>
               <object class="GtkButton" id="undo">
                 <property name="icon-name">edit-undo-symbolic</property>
+		<property name="tooltip-text">Undo paint</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="redo">
                 <property name="icon-name">edit-redo-symbolic</property>
+		<property name="tooltip-text">Redo paint</property>
               </object>
             </child>
           </object>
@@ -27,7 +29,7 @@
               <object class="GtkToggleButton" id="pointer">
                 <property name="icon-name">edit-delete-symbolic</property>
                 <property name="active">true</property>
-
+		<property name="tooltip-text">Pointer mode</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
               </object>
             </child>
@@ -36,7 +38,7 @@
               <object class="GtkToggleButton" id="brush">
                 <property name="icon-name">document-edit-symbolic</property>
                 <property name="group">pointer</property>
-
+		<property name="tooltip-text">Paint with a brush</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
               </object>
             </child>
@@ -45,7 +47,52 @@
               <object class="GtkToggleButton" id="line">
                 <property name="icon-name">document-edit-symbolic</property>
                 <property name="group">pointer</property>
+		<property name="tooltip-text">Draw straight lines</property>
+		<signal name="toggled" handler="paintbox_toggled"/>
+              </object>
+            </child>
 
+            <child>
+              <object class="GtkToggleButton" id="rect">
+                <property name="icon-name">document-edit-symbolic</property>
+                <property name="group">pointer</property>
+		<property name="tooltip-text">Draw rectangles</property>
+		<signal name="toggled" handler="paintbox_toggled"/>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkToggleButton" id="circle">
+                <property name="icon-name">document-edit-symbolic</property>
+                <property name="group">pointer</property>
+		<property name="tooltip-text">Draw circles</property>
+		<signal name="toggled" handler="paintbox_toggled"/>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkToggleButton" id="smudge">
+                <property name="icon-name">document-edit-symbolic</property>
+                <property name="group">pointer</property>
+		<property name="tooltip-text">Smudge</property>
+		<signal name="toggled" handler="paintbox_toggled"/>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkToggleButton" id="flood_while">
+                <property name="icon-name">document-edit-symbolic</property>
+                <property name="group">pointer</property>
+		<property name="tooltip-text">Flood while equal to start pixel</property>
+		<signal name="toggled" handler="paintbox_toggled"/>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkToggleButton" id="flood_until">
+                <property name="icon-name">document-edit-symbolic</property>
+                <property name="group">pointer</property>
+		<property name="tooltip-text">Flood until equal to ink</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
               </object>
             </child>
@@ -54,7 +101,7 @@
               <object class="GtkToggleButton" id="text">
                 <property name="icon-name">format-text-plaintext</property>
                 <property name="group">pointer</property>
-
+		<property name="tooltip-text">Draw text</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
               </object>
             </child>
@@ -63,7 +110,7 @@
               <object class="GtkToggleButton" id="dropper">
                 <property name="icon-name">color-select-symbolic</property>
                 <property name="group">pointer</property>
-
+		<property name="tooltip-text">Ink dropper</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
               </object>
             </child>
@@ -77,6 +124,13 @@
 
             <child>
               <object class="GtkColorDialogButton" id="ink">
+		<property name="rgba">white</property>
+                <property name="dialog">
+                  <object class="GtkColorDialog">
+                    <property name="modal">1</property>
+                    <property name="with-alpha">0</property>
+                  </object>
+                </property>
 		<property name="tooltip-text">Ink colour</property>
               </object>
             </child>
@@ -91,6 +145,18 @@
             <child>
 	      <object class="Tslider" id="width">
 		<property name="tooltip-text">Brush width</property>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkFontDialogButton" id="font">
+		<property name="font-desc">Sans 12</property>
+                <property name="dialog">
+                  <object class="GtkFontDialog">
+                    <property name="modal">1</property>
+                  </object>
+                </property>
+		<property name="tooltip-text">Font to draw text with</property>
               </object>
             </child>
 
