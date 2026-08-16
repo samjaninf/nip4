@@ -6,18 +6,23 @@
 
 	click to set colour fails
 
-- check brush performance against nip2?
+- two flood tools
 
-	it's so slow!
+- text tool
 
-	mask drawing could draw the difference and do the four
-	cardinal directions
+	need a font button too
+
+- smudge button
+
+- undo / redo
+
+- improve icons
+
+- mask drawing could draw the difference and do the four cardinal directions?
 
 - setting tslider digits to 0 doesn't seem to make it int-valued
 
 	how odd
-
-- undo / redo
 
 
 

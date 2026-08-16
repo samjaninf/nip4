@@ -65,6 +65,11 @@ struct _Paintbox {
 	double start_x;
 	double start_y;
 
+	/* Last position for line draw.
+	 */
+	int last_x;
+	int last_y;
+
 	/* Mask and for drawing.
 	 */
 	VipsImage *mask;
@@ -203,16 +208,16 @@ paintbox_drag_begin(Imageui *imageui,
 	switch (paintbox->tool) {
 	case PAINTBOX_TOOL_BRUSH:
 		handled = TRUE;
-		paintbox->x0 = rint(image_x);
-		paintbox->y0 = rint(image_y);
+		paintbox->last_x = rint(image_x);
+		paintbox->last_y = rint(image_y);
 		paintbox_make_mask(paintbox);
 		break;
 
 	case PAINTBOX_TOOL_LINE:
 		handled = TRUE;
 		paintbox->rubber = PAINTBOX_RUBBER_LINE;
-		paintbox->x0 = paintbox->x1 = rint(image_x);
-		paintbox->y0 = paintbox->y1 = rint(image_y);
+		paintbox->last_x = paintbox->x0 = paintbox->x1 = rint(image_x);
+		paintbox->last_y = paintbox->y0 = paintbox->y1 = rint(image_y);
 		break;
 
 	default:
@@ -240,10 +245,10 @@ paintbox_update_brush_draw(Paintbox *paintbox, int x, int y)
 	if (tilesource &&
 		paintbox->mask)
 		tilesource_draw_line(tilesource, rgb, 3, paintbox->mask,
-			paintbox->x0, paintbox->y0, x, y);
+			paintbox->last_x, paintbox->last_y, x, y);
 
-	paintbox->x0 = x;
-	paintbox->y0 = y;
+	paintbox->last_x = x;
+	paintbox->last_y = y;
 }
 
 static gboolean
