@@ -55,6 +55,7 @@ struct _Paintbox {
 	guint drag_begin_sid;
 	guint drag_update_sid;
 	guint drag_end_sid;
+	guint motion_sid;
 	guint snapshot_sid;
 
 	/* Currently selected tool.
@@ -91,10 +92,9 @@ struct _Paintbox {
 	/* Our rubber-banding state. All in image cods.
 	 */
 	PaintboxRubber rubber;
-	int cx, cy;
-	int r;
 	int x0, y0;
 	int x1, y1;
+	int r;
 };
 
 G_DEFINE_TYPE(Paintbox, paintbox, GTK_TYPE_WIDGET);
@@ -112,22 +112,25 @@ GdkRGBA paintbox_shadow = { 0.2, 0.2, 0.2, 0.5 };
 static void
 paintbox_disconnect(Paintbox *paintbox)
 {
-	if (paintbox->imageui) {
+	if (paintbox->drag_begin_sid) {
 		g_signal_handler_disconnect(paintbox->imageui,
 			paintbox->drag_begin_sid);
 		g_signal_handler_disconnect(paintbox->imageui,
 			paintbox->drag_update_sid);
 		g_signal_handler_disconnect(paintbox->imageui,
 			paintbox->drag_end_sid);
+		g_signal_handler_disconnect(paintbox->imageui,
+			paintbox->motion_sid);
 
 		paintbox->drag_begin_sid = 0;
 		paintbox->drag_update_sid = 0;
 		paintbox->drag_end_sid = 0;
+		paintbox->motion_sid = 0;
 
 		paintbox->imageui = NULL;
 	}
 
-	if (paintbox->imagedisplay) {
+	if (paintbox->snapshot_sid) {
 		g_signal_handler_disconnect(paintbox->imagedisplay,
 			paintbox->snapshot_sid);
 
@@ -205,7 +208,6 @@ paintbox_drag_begin(Imageui *imageui,
 	switch (paintbox->tool) {
 	case PAINTBOX_TOOL_BRUSH:
 		handled = TRUE;
-
 		paintbox_make_mask(paintbox);
 		paintbox->last_x = image_x;
 		paintbox->last_y = image_y;
@@ -213,7 +215,6 @@ paintbox_drag_begin(Imageui *imageui,
 
 	case PAINTBOX_TOOL_LINE:
 		handled = TRUE;
-
 		paintbox->rubber = PAINTBOX_RUBBER_LINE;
 		paintbox->x0 = paintbox->x1 = rint(image_x);
 		paintbox->y0 = paintbox->y1 = rint(image_y);
@@ -340,6 +341,41 @@ paintbox_drag_end(Imageui *imageui,
 	return handled;
 }
 
+static gboolean
+paintbox_motion(Imageui *imageui,
+	gdouble gtk_x, gdouble gtk_y, GtkEventControllerMotion *motion,
+	gpointer user_data)
+{
+	Paintbox *paintbox = PAINTBOX(user_data);
+	Tilesource *tilesource = imageui_get_tilesource(imageui);
+
+	double image_x, image_y;
+	imageui_gtk_to_image(imageui, gtk_x, gtk_y, &image_x, &image_y);
+
+#ifdef DEBUG_VERBOSE
+	printf("paintbox_motion: image_x = %g, image_y = %g\n",
+		image_x, image_y);
+#endif /*DEBUG_VERBOSE*/
+
+	gboolean handled = FALSE;
+
+	switch (paintbox->tool) {
+	case PAINTBOX_TOOL_BRUSH:
+		paintbox->rubber = PAINTBOX_RUBBER_CIRCLE;
+		paintbox->x0 = image_x;
+		paintbox->y0 = image_y;
+		paintbox->r = rint(TSLIDER(paintbox->width)->value) / 2;
+		gtk_widget_queue_draw(paintbox->imagedisplay);
+		break;
+
+	default:
+		paintbox->rubber = PAINTBOX_RUBBER_NONE;
+		break;
+	}
+
+	return handled;
+}
+
 static void
 paintbox_set_tool(Paintbox *paintbox, PaintboxTool tool)
 {
@@ -360,16 +396,38 @@ paintbox_set_tool(Paintbox *paintbox, PaintboxTool tool)
 }
 
 static void
+paintbox_stroke_rubber(Paintbox *paintbox, GtkSnapshot *snapshot, GskPath *path)
+{
+	GskStroke *stroke;
+
+	stroke = gsk_stroke_new(3);
+	gsk_stroke_set_dash(stroke, (float[1]){ 10 }, 1);
+	gtk_snapshot_append_stroke(snapshot, path, stroke, &paintbox_border);
+	gsk_stroke_free(stroke);
+
+	stroke = gsk_stroke_new(3);
+	gsk_stroke_set_dash(stroke, (float[1]){ 10 }, 1);
+	gsk_stroke_set_dash_offset(stroke, 10);
+	gtk_snapshot_append_stroke(snapshot, path, stroke, &paintbox_shadow);
+	gsk_stroke_free(stroke);
+}
+
+static void
 paintbox_snapshot(Imagedisplay *imagedisplay,
 	GtkSnapshot *snapshot, Paintbox *paintbox)
 {
 	Imageui *imageui = paintbox->imageui;
 
 	double x0_gtk, y0_gtk;
-	imageui_image_to_gtk(imageui, paintbox->x0, paintbox->y0, &x0_gtk, &y0_gtk);
+	imageui_image_to_gtk(imageui, paintbox->x0 + 0.5, paintbox->y0 + 0.5,
+		&x0_gtk, &y0_gtk);
 
 	double x1_gtk, y1_gtk;
-	imageui_image_to_gtk(imageui, paintbox->x1, paintbox->y1, &x1_gtk, &y1_gtk);
+	imageui_image_to_gtk(imageui, paintbox->x1 + 0.5, paintbox->y1 + 0.5,
+		&x1_gtk, &y1_gtk);
+
+	double scale = imagedisplay_get_scale(imagedisplay);
+	int r = paintbox->r * scale;
 
 	VipsRect window = {
 		0,
@@ -378,34 +436,29 @@ paintbox_snapshot(Imagedisplay *imagedisplay,
 		gtk_widget_get_height(GTK_WIDGET(imageui))
 	};
 
-	GskStroke *stroke;
-	int x0, y0;
-	int x1, y1;
-
 	switch (paintbox->rubber) {
-		case PAINTBOX_RUBBER_LINE:
-
-		if (line_clip(&window,
-			x0_gtk, y0_gtk, x1_gtk, y1_gtk, &x0, &y0, &x1, &y1)) {
+	case PAINTBOX_RUBBER_LINE:
+		{
 			GskPathBuilder *builder = gsk_path_builder_new();
-			gsk_path_builder_move_to(builder, x0, y0);
-			gsk_path_builder_line_to(builder, x1, y1);
+			gsk_path_builder_move_to(builder, x0_gtk, y0_gtk);
+			gsk_path_builder_line_to(builder, x1_gtk, y1_gtk);
 			g_autoptr(GskPath) path = gsk_path_builder_free_to_path(builder);
 
-			stroke = gsk_stroke_new(3);
-			gsk_stroke_set_dash(stroke, (float[1]){ 10 }, 1);
-			gtk_snapshot_append_stroke(snapshot,
-				path, stroke, &paintbox_border);
-			gsk_stroke_free(stroke);
-
-			stroke = gsk_stroke_new(3);
-			gsk_stroke_set_dash(stroke, (float[1]){ 10 }, 1);
-			gsk_stroke_set_dash_offset(stroke, 10);
-			gtk_snapshot_append_stroke(snapshot,
-				path, stroke, &paintbox_shadow);
-			gsk_stroke_free(stroke);
+			paintbox_stroke_rubber(paintbox, snapshot, path);
 		}
 		break;
+
+	case PAINTBOX_RUBBER_CIRCLE:
+		{
+			GskPathBuilder *builder = gsk_path_builder_new();
+			graphene_point_t center = GRAPHENE_POINT_INIT(x0_gtk, y0_gtk);
+			gsk_path_builder_add_circle(builder, &center, r);
+			g_autoptr(GskPath) path = gsk_path_builder_free_to_path(builder);
+
+			paintbox_stroke_rubber(paintbox, snapshot, path);
+		}
+		break;
+
 
 	default:
 		break;
@@ -429,6 +482,8 @@ paintbox_imagewindow_new_image(Imagewindow *win, Paintbox *paintbox)
 		"drag-update", G_CALLBACK(paintbox_drag_update), paintbox);
 	paintbox->drag_end_sid = g_signal_connect(paintbox->imageui,
 		"drag-end", G_CALLBACK(paintbox_drag_end), paintbox);
+	paintbox->motion_sid = g_signal_connect(paintbox->imageui,
+		"motion", G_CALLBACK(paintbox_motion), paintbox);
 
 	paintbox->imagedisplay = imageui_get_imagedisplay(paintbox->imageui);
 	paintbox->snapshot_sid = g_signal_connect(paintbox->imagedisplay,

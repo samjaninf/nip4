@@ -1,3 +1,4 @@
+- add straight line width and colour
 
 - fix colour widget
 
@@ -7,11 +8,11 @@
 
 	click to set colour fails
 
-- add straight line width
 
 - check brush performance against nip2?
 
-- use motion handler to rubber brush outline
+	mask drawing could draw the difference and do the four
+	cardinal directions
 
 - setting tslider digits to 0 doesn't seem to make it int-valued
 
