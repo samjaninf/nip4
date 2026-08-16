@@ -65,11 +65,6 @@ struct _Paintbox {
 	double start_x;
 	double start_y;
 
-	/* Last position seen for brush draw.
-	 */
-	int last_x;
-	int last_y;
-
 	/* Mask and for drawing.
 	 */
 	VipsImage *mask;
@@ -208,9 +203,9 @@ paintbox_drag_begin(Imageui *imageui,
 	switch (paintbox->tool) {
 	case PAINTBOX_TOOL_BRUSH:
 		handled = TRUE;
+		paintbox->x0 = rint(image_x);
+		paintbox->y0 = rint(image_y);
 		paintbox_make_mask(paintbox);
-		paintbox->last_x = image_x;
-		paintbox->last_y = image_y;
 		break;
 
 	case PAINTBOX_TOOL_LINE:
@@ -245,10 +240,10 @@ paintbox_update_brush_draw(Paintbox *paintbox, int x, int y)
 	if (tilesource &&
 		paintbox->mask)
 		tilesource_draw_line(tilesource, rgb, 3, paintbox->mask,
-			paintbox->last_x, paintbox->last_y, x, y);
+			paintbox->x0, paintbox->y0, x, y);
 
-	paintbox->last_x = x;
-	paintbox->last_y = y;
+	paintbox->x0 = x;
+	paintbox->y0 = y;
 }
 
 static gboolean
@@ -281,7 +276,6 @@ paintbox_drag_update(Imageui *imageui,
 
 	case PAINTBOX_TOOL_LINE:
 		handled = TRUE;
-
 		paintbox->x1 = rint(image_x);
 		paintbox->y1 = rint(image_y);
 		gtk_widget_queue_draw(paintbox->imagedisplay);
@@ -323,15 +317,9 @@ paintbox_drag_end(Imageui *imageui,
 	case PAINTBOX_TOOL_LINE:
 		handled = TRUE;
 		paintbox->rubber = PAINTBOX_RUBBER_NONE;
+		paintbox_make_mask(paintbox);
+		paintbox_update_brush_draw(paintbox, image_x, image_y);
 		gtk_widget_queue_draw(paintbox->imagedisplay);
-
-		/*
-		if (tilesource &&
-			!tilesource_draw_line(tilesource, ink, n_ink,
-				paintbox->x0, paintbox->y0, paintbox->x1, paintbox->y1))
-			imagewindow_error(paintbox->win);
-		 */
-
 		break;
 
 	default:
@@ -369,7 +357,6 @@ paintbox_motion(Imageui *imageui,
 		break;
 
 	default:
-		paintbox->rubber = PAINTBOX_RUBBER_NONE;
 		break;
 	}
 
@@ -429,6 +416,10 @@ paintbox_snapshot(Imagedisplay *imagedisplay,
 	double scale = imagedisplay_get_scale(imagedisplay);
 	int r = paintbox->r * scale;
 
+	printf("paintbox_snapshot: line x0 = %g, y0 = %g, x1 = %g, y1 = %g\n",
+		x0_gtk, y0_gtk, x1_gtk, y1_gtk);
+	printf("\trubber = %d\n", paintbox->rubber);
+
 	VipsRect window = {
 		0,
 		0,
@@ -458,7 +449,6 @@ paintbox_snapshot(Imagedisplay *imagedisplay,
 			paintbox_stroke_rubber(paintbox, snapshot, path);
 		}
 		break;
-
 
 	default:
 		break;

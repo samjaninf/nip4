@@ -1,5 +1,3 @@
-- add straight line width and colour
-
 - fix colour widget
 
 	set initial colour to black maybe?
@@ -8,8 +6,9 @@
 
 	click to set colour fails
 
-
 - check brush performance against nip2?
+
+	it's so slow!
 
 	mask drawing could draw the difference and do the four
 	cardinal directions
