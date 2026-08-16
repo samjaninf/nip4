@@ -1,12 +1,26 @@
 - implement other tools
 
+	smudge
+	flood while
+	flood until
+	text
+	dropper
+
 - add icons
 
+- add Esc to cancel draw
+
+- catch enter / leave window to remove rubber band
+
 - mask drawing could draw the difference and do the four cardinal directions?
+
+	it's very slow right now
 
 - setting tslider digits to 0 doesn't seem to make it int-valued
 
 	how odd
+
+- implement undo / redo
 
 
 
