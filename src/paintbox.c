@@ -241,6 +241,12 @@ paintbox_drag_begin(Imageui *imageui,
 		paintbox->r = 1;
 		break;
 
+	case PAINTBOX_TOOL_SMUDGE:
+		handled = TRUE;
+		paintbox->last_x = rint(image_x);
+		paintbox->last_y = rint(image_y);
+		break;
+
 	default:
 		break;
 	}
@@ -266,6 +272,22 @@ paintbox_update_brush_draw(Paintbox *paintbox, int x, int y)
 	if (tilesource &&
 		paintbox->mask)
 		tilesource_draw_line(tilesource, rgb, 3, paintbox->mask,
+			paintbox->last_x, paintbox->last_y, x, y);
+
+	paintbox->last_x = x;
+	paintbox->last_y = y;
+}
+
+static void
+paintbox_update_smudge_draw(Paintbox *paintbox, int x, int y)
+{
+	Imageui *imageui = imagewindow_get_imageui(paintbox->win);
+	Tilesource *tilesource = imageui_get_tilesource(imageui);
+
+	int width = rint(TSLIDER(paintbox->width)->value);
+
+	if (tilesource)
+		tilesource_draw_smudge(tilesource, width,
 			paintbox->last_x, paintbox->last_y, x, y);
 
 	paintbox->last_x = x;
@@ -320,6 +342,11 @@ paintbox_drag_update(Imageui *imageui,
 		int dy = paintbox->y0 - image_y;
 		paintbox->r = rint(sqrt(dx * dx + dy * dy));
 		gtk_widget_queue_draw(paintbox->imagedisplay);
+		break;
+
+	case PAINTBOX_TOOL_SMUDGE:
+		handled = TRUE;
+		paintbox_update_smudge_draw(paintbox, image_x, image_y);
 		break;
 
 	default:
@@ -397,6 +424,11 @@ paintbox_drag_end(Imageui *imageui,
 		gtk_widget_queue_draw(paintbox->imagedisplay);
 		break;
 
+	case PAINTBOX_TOOL_SMUDGE:
+		handled = TRUE;
+		paintbox_update_smudge_draw(paintbox, image_x, image_y);
+		break;
+
 	default:
 		break;
 	}
@@ -423,6 +455,7 @@ paintbox_motion(Imageui *imageui,
 	gboolean handled = FALSE;
 
 	switch (paintbox->tool) {
+	case PAINTBOX_TOOL_SMUDGE:
 	case PAINTBOX_TOOL_BRUSH:
 		paintbox->rubber = PAINTBOX_RUBBER_CIRCLE;
 		paintbox->x0 = image_x;

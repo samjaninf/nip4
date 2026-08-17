@@ -2144,7 +2144,7 @@ tilesource_set_synchronous(Tilesource *tilesource, gboolean synchronous)
 }
 
 static void
-tilesource_draw_line_mask(VipsImage *image, VipsPel *pink,
+tilesource_draw_line_point(VipsImage *image, VipsPel *pink,
 	int x, int y, void *client)
 {
 	VipsImage *mask = VIPS_IMAGE(client);
@@ -2160,15 +2160,15 @@ tilesource_draw_line(Tilesource *tilesource,
 	VipsImage *image;
 	if ((image = tilesource_get_base_image(tilesource))) {
 		vips_draw_line(image, ink, n, x0, y0, x1, y1,
-			"draw-point", tilesource_draw_line_mask,
+			"draw-point", tilesource_draw_line_point,
 			"client", mask,
 			NULL);
 
 		VipsRect dirty = {
 			.left = x0 - mask->Xsize / 2,
 			.top = y0 - mask->Ysize / 2,
-			.width = x1 - x0 + mask->Xsize,
-			.height = y1 - y0 +  mask->Ysize,
+			.width = (x1 - x0) + mask->Xsize,
+			.height = (y1 - y0) + mask->Ysize,
 		};
 		vips_rect_normalise(&dirty);
 		vips_rect_marginadjust(&dirty, 1);
@@ -2220,5 +2220,45 @@ tilesource_draw_circle(Tilesource *tilesource,
 		vips_rect_normalise(&rect);
 		vips_rect_marginadjust(&rect, 1);
 		tilesource_invalidate_area(tilesource, &rect);
+	}
+}
+
+static void
+tilesource_draw_smudge_point(VipsImage *image, VipsPel *pink,
+	int x, int y, void *client)
+{
+	int width = GPOINTER_TO_INT(client);
+
+	vips_draw_smudge(image, x - width / 2, y - width / 2, width, width, NULL);
+}
+
+void
+tilesource_draw_smudge(Tilesource *tilesource, int width,
+	int x0, int y0, int x1, int y1)
+{
+	VipsImage *image;
+	if ((image = tilesource_get_base_image(tilesource))) {
+		// not used, but vips_draw_line likes it
+		double rgb[3] = {0, 0, 0};
+
+		vips_draw_line(image, rgb, 3, x0, y0, x1, y1,
+			"draw-point", tilesource_draw_smudge_point,
+			"client", GINT_TO_POINTER(width),
+			NULL);
+
+		// smudging must always make at least 1 change, even for zero-length
+		// lines
+		vips_draw_smudge(image,
+			x0 - width / 2, y0 - width / 2, width, width, NULL);
+
+		VipsRect dirty = {
+			.left = x0,
+			.top = y0,
+			.width = x1 - x0,
+			.height = y1 - y0,
+		};
+		vips_rect_normalise(&dirty);
+		vips_rect_marginadjust(&dirty, width / 2 + 1);
+		tilesource_invalidate_area(tilesource, &dirty);
 	}
 }
