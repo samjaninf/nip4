@@ -2283,3 +2283,23 @@ tilesource_draw_flood(Tilesource *tilesource,
 		tilesource_invalidate_area(tilesource, &dirty);
 	}
 }
+
+void
+tilesource_draw_mask(Tilesource *tilesource,
+	double *ink, int n, VipsImage *mask, int x, int y)
+{
+	VipsImage *image;
+	if ((image = tilesource_get_base_image(tilesource))) {
+		vips_draw_mask(image, ink, n, mask, x, y, NULL);
+
+		VipsRect dirty = {
+			.left = x,
+			.top = y,
+			.width = mask->Xsize,
+			.height = mask->Ysize,
+		};
+		vips_rect_normalise(&dirty);
+		vips_rect_marginadjust(&dirty, 1);
+		tilesource_invalidate_area(tilesource, &dirty);
+	}
+}

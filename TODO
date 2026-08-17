@@ -5,10 +5,19 @@
 
 - should we soften the edges of the brush mask? what does nip2 do?
 
+	it has very light antialias on brush edges
+
+	not clear what it does for text
+
 - add icons
 
 	https://staging.svgrepo.com/svg/82820/brush
 	https://staging.svgrepo.com/svg/109447/pencil
+	https://freesvg.org/flood-fill-tool-monochrome-icon
+	https://www.svgrepo.com/svg/347918/rectangle
+	https://www.svgrepo.com/svg/532681/circle
+	https://www.svgrepo.com/svg/532229/text
+	https://www.svgrepo.com/svg/456606/dropper
 
 - add Esc to cancel draw
 

@@ -39,6 +39,7 @@ typedef enum _PaintboxRubber {
 	PAINTBOX_RUBBER_LINE,
 	PAINTBOX_RUBBER_CIRCLE,
 	PAINTBOX_RUBBER_RECT,
+	PAINTBOX_RUBBER_BOX,
 } PaintboxRubber;
 
 struct _Paintbox {
@@ -100,7 +101,7 @@ struct _Paintbox {
 	PaintboxRubber rubber;
 	int x0, y0;
 	int x1, y1;
-	int r;
+	int a, b;
 };
 
 G_DEFINE_TYPE(Paintbox, paintbox, GTK_TYPE_WIDGET);
@@ -171,7 +172,7 @@ paintbox_refresh(Paintbox *paintbox)
 }
 
 static gboolean
-paintbox_make_mask(Paintbox *paintbox)
+paintbox_make_brush(Paintbox *paintbox)
 {
 	int size = rint(TSLIDER(paintbox->width)->value);
 
@@ -181,6 +182,25 @@ paintbox_make_mask(Paintbox *paintbox)
 		"reject", TRUE,
 		"uchar", TRUE,
 		NULL))
+		return FALSE;
+
+	VIPS_UNREF(paintbox->mask);
+	paintbox->mask = mask;
+
+	return TRUE;
+}
+
+static gboolean
+paintbox_make_text(Paintbox *paintbox)
+{
+	g_autofree char *text =
+		gtk_editable_get_chars(GTK_EDITABLE(paintbox->text_string), 0, -1);
+	PangoFontDescription *desc = gtk_font_dialog_button_get_font_desc(
+		GTK_FONT_DIALOG_BUTTON(paintbox->font));
+	g_autofree char *font = pango_font_description_to_string(desc);
+
+	VipsImage *mask;
+	if (vips_text(&mask, text, "font", font, NULL))
 		return FALSE;
 
 	VIPS_UNREF(paintbox->mask);
@@ -216,7 +236,7 @@ paintbox_drag_begin(Imageui *imageui,
 		handled = TRUE;
 		paintbox->last_x = rint(image_x);
 		paintbox->last_y = rint(image_y);
-		paintbox_make_mask(paintbox);
+		paintbox_make_brush(paintbox);
 		break;
 
 	case PAINTBOX_TOOL_LINE:
@@ -238,13 +258,23 @@ paintbox_drag_begin(Imageui *imageui,
 		paintbox->rubber = PAINTBOX_RUBBER_CIRCLE;
 		paintbox->x0 = rint(image_x);
 		paintbox->y0 = rint(image_y);
-		paintbox->r = 1;
+		paintbox->a = 1;
 		break;
 
 	case PAINTBOX_TOOL_SMUDGE:
 		handled = TRUE;
 		paintbox->last_x = rint(image_x);
 		paintbox->last_y = rint(image_y);
+		break;
+
+	case PAINTBOX_TOOL_TEXT:
+		handled = TRUE;
+		paintbox_make_text(paintbox);
+		paintbox->rubber = PAINTBOX_RUBBER_BOX;
+		paintbox->x0 = rint(image_x);
+		paintbox->y0 = rint(image_y);
+		paintbox->a = paintbox->mask->Xsize;
+		paintbox->b = paintbox->mask->Ysize;
 		break;
 
 	default:
@@ -340,13 +370,20 @@ paintbox_drag_update(Imageui *imageui,
 		handled = TRUE;
 		int dx = paintbox->x0 - image_x;
 		int dy = paintbox->y0 - image_y;
-		paintbox->r = rint(sqrt(dx * dx + dy * dy));
+		paintbox->a = rint(sqrt(dx * dx + dy * dy));
 		gtk_widget_queue_draw(paintbox->imagedisplay);
 		break;
 
 	case PAINTBOX_TOOL_SMUDGE:
 		handled = TRUE;
 		paintbox_update_smudge_draw(paintbox, image_x, image_y);
+		break;
+
+	case PAINTBOX_TOOL_TEXT:
+		handled = TRUE;
+		paintbox->x0 = rint(image_x);
+		paintbox->y0 = rint(image_y);
+		gtk_widget_queue_draw(paintbox->imagedisplay);
 		break;
 
 	default:
@@ -396,7 +433,7 @@ paintbox_drag_end(Imageui *imageui,
 	case PAINTBOX_TOOL_LINE:
 		handled = TRUE;
 		paintbox->rubber = PAINTBOX_RUBBER_NONE;
-		paintbox_make_mask(paintbox);
+		paintbox_make_brush(paintbox);
 		paintbox_update_brush_draw(paintbox, image_x, image_y);
 		gtk_widget_queue_draw(paintbox->imagedisplay);
 		break;
@@ -419,7 +456,7 @@ paintbox_drag_end(Imageui *imageui,
 
 		if (tilesource)
 			tilesource_draw_circle(tilesource, rgb, 3, fill,
-				paintbox->x0, paintbox->y0, paintbox->r);
+				paintbox->x0, paintbox->y0, paintbox->a);
 
 		gtk_widget_queue_draw(paintbox->imagedisplay);
 		break;
@@ -443,6 +480,18 @@ paintbox_drag_end(Imageui *imageui,
 
 		if (tilesource)
 			tilesource_draw_flood(tilesource, rgb, 3, TRUE, image_x, image_y);
+
+		gtk_widget_queue_draw(paintbox->imagedisplay);
+		break;
+
+	case PAINTBOX_TOOL_TEXT:
+		handled = TRUE;
+		paintbox->rubber = PAINTBOX_RUBBER_NONE;
+
+		if (tilesource &&
+			paintbox->mask)
+			tilesource_draw_mask(tilesource, rgb, 3, paintbox->mask,
+				image_x, image_y);
 
 		gtk_widget_queue_draw(paintbox->imagedisplay);
 		break;
@@ -477,7 +526,7 @@ paintbox_motion(Imageui *imageui,
 		paintbox->rubber = PAINTBOX_RUBBER_CIRCLE;
 		paintbox->x0 = image_x;
 		paintbox->y0 = image_y;
-		paintbox->r = rint(TSLIDER(paintbox->width)->value) / 2;
+		paintbox->a = rint(TSLIDER(paintbox->width)->value) / 2;
 		gtk_widget_queue_draw(paintbox->imagedisplay);
 		break;
 
@@ -539,7 +588,8 @@ paintbox_snapshot(Imagedisplay *imagedisplay,
 		&x1_gtk, &y1_gtk);
 
 	double scale = imagedisplay_get_scale(imagedisplay);
-	int r = paintbox->r * scale;
+	int a = paintbox->a * scale;
+	int b = paintbox->b * scale;
 
 	switch (paintbox->rubber) {
 	case PAINTBOX_RUBBER_LINE:
@@ -557,7 +607,7 @@ paintbox_snapshot(Imagedisplay *imagedisplay,
 		{
 			GskPathBuilder *builder = gsk_path_builder_new();
 			graphene_point_t center = GRAPHENE_POINT_INIT(x0_gtk, y0_gtk);
-			gsk_path_builder_add_circle(builder, &center, r);
+			gsk_path_builder_add_circle(builder, &center, a);
 			g_autoptr(GskPath) path = gsk_path_builder_free_to_path(builder);
 
 			paintbox_stroke_rubber(paintbox, snapshot, path);
@@ -571,6 +621,20 @@ paintbox_snapshot(Imagedisplay *imagedisplay,
 			gsk_path_builder_line_to(builder, x1_gtk, y0_gtk);
 			gsk_path_builder_line_to(builder, x1_gtk, y1_gtk);
 			gsk_path_builder_line_to(builder, x0_gtk, y1_gtk);
+			gsk_path_builder_line_to(builder, x0_gtk, y0_gtk);
+			g_autoptr(GskPath) path = gsk_path_builder_free_to_path(builder);
+
+			paintbox_stroke_rubber(paintbox, snapshot, path);
+		}
+		break;
+
+	case PAINTBOX_RUBBER_BOX:
+		{
+			GskPathBuilder *builder = gsk_path_builder_new();
+			gsk_path_builder_move_to(builder, x0_gtk, y0_gtk);
+			gsk_path_builder_line_to(builder, x0_gtk + a, y0_gtk);
+			gsk_path_builder_line_to(builder, x0_gtk + a, y0_gtk + b);
+			gsk_path_builder_line_to(builder, x0_gtk, y0_gtk + b);
 			gsk_path_builder_line_to(builder, x0_gtk, y0_gtk);
 			g_autoptr(GskPath) path = gsk_path_builder_free_to_path(builder);
 

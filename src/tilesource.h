@@ -307,5 +307,7 @@ void tilesource_draw_smudge(Tilesource *tilesource, int width,
 	int x0, int y0, int x1, int y1);
 void tilesource_draw_flood(Tilesource *tilesource,
 	double *ink, int n, gboolean equal, int x, int y);
+void tilesource_draw_mask(Tilesource *tilesource,
+	double *ink, int n, VipsImage *mask, int x, int y);
 
 #endif /*__TILESOURCE_H*/
