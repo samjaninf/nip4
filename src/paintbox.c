@@ -30,9 +30,9 @@
 #include "nip4.h"
 
 /*
- */
 #define DEBUG_VERBOSE
 #define DEBUG
+ */
 
 typedef enum _PaintboxRubber {
 	PAINTBOX_RUBBER_NONE,
@@ -490,10 +490,6 @@ paintbox_snapshot(Imagedisplay *imagedisplay,
 
 	double scale = imagedisplay_get_scale(imagedisplay);
 	int r = paintbox->r * scale;
-
-	printf("paintbox_snapshot: line x0 = %g, y0 = %g, x1 = %g, y1 = %g\n",
-		x0_gtk, y0_gtk, x1_gtk, y1_gtk);
-	printf("\trubber = %d\n", paintbox->rubber);
 
 	VipsRect window = {
 		0,

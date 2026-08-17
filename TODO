@@ -1,3 +1,6 @@
+- tilesource_invalidate_area() seems to sometimes miss tiles ... do we really
+  touch all of them?
+
 - implement other tools
 
 	smudge

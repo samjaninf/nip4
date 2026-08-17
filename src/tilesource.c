@@ -2167,10 +2167,11 @@ tilesource_draw_line(Tilesource *tilesource,
 		VipsRect dirty = {
 			.left = x0 - mask->Xsize / 2,
 			.top = y0 - mask->Ysize / 2,
-			.width = x1 - x0 +  mask->Xsize,
+			.width = x1 - x0 + mask->Xsize,
 			.height = y1 - y0 +  mask->Ysize,
 		};
 		vips_rect_normalise(&dirty);
+		vips_rect_marginadjust(&dirty, 1);
 		tilesource_invalidate_area(tilesource, &dirty);
 	}
 }
@@ -2195,6 +2196,7 @@ tilesource_draw_rect(Tilesource *tilesource,
 			"fill", fill,
 			NULL);
 
+		vips_rect_marginadjust(&rect, 1);
 		tilesource_invalidate_area(tilesource, &rect);
 	}
 }
@@ -2216,7 +2218,7 @@ tilesource_draw_circle(Tilesource *tilesource,
 			.height = radius * 2,
 		};
 		vips_rect_normalise(&rect);
-
+		vips_rect_marginadjust(&rect, 1);
 		tilesource_invalidate_area(tilesource, &rect);
 	}
 }
