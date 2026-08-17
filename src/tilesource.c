@@ -2262,3 +2262,24 @@ tilesource_draw_smudge(Tilesource *tilesource, int width,
 		tilesource_invalidate_area(tilesource, &dirty);
 	}
 }
+
+void
+tilesource_draw_flood(Tilesource *tilesource,
+	double *ink, int n, gboolean equal, int x, int y)
+{
+	VipsImage *image;
+	if ((image = tilesource_get_base_image(tilesource))) {
+		VipsRect dirty;
+		vips_draw_flood(image, ink, n, x, y,
+			"equal", equal,
+			"left", &dirty.left,
+			"top", &dirty.top,
+			"width", &dirty.width,
+			"height", &dirty.height,
+			NULL);
+
+		vips_rect_normalise(&dirty);
+		vips_rect_marginadjust(&dirty, 1);
+		tilesource_invalidate_area(tilesource, &dirty);
+	}
+}

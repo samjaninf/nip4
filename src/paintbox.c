@@ -84,8 +84,8 @@ struct _Paintbox {
 	GtkWidget *rect;
 	GtkWidget *circle;
 	GtkWidget *smudge;
-	GtkWidget *flood_while;
 	GtkWidget *flood_until;
+	GtkWidget *flood_while;
 	GtkWidget *text;
 	GtkWidget *dropper;
 	GtkWidget *tools[PAINTBOX_TOOL_LAST];
@@ -429,6 +429,24 @@ paintbox_drag_end(Imageui *imageui,
 		paintbox_update_smudge_draw(paintbox, image_x, image_y);
 		break;
 
+	case PAINTBOX_TOOL_FLOOD_UNTIL:
+		handled = TRUE;
+
+		if (tilesource)
+			tilesource_draw_flood(tilesource, rgb, 3, FALSE, image_x, image_y);
+
+		gtk_widget_queue_draw(paintbox->imagedisplay);
+		break;
+
+	case PAINTBOX_TOOL_FLOOD_WHILE:
+		handled = TRUE;
+
+		if (tilesource)
+			tilesource_draw_flood(tilesource, rgb, 3, TRUE, image_x, image_y);
+
+		gtk_widget_queue_draw(paintbox->imagedisplay);
+		break;
+
 	default:
 		break;
 	}
@@ -442,7 +460,6 @@ paintbox_motion(Imageui *imageui,
 	gpointer user_data)
 {
 	Paintbox *paintbox = PAINTBOX(user_data);
-	Tilesource *tilesource = imageui_get_tilesource(imageui);
 
 	double image_x, image_y;
 	imageui_gtk_to_image(imageui, gtk_x, gtk_y, &image_x, &image_y);
@@ -523,13 +540,6 @@ paintbox_snapshot(Imagedisplay *imagedisplay,
 
 	double scale = imagedisplay_get_scale(imagedisplay);
 	int r = paintbox->r * scale;
-
-	VipsRect window = {
-		0,
-		0,
-		gtk_widget_get_width(GTK_WIDGET(imageui)),
-		gtk_widget_get_height(GTK_WIDGET(imageui))
-	};
 
 	switch (paintbox->rubber) {
 	case PAINTBOX_RUBBER_LINE:

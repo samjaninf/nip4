@@ -80,19 +80,19 @@
             </child>
 
             <child>
-              <object class="GtkToggleButton" id="flood_while">
+              <object class="GtkToggleButton" id="flood_until">
                 <property name="icon-name">document-edit-symbolic</property>
                 <property name="group">pointer</property>
-		<property name="tooltip-text">Flood while equal to start pixel</property>
+		<property name="tooltip-text">Flood until equal to ink</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
               </object>
             </child>
 
             <child>
-              <object class="GtkToggleButton" id="flood_until">
+              <object class="GtkToggleButton" id="flood_while">
                 <property name="icon-name">document-edit-symbolic</property>
                 <property name="group">pointer</property>
-		<property name="tooltip-text">Flood until equal to ink</property>
+		<property name="tooltip-text">Flood while equal to start pixel</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
               </object>
             </child>

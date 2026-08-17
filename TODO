@@ -1,25 +1,38 @@
 - implement other tools
 
-	flood while
-	flood until
 	text
 	dropper
 
+- should we soften the edges of the brush mask? what does nip2 do?
+
 - add icons
+
+	https://staging.svgrepo.com/svg/82820/brush
+	https://staging.svgrepo.com/svg/109447/pencil
 
 - add Esc to cancel draw
 
 - catch enter / leave window to remove rubber band
 
-- mask drawing could draw the difference and do the four cardinal directions?
+- implement undo / redo
 
-	it's very slow right now
+- wide line drawing could draw the difference points
+
+	need at least 6 directions
+
+		- single point (ie. whole mask plot for start of line)
+		- right
+		- right and up
+		- down
+		- down and right
+		- down and left
+
+	clipping? I suppose we need to draw off the edge of the
+	image by the mask size
 
 - setting tslider digits to 0 doesn't seem to make it int-valued
 
 	how odd
-
-- implement undo / redo
 
 
 
