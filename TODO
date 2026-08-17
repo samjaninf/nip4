@@ -1,6 +1,7 @@
+- fix text tool with empty string
+
 - implement other tools
 
-	text
 	dropper
 
 - should we soften the edges of the brush mask? what does nip2 do?
@@ -8,6 +9,10 @@
 	it has very light antialias on brush edges
 
 	not clear what it does for text
+
+	hard brush is maybe better for flood-while
+
+	have width zero for hard single pixel brush?
 
 - add icons
 
@@ -18,6 +23,12 @@
 	https://www.svgrepo.com/svg/532681/circle
 	https://www.svgrepo.com/svg/532229/text
 	https://www.svgrepo.com/svg/456606/dropper
+
+  brush icon isn't working
+
+  see maybe
+
+	https://www.reddit.com/r/gnome/comments/ug0dtc/gtk4_how_to_import_a_custom_icon_from_an_svg_file/
 
 - add Esc to cancel draw
 
