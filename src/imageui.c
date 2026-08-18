@@ -176,6 +176,8 @@ enum {
 	/* User input events.
 	 */
 	SIG_MOTION,
+	SIG_ENTER,
+	SIG_LEAVE,
 	SIG_DRAG_BEGIN,
 	SIG_DRAG_UPDATE,
 	SIG_DRAG_END,
@@ -307,6 +309,26 @@ imageui_motion(GtkEventControllerMotion *motion,
 	gboolean handled;
 	g_signal_emit(imageui, imageui_signals[SIG_MOTION], 0,
 		x, y, motion, &handled);
+}
+
+static void
+imageui_enter(GtkEventControllerMotion *motion, gpointer user_data)
+{
+#ifdef DEBUG_VERBOSE
+	printf("imageui_enter:\n");
+#endif /*DEBUG_VERBOSE*/
+
+	g_signal_emit(imageui, imageui_signals[SIG_ENTER], 0);
+}
+
+static void
+imageui_leave(GtkEventControllerMotion *motion, gpointer user_data)
+{
+#ifdef DEBUG_VERBOSE
+	printf("imageui_leave:\n");
+#endif /*DEBUG_VERBOSE*/
+
+	g_signal_emit(imageui, imageui_signals[SIG_LEAVE], 0);
 }
 
 static void
@@ -974,8 +996,8 @@ imageui_key_pressed_real(Imageui *imageui,
 	gboolean ret;
 
 #ifdef DEBUG_VERBOSE
-	printf("imageui_key_pressed_real: keyval = %d, state = %d\n",
-		keyval, state);
+	printf("imageui_key_pressed_real: keyval = %d, keycode = %d, state = %d\n",
+		keyval, keycode, state);
 #endif /*DEBUG_VERBOSE*/
 
 	handled = FALSE;
@@ -1070,22 +1092,37 @@ imageui_key_pressed_real(Imageui *imageui,
 	}
 
 	if (!handled) {
-		int i;
+		/* keycode is the physical key, we need to search the set of keyvals
+		 * for this physical key to see if one of them is in the set of zoom
+		 * keys.
+		 */
+		g_autofree guint *keyvals = NULL;
+		int n_entries;
+		if (gdk_display_map_keycode(gdk_display_get_default(),
+			keycode, NULL, &keyvals, &n_entries)) {
+			for (int i = 0; i < n_entries; i++) {
+				int j;
 
-		for (i = 0; i < VIPS_NUMBER(magnify_keys); i++)
-			if (magnify_keys[i].keyval == keyval) {
-				double zoom;
+				for (j = 0; j < VIPS_NUMBER(magnify_keys); j++)
+					if (magnify_keys[j].keyval == keyvals[i]) {
+						double zoom;
 
-				zoom = magnify_keys[i].zoom;
-				if (state & GDK_CONTROL_MASK)
-					zoom = 1.0 / zoom;
+						zoom = magnify_keys[j].zoom;
+						// ctrl-N is often workspace switch, so use shift
+						if (state & GDK_SHIFT_MASK)
+							zoom = 1.0 / zoom;
 
-				imageui_zoom_to_eased(imageui,
-					zoom * imageui_get_pixel_size(imageui));
+						imageui_zoom_to_eased(imageui,
+							zoom * imageui_get_pixel_size(imageui));
 
-				handled = TRUE;
-				break;
+						handled = TRUE;
+						break;
+					}
+
+				if (j < VIPS_NUMBER(magnify_keys))
+					break;
 			}
+		}
 	}
 
 	return handled;
@@ -1327,6 +1364,8 @@ imageui_class_init(ImageuiClass *class)
 	BIND_CALLBACK(imageui_key_pressed);
 	BIND_CALLBACK(imageui_key_released);
 	BIND_CALLBACK(imageui_motion);
+	BIND_CALLBACK(imageui_enter);
+	BIND_CALLBACK(imageui_leave);
 	BIND_CALLBACK(imageui_scroll);
 
 	gobject_class->dispose = imageui_dispose;
@@ -1407,6 +1446,24 @@ imageui_class_init(ImageuiClass *class)
 		nip4_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
 		G_TYPE_BOOLEAN, 3,
 		G_TYPE_DOUBLE, G_TYPE_DOUBLE, G_TYPE_OBJECT);
+
+	imageui_signals[SIG_MOTION] = g_signal_new("enter",
+		G_TYPE_FROM_CLASS(class),
+		G_SIGNAL_RUN_LAST,
+		0,
+		NULL,
+		NULL,
+		g_cclosure_marshal_VOID__VOID,
+		G_TYPE_NONE, 0);
+
+	imageui_signals[SIG_MOTION] = g_signal_new("leave",
+		G_TYPE_FROM_CLASS(class),
+		G_SIGNAL_RUN_LAST,
+		0,
+		NULL,
+		NULL,
+		g_cclosure_marshal_VOID__VOID,
+		G_TYPE_NONE, 0);
 
 	imageui_signals[SIG_DRAG_BEGIN] = g_signal_new("drag-begin",
 		G_TYPE_FROM_CLASS(class),

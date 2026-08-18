@@ -1,8 +1,12 @@
-- zoom out keys are not working?
 
-- add Esc to cancel draw
+- imageui emits "enter" and "leave", listen for them in the paintbox
 
-	attach to imageui key pressed / released
+	need some way to disable and reenable rubber
+
+	add a better way to cancel a tool
+
+		we currently flip to POINTER, should just ignore drag_end
+		after esc
 
 - add icons
 
@@ -31,8 +35,6 @@
 	hard brush is maybe better for flood-while
 
 	have width zero for hard single pixel brush?
-
-- catch enter / leave window to remove rubber band
 
 - implement undo / redo
 
