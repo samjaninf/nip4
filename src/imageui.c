@@ -145,6 +145,13 @@ typedef struct _ImageuiClass {
 		double offset_x, double offset_y, GtkGestureDrag *drag,
 		gpointer user_data);
 
+	gboolean (*key_pressed)(Imageui *imageui,
+		guint keyval, guint keycode, GdkModifierType state,
+		GtkEventControllerKey *key, gpointer user_data);
+	gboolean (*key_released)(Imageui *imageui,
+		guint keyval, guint keycode, GdkModifierType state,
+		GtkEventControllerKey *key, gpointer user_data);
+
 } ImageuiClass;
 
 G_DEFINE_TYPE(Imageui, imageui, GTK_TYPE_WIDGET);
@@ -172,8 +179,8 @@ enum {
 	SIG_DRAG_BEGIN,
 	SIG_DRAG_UPDATE,
 	SIG_DRAG_END,
-	SIG_KEY_PRESS,
-	SIG_KEY_RELEASE,
+	SIG_KEY_PRESSED,
+	SIG_KEY_RELEASED,
 
 	SIG_LAST
 };
@@ -348,6 +355,40 @@ imageui_drag_end(GtkGestureDrag *drag,
 	gboolean handled;
 	g_signal_emit(imageui, imageui_signals[SIG_DRAG_END], 0,
 		offset_x, offset_y, drag, &handled);
+}
+
+static gboolean
+imageui_key_pressed(GtkEventControllerKey *key,
+	guint keyval, guint keycode, GdkModifierType state, gpointer user_data)
+{
+	Imageui *imageui = IMAGEUI(user_data);
+
+#ifdef DEBUG_VERBOSE
+	printf("imageui_key_pressed: keyval = %d\n", keyval);
+#endif /*DEBUG_VERBOSE*/
+
+	gboolean handled;
+	g_signal_emit(imageui, imageui_signals[SIG_KEY_PRESSED], 0,
+		keyval, keycode, state, key, &handled);
+
+	return handled;
+}
+
+static gboolean
+imageui_key_released(GtkEventControllerKey *key,
+	guint keyval, guint keycode, GdkModifierType state, gpointer user_data)
+{
+	Imageui *imageui = IMAGEUI(user_data);
+
+#ifdef DEBUG_VERBOSE
+	printf("imageui_key_released: keyval = %d\n", keyval);
+#endif /*DEBUG_VERBOSE*/
+
+	gboolean handled;
+	g_signal_emit(imageui, imageui_signals[SIG_KEY_RELEASED], 0,
+		keyval, keycode, state, key, &handled);
+
+	return handled;
 }
 
 #ifdef DEBUG_VERBOSE
@@ -920,10 +961,10 @@ static struct {
 };
 
 static gboolean
-imageui_key_pressed(GtkEventControllerKey *self,
-	guint keyval, guint keycode, GdkModifierType state, gpointer user_data)
+imageui_key_pressed_real(Imageui *imageui,
+	guint keyval, guint keycode, GdkModifierType state,
+	GtkEventControllerKey *key, gpointer user_data)
 {
-	Imageui *imageui = IMAGEUI(user_data);
 	GtkScrolledWindow *scrolled_window =
 		GTK_SCROLLED_WINDOW(imageui->scrolled_window);
 
@@ -933,7 +974,7 @@ imageui_key_pressed(GtkEventControllerKey *self,
 	gboolean ret;
 
 #ifdef DEBUG_VERBOSE
-	printf("imageui_key_pressed: keyval = %d, state = %d\n",
+	printf("imageui_key_pressed_real: keyval = %d, state = %d\n",
 		keyval, state);
 #endif /*DEBUG_VERBOSE*/
 
@@ -1051,12 +1092,16 @@ imageui_key_pressed(GtkEventControllerKey *self,
 }
 
 static gboolean
-imageui_key_released(GtkEventControllerKey *self,
-	guint keyval, guint keycode, GdkModifierType state, gpointer user_data)
+imageui_key_released_real(Imageui *imageui,
+	guint keyval, guint keycode, GdkModifierType state,
+	GtkEventControllerKey *key, gpointer user_data)
 {
-	Imageui *imageui = IMAGEUI(user_data);
-
 	gboolean handled;
+
+#ifdef DEBUG_VERBOSE
+	printf("imageui_key_released_real: keyval = %d, state = %d\n",
+		keyval, state);
+#endif /*DEBUG_VERBOSE*/
 
 	handled = FALSE;
 
@@ -1292,6 +1337,8 @@ imageui_class_init(ImageuiClass *class)
 	class->drag_begin = imageui_drag_begin_real;
 	class->drag_update = imageui_drag_update_real;
 	class->drag_end = imageui_drag_end_real;
+	class->key_pressed = imageui_key_pressed_real;
+	class->key_released = imageui_key_released_real;
 
 	g_object_class_install_property(gobject_class, PROP_TILESOURCE,
 		g_param_spec_object("tilesource",
@@ -1390,6 +1437,26 @@ imageui_class_init(ImageuiClass *class)
 		nip4_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
 		G_TYPE_BOOLEAN, 3,
 		G_TYPE_DOUBLE, G_TYPE_DOUBLE, G_TYPE_OBJECT);
+
+	imageui_signals[SIG_KEY_PRESSED] = g_signal_new("key-pressed",
+		G_TYPE_FROM_CLASS(class),
+		G_SIGNAL_RUN_LAST,
+		G_STRUCT_OFFSET(ImageuiClass, key_pressed),
+		imageui_event_accu,
+		NULL,
+		nip4_BOOLEAN__INT_INT_INT_OBJECT,
+		G_TYPE_BOOLEAN, 4,
+		G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_OBJECT);
+
+	imageui_signals[SIG_KEY_RELEASED] = g_signal_new("key-released",
+		G_TYPE_FROM_CLASS(class),
+		G_SIGNAL_RUN_LAST,
+		G_STRUCT_OFFSET(ImageuiClass, key_released),
+		imageui_event_accu,
+		NULL,
+		nip4_BOOLEAN__INT_INT_INT_OBJECT,
+		G_TYPE_BOOLEAN, 4,
+		G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_OBJECT);
 
 	for (int i = 0; i < REGIONVIEW_RESIZE_LAST; i++)
 		imageui_cursors[i] =

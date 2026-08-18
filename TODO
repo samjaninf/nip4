@@ -1,4 +1,9 @@
 
+
+- add Esc to cancel draw
+
+	attach to imageui key pressed / released
+
 - add icons
 
 	https://staging.svgrepo.com/svg/82820/brush
@@ -26,8 +31,6 @@
 	hard brush is maybe better for flood-while
 
 	have width zero for hard single pixel brush?
-
-- add Esc to cancel draw
 
 - catch enter / leave window to remove rubber band
 

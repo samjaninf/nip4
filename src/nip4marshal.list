@@ -28,3 +28,6 @@ VOID: OBJECT, INT
 
 # motion events
 BOOLEAN: DOUBLE, DOUBLE, OBJECT
+
+# key_pressed / _released
+BOOLEAN: INT, INT, INT, OBJECT
