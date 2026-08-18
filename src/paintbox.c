@@ -307,7 +307,7 @@ paintbox_drag_begin(Imageui *imageui,
 		handled = TRUE;
 		if (paintbox_make_text(paintbox) &&
 			paintbox->mask)
-			paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_RECT,
+			paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_BOX,
 				rint(image_x), rint(image_y), 0, 0,
 				paintbox->mask->Xsize, paintbox->mask->Ysize);
 		break;
@@ -583,9 +583,11 @@ paintbox_key_pressed(Imageui *imageui,
 
 	switch (paintbox->tool) {
 	case PAINTBOX_TOOL_LINE:
-	case PAINTBOX_TOOL_TEXT:
+	case PAINTBOX_TOOL_RECT:
+	case PAINTBOX_TOOL_CIRCLE:
 	case PAINTBOX_TOOL_FLOOD_UNTIL:
 	case PAINTBOX_TOOL_FLOOD_WHILE:
+	case PAINTBOX_TOOL_TEXT:
 		handled = TRUE;
 		// FIXME ... we need a better way to cancel tool actions!
 		paintbox_set_tool(paintbox, PAINTBOX_TOOL_POINTER);
