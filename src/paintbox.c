@@ -58,6 +58,7 @@ struct _Paintbox {
 	guint drag_end_sid;
 	guint motion_sid;
 	guint snapshot_sid;
+	guint key_pressed_sid;
 
 	/* Currently selected tool.
 	 */
@@ -128,11 +129,14 @@ paintbox_disconnect(Paintbox *paintbox)
 			paintbox->drag_end_sid);
 		g_signal_handler_disconnect(paintbox->imageui,
 			paintbox->motion_sid);
+		g_signal_handler_disconnect(paintbox->imageui,
+			paintbox->key_pressed_sid);
 
 		paintbox->drag_begin_sid = 0;
 		paintbox->drag_update_sid = 0;
 		paintbox->drag_end_sid = 0;
 		paintbox->motion_sid = 0;
+		paintbox->key_pressed_sid = 0;
 
 		paintbox->imageui = NULL;
 	}
@@ -212,13 +216,44 @@ paintbox_make_text(Paintbox *paintbox)
 	return TRUE;
 }
 
+static void
+paintbox_set_rubber(Paintbox *paintbox, PaintboxRubber rubber,
+	int x0, int y0, int x1, int y1, int a, int b)
+{
+	paintbox->rubber = rubber;
+	paintbox->x0 = x0;
+	paintbox->y0 = y0;
+	paintbox->x1 = x1;
+	paintbox->y1 = y1;
+	paintbox->a = a;
+	paintbox->b = b;
+
+	gtk_widget_queue_draw(paintbox->imagedisplay);
+}
+
+static void
+paintbox_set_tool(Paintbox *paintbox, PaintboxTool tool)
+{
+	if (paintbox->tool != tool) {
+		if (tool != PAINTBOX_TOOL_POINTER) {
+			Imageui *imageui = imagewindow_get_imageui(paintbox->win);
+
+			if (!imageui_make_paintable(imageui)) {
+				imagewindow_error(paintbox->win);
+				return;
+			}
+		}
+
+		paintbox->tool = tool;
+
+		paintbox_refresh(paintbox);
+	}
+}
+
 static gboolean
 paintbox_drag_begin(Imageui *imageui,
 	gdouble start_x, gdouble start_y, GtkGestureDrag *drag, gpointer user_data)
 {
-	GtkEventController *controller = GTK_EVENT_CONTROLLER(drag);
-	GdkModifierType modifiers =
-		gtk_event_controller_get_current_event_state(controller);
 	Paintbox *paintbox = PAINTBOX(user_data);
 
 	paintbox->start_x = start_x;
@@ -244,24 +279,22 @@ paintbox_drag_begin(Imageui *imageui,
 
 	case PAINTBOX_TOOL_LINE:
 		handled = TRUE;
-		paintbox->rubber = PAINTBOX_RUBBER_LINE;
-		paintbox->last_x = paintbox->x0 = paintbox->x1 = rint(image_x);
-		paintbox->last_y = paintbox->y0 = paintbox->y1 = rint(image_y);
+		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_LINE,
+			rint(image_x), rint(image_y), rint(image_x), rint(image_y), 0, 0);
+		paintbox->last_x = rint(image_x);
+		paintbox->last_y = rint(image_y);
 		break;
 
 	case PAINTBOX_TOOL_RECT:
 		handled = TRUE;
-		paintbox->rubber = PAINTBOX_RUBBER_RECT;
-		paintbox->x0 = paintbox->x1 = rint(image_x);
-		paintbox->y0 = paintbox->y1 = rint(image_y);
+		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_RECT,
+			rint(image_x), rint(image_y), rint(image_x), rint(image_y), 0, 0);
 		break;
 
 	case PAINTBOX_TOOL_CIRCLE:
 		handled = TRUE;
-		paintbox->rubber = PAINTBOX_RUBBER_CIRCLE;
-		paintbox->x0 = rint(image_x);
-		paintbox->y0 = rint(image_y);
-		paintbox->a = 1;
+		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_CIRCLE,
+			rint(image_x), rint(image_x), 0, 0, 1, 0);
 		break;
 
 	case PAINTBOX_TOOL_SMUDGE:
@@ -273,13 +306,10 @@ paintbox_drag_begin(Imageui *imageui,
 	case PAINTBOX_TOOL_TEXT:
 		handled = TRUE;
 		if (paintbox_make_text(paintbox) &&
-			paintbox->mask) {
-			paintbox->rubber = PAINTBOX_RUBBER_BOX;
-			paintbox->x0 = rint(image_x);
-			paintbox->y0 = rint(image_y);
-			paintbox->a = paintbox->mask->Xsize;
-			paintbox->b = paintbox->mask->Ysize;
-		}
+			paintbox->mask)
+			paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_RECT,
+				rint(image_x), rint(image_y), 0, 0,
+				paintbox->mask->Xsize, paintbox->mask->Ysize);
 		break;
 
 	default:
@@ -334,9 +364,6 @@ paintbox_drag_update(Imageui *imageui,
 	gdouble offset_x, gdouble offset_y, GtkGestureDrag *drag,
 	gpointer user_data)
 {
-	GtkEventController *controller = GTK_EVENT_CONTROLLER(drag);
-	GdkModifierType modifiers =
-		gtk_event_controller_get_current_event_state(controller);
 	Paintbox *paintbox = PAINTBOX(user_data);
 
 	double gtk_x = paintbox->start_x + offset_x;
@@ -437,7 +464,7 @@ paintbox_drag_end(Imageui *imageui,
 
 	case PAINTBOX_TOOL_LINE:
 		handled = TRUE;
-		paintbox->rubber = PAINTBOX_RUBBER_NONE;
+		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
 		paintbox_make_brush(paintbox);
 		paintbox_update_brush_draw(paintbox, image_x, image_y);
 		gtk_widget_queue_draw(paintbox->imagedisplay);
@@ -445,7 +472,7 @@ paintbox_drag_end(Imageui *imageui,
 
 	case PAINTBOX_TOOL_RECT:
 		handled = TRUE;
-		paintbox->rubber = PAINTBOX_RUBBER_NONE;
+		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
 
 		if (tilesource)
 			tilesource_draw_rect(tilesource, rgb, 3, fill,
@@ -457,7 +484,7 @@ paintbox_drag_end(Imageui *imageui,
 
 	case PAINTBOX_TOOL_CIRCLE:
 		handled = TRUE;
-		paintbox->rubber = PAINTBOX_RUBBER_NONE;
+		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
 
 		if (tilesource)
 			tilesource_draw_circle(tilesource, rgb, 3, fill,
@@ -491,7 +518,7 @@ paintbox_drag_end(Imageui *imageui,
 
 	case PAINTBOX_TOOL_TEXT:
 		handled = TRUE;
-		paintbox->rubber = PAINTBOX_RUBBER_NONE;
+		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
 
 		if (tilesource &&
 			paintbox->mask)
@@ -528,11 +555,9 @@ paintbox_motion(Imageui *imageui,
 	switch (paintbox->tool) {
 	case PAINTBOX_TOOL_SMUDGE:
 	case PAINTBOX_TOOL_BRUSH:
-		paintbox->rubber = PAINTBOX_RUBBER_CIRCLE;
-		paintbox->x0 = image_x;
-		paintbox->y0 = image_y;
-		paintbox->a = rint(TSLIDER(paintbox->width)->value) / 2;
-		gtk_widget_queue_draw(paintbox->imagedisplay);
+		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_CIRCLE,
+			rint(image_x), rint(image_x), 0, 0,
+			rint(TSLIDER(paintbox->width)->value) / 2, 0);
 		break;
 
 	default:
@@ -542,23 +567,36 @@ paintbox_motion(Imageui *imageui,
 	return handled;
 }
 
-static void
-paintbox_set_tool(Paintbox *paintbox, PaintboxTool tool)
+static gboolean
+paintbox_key_pressed(Imageui *imageui,
+	guint keyval, guint keycode, GdkModifierType state,
+	GtkEventControllerKey *key, gpointer user_data)
 {
-	if (paintbox->tool != tool) {
-		if (tool != PAINTBOX_TOOL_POINTER) {
-			Imageui *imageui = imagewindow_get_imageui(paintbox->win);
+	Paintbox *paintbox = PAINTBOX(user_data);
 
-			if (!imageui_make_paintable(imageui)) {
-				imagewindow_error(paintbox->win);
-				return;
-			}
-		}
+#ifdef DEBUG_VERBOSE
+	printf("paintbox_key_pressed_real: keyval = %d, state = %d\n",
+		keyval, state);
+#endif /*DEBUG_VERBOSE*/
 
-		paintbox->tool = tool;
+	gboolean handled = FALSE;
 
-		paintbox_refresh(paintbox);
+	switch (paintbox->tool) {
+	case PAINTBOX_TOOL_LINE:
+	case PAINTBOX_TOOL_TEXT:
+	case PAINTBOX_TOOL_FLOOD_UNTIL:
+	case PAINTBOX_TOOL_FLOOD_WHILE:
+		handled = TRUE;
+		// FIXME ... we need a better way to cancel tool actions!
+		paintbox_set_tool(paintbox, PAINTBOX_TOOL_POINTER);
+		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
+		break;
+
+	default:
+		break;
 	}
+
+	return handled;
 }
 
 static void
@@ -671,6 +709,8 @@ paintbox_imagewindow_new_image(Imagewindow *win, Paintbox *paintbox)
 		"drag-end", G_CALLBACK(paintbox_drag_end), paintbox);
 	paintbox->motion_sid = g_signal_connect(paintbox->imageui,
 		"motion", G_CALLBACK(paintbox_motion), paintbox);
+	paintbox->key_pressed_sid = g_signal_connect(paintbox->imageui,
+		"key_pressed", G_CALLBACK(paintbox_key_pressed), paintbox);
 
 	paintbox->imagedisplay = imageui_get_imagedisplay(paintbox->imageui);
 	paintbox->snapshot_sid = g_signal_connect(paintbox->imagedisplay,
