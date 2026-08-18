@@ -219,6 +219,31 @@ draw_mask_draw(VipsImage *image, VipsImage *mask, VipsPel *ink,
 	return 0;
 }
 
+static int
+draw_mask_set(VipsImage *image, VipsImage *mask, VipsPel *ink,
+	VipsRect *image_clip, VipsRect *mask_clip)
+{
+	int width = image_clip->width;
+	int height = image_clip->height;
+	int ps = VIPS_IMAGE_SIZEOF_PEL(image);
+
+	for (int y = 0; y < height; y++) {
+		VipsPel *to =
+			VIPS_IMAGE_ADDR(image, image_clip->left, y + image_clip->top);
+		VipsPel *m =
+			VIPS_IMAGE_ADDR(mask, mask_clip->left, y + mask_clip->top);
+
+		for (int x = 0; x < width; x++) {
+			if (m[x])
+				VIPS_MEMCPY(to, ink, ps);
+
+			to += ps;
+		}
+	}
+
+	return 0;
+}
+
 /* Direct path for draw-mask-along-line or draw-mask-along-circle. We want to
  * avoid function dispatch overhead.
  */
@@ -264,7 +289,8 @@ draw_mask(VipsImage *image, VipsPel *ink, VipsImage *mask, int x, int y)
 			break;
 
 		case VIPS_CODING_NONE:
-			if (draw_mask_draw(image, mask, ink, &image_clip, &mask_clip))
+			//if (draw_mask_draw(image, mask, ink, &image_clip, &mask_clip))
+			if (draw_mask_set(image, mask, ink, &image_clip, &mask_clip))
 				return -1;
 			break;
 

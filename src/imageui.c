@@ -314,6 +314,8 @@ imageui_motion(GtkEventControllerMotion *motion,
 static void
 imageui_enter(GtkEventControllerMotion *motion, gpointer user_data)
 {
+	Imageui *imageui = IMAGEUI(user_data);
+
 #ifdef DEBUG_VERBOSE
 	printf("imageui_enter:\n");
 #endif /*DEBUG_VERBOSE*/
@@ -324,6 +326,8 @@ imageui_enter(GtkEventControllerMotion *motion, gpointer user_data)
 static void
 imageui_leave(GtkEventControllerMotion *motion, gpointer user_data)
 {
+	Imageui *imageui = IMAGEUI(user_data);
+
 #ifdef DEBUG_VERBOSE
 	printf("imageui_leave:\n");
 #endif /*DEBUG_VERBOSE*/

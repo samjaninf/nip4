@@ -1,3 +1,6 @@
+- oops broken motion handling
+
+	eg. scroll wheel zoom on pointer
 
 - imageui emits "enter" and "leave", listen for them in the paintbox
 
@@ -37,20 +40,6 @@
 	have width zero for hard single pixel brush?
 
 - implement undo / redo
-
-- wide line drawing could draw the difference points
-
-	need at least 6 directions
-
-		- single point (ie. whole mask plot for start of line)
-		- right
-		- right and up
-		- down
-		- down and right
-		- down and left
-
-	clipping? I suppose we need to draw off the edge of the
-	image by the mask size
 
 - setting tslider digits to 0 doesn't seem to make it int-valued
 
