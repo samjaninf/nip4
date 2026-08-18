@@ -199,12 +199,15 @@ paintbox_make_text(Paintbox *paintbox)
 		GTK_FONT_DIALOG_BUTTON(paintbox->font));
 	g_autofree char *font = pango_font_description_to_string(desc);
 
-	VipsImage *mask;
-	if (vips_text(&mask, text, "font", font, NULL))
-		return FALSE;
+	if (text &&
+		strlen(text) > 0) {
+		VipsImage *mask;
+		if (vips_text(&mask, text, "font", font, NULL))
+			return FALSE;
 
-	VIPS_UNREF(paintbox->mask);
-	paintbox->mask = mask;
+		VIPS_UNREF(paintbox->mask);
+		paintbox->mask = mask;
+	}
 
 	return TRUE;
 }
@@ -269,12 +272,14 @@ paintbox_drag_begin(Imageui *imageui,
 
 	case PAINTBOX_TOOL_TEXT:
 		handled = TRUE;
-		paintbox_make_text(paintbox);
-		paintbox->rubber = PAINTBOX_RUBBER_BOX;
-		paintbox->x0 = rint(image_x);
-		paintbox->y0 = rint(image_y);
-		paintbox->a = paintbox->mask->Xsize;
-		paintbox->b = paintbox->mask->Ysize;
+		if (paintbox_make_text(paintbox) &&
+			paintbox->mask) {
+			paintbox->rubber = PAINTBOX_RUBBER_BOX;
+			paintbox->x0 = rint(image_x);
+			paintbox->y0 = rint(image_y);
+			paintbox->a = paintbox->mask->Xsize;
+			paintbox->b = paintbox->mask->Ysize;
+		}
 		break;
 
 	default:
