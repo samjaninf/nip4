@@ -1,5 +1,7 @@
 - write image back to nip4 after each paint action
 
+- when we hide the paintbox, it should flip back to pointer
+
 - icons are not rendering very well
 
 	do they use features gtksvg does not support?

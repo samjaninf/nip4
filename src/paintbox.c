@@ -30,9 +30,9 @@
 #include "nip4.h"
 
 /*
- */
 #define DEBUG_VERBOSE
 #define DEBUG
+ */
 
 typedef enum _PaintboxRubber {
 	PAINTBOX_RUBBER_NONE,
@@ -295,8 +295,8 @@ paintbox_drag_begin(Imageui *imageui,
 
 	gboolean handled = FALSE;
 
-	switch (paintbox->state) {
-	case PAINTBOX_STATE_WAIT:
+	if (paintbox->tool != PAINTBOX_TOOL_POINTER &&
+		paintbox->state == PAINTBOX_STATE_WAIT) {
 		switch (paintbox->tool) {
 		case PAINTBOX_TOOL_BRUSH:
 			paintbox->last_x = rint(image_x);
@@ -347,11 +347,6 @@ paintbox_drag_begin(Imageui *imageui,
 
 		handled = TRUE;
 		paintbox->state = PAINTBOX_STATE_DRAG;
-
-		break;
-
-	default:
-		break;
 	}
 
 	return handled;
@@ -416,8 +411,7 @@ paintbox_drag_update(Imageui *imageui,
 
 	gboolean handled = FALSE;
 
-	switch (paintbox->state) {
-	case PAINTBOX_STATE_DRAG:
+	if (paintbox->state == PAINTBOX_STATE_DRAG) {
 		switch (paintbox->tool) {
 		case PAINTBOX_TOOL_BRUSH:
 			paintbox_update_brush_draw(paintbox, image_x, image_y);
@@ -432,11 +426,6 @@ paintbox_drag_update(Imageui *imageui,
 		}
 
 		handled = TRUE;
-
-		break;
-
-	default:
-		break;
 	}
 
 	return handled;
@@ -473,8 +462,7 @@ paintbox_drag_end(Imageui *imageui,
 
 	gboolean handled = FALSE;
 
-	switch (paintbox->state) {
-	case PAINTBOX_STATE_DRAG:
+	if (paintbox->state == PAINTBOX_STATE_DRAG) {
 		switch (paintbox->tool) {
 		case PAINTBOX_TOOL_BRUSH:
 			paintbox_update_brush_draw(paintbox, image_x, image_y);
@@ -529,11 +517,6 @@ paintbox_drag_end(Imageui *imageui,
 		handled = TRUE;
 		paintbox_rubber_clear(paintbox);
 		paintbox->state = PAINTBOX_STATE_WAIT;
-
-		break;
-
-	default:
-		break;
 	}
 
 	return handled;
@@ -556,8 +539,7 @@ paintbox_motion(Imageui *imageui,
 
 	gboolean handled = FALSE;
 
-	switch (paintbox->state) {
-	case PAINTBOX_STATE_WAIT:
+	if (paintbox->state == PAINTBOX_STATE_WAIT)
 		switch (paintbox->tool) {
 		case PAINTBOX_TOOL_SMUDGE:
 		case PAINTBOX_TOOL_BRUSH:
@@ -569,9 +551,7 @@ paintbox_motion(Imageui *imageui,
 		default:
 			break;
 		}
-		break;
-
-	case PAINTBOX_STATE_DRAG:
+	else
 		switch (paintbox->tool) {
 		case PAINTBOX_TOOL_SMUDGE:
 		case PAINTBOX_TOOL_BRUSH:
@@ -608,10 +588,6 @@ paintbox_motion(Imageui *imageui,
 		default:
 			break;
 		}
-
-	default:
-		break;
-	}
 
 	return handled;
 }
