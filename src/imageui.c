@@ -1451,7 +1451,7 @@ imageui_class_init(ImageuiClass *class)
 		G_TYPE_BOOLEAN, 3,
 		G_TYPE_DOUBLE, G_TYPE_DOUBLE, G_TYPE_OBJECT);
 
-	imageui_signals[SIG_MOTION] = g_signal_new("enter",
+	imageui_signals[SIG_ENTER] = g_signal_new("enter",
 		G_TYPE_FROM_CLASS(class),
 		G_SIGNAL_RUN_LAST,
 		0,
@@ -1460,7 +1460,7 @@ imageui_class_init(ImageuiClass *class)
 		g_cclosure_marshal_VOID__VOID,
 		G_TYPE_NONE, 0);
 
-	imageui_signals[SIG_MOTION] = g_signal_new("leave",
+	imageui_signals[SIG_LEAVE] = g_signal_new("leave",
 		G_TYPE_FROM_CLASS(class),
 		G_SIGNAL_RUN_LAST,
 		0,

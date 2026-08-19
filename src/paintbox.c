@@ -30,9 +30,9 @@
 #include "nip4.h"
 
 /*
+ */
 #define DEBUG_VERBOSE
 #define DEBUG
- */
 
 typedef enum _PaintboxRubber {
 	PAINTBOX_RUBBER_NONE,
@@ -57,6 +57,8 @@ struct _Paintbox {
 	guint drag_update_sid;
 	guint drag_end_sid;
 	guint motion_sid;
+	guint enter_sid;
+	guint leave_sid;
 	guint snapshot_sid;
 	guint key_pressed_sid;
 
@@ -567,6 +569,22 @@ paintbox_motion(Imageui *imageui,
 	return handled;
 }
 
+static void
+paintbox_enter(Imageui *imageui, gpointer user_data)
+{
+	Paintbox *paintbox = PAINTBOX(user_data);
+
+	printf("paintbox_enter:\n");
+}
+
+static void
+paintbox_leave(Imageui *imageui, gpointer user_data)
+{
+	Paintbox *paintbox = PAINTBOX(user_data);
+
+	printf("paintbox_leave:\n");
+}
+
 static gboolean
 paintbox_key_pressed(Imageui *imageui,
 	guint keyval, guint keycode, GdkModifierType state,
@@ -711,6 +729,10 @@ paintbox_imagewindow_new_image(Imagewindow *win, Paintbox *paintbox)
 		"drag-end", G_CALLBACK(paintbox_drag_end), paintbox);
 	paintbox->motion_sid = g_signal_connect(paintbox->imageui,
 		"motion", G_CALLBACK(paintbox_motion), paintbox);
+	paintbox->enter_sid = g_signal_connect(paintbox->imageui,
+		"enter", G_CALLBACK(paintbox_enter), paintbox);
+	paintbox->leave_sid = g_signal_connect(paintbox->imageui,
+		"leave", G_CALLBACK(paintbox_leave), paintbox);
 	paintbox->key_pressed_sid = g_signal_connect(paintbox->imageui,
 		"key_pressed", G_CALLBACK(paintbox_key_pressed), paintbox);
 

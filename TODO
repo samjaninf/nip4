@@ -1,8 +1,5 @@
-- oops broken motion handling
 
-	eg. scroll wheel zoom on pointer
-
-- imageui emits "enter" and "leave", listen for them in the paintbox
+- implement paintbox enter and leave
 
 	need some way to disable and reenable rubber
 
