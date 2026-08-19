@@ -132,12 +132,18 @@ paintbox_disconnect(Paintbox *paintbox)
 		g_signal_handler_disconnect(paintbox->imageui,
 			paintbox->motion_sid);
 		g_signal_handler_disconnect(paintbox->imageui,
+			paintbox->enter_sid);
+		g_signal_handler_disconnect(paintbox->imageui,
+			paintbox->leave_sid);
+		g_signal_handler_disconnect(paintbox->imageui,
 			paintbox->key_pressed_sid);
 
 		paintbox->drag_begin_sid = 0;
 		paintbox->drag_update_sid = 0;
 		paintbox->drag_end_sid = 0;
 		paintbox->motion_sid = 0;
+		paintbox->enter_sid = 0;
+		paintbox->leave_sid = 0;
 		paintbox->key_pressed_sid = 0;
 
 		paintbox->imageui = NULL;
@@ -296,7 +302,7 @@ paintbox_drag_begin(Imageui *imageui,
 	case PAINTBOX_TOOL_CIRCLE:
 		handled = TRUE;
 		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_CIRCLE,
-			rint(image_x), rint(image_x), 0, 0, 1, 0);
+			rint(image_x), rint(image_y), 0, 0, 1, 0);
 		break;
 
 	case PAINTBOX_TOOL_SMUDGE:
@@ -466,33 +472,26 @@ paintbox_drag_end(Imageui *imageui,
 
 	case PAINTBOX_TOOL_LINE:
 		handled = TRUE;
-		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
 		paintbox_make_brush(paintbox);
 		paintbox_update_brush_draw(paintbox, image_x, image_y);
-		gtk_widget_queue_draw(paintbox->imagedisplay);
+		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
 		break;
 
 	case PAINTBOX_TOOL_RECT:
 		handled = TRUE;
-		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
-
 		if (tilesource)
 			tilesource_draw_rect(tilesource, rgb, 3, fill,
 				paintbox->x0, paintbox->y0,
 				paintbox->x1 - paintbox->x0, paintbox->y1 - paintbox->y0);
-
-		gtk_widget_queue_draw(paintbox->imagedisplay);
+		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
 		break;
 
 	case PAINTBOX_TOOL_CIRCLE:
 		handled = TRUE;
-		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
-
 		if (tilesource)
 			tilesource_draw_circle(tilesource, rgb, 3, fill,
 				paintbox->x0, paintbox->y0, paintbox->a);
-
-		gtk_widget_queue_draw(paintbox->imagedisplay);
+		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
 		break;
 
 	case PAINTBOX_TOOL_SMUDGE:
@@ -502,32 +501,25 @@ paintbox_drag_end(Imageui *imageui,
 
 	case PAINTBOX_TOOL_FLOOD_UNTIL:
 		handled = TRUE;
-
 		if (tilesource)
 			tilesource_draw_flood(tilesource, rgb, 3, FALSE, image_x, image_y);
-
 		gtk_widget_queue_draw(paintbox->imagedisplay);
 		break;
 
 	case PAINTBOX_TOOL_FLOOD_WHILE:
 		handled = TRUE;
-
 		if (tilesource)
 			tilesource_draw_flood(tilesource, rgb, 3, TRUE, image_x, image_y);
-
 		gtk_widget_queue_draw(paintbox->imagedisplay);
 		break;
 
 	case PAINTBOX_TOOL_TEXT:
 		handled = TRUE;
-		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
-
 		if (tilesource &&
 			paintbox->mask)
 			tilesource_draw_mask(tilesource, rgb, 3, paintbox->mask,
 				image_x, image_y);
-
-		gtk_widget_queue_draw(paintbox->imagedisplay);
+		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
 		break;
 
 	default:
@@ -558,7 +550,7 @@ paintbox_motion(Imageui *imageui,
 	case PAINTBOX_TOOL_SMUDGE:
 	case PAINTBOX_TOOL_BRUSH:
 		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_CIRCLE,
-			rint(image_x), rint(image_x), 0, 0,
+			rint(image_x), rint(image_y), 0, 0,
 			rint(TSLIDER(paintbox->width)->value) / 2, 0);
 		break;
 
