@@ -27,7 +27,7 @@
 
             <child>
               <object class="GtkToggleButton" id="pointer">
-                <property name="icon-name">edit-delete-symbolic</property>
+                <property name="icon-name">pointer-symbolic</property>
                 <property name="active">true</property>
 		<property name="tooltip-text">Pointer mode</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
@@ -36,7 +36,7 @@
 
             <child>
               <object class="GtkToggleButton" id="brush">
-                <property name="icon-name">banana-symbolic</property>
+                <property name="icon-name">brush-symbolic</property>
                 <property name="group">pointer</property>
 		<property name="tooltip-text">Paint with a brush</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
@@ -45,7 +45,7 @@
 
             <child>
               <object class="GtkToggleButton" id="line">
-                <property name="icon-name">document-edit-symbolic</property>
+                <property name="icon-name">pencil-symbolic</property>
                 <property name="group">pointer</property>
 		<property name="tooltip-text">Draw straight lines</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
@@ -54,7 +54,7 @@
 
             <child>
               <object class="GtkToggleButton" id="rect">
-                <property name="icon-name">document-edit-symbolic</property>
+                <property name="icon-name">rectangle-symbolic</property>
                 <property name="group">pointer</property>
 		<property name="tooltip-text">Draw rectangles</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
@@ -63,7 +63,7 @@
 
             <child>
               <object class="GtkToggleButton" id="circle">
-                <property name="icon-name">document-edit-symbolic</property>
+                <property name="icon-name">circle-symbolic</property>
                 <property name="group">pointer</property>
 		<property name="tooltip-text">Draw circles</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
@@ -72,7 +72,7 @@
 
             <child>
               <object class="GtkToggleButton" id="smudge">
-                <property name="icon-name">document-edit-symbolic</property>
+                <property name="icon-name">smudge-symbolic</property>
                 <property name="group">pointer</property>
 		<property name="tooltip-text">Smudge</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
@@ -81,7 +81,7 @@
 
             <child>
               <object class="GtkToggleButton" id="flood_until">
-                <property name="icon-name">document-edit-symbolic</property>
+                <property name="icon-name">flood-symbolic</property>
                 <property name="group">pointer</property>
 		<property name="tooltip-text">Flood until equal to ink</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
@@ -90,7 +90,7 @@
 
             <child>
               <object class="GtkToggleButton" id="flood_while">
-                <property name="icon-name">document-edit-symbolic</property>
+                <property name="icon-name">flood-symbolic</property>
                 <property name="group">pointer</property>
 		<property name="tooltip-text">Flood while equal to start pixel</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
@@ -99,7 +99,7 @@
 
             <child>
               <object class="GtkToggleButton" id="text">
-                <property name="icon-name">format-text-plaintext</property>
+                <property name="icon-name">text-symbolic</property>
                 <property name="group">pointer</property>
 		<property name="tooltip-text">Draw text</property>
 		<signal name="toggled" handler="paintbox_toggled"/>
@@ -108,7 +108,7 @@
 
             <child>
               <object class="GtkToggleButton" id="dropper">
-                <property name="icon-name">color-select-symbolic</property>
+                <property name="icon-name">dropper-symbolic</property>
                 <property name="group">pointer</property>
 		<property name="tooltip-text">Ink dropper</property>
 		<signal name="toggled" handler="paintbox_toggled"/>

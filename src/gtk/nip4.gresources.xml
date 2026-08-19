@@ -46,8 +46,18 @@
     <file>saveoptions.css</file>
     <file>iimageview.css</file>
 
-    <file>icons/scalable/actions/brush-symbolic.svg</file>
-    <file>icons/scalable/actions/banana-symbolic.svg</file>
-
   </gresource>
+
+  <gresource prefix="/org/libvips/nip4/icons/scalable/actions">
+    <file>pointer-symbolic.svg</file>
+    <file>brush-symbolic.svg</file>
+    <file>pencil-symbolic.svg</file>
+    <file>rectangle-symbolic.svg</file>
+    <file>circle-symbolic.svg</file>
+    <file>smudge-symbolic.svg</file>
+    <file>flood-symbolic.svg</file>
+    <file>text-symbolic.svg</file>
+    <file>dropper-symbolic.svg</file>
+  </gresource>
+
 </gresources>
