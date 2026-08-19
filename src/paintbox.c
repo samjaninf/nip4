@@ -102,6 +102,7 @@ struct _Paintbox {
 	/* Our rubber-banding state. All in image cods.
 	 */
 	PaintboxRubber rubber;
+	gboolean hide;
 	int x0, y0;
 	int x1, y1;
 	int a, b;
@@ -229,6 +230,7 @@ paintbox_set_rubber(Paintbox *paintbox, PaintboxRubber rubber,
 	int x0, int y0, int x1, int y1, int a, int b)
 {
 	paintbox->rubber = rubber;
+	paintbox->hide = FALSE;
 	paintbox->x0 = x0;
 	paintbox->y0 = y0;
 	paintbox->x1 = x1;
@@ -242,6 +244,8 @@ paintbox_set_rubber(Paintbox *paintbox, PaintboxRubber rubber,
 static void
 paintbox_set_tool(Paintbox *paintbox, PaintboxTool tool)
 {
+	paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
+
 	if (paintbox->tool != tool) {
 		if (tool != PAINTBOX_TOOL_POINTER) {
 			Imageui *imageui = imagewindow_get_imageui(paintbox->win);
@@ -253,7 +257,6 @@ paintbox_set_tool(Paintbox *paintbox, PaintboxTool tool)
 		}
 
 		paintbox->tool = tool;
-
 		paintbox_refresh(paintbox);
 	}
 }
@@ -566,7 +569,8 @@ paintbox_enter(Imageui *imageui, gpointer user_data)
 {
 	Paintbox *paintbox = PAINTBOX(user_data);
 
-	printf("paintbox_enter:\n");
+	paintbox->hide = FALSE;
+	gtk_widget_queue_draw(paintbox->imagedisplay);
 }
 
 static void
@@ -574,7 +578,8 @@ paintbox_leave(Imageui *imageui, gpointer user_data)
 {
 	Paintbox *paintbox = PAINTBOX(user_data);
 
-	printf("paintbox_leave:\n");
+	paintbox->hide = TRUE;
+	gtk_widget_queue_draw(paintbox->imagedisplay);
 }
 
 static gboolean
@@ -601,7 +606,6 @@ paintbox_key_pressed(Imageui *imageui,
 		handled = TRUE;
 		// FIXME ... we need a better way to cancel tool actions!
 		paintbox_set_tool(paintbox, PAINTBOX_TOOL_POINTER);
-		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
 		break;
 
 	default:
@@ -633,6 +637,9 @@ paintbox_snapshot(Imagedisplay *imagedisplay,
 	GtkSnapshot *snapshot, Paintbox *paintbox)
 {
 	Imageui *imageui = paintbox->imageui;
+
+	if (paintbox->hide)
+		return;
 
 	double x0_gtk, y0_gtk;
 	imageui_image_to_gtk(imageui, paintbox->x0 + 0.5, paintbox->y0 + 0.5,
