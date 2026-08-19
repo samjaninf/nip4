@@ -30,9 +30,9 @@
 #include "nip4.h"
 
 /*
+ */
 #define DEBUG_VERBOSE
 #define DEBUG
- */
 
 typedef enum _PaintboxRubber {
 	PAINTBOX_RUBBER_NONE,
@@ -528,6 +528,7 @@ paintbox_drag_end(Imageui *imageui,
 
 		handled = TRUE;
 		paintbox_rubber_clear(paintbox);
+		paintbox->state = PAINTBOX_STATE_WAIT;
 
 		break;
 
