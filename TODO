@@ -2,11 +2,7 @@
 
 - when we hide the paintbox, it should flip back to pointer
 
-- icons are not rendering very well
-
-	do they use features gtksvg does not support?
-
-	makebe we just need a new gtk version?
+- better flood icons
 
 - implement dropper
 
