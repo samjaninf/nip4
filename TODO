@@ -1,13 +1,4 @@
 
-- implement paintbox enter and leave
-
-	need some way to disable and reenable rubber
-
-	add a better way to cancel a tool
-
-		we currently flip to POINTER, should just ignore drag_end
-		after esc
-
 - add icons
 
 	https://staging.svgrepo.com/svg/82820/brush

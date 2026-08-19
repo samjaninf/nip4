@@ -30,9 +30,9 @@
 #include "nip4.h"
 
 /*
- */
 #define DEBUG_VERBOSE
 #define DEBUG
+ */
 
 typedef enum _PaintboxRubber {
 	PAINTBOX_RUBBER_NONE,
@@ -41,6 +41,11 @@ typedef enum _PaintboxRubber {
 	PAINTBOX_RUBBER_RECT,
 	PAINTBOX_RUBBER_BOX,
 } PaintboxRubber;
+
+typedef enum _PaintboxState {
+	PAINTBOX_STATE_WAIT,
+	PAINTBOX_STATE_DRAG,
+} PaintboxState;
 
 struct _Paintbox {
 	GtkWidget parent_instance;
@@ -65,6 +70,10 @@ struct _Paintbox {
 	/* Currently selected tool.
 	 */
 	PaintboxTool tool;
+
+	/* State machine.
+	 */
+	PaintboxState state;
 
 	double start_x;
 	double start_y;
@@ -242,9 +251,15 @@ paintbox_set_rubber(Paintbox *paintbox, PaintboxRubber rubber,
 }
 
 static void
-paintbox_set_tool(Paintbox *paintbox, PaintboxTool tool)
+paintbox_rubber_clear(Paintbox *paintbox)
 {
 	paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
+}
+
+static void
+paintbox_set_tool(Paintbox *paintbox, PaintboxTool tool)
+{
+	paintbox_rubber_clear(paintbox);
 
 	if (paintbox->tool != tool) {
 		if (tool != PAINTBOX_TOOL_POINTER) {
@@ -280,47 +295,59 @@ paintbox_drag_begin(Imageui *imageui,
 
 	gboolean handled = FALSE;
 
-	switch (paintbox->tool) {
-	case PAINTBOX_TOOL_BRUSH:
-		handled = TRUE;
-		paintbox->last_x = rint(image_x);
-		paintbox->last_y = rint(image_y);
-		paintbox_make_brush(paintbox);
-		break;
+	switch (paintbox->state) {
+	case PAINTBOX_STATE_WAIT:
+		switch (paintbox->tool) {
+		case PAINTBOX_TOOL_BRUSH:
+			paintbox->last_x = rint(image_x);
+			paintbox->last_y = rint(image_y);
+			paintbox_make_brush(paintbox);
+			break;
 
-	case PAINTBOX_TOOL_LINE:
-		handled = TRUE;
-		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_LINE,
-			rint(image_x), rint(image_y), rint(image_x), rint(image_y), 0, 0);
-		paintbox->last_x = rint(image_x);
-		paintbox->last_y = rint(image_y);
-		break;
+		case PAINTBOX_TOOL_LINE:
+			paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_LINE,
+				rint(image_x), rint(image_y),
+				rint(image_x), rint(image_y),
+				0, 0);
+			paintbox->last_x = rint(image_x);
+			paintbox->last_y = rint(image_y);
+			break;
 
-	case PAINTBOX_TOOL_RECT:
-		handled = TRUE;
-		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_RECT,
-			rint(image_x), rint(image_y), rint(image_x), rint(image_y), 0, 0);
-		break;
+		case PAINTBOX_TOOL_RECT:
+			paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_RECT,
+				rint(image_x), rint(image_y),
+				rint(image_x), rint(image_y),
+				0, 0);
+			break;
 
-	case PAINTBOX_TOOL_CIRCLE:
-		handled = TRUE;
-		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_CIRCLE,
-			rint(image_x), rint(image_y), 0, 0, 1, 0);
-		break;
+		case PAINTBOX_TOOL_CIRCLE:
+			paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_CIRCLE,
+				rint(image_x), rint(image_y),
+				0, 0,
+				1, 0);
+			break;
 
-	case PAINTBOX_TOOL_SMUDGE:
-		handled = TRUE;
-		paintbox->last_x = rint(image_x);
-		paintbox->last_y = rint(image_y);
-		break;
+		case PAINTBOX_TOOL_SMUDGE:
+			paintbox->last_x = rint(image_x);
+			paintbox->last_y = rint(image_y);
+			break;
 
-	case PAINTBOX_TOOL_TEXT:
+		case PAINTBOX_TOOL_TEXT:
+			if (paintbox_make_text(paintbox) &&
+				paintbox->mask)
+				paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_BOX,
+					rint(image_x), rint(image_y),
+					0, 0,
+					paintbox->mask->Xsize, paintbox->mask->Ysize);
+			break;
+
+		default:
+			break;
+		}
+
 		handled = TRUE;
-		if (paintbox_make_text(paintbox) &&
-			paintbox->mask)
-			paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_BOX,
-				rint(image_x), rint(image_y), 0, 0,
-				paintbox->mask->Xsize, paintbox->mask->Ysize);
+		paintbox->state = PAINTBOX_STATE_DRAG;
+
 		break;
 
 	default:
@@ -389,44 +416,23 @@ paintbox_drag_update(Imageui *imageui,
 
 	gboolean handled = FALSE;
 
-	switch (paintbox->tool) {
-	case PAINTBOX_TOOL_BRUSH:
-		handled = TRUE;
-		paintbox_update_brush_draw(paintbox, image_x, image_y);
-		break;
+	switch (paintbox->state) {
+	case PAINTBOX_STATE_DRAG:
+		switch (paintbox->tool) {
+		case PAINTBOX_TOOL_BRUSH:
+			paintbox_update_brush_draw(paintbox, image_x, image_y);
+			break;
 
-	case PAINTBOX_TOOL_LINE:
-		handled = TRUE;
-		paintbox->x1 = rint(image_x);
-		paintbox->y1 = rint(image_y);
-		gtk_widget_queue_draw(paintbox->imagedisplay);
-		break;
+		case PAINTBOX_TOOL_SMUDGE:
+			paintbox_update_smudge_draw(paintbox, image_x, image_y);
+			break;
 
-	case PAINTBOX_TOOL_RECT:
-		handled = TRUE;
-		paintbox->x1 = rint(image_x);
-		paintbox->y1 = rint(image_y);
-		gtk_widget_queue_draw(paintbox->imagedisplay);
-		break;
+		default:
+			break;
+		}
 
-	case PAINTBOX_TOOL_CIRCLE:
 		handled = TRUE;
-		int dx = paintbox->x0 - image_x;
-		int dy = paintbox->y0 - image_y;
-		paintbox->a = rint(sqrt(dx * dx + dy * dy));
-		gtk_widget_queue_draw(paintbox->imagedisplay);
-		break;
 
-	case PAINTBOX_TOOL_SMUDGE:
-		handled = TRUE;
-		paintbox_update_smudge_draw(paintbox, image_x, image_y);
-		break;
-
-	case PAINTBOX_TOOL_TEXT:
-		handled = TRUE;
-		paintbox->x0 = rint(image_x);
-		paintbox->y0 = rint(image_y);
-		gtk_widget_queue_draw(paintbox->imagedisplay);
 		break;
 
 	default:
@@ -467,62 +473,62 @@ paintbox_drag_end(Imageui *imageui,
 
 	gboolean handled = FALSE;
 
-	switch (paintbox->tool) {
-	case PAINTBOX_TOOL_BRUSH:
-		handled = TRUE;
-		paintbox_update_brush_draw(paintbox, image_x, image_y);
-		break;
+	switch (paintbox->state) {
+	case PAINTBOX_STATE_DRAG:
+		switch (paintbox->tool) {
+		case PAINTBOX_TOOL_BRUSH:
+			paintbox_update_brush_draw(paintbox, image_x, image_y);
+			break;
 
-	case PAINTBOX_TOOL_LINE:
-		handled = TRUE;
-		paintbox_make_brush(paintbox);
-		paintbox_update_brush_draw(paintbox, image_x, image_y);
-		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
-		break;
+		case PAINTBOX_TOOL_LINE:
+			paintbox_make_brush(paintbox);
+			paintbox_update_brush_draw(paintbox, image_x, image_y);
+			break;
 
-	case PAINTBOX_TOOL_RECT:
-		handled = TRUE;
-		if (tilesource)
-			tilesource_draw_rect(tilesource, rgb, 3, fill,
-				paintbox->x0, paintbox->y0,
-				paintbox->x1 - paintbox->x0, paintbox->y1 - paintbox->y0);
-		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
-		break;
+		case PAINTBOX_TOOL_RECT:
+			if (tilesource)
+				tilesource_draw_rect(tilesource,
+					rgb, 3, fill,
+					paintbox->x0, paintbox->y0,
+					paintbox->x1 - paintbox->x0, paintbox->y1 - paintbox->y0);
+			break;
 
-	case PAINTBOX_TOOL_CIRCLE:
-		handled = TRUE;
-		if (tilesource)
-			tilesource_draw_circle(tilesource, rgb, 3, fill,
-				paintbox->x0, paintbox->y0, paintbox->a);
-		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
-		break;
+		case PAINTBOX_TOOL_CIRCLE:
+			if (tilesource)
+				tilesource_draw_circle(tilesource,
+					rgb, 3, fill, paintbox->x0, paintbox->y0, paintbox->a);
+			break;
 
-	case PAINTBOX_TOOL_SMUDGE:
-		handled = TRUE;
-		paintbox_update_smudge_draw(paintbox, image_x, image_y);
-		break;
+		case PAINTBOX_TOOL_SMUDGE:
+			paintbox_update_smudge_draw(paintbox, image_x, image_y);
+			break;
 
-	case PAINTBOX_TOOL_FLOOD_UNTIL:
-		handled = TRUE;
-		if (tilesource)
-			tilesource_draw_flood(tilesource, rgb, 3, FALSE, image_x, image_y);
-		gtk_widget_queue_draw(paintbox->imagedisplay);
-		break;
+		case PAINTBOX_TOOL_FLOOD_UNTIL:
+			if (tilesource)
+				tilesource_draw_flood(tilesource,
+					rgb, 3, FALSE, image_x, image_y);
+			break;
 
-	case PAINTBOX_TOOL_FLOOD_WHILE:
-		handled = TRUE;
-		if (tilesource)
-			tilesource_draw_flood(tilesource, rgb, 3, TRUE, image_x, image_y);
-		gtk_widget_queue_draw(paintbox->imagedisplay);
-		break;
+		case PAINTBOX_TOOL_FLOOD_WHILE:
+			if (tilesource)
+				tilesource_draw_flood(tilesource,
+					rgb, 3, TRUE, image_x, image_y);
+			break;
 
-	case PAINTBOX_TOOL_TEXT:
+		case PAINTBOX_TOOL_TEXT:
+			if (tilesource &&
+				paintbox->mask)
+				tilesource_draw_mask(tilesource,
+					rgb, 3, paintbox->mask, image_x, image_y);
+			break;
+
+		default:
+			break;
+		}
+
 		handled = TRUE;
-		if (tilesource &&
-			paintbox->mask)
-			tilesource_draw_mask(tilesource, rgb, 3, paintbox->mask,
-				image_x, image_y);
-		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE, 0, 0, 0, 0, 0, 0);
+		paintbox_rubber_clear(paintbox);
+
 		break;
 
 	default:
@@ -549,13 +555,58 @@ paintbox_motion(Imageui *imageui,
 
 	gboolean handled = FALSE;
 
-	switch (paintbox->tool) {
-	case PAINTBOX_TOOL_SMUDGE:
-	case PAINTBOX_TOOL_BRUSH:
-		paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_CIRCLE,
-			rint(image_x), rint(image_y), 0, 0,
-			rint(TSLIDER(paintbox->width)->value) / 2, 0);
+	switch (paintbox->state) {
+	case PAINTBOX_STATE_WAIT:
+		switch (paintbox->tool) {
+		case PAINTBOX_TOOL_SMUDGE:
+		case PAINTBOX_TOOL_BRUSH:
+			paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_CIRCLE,
+				rint(image_x), rint(image_y), 0, 0,
+				rint(TSLIDER(paintbox->width)->value) / 2, 0);
+			break;
+
+		default:
+			break;
+		}
 		break;
+
+	case PAINTBOX_STATE_DRAG:
+		switch (paintbox->tool) {
+		case PAINTBOX_TOOL_SMUDGE:
+		case PAINTBOX_TOOL_BRUSH:
+			paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_CIRCLE,
+				rint(image_x), rint(image_y), 0, 0,
+				rint(TSLIDER(paintbox->width)->value) / 2, 0);
+			break;
+
+		case PAINTBOX_TOOL_LINE:
+			paintbox->x1 = rint(image_x);
+			paintbox->y1 = rint(image_y);
+			gtk_widget_queue_draw(paintbox->imagedisplay);
+			break;
+
+		case PAINTBOX_TOOL_RECT:
+			paintbox->x1 = rint(image_x);
+			paintbox->y1 = rint(image_y);
+			gtk_widget_queue_draw(paintbox->imagedisplay);
+			break;
+
+		case PAINTBOX_TOOL_CIRCLE:
+			double dx = paintbox->x0 - image_x;
+			double dy = paintbox->y0 - image_y;
+			paintbox->a = rint(sqrt(dx * dx + dy * dy));
+			gtk_widget_queue_draw(paintbox->imagedisplay);
+			break;
+
+		case PAINTBOX_TOOL_TEXT:
+			paintbox->x0 = rint(image_x);
+			paintbox->y0 = rint(image_y);
+			gtk_widget_queue_draw(paintbox->imagedisplay);
+			break;
+
+		default:
+			break;
+		}
 
 	default:
 		break;
@@ -596,21 +647,30 @@ paintbox_key_pressed(Imageui *imageui,
 
 	gboolean handled = FALSE;
 
-	switch (paintbox->tool) {
-	case PAINTBOX_TOOL_LINE:
-	case PAINTBOX_TOOL_RECT:
-	case PAINTBOX_TOOL_CIRCLE:
-	case PAINTBOX_TOOL_FLOOD_UNTIL:
-	case PAINTBOX_TOOL_FLOOD_WHILE:
-	case PAINTBOX_TOOL_TEXT:
-		handled = TRUE;
-		// FIXME ... we need a better way to cancel tool actions!
-		paintbox_set_tool(paintbox, PAINTBOX_TOOL_POINTER);
-		break;
+	if (keyval == GDK_KEY_Escape)
+		switch (paintbox->state) {
+		case PAINTBOX_STATE_DRAG:
+			switch (paintbox->tool) {
+			case PAINTBOX_TOOL_LINE:
+			case PAINTBOX_TOOL_RECT:
+			case PAINTBOX_TOOL_CIRCLE:
+			case PAINTBOX_TOOL_FLOOD_UNTIL:
+			case PAINTBOX_TOOL_FLOOD_WHILE:
+			case PAINTBOX_TOOL_TEXT:
+				handled = TRUE;
+				paintbox->state = PAINTBOX_STATE_WAIT;
+				paintbox_rubber_clear(paintbox);
+				break;
 
-	default:
-		break;
-	}
+			default:
+				break;
+			}
+
+			break;
+
+		default:
+			break;
+		}
 
 	return handled;
 }
