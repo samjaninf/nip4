@@ -5,9 +5,11 @@
 	oh I think it writes a temp TIFF and then loads it back, we need
 	something better
 
-- draw_mask should have a flag to select blend / set
+	update imageinfo on view, then update model from view
 
-	use set for brush, blend for text
+		this fails for some reason I forget
+
+		if we can get it working, use this for ^V as well
 
 - when we hide the paintbox it should flip back to pointer
 
@@ -16,16 +18,6 @@
 - better flood icons
 
 - implement dropper
-
-- should we soften the edges of the brush mask? what does nip2 do?
-
-	it has very light antialias on brush edges
-
-	not clear what it does for text
-
-	hard brush is maybe better for flood-while
-
-	have width zero for hard single pixel brush?
 
 - implement undo / redo
 

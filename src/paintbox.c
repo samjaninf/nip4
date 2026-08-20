@@ -431,6 +431,32 @@ paintbox_drag_update(Imageui *imageui,
 	return handled;
 }
 
+static void
+paintbox_update_model(Paintbox *paintbox)
+{
+	Tilesource *tilesource = imageui_get_tilesource(paintbox->imageui);
+	iImage *iimage = imagewindow_get_iimage(paintbox->win);
+
+	VipsImage *image;
+	if ((image = tilesource_get_base_image(tilesource)) &&
+		iimage->value.ii->image != image) {
+
+		// will be removed on next GC, unless someone takes ownership
+		iImageinfo *new_ii = imageinfo_new(main_imageinfogroup,
+			reduce_context->heap, image, NULL);
+
+		image_value_set(&iimage->value, new_ii);
+
+		// set modified, edited, etc.
+		classmodel_update_view(classmodel);
+	}
+
+	Row *row = HEAPMODEL(iimage)->row;
+
+	(void) expr_dirty(row->expr, link_serial_new());
+	symbol_recalculate_all();
+}
+
 static gboolean
 paintbox_drag_end(Imageui *imageui,
 	gdouble offset_x, gdouble offset_y, GtkGestureDrag *drag,
@@ -517,6 +543,7 @@ paintbox_drag_end(Imageui *imageui,
 		handled = TRUE;
 		paintbox_rubber_clear(paintbox);
 		paintbox->state = PAINTBOX_STATE_WAIT;
+		paintbox_update_model(paintbox);
 	}
 
 	return handled;
