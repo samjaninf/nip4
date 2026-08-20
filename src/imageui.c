@@ -1633,8 +1633,8 @@ imageui_make_paintable(Imageui *imageui)
 		VipsImage *image;
 		if ((image = tilesource_get_base_image(imageui->tilesource))) {
 #ifdef DEBUG
-			printf("imageui_make_paintable:\n");
 #endif /*DEBUG*/
+			printf("imageui_make_paintable:\n");
 
 			progress_begin();
 
@@ -1652,6 +1652,10 @@ imageui_make_paintable(Imageui *imageui)
 				return FALSE;
 			}
 
+#ifdef DEBUG
+			printf("\tnew writeable image is %p\n", memory);
+#endif /*DEBUG*/
+
 			VIPS_UNREF(memory);
 
 			g_object_set(G_OBJECT(imageui), "tilesource", new_tilesource, NULL);
@@ -1659,10 +1663,6 @@ imageui_make_paintable(Imageui *imageui)
 			VIPS_UNREF(new_tilesource);
 
 			imageui->is_paintable = TRUE;
-
-#ifdef DEBUG
-			printf("\tnew writeable image is %p\n", memory);
-#endif /*DEBUG*/
 		}
 	}
 

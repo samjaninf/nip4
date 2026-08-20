@@ -1,6 +1,17 @@
 - write image back to nip4 after each paint action
 
-- when we hide the paintbox, it should flip back to pointer
+	how does ^V into an imageui work? use that mechanism
+
+	oh I think it writes a temp TIFF and then loads it back, we need
+	something better
+
+- draw_mask should have a flag to select blend / set
+
+	use set for brush, blend for text
+
+- when we hide the paintbox it should flip back to pointer
+
+- can't paint on RGBA images
 
 - better flood icons
 
