@@ -484,17 +484,17 @@ tilesource_image(Tilesource *tilesource, VipsImage **mask_out, int current_z)
 	}
 
 	if (current_z > 0) {
-        /* We may have already zoomed out a bit because we've loaded
-         * some layer other than the base one. Calculate the
-         * subsample as (current_width / required_width).
-         */
-        int width = VIPS_MAX(1, tilesource->image_width >> current_z);
-        int height = VIPS_MAX(1, tilesource->image_height >> current_z);
-        int xfac = VIPS_MAX(1, image->Xsize / width);
-        int yfac = VIPS_MAX(1, image->Ysize / height);
+		/* We may have already zoomed out a bit because we've loaded
+		 * some layer other than the base one. Calculate the
+		 * subsample as (current_width / required_width).
+		 */
+		int width = VIPS_MAX(1, tilesource->image_width >> current_z);
+		int height = VIPS_MAX(1, tilesource->image_height >> current_z);
+		int xfac = VIPS_MAX(1, image->Xsize / width);
+		int yfac = VIPS_MAX(1, image->Ysize / height);
 
-        if (vips_subsample(image, &x, xfac, yfac, NULL))
-            return NULL;
+		if (vips_subsample(image, &x, xfac, yfac, NULL))
+			return NULL;
 		VIPS_UNREF(image);
 		image = x;
 	}
@@ -1539,8 +1539,8 @@ tilesource_new_from_image(VipsImage *image)
 		return NULL;
 
 	tilesource->level_count = 1;
-	tilesource->level_width[0] = image->Xsize;;
-	tilesource->level_height[0] = image->Ysize;;
+	tilesource->level_width[0] = image->Xsize;
+	tilesource->level_height[0] = image->Ysize;
 
 	/* Always loaded.
 	 */
@@ -1956,8 +1956,8 @@ tilesource_new_from_file(const char *filename)
 	 */
 	if (!tilesource->level_count) {
 		tilesource->level_count = 1;
-		tilesource->level_width[0] = base->Xsize;;
-		tilesource->level_height[0] = base->Ysize;;
+		tilesource->level_width[0] = base->Xsize;
+		tilesource->level_height[0] = base->Ysize;
 	}
 
 	/* Default page geometry if we've not found any other way to set it.

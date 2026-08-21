@@ -125,7 +125,6 @@ struct _Imageui {
 	/* TRUE if we've made this image paintable.
 	 */
 	gboolean is_paintable;
-
 };
 
 typedef struct _ImageuiClass {
