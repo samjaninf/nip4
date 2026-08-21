@@ -442,6 +442,7 @@ paintbox_update_model(Paintbox *paintbox)
 		iimage->value.ii->image != image) {
 
 		// will be removed on next GC, unless someone takes ownership
+		g_object_ref(image);
 		Imageinfo *new_ii = imageinfo_new(main_imageinfogroup,
 			reduce_context->heap, image, NULL);
 		image_value_set(&iimage->value, new_ii);
