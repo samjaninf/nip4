@@ -1,3 +1,18 @@
+
+- can't paint on RGBA images
+
+- better flood icons
+
+- implement dropper
+
+- implement undo / redo
+
+- setting tslider digits to 0 doesn't seem to make it int-valued
+
+	how odd
+
+
+
 - add something to open a dcraw image in 16 bits
 
 - text widget should have an rgba toggle

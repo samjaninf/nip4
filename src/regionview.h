@@ -56,7 +56,7 @@ typedef enum {
 
 /* Resize types.
  */
-typedef enum {
+enum _RegionviewResize {
 	REGIONVIEW_RESIZE_NONE,
 	REGIONVIEW_RESIZE_MOVE,
 	REGIONVIEW_RESIZE_EDIT,
@@ -69,7 +69,7 @@ typedef enum {
 	REGIONVIEW_RESIZE_BOTTOMLEFT,
 	REGIONVIEW_RESIZE_LEFT,
 	REGIONVIEW_RESIZE_LAST
-} RegionviewResize;
+};
 
 struct _Regionview {
 	View view;
@@ -91,9 +91,9 @@ struct _Regionview {
 	VipsRect draw_area;
 	RegionviewType draw_type;
 
-	/* The window we draw on.
+	/* The imageuiregion that's running our interactions.
 	 */
-	Imageui *imageui;
+	Imageuiregion *imageuiregion;
 
 	/* What's on the screen.
 	 */
@@ -114,6 +114,8 @@ typedef struct _RegionviewClass {
 	/* My methods.
 	 */
 } RegionviewClass;
+
+Imageui *regionview_get_imageui(Regionview *regionview);
 
 void regionview_model_update(Regionview *regionview);
 RegionviewResize regionview_hit(Regionview *regionview, int x, int y);

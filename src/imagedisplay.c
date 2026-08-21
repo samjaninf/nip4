@@ -948,3 +948,9 @@ imagedisplay_gtk_to_image(Imagedisplay *imagedisplay,
 	*x_image = VIPS_CLIP(0, *x_image, imagedisplay->image_rect.width - 1);
 	*y_image = VIPS_CLIP(0, *y_image, imagedisplay->image_rect.height - 1);
 }
+
+double
+imagedisplay_get_scale(Imagedisplay *imagedisplay)
+{
+	return imagedisplay->scale;
+}

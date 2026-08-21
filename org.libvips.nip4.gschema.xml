@@ -23,6 +23,14 @@
       </description>
     </key>
 
+    <key type="b" name="paintbox">
+      <default>false</default>
+      <summary>Show paintbox</summary>
+      <description>
+        If set, show the paintbox.
+      </description>
+    </key>
+
     <key type="b" name="properties">
       <default>false</default>
       <summary>Show Properties menu</summary>

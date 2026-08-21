@@ -416,7 +416,7 @@ imageinfo_class_init(ImageinfoClass *class)
 
 	/* Create signals.
 	 */
-	imageinfo_signals[SIG_AREA_CHANGED] = g_signal_new("area_changed",
+	imageinfo_signals[SIG_AREA_CHANGED] = g_signal_new("area-changed",
 		G_OBJECT_CLASS_TYPE(gobject_class),
 		G_SIGNAL_RUN_FIRST,
 		G_STRUCT_OFFSET(ImageinfoClass, area_changed),
@@ -433,7 +433,7 @@ imageinfo_class_init(ImageinfoClass *class)
 		g_cclosure_marshal_VOID__VOID,
 		G_TYPE_NONE, 0);
 
-	imageinfo_signals[SIG_FILE_CHANGED] = g_signal_new("file_changed",
+	imageinfo_signals[SIG_FILE_CHANGED] = g_signal_new("file-changed",
 		G_OBJECT_CLASS_TYPE(gobject_class),
 		G_SIGNAL_RUN_FIRST,
 		G_STRUCT_OFFSET(ImageinfoClass, file_changed),

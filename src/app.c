@@ -238,6 +238,12 @@ app_startup(GApplication *app)
 
 	G_APPLICATION_CLASS(app_parent_class)->startup(app);
 
+	/* Add our custom icons to the theme.
+	 */
+	GtkIconTheme *theme =
+		gtk_icon_theme_get_for_display(gdk_display_get_default());
+	gtk_icon_theme_add_resource_path(theme, "/org/libvips/nip4/icons");
+
 	/* Image display programs are supposed to default to a dark theme,
 	 * according to the HIG.
 	 */
@@ -265,6 +271,7 @@ app_startup(GApplication *app)
 	PROPERTIES_TYPE;
 	DISPLAYBAR_TYPE;
 	INFOBAR_TYPE;
+	PAINTBOX_TYPE;
 	TSLIDER_TYPE;
 
 	/* Some custom CSS.

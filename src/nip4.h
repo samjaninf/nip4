@@ -163,6 +163,7 @@ typedef struct _iContainer iContainer;
 typedef struct _iImage iImage;
 typedef struct _Imageinfogroup Imageinfogroup;
 typedef struct _Imageinfo Imageinfo;
+typedef struct _Imageui Imageui;
 typedef struct _iRegiongroup iRegiongroup;
 typedef struct _iRegiongroupview iRegiongroupview;
 typedef struct _iRegion iRegion;
@@ -183,6 +184,7 @@ typedef struct _ParseNode ParseNode;
 typedef struct _Plot Plot;
 typedef struct _Reduce Reduce;
 typedef struct _Regionview Regionview;
+typedef enum _RegionviewResize RegionviewResize;
 typedef struct _Rhs Rhs;
 typedef struct _Rhsview Rhsview;
 typedef struct _Row Row;
@@ -220,8 +222,10 @@ typedef struct _Workspace Workspace;
 #include "ientry.h"
 #include "tslider.h"
 #include "imageui.h"
+#include "imageuiregion.h"
 #include "imagewindow.h"
 #include "infobar.h"
+#include "paintbox.h"
 #include "displaybar.h"
 #include "saveoptions.h"
 #include "recover.h"

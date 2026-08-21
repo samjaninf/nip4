@@ -1,4 +1,4 @@
-/* a drawing area that draws an image
+/* the nip4 paintbox bar
  */
 
 /*
@@ -25,23 +25,34 @@
 
 	These files are distributed with VIPS - http://www.vips.ecs.soton.ac.uk
 
- */
+*/
 
-#ifndef __IMAGEDISPLAY_H
-#define __IMAGEDISPLAY_H
+#ifndef __PAINTBOX_H
+#define __PAINTBOX_H
 
-#define IMAGEDISPLAY_TYPE (imagedisplay_get_type())
-#define IMAGEDISPLAY NIP4_IMAGEDISPLAY
+// currently selected tool
+typedef enum _PaintboxTool {
+	PAINTBOX_TOOL_POINTER,
+	PAINTBOX_TOOL_BRUSH,
+	PAINTBOX_TOOL_LINE,
+	PAINTBOX_TOOL_RECT,
+	PAINTBOX_TOOL_CIRCLE,
+	PAINTBOX_TOOL_SMUDGE,
+	PAINTBOX_TOOL_FLOOD_UNTIL,
+	PAINTBOX_TOOL_FLOOD_WHILE,
+	PAINTBOX_TOOL_TEXT,
+	PAINTBOX_TOOL_DROPPER,
 
-G_DECLARE_FINAL_TYPE(Imagedisplay, imagedisplay,
-	NIP4, IMAGEDISPLAY, GtkDrawingArea)
+	PAINTBOX_TOOL_LAST
+} PaintboxTool;
 
-void imagedisplay_image_to_gtk(Imagedisplay *imagedisplay,
-	double x_image, double y_image, double *x_gtk, double *y_gtk);
-void imagedisplay_gtk_to_image(Imagedisplay *imagedisplay,
-	double x_gtk, double y_gtk, double *x_image, double *y_image);
-double imagedisplay_get_scale(Imagedisplay *imagedisplay);
+#define PAINTBOX_TYPE (paintbox_get_type())
 
-Imagedisplay *imagedisplay_new(Tilesource *tilesource);
+G_DECLARE_FINAL_TYPE(Paintbox, paintbox, NIP4, PAINTBOX, GtkWidget)
 
-#endif /* __IMAGEDISPLAY_H */
+#define PAINTBOX(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), PAINTBOX_TYPE, Paintbox))
+
+Paintbox *paintbox_new(Imagewindow *win);
+
+#endif /* __PAINTBOX_H */
