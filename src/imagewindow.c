@@ -429,6 +429,12 @@ imagewindow_get_imageui(Imagewindow *win)
 	return win ? win->imageui : NULL;
 }
 
+iImage *
+imagewindow_get_iimage(Imagewindow *win)
+{
+	return win ? win->iimage : NULL;
+}
+
 static void
 imagewindow_reset_view(Imagewindow *win)
 {

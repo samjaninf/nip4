@@ -442,17 +442,15 @@ paintbox_update_model(Paintbox *paintbox)
 		iimage->value.ii->image != image) {
 
 		// will be removed on next GC, unless someone takes ownership
-		iImageinfo *new_ii = imageinfo_new(main_imageinfogroup,
+		Imageinfo *new_ii = imageinfo_new(main_imageinfogroup,
 			reduce_context->heap, image, NULL);
-
 		image_value_set(&iimage->value, new_ii);
 
 		// set modified, edited, etc.
-		classmodel_update_view(classmodel);
+		classmodel_update_view(CLASSMODEL(iimage));
 	}
 
 	Row *row = HEAPMODEL(iimage)->row;
-
 	(void) expr_dirty(row->expr, link_serial_new());
 	symbol_recalculate_all();
 }

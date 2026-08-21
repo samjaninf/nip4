@@ -1,15 +1,30 @@
-- write image back to nip4 after each paint action
+- seeing
 
-	how does ^V into an imageui work? use that mechanism
+	(nip4:1970198): GLib-GObject-CRITICAL **: 12:35:40.139: instance of invalid non-instantiatable type '<unknown>'
 
-	oh I think it writes a temp TIFF and then loads it back, we need
-	something better
+	(nip4:1970198): GLib-GObject-CRITICAL **: 12:35:40.139: g_signal_handler_is_connected: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
 
-	update imageinfo on view, then update model from view
+	(nip4:1970198): GLib-GObject-CRITICAL **: 12:35:40.139: g_object_unref: assertion 'G_IS_OBJECT (object)' failed
 
-		this fails for some reason I forget
+  on exit after some painting
 
-		if we can get it working, use this for ^V as well
+  some double unref in paintbox_update_model()?
+
+  commenting out this code stops it
+
+        Imageinfo *new_ii = imageinfo_new(main_imageinfogroup,
+		reduce_context->heap, image, NULL);
+        image_value_set(&iimage->value, new_ii);
+
+  you need to comment out both
+
+  adding
+
+	g_object_ref(new_ii);
+
+  gives a segv on exit
+
+
 
 - when we hide the paintbox it should flip back to pointer
 
