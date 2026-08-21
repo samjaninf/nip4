@@ -4,6 +4,7 @@
 - all file dialog filters default to "all"
 - add #include
 - add the image paintbox
+- alt-left / alt-right use case-insensitive utf-8 ordering [dreadbalaur]
 
 ## 9.1.5
 
