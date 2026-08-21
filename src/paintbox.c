@@ -866,6 +866,20 @@ paintbox_get_property(GObject *object,
 }
 
 static void
+paintbox_notify_revealed(GtkWidget *widget,
+	GParamSpec *pspec, Paintbox *paintbox)
+{
+#ifdef DEBUG
+	printf("paintbox_notify_revealed:\n");
+#endif /*DEBUG*/
+
+	/* Turn off the paintbox when it's hidden.
+	 */
+	if (!gtk_action_bar_get_revealed(GTK_ACTION_BAR(widget)))
+		paintbox_set_tool(paintbox, PAINTBOX_TOOL_POINTER);
+}
+
+static void
 paintbox_init(Paintbox *paintbox)
 {
 #ifdef DEBUG
@@ -891,6 +905,9 @@ paintbox_init(Paintbox *paintbox)
 	width->value = 5;
 	width->digits = 1;
 	tslider_changed(width);
+
+	g_signal_connect(paintbox->action_bar, "notify::revealed",
+		G_CALLBACK(paintbox_notify_revealed), paintbox);
 
 	paintbox_refresh(paintbox);
 }

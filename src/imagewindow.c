@@ -1331,6 +1331,7 @@ imagewindow_init(Imagewindow *win)
 	set_state(GTK_WIDGET(win), win->settings, "properties");
 	set_state(GTK_WIDGET(win), win->settings, "control");
 	set_state(GTK_WIDGET(win), win->settings, "info");
+	set_state(GTK_WIDGET(win), win->settings, "paintbox");
 
 	// some kind of gtk bug? hexpand on properties can't be set from .ui or in
 	// properties.c, but must be set after adding to a parent
