@@ -1633,8 +1633,8 @@ imageui_make_paintable(Imageui *imageui)
 		VipsImage *image;
 		if ((image = tilesource_get_base_image(imageui->tilesource))) {
 #ifdef DEBUG
-#endif /*DEBUG*/
 			printf("imageui_make_paintable:\n");
+#endif /*DEBUG*/
 
 			progress_begin();
 
