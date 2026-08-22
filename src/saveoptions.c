@@ -583,10 +583,8 @@ save_options_new(GtkWindow *parent_window,
 	VipsImage *image, const char *filename)
 {
 	const char *saver;
-	if (!(saver = vips_foreign_find_save(filename))) {
-		error_vips_all();
+	if (!(saver = vips_foreign_find_save(filename)))
 		return NULL;
-	}
 
 	g_autoptr(SaveOptions) options = g_object_new(SAVE_OPTIONS_TYPE,
 		"transient-for", parent_window,

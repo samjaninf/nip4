@@ -296,8 +296,10 @@ iimage_graphic_save(Classmodel *classmodel,
 		path_expand(buf);
 
 		SaveOptions *options = save_options_new(window, image, buf);
-		if (!options)
+		if (!options) {
+			error_vips_all();
 			return FALSE;
+		}
 
 		gtk_window_present(GTK_WINDOW(options));
 	}
