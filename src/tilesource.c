@@ -807,7 +807,10 @@ tilesource_update_rgb(Tilesource *tilesource)
 		VipsImage *rgb;
 
 		if (!(rgb = tilesource_rgb(tilesource, tilesource->image))) {
+#ifdef DEBUG
 			printf("tilesource_rgb failed: %s\n", vips_error_buffer());
+#endif /*DEBUG*/
+
 			return -1;
 		}
 		VIPS_UNREF(tilesource->rgb);
@@ -841,7 +844,10 @@ tilesource_update_image(Tilesource *tilesource)
 		return 0;
 
 	if (!(image = tilesource_image(tilesource, &mask, tilesource->current_z))) {
+#ifdef DEBUG
 		printf("tilesource_update_image: build failed\n");
+#endif /*DEBUG*/
+
 		return -1;
 	}
 
