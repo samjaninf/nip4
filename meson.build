@@ -103,8 +103,8 @@ nip4_deps += declare_dependency(
   compile_args: '-DHAVE_CONFIG_H',
 )
 
-# need vips_thread_execute()
-nip4_deps += dependency('vips', version: '>=8.18')
+# need draw_line with the "draw-point" option
+nip4_deps += dependency('vips', version: '>=8.19')
 nip4_deps += gtk_dep
 nip4_deps += dependency('gsl')
 nip4_deps += dependency('libxml-2.0')
