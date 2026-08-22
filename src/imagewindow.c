@@ -31,7 +31,7 @@
 #define DEBUG
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* We have a number of active imageui (open images) and look them up via the
  * tilesource filename or image pointer.
@@ -1098,7 +1098,7 @@ imagewindow_mode(GSimpleAction *action,
 	Tilesource *tilesource = imagewindow_get_tilesource(win);
 	const gchar *str = g_variant_get_string(state, NULL);
 	TilesourceMode mode =
-		vips_enum_from_nick("nip4", TILESOURCE_MODE_TYPE, str);
+		vips_enum_from_nick(PACKAGE, TILESOURCE_MODE_TYPE, str);
 
 	if (tilesource)
 		g_object_set(tilesource,
@@ -1115,7 +1115,7 @@ imagewindow_background(GSimpleAction *action,
 	Imagewindow *win = IMAGEWINDOW(user_data);
 	const gchar *str = g_variant_get_string(state, NULL);
 	TilecacheBackground background =
-		vips_enum_from_nick("vipsdisp", TILECACHE_BACKGROUND_TYPE, str);
+		vips_enum_from_nick(PACKAGE, TILECACHE_BACKGROUND_TYPE, str);
 
 	if (win->imageui)
 		g_object_set(win->imageui,

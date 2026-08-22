@@ -31,7 +31,7 @@
 #define DEBUG
  */
 
-#include "nip4.h"
+#include "package.h"
 
 struct _SaveOptions {
 	GtkApplicationWindow parent_instance;

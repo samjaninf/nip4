@@ -33,7 +33,7 @@
 #define DEBUG
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* Use this threadpool to do background loads of images.
  */

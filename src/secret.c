@@ -32,7 +32,7 @@
 #define DEBUG_ADD
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* build secret sets for exprs
 

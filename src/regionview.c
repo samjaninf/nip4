@@ -35,7 +35,7 @@
 #define DEBUG_MAKE
  */
 
-#include "nip4.h"
+#include "package.h"
 
 G_DEFINE_TYPE(Regionview, regionview, VIEW_TYPE)
 

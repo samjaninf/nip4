@@ -1,6 +1,6 @@
 // shim for prefcolumnview
 
-#include "nip4.h"
+#include "package.h"
 
 View *
 prefcolumnview_new(void)

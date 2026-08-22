@@ -36,7 +36,7 @@
  */
 #define DEBUG_SAVEFILE
 
-#include "nip4.h"
+#include "package.h"
 
 G_DEFINE_TYPE(Filemodel, filemodel, MODEL_TYPE)
 

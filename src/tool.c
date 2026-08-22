@@ -34,7 +34,7 @@
 #define DEBUG_TOOLITEM
  */
 
-#include "nip4.h"
+#include "package.h"
 
 G_DEFINE_TYPE(Tool, tool, FILEMODEL_TYPE)
 

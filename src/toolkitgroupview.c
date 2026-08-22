@@ -31,7 +31,7 @@
 #define DEBUG
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* A node in our tree ... a kit, a tool, or a pointer to a toolitem linked
  * to a tool (ie. a computed tool or pullright or separator).

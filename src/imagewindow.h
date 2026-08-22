@@ -43,7 +43,7 @@
 	(G_TYPE_INSTANCE_GET_CLASS((obj), IMAGEWINDOW_TYPE, ImagewindowClass))
 
 G_DECLARE_FINAL_TYPE(Imagewindow, imagewindow,
-	NIP4, IMAGEWINDOW, GtkApplicationWindow)
+	APP, IMAGEWINDOW, GtkApplicationWindow)
 
 void imagewindow_error(Imagewindow *win);
 

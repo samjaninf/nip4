@@ -26,7 +26,7 @@
 #define DEBUG_FATAL
  */
 
-#include "nip4.h"
+#include "package.h"
 
 static gboolean main_option_version = FALSE;
 

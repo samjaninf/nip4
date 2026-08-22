@@ -27,7 +27,7 @@
 
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* trace each regeneration
 #define DEBUG_REGEN

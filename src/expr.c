@@ -39,7 +39,7 @@
 #define DEBUG
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* Our signals.
  */

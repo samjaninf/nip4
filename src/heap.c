@@ -31,7 +31,7 @@
 #define DEBUG
  */
 
-/* GC on every alloc too! Extraordinarily slow. Turn on DEBUG_HEAP in nip4.h
+/* GC on every alloc too! Extraordinarily slow. Turn on DEBUG_HEAP in package.h
  * first. Good for spotting heap pointer errors.
 #define DEBUG_HEAP_GC
  */
@@ -44,7 +44,7 @@
 #define DEBUG_GC_TIME
  */
 
-#include "nip4.h"
+#include "package.h"
 
 static iObjectClass *parent_class = NULL;
 

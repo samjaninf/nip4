@@ -32,7 +32,7 @@
 #define DEBUG_DIRTY
  */
 
-#include "nip4.h"
+#include "package.h"
 
 void *
 link_expr_destroy(LinkExpr *le)

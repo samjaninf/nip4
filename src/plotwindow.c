@@ -32,7 +32,7 @@
 #define DEBUG_VERBOSE
  */
 
-#include "nip4.h"
+#include "package.h"
 
 struct _Plotwindow {
 	GtkApplicationWindow parent;

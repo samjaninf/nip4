@@ -26,7 +26,7 @@
 #define DEBUG_LEAK
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* Our signals.
  */

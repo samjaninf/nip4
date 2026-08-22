@@ -21,7 +21,7 @@
 
  */
 
-#include "nip4.h"
+#include "package.h"
 
 // set when we're processing some events to update the GUI ... used to sanity
 // check eg. reduce (we mustn't call reduce from inside the nested loop,
@@ -353,8 +353,8 @@ alert_yesno_cb(GObject *source_object,
     GAsyncResult *result, gpointer user_data)
 {
     GtkAlertDialog *alert = GTK_ALERT_DIALOG(source_object);
-    GtkWindow *window = g_object_get_data(G_OBJECT(alert), "nip4-window");
-    Yesno yesno = g_object_get_data(G_OBJECT(alert), "nip4-yesno");
+    GtkWindow *window = g_object_get_data(G_OBJECT(alert), "app-window");
+    Yesno yesno = g_object_get_data(G_OBJECT(alert), "app-yesno");
     int choice = gtk_alert_dialog_choose_finish(alert, result, NULL);
 
     if (choice == 1)
@@ -380,8 +380,8 @@ alert_yesno(GtkWindow *window, Yesno yesno, void *user_data,
     gtk_alert_dialog_set_detail(alert, buf);
     gtk_alert_dialog_set_buttons(alert, labels);
     gtk_alert_dialog_set_modal(alert, TRUE);
-    g_object_set_data(G_OBJECT(alert), "nip4-window", window);
-    g_object_set_data(G_OBJECT(alert), "nip4-yesno", yesno);
+    g_object_set_data(G_OBJECT(alert), "app-window", window);
+    g_object_set_data(G_OBJECT(alert), "app-yesno", yesno);
     gtk_alert_dialog_choose(alert, window, NULL, alert_yesno_cb, user_data);
 }
 

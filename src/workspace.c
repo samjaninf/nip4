@@ -33,7 +33,7 @@
 #define DEBUG_COMPAT
  */
 
-#include "nip4.h"
+#include "package.h"
 
 G_DEFINE_TYPE(Workspace, workspace, MODEL_TYPE)
 

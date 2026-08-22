@@ -35,7 +35,7 @@
 #define DEBUG_FILE
  */
 
-#include "nip4.h"
+#include "package.h"
 
 G_DEFINE_TYPE(Log, log, GTK_TYPE_WINDOW);
 

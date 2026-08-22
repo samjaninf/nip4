@@ -33,7 +33,7 @@
 #define DEBUG
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* Stuff from bison ... needed as we call the lexer directly to rewrite
  * expressions.

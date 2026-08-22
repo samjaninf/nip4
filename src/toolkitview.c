@@ -1,4 +1,4 @@
-#include "nip4.h"
+#include "package.h"
 
 View *
 toolkitview_new(void)

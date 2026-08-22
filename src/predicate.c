@@ -27,7 +27,7 @@
 
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* Is it one of the system members? Hidden in menus and class display. We
  * can't safely use is_super()/is_this() (they are fast), because we can get

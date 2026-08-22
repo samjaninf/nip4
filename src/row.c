@@ -60,7 +60,7 @@
 #define DEBUG_SORT
  */
 
-#include "nip4.h"
+#include "package.h"
 
 G_DEFINE_TYPE(Row, row, HEAPMODEL_TYPE)
 

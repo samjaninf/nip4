@@ -27,7 +27,7 @@
 
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* Index with binop or uop.
  *

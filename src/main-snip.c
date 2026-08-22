@@ -26,7 +26,7 @@
 #define DEBUG_FATAL
  */
 
-#include "nip4.h"
+#include "package.h"
 
 static char *main_option_output = NULL;
 static gboolean main_option_test = FALSE;

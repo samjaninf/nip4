@@ -25,7 +25,7 @@
 #define DEBUG
  */
 
-#include "nip4.h"
+#include "package.h"
 
 struct _App {
 	GtkApplication parent;

@@ -1,4 +1,4 @@
-#include "nip4.h"
+#include "package.h"
 
 void
 prefs_set(const char *name, const char *fmt, ...)

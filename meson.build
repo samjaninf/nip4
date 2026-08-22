@@ -49,6 +49,7 @@ config_h = configuration_data()
 set_defines = [
   ['APPLICATION_ID', application_id],
   ['PACKAGE', meson.project_name()],
+  ['PACKAGE_UPPER', meson.project_name().to_upper()],
   ['VERSION', meson.project_version()],
 ]
 

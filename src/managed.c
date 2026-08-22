@@ -30,7 +30,7 @@
 
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* get -DDEBUG_LEAK from the gcc command-line
 #define DEBUG

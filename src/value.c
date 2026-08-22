@@ -31,7 +31,7 @@
 #define DEBUG
  */
 
-#include "nip4.h"
+#include "package.h"
 
 G_DEFINE_TYPE(Value, value, CLASSMODEL_TYPE)
 

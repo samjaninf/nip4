@@ -32,7 +32,7 @@
 #define DEBUG_REWRITE
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* Default search paths if prefs fail.
  */

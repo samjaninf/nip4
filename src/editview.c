@@ -31,7 +31,7 @@
 #define DEBUG
  */
 
-#include "nip4.h"
+#include "package.h"
 
 G_DEFINE_ABSTRACT_TYPE(Editview, editview, GRAPHICVIEW_TYPE)
 

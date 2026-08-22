@@ -32,7 +32,7 @@
 #define DEBUG
  */
 
-#include "nip4.h"
+#include "package.h"
 
 G_DEFINE_TYPE(Formula, formula, GTK_TYPE_WIDGET)
 

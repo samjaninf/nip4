@@ -1,6 +1,6 @@
 // shim for prefworkspaceview
 
-#include "nip4.h"
+#include "package.h"
 
 View *
 prefworkspaceview_new(void)

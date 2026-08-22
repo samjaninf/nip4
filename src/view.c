@@ -31,7 +31,7 @@
 #define DEBUG_TIME
  */
 
-#include "nip4.h"
+#include "package.h"
 
 G_DEFINE_TYPE(View, view, VOBJECT_TYPE)
 

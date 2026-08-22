@@ -28,7 +28,7 @@
 
 */
 
-#include "nip4.h"
+#include "package.h"
 
 #define YY_INPUT(buf, result, max_size) \
 	{ \

@@ -29,7 +29,7 @@
 #define DEBUG_ERROR
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* Track errors messages in this thing. We keep two messages: a principal
  * error, and extra informative text. For example "Unable to load file.",

@@ -31,7 +31,7 @@
 #define DEBUG
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* Set of allowed colour_space strings. Do a case-insensitive match.
  */

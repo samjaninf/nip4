@@ -27,7 +27,7 @@
 
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* Free any stuff attached to a ParseConst.
  */

@@ -29,7 +29,7 @@
 #define DEBUG_TIME
  */
 
-#include "nip4.h"
+#include "package.h"
 
 G_DEFINE_TYPE(vObject, vobject, GTK_TYPE_WIDGET)
 

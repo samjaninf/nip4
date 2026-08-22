@@ -27,7 +27,7 @@
 
  */
 
-#include "nip4.h"
+#include "package.h"
 
 /* All debug
 #define DEBUG

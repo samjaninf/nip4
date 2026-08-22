@@ -31,7 +31,7 @@
 #define DEBUG
  */
 
-#include "nip4.h"
+#include "package.h"
 
 // a .ws file we found in the recover area
 typedef struct _Recoverfile {
