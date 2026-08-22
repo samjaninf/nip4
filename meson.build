@@ -51,6 +51,7 @@ set_defines = [
   ['PACKAGE', meson.project_name()],
   ['PACKAGE_UPPER', meson.project_name().to_upper()],
   ['VERSION', meson.project_version()],
+  ['NIP4', '1'],
 ]
 
 foreach define: set_defines
