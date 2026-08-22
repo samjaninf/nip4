@@ -1610,9 +1610,10 @@ row_recomp_all(Row *top_row)
 		pgraph(&top_row->expr->root);
 #endif /*DEBUG*/
 
-		/* So we don't stall updates for too long.
+		/* So we don't stall updates for too long. Don't bother in batch mode.
 		 */
-		process_events();
+		if (!main_option_batch)
+			process_events();
 	}
 
 	workspace_error_sanity(top_row->ws);
