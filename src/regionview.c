@@ -641,11 +641,6 @@ regionview_draw(Regionview *regionview, GtkSnapshot *snapshot)
 		regionview_draw_guide(regionview, snapshot);
 		break;
 
-		/*
-	REGIONVIEW_LINE,			// floating dashed line for paintbox
-	REGIONVIEW_BOX				// floating dashed box for paintbox
-		 */
-
 	default:
 		g_assert_not_reached();
 	}
