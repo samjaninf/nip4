@@ -285,6 +285,4 @@ const char *get_savedir(void);
 void **slist_to_array(GSList *list);
 int array_len(void **array);
 
-int draw_mask(VipsImage *image, VipsPel *ink, VipsImage *mask, int x, int y);
-
 GPid get_gpid(void);

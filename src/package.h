@@ -19,8 +19,8 @@
 
  */
 
-#ifndef __NIP4_H
-#define __NIP4_H
+#ifndef __PACKAGE_H
+#define __PACKAGE_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -50,7 +50,7 @@
 #include <sys/mount.h>
 #endif
 
-#define APP_PATH "/org/libvips/nip4"
+#define APP_PATH "/org/libvips/" PACKAGE
 
 #include <gtk/gtk.h>
 // needed for VIPS_ARGUMENT_COLLECT_SET
@@ -141,6 +141,8 @@
 /* Sanity-check all nodes all the time, very slow!
 #define DEBUG_HEAP
  */
+
+int draw_mask(VipsImage *image, VipsPel *ink, VipsImage *mask, int x, int y);
 
 // various forward typdefs
 
@@ -337,4 +339,4 @@ typedef struct _Workspace Workspace;
 #include "toolview.h"
 #include "rhsview.h"
 
-#endif /*__NIP4_H*/
+#endif /*__PACKAGE_H*/
