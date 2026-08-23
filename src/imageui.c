@@ -157,7 +157,9 @@ G_DEFINE_TYPE(Imageui, imageui, GTK_TYPE_WIDGET);
 
 enum {
 	PROP_TILESOURCE = 1,
+#ifdef NIP4
 	PROP_IIMAGE,
+#endif /*NIP4*/
 	PROP_BACKGROUND,
 	PROP_ZOOM,
 	PROP_X,
@@ -1535,9 +1537,11 @@ imageui_class_init(ImageuiClass *class)
 		G_TYPE_BOOLEAN, 4,
 		G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_OBJECT);
 
+#ifdef NIP4
 	for (int i = 0; i < REGIONVIEW_RESIZE_LAST; i++)
 		imageui_cursors[i] =
 			gdk_cursor_new_from_name(imageui_cursor_names[i], NULL);
+#endif /*NIP4*/
 }
 
 #ifdef NIP4
