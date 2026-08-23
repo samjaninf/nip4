@@ -1,4 +1,4 @@
-/* the nip4 paintbox bar
+/* the paintbox bar
  */
 
 /*
