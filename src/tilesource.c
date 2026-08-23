@@ -2014,7 +2014,7 @@ tilesource_request_tile(Tilesource *tilesource, Tile *tile)
 {
 #ifdef DEBUG_VERBOSE
 	printf("tilesource_request_tile: %d x %d\n",
-		tile->region->valid.left, tile->region->valid.top);
+		tile->bounds.left, tile->bounds.top);
 #endif /*DEBUG_VERBOSE*/
 
 	if (tilesource->load_error) {
@@ -2070,7 +2070,7 @@ tilesource_collect_tile(Tilesource *tilesource, Tile *tile)
 {
 #ifdef DEBUG_VERBOSE
 	printf("tilesource_collect_tile: %d x %d\n",
-		tile->region->valid.left, tile->region->valid.top);
+		tile->bounds.left, tile->bounds.top);
 #endif /*DEBUG_VERBOSE*/
 
 	/* Clip the tile against the size of this level.
