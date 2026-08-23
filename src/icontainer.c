@@ -782,7 +782,7 @@ icontainer_class_init(iContainerClass *class)
 		G_SIGNAL_RUN_FIRST,
 		G_STRUCT_OFFSET(iContainerClass, child_add),
 		NULL, NULL,
-		nip4_VOID__OBJECT_INT,
+		app_VOID__OBJECT_INT,
 		G_TYPE_NONE, 2,
 		ICONTAINER_TYPE, G_TYPE_INT);
 
@@ -818,7 +818,7 @@ icontainer_class_init(iContainerClass *class)
 		G_SIGNAL_RUN_FIRST,
 		G_STRUCT_OFFSET(iContainerClass, child_attach),
 		NULL, NULL,
-		nip4_VOID__OBJECT_INT,
+		app_VOID__OBJECT_INT,
 		G_TYPE_NONE, 2,
 		ICONTAINER_TYPE, G_TYPE_INT);
 

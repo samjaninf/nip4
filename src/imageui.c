@@ -1463,7 +1463,7 @@ imageui_class_init(ImageuiClass *class)
 		G_STRUCT_OFFSET(ImageuiClass, motion),
 		imageui_event_accu,
 		NULL,
-		nip4_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
+		app_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
 		G_TYPE_BOOLEAN, 3,
 		G_TYPE_DOUBLE, G_TYPE_DOUBLE, G_TYPE_OBJECT);
 
@@ -1491,7 +1491,7 @@ imageui_class_init(ImageuiClass *class)
 		G_STRUCT_OFFSET(ImageuiClass, drag_begin),
 		imageui_event_accu,
 		NULL,
-		nip4_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
+		app_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
 		G_TYPE_BOOLEAN, 3,
 		G_TYPE_DOUBLE, G_TYPE_DOUBLE, G_TYPE_OBJECT);
 
@@ -1501,7 +1501,7 @@ imageui_class_init(ImageuiClass *class)
 		G_STRUCT_OFFSET(ImageuiClass, drag_update),
 		imageui_event_accu,
 		NULL,
-		nip4_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
+		app_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
 		G_TYPE_BOOLEAN, 3,
 		G_TYPE_DOUBLE, G_TYPE_DOUBLE, G_TYPE_OBJECT);
 
@@ -1511,7 +1511,7 @@ imageui_class_init(ImageuiClass *class)
 		G_STRUCT_OFFSET(ImageuiClass, drag_end),
 		imageui_event_accu,
 		NULL,
-		nip4_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
+		app_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
 		G_TYPE_BOOLEAN, 3,
 		G_TYPE_DOUBLE, G_TYPE_DOUBLE, G_TYPE_OBJECT);
 
@@ -1521,7 +1521,7 @@ imageui_class_init(ImageuiClass *class)
 		G_STRUCT_OFFSET(ImageuiClass, key_pressed),
 		imageui_event_accu,
 		NULL,
-		nip4_BOOLEAN__INT_INT_INT_OBJECT,
+		app_BOOLEAN__INT_INT_INT_OBJECT,
 		G_TYPE_BOOLEAN, 4,
 		G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_OBJECT);
 
@@ -1531,7 +1531,7 @@ imageui_class_init(ImageuiClass *class)
 		G_STRUCT_OFFSET(ImageuiClass, key_released),
 		imageui_event_accu,
 		NULL,
-		nip4_BOOLEAN__INT_INT_INT_OBJECT,
+		app_BOOLEAN__INT_INT_INT_OBJECT,
 		G_TYPE_BOOLEAN, 4,
 		G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_OBJECT);
 
