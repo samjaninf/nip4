@@ -7,6 +7,8 @@
 
 - implement undo / redo
 
+- brushes should snap to guides
+
 - setting tslider digits to 0 doesn't seem to make it int-valued
 
 	how odd

@@ -553,15 +553,59 @@ paintbox_drag_end(Imageui *imageui,
 	return handled;
 }
 
+static void
+paintbox_snap_brush(Paintbox *paintbox,
+	int x, int y, int r, int *new_x, int *new_y)
+{
+	VipsRect brush = {x, y, 0, 0};
+	vips_rect_marginadjust(&brush, r);
+	VipsRect new_brush;
+	if (imageui_snap_rect(paintbox->imageui, &brush, &new_brush)) {
+		*new_x = new_brush.left + r;
+		*new_y = new_brush.top + r;
+	}
+	else {
+		*new_x = x;
+		*new_y = y;
+	}
+}
+
+static void
+paintbox_snap_point(Paintbox *paintbox, int x, int y, int *new_x, int *new_y)
+{
+	int sx, sy;
+	if (imageui_snap_point(paintbox->imageui, x, y, &sx, &sy)) {
+		*new_x = sx;
+		*new_y = sy;
+	}
+	else {
+		*new_x = x;
+		*new_y = y;
+	}
+}
+
+static void
+paintbox_snap_rect(Paintbox *paintbox, VipsRect *rect, VipsRect *new_rect)
+{
+	VipsRect r;
+	if (imageui_snap_rect(paintbox->imageui, rect, &r))
+		*new_rect = r;
+	else
+		*new_rect = *rect;
+}
+
 static gboolean
 paintbox_motion(Imageui *imageui,
 	gdouble gtk_x, gdouble gtk_y, GtkEventControllerMotion *motion,
 	gpointer user_data)
 {
 	Paintbox *paintbox = PAINTBOX(user_data);
+	int radius = rint(TSLIDER(paintbox->width)->value / 2);
 
 	double image_x, image_y;
 	imageui_gtk_to_image(imageui, gtk_x, gtk_y, &image_x, &image_y);
+	int x = rint(image_x);
+	int y = rint(image_y);
 
 #ifdef DEBUG_VERBOSE
 	printf("paintbox_motion: image_x = %g, image_y = %g\n",
@@ -574,9 +618,9 @@ paintbox_motion(Imageui *imageui,
 		switch (paintbox->tool) {
 		case PAINTBOX_TOOL_SMUDGE:
 		case PAINTBOX_TOOL_BRUSH:
-			paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_CIRCLE,
-				rint(image_x), rint(image_y), 0, 0,
-				rint(TSLIDER(paintbox->width)->value) / 2, 0);
+			paintbox_snap_brush(paintbox, x, y, radius, &x, &y);
+			paintbox_set_rubber(paintbox,
+				PAINTBOX_RUBBER_CIRCLE, x, y, 0, 0, radius, 0);
 			break;
 
 		default:
@@ -586,33 +630,43 @@ paintbox_motion(Imageui *imageui,
 		switch (paintbox->tool) {
 		case PAINTBOX_TOOL_SMUDGE:
 		case PAINTBOX_TOOL_BRUSH:
-			paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_CIRCLE,
-				rint(image_x), rint(image_y), 0, 0,
-				rint(TSLIDER(paintbox->width)->value) / 2, 0);
+			paintbox_snap_brush(paintbox, x, y, radius, &x, &y);
+			paintbox_set_rubber(paintbox,
+				PAINTBOX_RUBBER_CIRCLE, x, y, 0, 0, radius, 0);
 			break;
 
 		case PAINTBOX_TOOL_LINE:
-			paintbox->x1 = rint(image_x);
-			paintbox->y1 = rint(image_y);
+			paintbox_snap_point(paintbox, x, y, &x, &y);
+			paintbox->x1 = x;
+			paintbox->y1 = y;
 			gtk_widget_queue_draw(paintbox->imagedisplay);
 			break;
 
 		case PAINTBOX_TOOL_RECT:
-			paintbox->x1 = rint(image_x);
-			paintbox->y1 = rint(image_y);
+			paintbox_snap_point(paintbox, x, y, &x, &y);
+			paintbox->x1 = x;
+			paintbox->y1 = y;
 			gtk_widget_queue_draw(paintbox->imagedisplay);
 			break;
 
 		case PAINTBOX_TOOL_CIRCLE:
-			double dx = paintbox->x0 - image_x;
-			double dy = paintbox->y0 - image_y;
+			paintbox_snap_point(paintbox, x, y, &x, &y);
+			double dx = paintbox->x0 - x;
+			double dy = paintbox->y0 - y;
 			paintbox->a = rint(sqrt(dx * dx + dy * dy));
 			gtk_widget_queue_draw(paintbox->imagedisplay);
 			break;
 
 		case PAINTBOX_TOOL_TEXT:
-			paintbox->x0 = rint(image_x);
-			paintbox->y0 = rint(image_y);
+			VipsRect text = {
+				paintbox->x0,
+				paintbox->y0,
+				paintbox->x1,
+				paintbox->y1,
+			};
+			paintbox_snap_rect(paintbox, &text, &text);
+			paintbox->x0 = text.left;
+			paintbox->y0 = text.top;
 			gtk_widget_queue_draw(paintbox->imagedisplay);
 			break;
 
