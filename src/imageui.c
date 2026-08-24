@@ -1348,21 +1348,6 @@ imageui_init(Imageui *imageui)
 #endif /*NIP4*/
 }
 
-static gboolean
-imageui_event_accu(GSignalInvocationHint *ihint,
-	GValue *return_accu, const GValue *handler_return, gpointer data)
-{
-	g_assert(G_VALUE_HOLDS_BOOLEAN(handler_return));
-
-	gboolean handled = g_value_get_boolean(handler_return);
-
-	g_value_set_boolean(return_accu, handled);
-
-	// gtk uses FALSE to abort signal processing, TRUE to continue
-	// therefore, continue if not handled
-	return !handled;
-}
-
 static void
 imageui_class_init(ImageuiClass *class)
 {
@@ -1463,7 +1448,7 @@ imageui_class_init(ImageuiClass *class)
 		G_TYPE_FROM_CLASS(class),
 		G_SIGNAL_RUN_LAST,
 		G_STRUCT_OFFSET(ImageuiClass, motion),
-		imageui_event_accu,
+		g_signal_accumulator_true_handled,
 		NULL,
 		app_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
 		G_TYPE_BOOLEAN, 3,
@@ -1491,7 +1476,7 @@ imageui_class_init(ImageuiClass *class)
 		G_TYPE_FROM_CLASS(class),
 		G_SIGNAL_RUN_LAST,
 		G_STRUCT_OFFSET(ImageuiClass, drag_begin),
-		imageui_event_accu,
+		g_signal_accumulator_true_handled,
 		NULL,
 		app_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
 		G_TYPE_BOOLEAN, 3,
@@ -1501,7 +1486,7 @@ imageui_class_init(ImageuiClass *class)
 		G_TYPE_FROM_CLASS(class),
 		G_SIGNAL_RUN_LAST,
 		G_STRUCT_OFFSET(ImageuiClass, drag_update),
-		imageui_event_accu,
+		g_signal_accumulator_true_handled,
 		NULL,
 		app_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
 		G_TYPE_BOOLEAN, 3,
@@ -1511,7 +1496,7 @@ imageui_class_init(ImageuiClass *class)
 		G_TYPE_FROM_CLASS(class),
 		G_SIGNAL_RUN_LAST,
 		G_STRUCT_OFFSET(ImageuiClass, drag_end),
-		imageui_event_accu,
+		g_signal_accumulator_true_handled,
 		NULL,
 		app_BOOLEAN__DOUBLE_DOUBLE_OBJECT,
 		G_TYPE_BOOLEAN, 3,
@@ -1521,7 +1506,7 @@ imageui_class_init(ImageuiClass *class)
 		G_TYPE_FROM_CLASS(class),
 		G_SIGNAL_RUN_LAST,
 		G_STRUCT_OFFSET(ImageuiClass, key_pressed),
-		imageui_event_accu,
+		g_signal_accumulator_true_handled,
 		NULL,
 		app_BOOLEAN__INT_INT_INT_OBJECT,
 		G_TYPE_BOOLEAN, 4,
@@ -1531,7 +1516,7 @@ imageui_class_init(ImageuiClass *class)
 		G_TYPE_FROM_CLASS(class),
 		G_SIGNAL_RUN_LAST,
 		G_STRUCT_OFFSET(ImageuiClass, key_released),
-		imageui_event_accu,
+		g_signal_accumulator_true_handled,
 		NULL,
 		app_BOOLEAN__INT_INT_INT_OBJECT,
 		G_TYPE_BOOLEAN, 4,

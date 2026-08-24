@@ -1,5 +1,20 @@
+- imageuiregion handlers are running before paintboix
+
+	so starting a paint on a guide will move the guide!
+
+	signal handlers are inviokled in attach order, so we must connect the
+	paintbox before we connect the imageuiregion handlers
+
+	imageuiregion is built during imageui construction, paintbox is
+	connected on ::new-image when the imageui is attached to the
+	imagewindow
+
+	we need to delay imageuiregion construction until after ::new-image has
+	been emitted
 
 - can't paint on RGBA images
+
+	nor eg. pages as bands, multipage, animated, etc.
 
 - better flood icons
 
@@ -7,7 +22,7 @@
 
 - implement undo / redo
 
-- brushes should snap to guides
+- text box should show with pointer on baseline
 
 - setting tslider digits to 0 doesn't seem to make it int-valued
 
