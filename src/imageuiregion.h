@@ -59,6 +59,6 @@ gboolean imageuiregion_snap_rect(Imageuiregion *imageuiregion,
 Regionview *imageuiregion_pick_regionview(Imageuiregion *imageuiregion,
 	int x, int y);
 
-Imageuiregion *imageuiregion_new(Imageui *imageui);
+Imageuiregion *imageuiregion_new(void);
 
 #endif /* __IMAGEUIREGION_H */

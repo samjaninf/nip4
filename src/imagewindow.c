@@ -613,6 +613,18 @@ imagewindow_imageui_set_visible(Imagewindow *win, Imageui *imageui)
 
 		// tell everyone there's a new imageui
 		imagewindow_new_image(win);
+
+		/* Attach the region handler. This needs to come after the new_image()
+		 * signal, so that the region drag handlers are hidden by paint drag
+		 * handlers.
+		 */
+		Imageuiregion *imageuiregion = imageuiregion_new();
+		g_object_set(imageui,
+			"imageuiregion", imageuiregion,
+			NULL);
+		g_object_set(imageuiregion,
+			"imageui", imageui,
+			NULL);
 	}
 	else
 		// the same image, just updated

@@ -1,16 +1,24 @@
-- imageuiregion handlers are running before paintboix
+- crash if you open an imagewindow for an iimage with regions on it
 
-	so starting a paint on a guide will move the guide!
+	imagewindow_set_iimage() called from iimage_edit()
 
-	signal handlers are inviokled in attach order, so we must connect the
-	paintbox before we connect the imageuiregion handlers
+	triggers imagewindow_iimage_changed() to init
 
-	imageuiregion is built during imageui construction, paintbox is
-	connected on ::new-image when the imageui is attached to the
-	imagewindow
+	calls imageui_new() and that sets "iimage" during _new
 
-	we need to delay imageuiregion construction until after ::new-image has
-	been emitted
+	imageui_set_iimage() tries to add regionviews, but imageuiregions
+	is NULL
+
+  we need to delay creating the regionviews until imageuiregion is built
+
+  make them as part of imageuiregion init, not from imageui_set_iimage() ?
+
+
+- drag_begin sets drag state and inits rubber
+
+  motion updates rubber
+
+  drag_end paints using rubber params
 
 - can't paint on RGBA images
 

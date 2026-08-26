@@ -159,6 +159,7 @@ enum {
 	PROP_TILESOURCE = 1,
 #ifdef NIP4
 	PROP_IIMAGE,
+	PROP_IMAGEUIREGION,
 #endif /*NIP4*/
 	PROP_BACKGROUND,
 	PROP_ZOOM,
@@ -454,6 +455,10 @@ imageui_property_name(guint prop_id)
 	case PROP_IIMAGE:
 		return "IIMAGE";
 		break;
+
+	case PROP_IMAGEUIREGION:
+		return "IMAGEUIREGION";
+		break;
 #endif /*NIP4*/
 
 	case PROP_BACKGROUND:
@@ -514,6 +519,11 @@ imageui_set_property(GObject *object,
 	case PROP_IIMAGE:
 		imageui_set_iimage(imageui, IIMAGE(g_value_get_object(value)));
 		break;
+
+	case PROP_IMAGEUIREGION:
+		g_assert(!imageui->imageuiregion);
+		imageui->imageuiregion = IMAGEUIREGION(g_value_get_object(value));
+		break;
 #endif /*NIP4*/
 
 	case PROP_BACKGROUND:
@@ -571,6 +581,10 @@ imageui_get_property(GObject *object,
 #ifdef NIP4
 	case PROP_IIMAGE:
 		g_value_set_object(value, imageui->iimage);
+		break;
+
+	case PROP_IMAGEUIREGION:
+		g_value_set_object(value, imageui->imageuiregion);
 		break;
 #endif /*NIP4*/
 
@@ -677,7 +691,7 @@ imageui_set_position(Imageui *imageui, double x, double y)
 		GTK_SCROLLED_WINDOW(imageui->scrolled_window));
 
 #ifdef DEBUG_VERBOSE
-	printf("imagewindow_set_position: x = %g, y = %g\n", x, y);
+	printf("imageui_set_position: x = %g, y = %g\n", x, y);
 #endif /*DEBUG_VERBOSE*/
 
 	gtk_adjustment_set_value(hadj, x);
@@ -1342,10 +1356,6 @@ imageui_init(Imageui *imageui)
 	// read the gtk animation setting preference
 	imageui->should_animate = widget_should_animate(GTK_WIDGET(imageui));
 
-#ifdef NIP4
-	// attach the region handler
-	imageui->imageuiregion = imageuiregion_new(imageui);
-#endif /*NIP4*/
 }
 
 static void
@@ -1397,6 +1407,13 @@ imageui_class_init(ImageuiClass *class)
 			_("iImage"),
 			_("The model we represent"),
 			IIMAGE_TYPE,
+			G_PARAM_READWRITE));
+
+	g_object_class_install_property(gobject_class, PROP_IMAGEUIREGION,
+		g_param_spec_object("imageuiregion",
+			_("Imageuiregion"),
+			_("The region handler"),
+			IMAGEUIREGION_TYPE,
 			G_PARAM_READWRITE));
 #endif /*NIP4*/
 
