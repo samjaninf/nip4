@@ -58,14 +58,7 @@ struct _Paintbox {
 	 */
 	Imageui *imageui;
 	GtkWidget *imagedisplay;
-	guint drag_begin_sid;
-	guint drag_update_sid;
-	guint drag_end_sid;
-	guint motion_sid;
-	guint enter_sid;
-	guint leave_sid;
 	guint snapshot_sid;
-	guint key_pressed_sid;
 
 	/* Currently selected tool.
 	 */
@@ -75,6 +68,8 @@ struct _Paintbox {
 	 */
 	PaintboxState state;
 
+	/* Start of drag.
+	 */
 	double start_x;
 	double start_y;
 
@@ -132,38 +127,16 @@ GdkRGBA paintbox_shadow = { 0.2, 0.2, 0.2, 0.5 };
 static void
 paintbox_disconnect(Paintbox *paintbox)
 {
-	if (paintbox->drag_begin_sid) {
-		g_signal_handler_disconnect(paintbox->imageui,
-			paintbox->drag_begin_sid);
-		g_signal_handler_disconnect(paintbox->imageui,
-			paintbox->drag_update_sid);
-		g_signal_handler_disconnect(paintbox->imageui,
-			paintbox->drag_end_sid);
-		g_signal_handler_disconnect(paintbox->imageui,
-			paintbox->motion_sid);
-		g_signal_handler_disconnect(paintbox->imageui,
-			paintbox->enter_sid);
-		g_signal_handler_disconnect(paintbox->imageui,
-			paintbox->leave_sid);
-		g_signal_handler_disconnect(paintbox->imageui,
-			paintbox->key_pressed_sid);
-
-		paintbox->drag_begin_sid = 0;
-		paintbox->drag_update_sid = 0;
-		paintbox->drag_end_sid = 0;
-		paintbox->motion_sid = 0;
-		paintbox->enter_sid = 0;
-		paintbox->leave_sid = 0;
-		paintbox->key_pressed_sid = 0;
-
-		paintbox->imageui = NULL;
-	}
-
 	if (paintbox->snapshot_sid) {
 		g_signal_handler_disconnect(paintbox->imagedisplay,
 			paintbox->snapshot_sid);
 
 		paintbox->imagedisplay = NULL;
+	}
+
+	if (paintbox->imageui) {
+		imageui_client_remove(paintbox->imageui, G_OBJECT(paintbox));
+		paintbox->imageui = NULL;
 	}
 }
 
@@ -177,6 +150,7 @@ paintbox_dispose(GObject *object)
 #endif /*DEBUG*/
 
 	VIPS_UNREF(paintbox->mask);
+	paintbox_disconnect(paintbox);
 
 	VIPS_FREEF(gtk_widget_unparent, paintbox->action_bar);
 
@@ -294,10 +268,10 @@ paintbox_snap_brush(Paintbox *paintbox,
 }
 
 static gboolean
-paintbox_drag_begin(Imageui *imageui,
-	gdouble start_x, gdouble start_y, GtkGestureDrag *drag, gpointer user_data)
+paintbox_drag_begin(Paintbox *paintbox,
+	gdouble start_x, gdouble start_y, GdkModifierType modifiers)
 {
-	Paintbox *paintbox = PAINTBOX(user_data);
+	Imageui *imageui = paintbox->imageui;
 
 	paintbox->start_x = start_x;
 	paintbox->start_y = start_y;
@@ -310,9 +284,9 @@ paintbox_drag_begin(Imageui *imageui,
 	int radius = rint(TSLIDER(paintbox->width)->value / 2);
 
 #ifdef DEBUG_VERBOSE
-#endif /*DEBUG_VERBOSE*/
 	printf("paintbox_drag_begin: start_x = %g, start_y = %g\n",
 		start_x, start_y);
+#endif /*DEBUG_VERBOSE*/
 
 	gboolean handled = FALSE;
 
@@ -428,16 +402,16 @@ paintbox_update_smudge_draw(Paintbox *paintbox, int x, int y)
 }
 
 static gboolean
-paintbox_drag_update(Imageui *imageui,
-	gdouble offset_x, gdouble offset_y, GtkGestureDrag *drag,
-	gpointer user_data)
+paintbox_drag_update(Paintbox *paintbox,
+	gdouble offset_x, gdouble offset_y, GdkModifierType modifiers)
 {
-	Paintbox *paintbox = PAINTBOX(user_data);
+	Imageui *imageui = paintbox->imageui;
 
-	double gtk_x = paintbox->start_x + offset_x;
-	double gtk_y = paintbox->start_y + offset_y;
-	double image_x, image_y;
-	imageui_gtk_to_image(imageui, gtk_x, gtk_y, &image_x, &image_y);
+	double image_x;
+	double image_y;
+	imageui_gtk_to_image(imageui,
+		paintbox->start_x + offset_x, paintbox->start_y + offset_y,
+		&image_x, &image_y);
 	int x = rint(image_x);
 	int y = rint(image_y);
 
@@ -500,19 +474,19 @@ paintbox_update_model(Paintbox *paintbox)
 #endif /*NIP4*/
 
 static gboolean
-paintbox_drag_end(Imageui *imageui,
-	gdouble offset_x, gdouble offset_y, GtkGestureDrag *drag,
-	gpointer user_data)
+paintbox_drag_end(Paintbox *paintbox,
+	gdouble offset_x, gdouble offset_y, GdkModifierType modifiers)
 {
-	Paintbox *paintbox = PAINTBOX(user_data);
+	Imageui *imageui = paintbox->imageui;
 	Tilesource *tilesource = imageui_get_tilesource(imageui);
 
-	double gtk_x = paintbox->start_x + offset_x;
-	double gtk_y = paintbox->start_y + offset_y;
-	double image_x, image_y;
-	imageui_gtk_to_image(imageui, gtk_x, gtk_y, &image_x, &image_y);
+	double image_x;
+	double image_y;
+	imageui_gtk_to_image(imageui,
+		paintbox->start_x + offset_x, paintbox->start_y + offset_y,
+		&image_x, &image_y);
 	int x = rint(image_x);
-    int y = rint(image_y);
+	int y = rint(image_y);
 
 	const GdkRGBA *rgba = gtk_color_dialog_button_get_rgba(
 			GTK_COLOR_DIALOG_BUTTON(paintbox->ink));
@@ -603,14 +577,13 @@ paintbox_drag_end(Imageui *imageui,
 }
 
 static gboolean
-paintbox_motion(Imageui *imageui,
-	gdouble gtk_x, gdouble gtk_y, GtkEventControllerMotion *motion,
-	gpointer user_data)
+paintbox_motion(Paintbox *paintbox, gdouble gtk_x, gdouble gtk_y)
 {
-	Paintbox *paintbox = PAINTBOX(user_data);
+	Imageui *imageui = paintbox->imageui;
 	int radius = rint(TSLIDER(paintbox->width)->value / 2);
 
-	double image_x, image_y;
+	double image_x;
+	double image_y;
 	imageui_gtk_to_image(imageui, gtk_x, gtk_y, &image_x, &image_y);
 	int x = rint(image_x);
 	int y = rint(image_y);
@@ -680,31 +653,28 @@ paintbox_motion(Imageui *imageui,
 	return handled;
 }
 
-static void
-paintbox_enter(Imageui *imageui, gpointer user_data)
+static gboolean
+paintbox_enter(Paintbox *paintbox)
 {
-	Paintbox *paintbox = PAINTBOX(user_data);
-
 	paintbox->hide = FALSE;
 	gtk_widget_queue_draw(paintbox->imagedisplay);
-}
 
-static void
-paintbox_leave(Imageui *imageui, gpointer user_data)
-{
-	Paintbox *paintbox = PAINTBOX(user_data);
-
-	paintbox->hide = TRUE;
-	gtk_widget_queue_draw(paintbox->imagedisplay);
+	return FALSE;
 }
 
 static gboolean
-paintbox_key_pressed(Imageui *imageui,
-	guint keyval, guint keycode, GdkModifierType state,
-	GtkEventControllerKey *key, gpointer user_data)
+paintbox_leave(Paintbox *paintbox)
 {
-	Paintbox *paintbox = PAINTBOX(user_data);
+	paintbox->hide = TRUE;
+	gtk_widget_queue_draw(paintbox->imagedisplay);
 
+	return FALSE;
+}
+
+static gboolean
+paintbox_key_pressed(Paintbox *paintbox,
+	guint keyval, guint keycode, GdkModifierType state)
+{
 #ifdef DEBUG_VERBOSE
 	printf("paintbox_key_pressed_real: keyval = %d, state = %d\n",
 		keyval, state);
@@ -738,6 +708,30 @@ paintbox_key_pressed(Imageui *imageui,
 		}
 
 	return handled;
+}
+
+static gboolean
+paintbox_event(GObject *object, const char *signal_name,
+	double x, double y, int keyval, int keycode, GdkModifierType modifiers)
+{
+	Paintbox *paintbox = PAINTBOX(object);
+
+	if (g_str_equal(signal_name, "motion"))
+		return paintbox_motion(paintbox, x, y);
+	else if (g_str_equal(signal_name, "drag-begin"))
+		return paintbox_drag_begin(paintbox, x, y, modifiers);
+	else if (g_str_equal(signal_name, "drag-update"))
+		return paintbox_drag_update(paintbox, x, y, modifiers);
+	else if (g_str_equal(signal_name, "drag-end"))
+		return paintbox_drag_end(paintbox, x, y, modifiers);
+	else if (g_str_equal(signal_name, "key-pressed"))
+		return paintbox_key_pressed(paintbox, keyval, keycode, modifiers);
+	else if (g_str_equal(signal_name, "enter"))
+		return paintbox_enter(paintbox);
+	else if (g_str_equal(signal_name, "leave"))
+		return paintbox_leave(paintbox);
+
+	return FALSE;
 }
 
 static void
@@ -844,23 +838,9 @@ paintbox_imagewindow_new_image(Imagewindow *win, Paintbox *paintbox)
 
 	paintbox_disconnect(paintbox);
 
-	printf("attaching paintbox\n");
-
 	paintbox->imageui = imagewindow_get_imageui(win);
-	paintbox->drag_begin_sid = g_signal_connect(paintbox->imageui,
-		"drag-begin", G_CALLBACK(paintbox_drag_begin), paintbox);
-	paintbox->drag_update_sid = g_signal_connect(paintbox->imageui,
-		"drag-update", G_CALLBACK(paintbox_drag_update), paintbox);
-	paintbox->drag_end_sid = g_signal_connect(paintbox->imageui,
-		"drag-end", G_CALLBACK(paintbox_drag_end), paintbox);
-	paintbox->motion_sid = g_signal_connect(paintbox->imageui,
-		"motion", G_CALLBACK(paintbox_motion), paintbox);
-	paintbox->enter_sid = g_signal_connect(paintbox->imageui,
-		"enter", G_CALLBACK(paintbox_enter), paintbox);
-	paintbox->leave_sid = g_signal_connect(paintbox->imageui,
-		"leave", G_CALLBACK(paintbox_leave), paintbox);
-	paintbox->key_pressed_sid = g_signal_connect(paintbox->imageui,
-		"key_pressed", G_CALLBACK(paintbox_key_pressed), paintbox);
+	imageui_client_add(paintbox->imageui, G_OBJECT(paintbox),
+		100, paintbox_event);
 
 	paintbox->imagedisplay = imageui_get_imagedisplay(paintbox->imageui);
 	paintbox->snapshot_sid = g_signal_connect(paintbox->imagedisplay,

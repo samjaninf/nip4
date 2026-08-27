@@ -1,16 +1,6 @@
-- imageuiregion handlers are running before paintboix
+- make infobar use imageui_client_add
 
-	so starting a paint on a guide will move the guide!
-
-	signal handlers are inviokled in attach order, so we must connect the
-	paintbox before we connect the imageuiregion handlers
-
-	imageuiregion is built during imageui construction, paintbox is
-	connected on ::new-image when the imageui is attached to the
-	imagewindow
-
-	we need to delay imageuiregion construction until after ::new-image has
-	been emitted
+	could get rid of eg. imageui->last_x_gtk?
 
 - can't paint on RGBA images
 
