@@ -1,3 +1,8 @@
+
+- smudge seems to make things darker
+
+	does it round down maybe?
+
 - can't paint on RGBA images
 
 	nor eg. pages as bands, multipage, animated, etc.

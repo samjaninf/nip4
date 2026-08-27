@@ -150,7 +150,6 @@ paintbox_dispose(GObject *object)
 #endif /*DEBUG*/
 
 	VIPS_UNREF(paintbox->mask);
-	paintbox_disconnect(paintbox);
 
 	VIPS_FREEF(gtk_widget_unparent, paintbox->action_bar);
 
@@ -339,6 +338,18 @@ paintbox_drag_begin(Paintbox *paintbox,
 			paintbox->last_y = y;
 			break;
 
+		case PAINTBOX_TOOL_FLOOD_UNTIL:
+		case PAINTBOX_TOOL_FLOOD_WHILE:
+		case PAINTBOX_TOOL_DROPPER:
+			// just note the start point in case there's a single click and no
+			// motion
+			imageui_snap_point(paintbox->imageui, x, y, &x, &y);
+			paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_NONE,
+				x, y,
+				0, 0,
+				0, 0);
+			break;
+
 		case PAINTBOX_TOOL_TEXT:
 			VipsRect text = {x, y, paintbox->a, paintbox->b};
 			imageui_snap_rect(paintbox->imageui, &text, &text);
@@ -405,18 +416,6 @@ static gboolean
 paintbox_drag_update(Paintbox *paintbox,
 	gdouble offset_x, gdouble offset_y, GdkModifierType modifiers)
 {
-	Imageui *imageui = paintbox->imageui;
-
-	double image_x;
-	double image_y;
-	imageui_gtk_to_image(imageui,
-		paintbox->start_x + offset_x, paintbox->start_y + offset_y,
-		&image_x, &image_y);
-	int x = rint(image_x);
-	int y = rint(image_y);
-
-	int radius = rint(TSLIDER(paintbox->width)->value / 2);
-
 #ifdef DEBUG_VERBOSE
 	printf("paintbox_drag_update: offset_x = %g, offset_y = %g\n",
 		offset_x, offset_y);
@@ -427,13 +426,11 @@ paintbox_drag_update(Paintbox *paintbox,
 	if (paintbox->state == PAINTBOX_STATE_DRAG) {
 		switch (paintbox->tool) {
 		case PAINTBOX_TOOL_BRUSH:
-			paintbox_snap_brush(paintbox, x, y, radius, &x, &y);
-			paintbox_update_brush_draw(paintbox, x, y);
+			paintbox_update_brush_draw(paintbox, paintbox->x0, paintbox->y0);
 			break;
 
 		case PAINTBOX_TOOL_SMUDGE:
-			paintbox_snap_brush(paintbox, x, y, radius, &x, &y);
-			paintbox_update_smudge_draw(paintbox, x, y);
+			paintbox_update_smudge_draw(paintbox, paintbox->x0, paintbox->y0);
 			break;
 
 		default:
@@ -480,14 +477,6 @@ paintbox_drag_end(Paintbox *paintbox,
 	Imageui *imageui = paintbox->imageui;
 	Tilesource *tilesource = imageui_get_tilesource(imageui);
 
-	double image_x;
-	double image_y;
-	imageui_gtk_to_image(imageui,
-		paintbox->start_x + offset_x, paintbox->start_y + offset_y,
-		&image_x, &image_y);
-	int x = rint(image_x);
-	int y = rint(image_y);
-
 	const GdkRGBA *rgba = gtk_color_dialog_button_get_rgba(
 			GTK_COLOR_DIALOG_BUTTON(paintbox->ink));
 	double rgb[3] = {
@@ -499,8 +488,6 @@ paintbox_drag_end(Paintbox *paintbox,
 	gboolean fill =
 		gtk_check_button_get_active(GTK_CHECK_BUTTON(paintbox->fill));
 
-	int radius = rint(TSLIDER(paintbox->width)->value / 2);
-
 #ifdef DEBUG_VERBOSE
 	printf("paintbox_drag_end: offset_x = %g, offset_y = %g\n",
 		offset_x, offset_y);
@@ -511,53 +498,49 @@ paintbox_drag_end(Paintbox *paintbox,
 	if (paintbox->state == PAINTBOX_STATE_DRAG) {
 		switch (paintbox->tool) {
 		case PAINTBOX_TOOL_BRUSH:
-			paintbox_snap_brush(paintbox, x, y, radius, &x, &y);
-			paintbox_update_brush_draw(paintbox, x, y);
+			paintbox_update_brush_draw(paintbox, paintbox->x0, paintbox->y0);
 			break;
 
 		case PAINTBOX_TOOL_LINE:
 			paintbox_make_brush(paintbox);
-			imageui_snap_point(paintbox->imageui, x, y, &x, &y);
-			paintbox_update_brush_draw(paintbox, x, y);
+			paintbox_update_brush_draw(paintbox, paintbox->x0, paintbox->y0);
 			break;
 
 		case PAINTBOX_TOOL_RECT:
-			imageui_snap_point(paintbox->imageui, x, y, &x, &y);
 			if (tilesource)
 				tilesource_draw_rect(tilesource,
 					rgb, 3, fill,
-					paintbox->last_x, paintbox->last_y,
-					x - paintbox->last_x, y - paintbox->last_x);
+					paintbox->x0, paintbox->y0,
+					paintbox->x1 - paintbox->x0, paintbox->y1 - paintbox->y0);
 			break;
 
 		case PAINTBOX_TOOL_CIRCLE:
-			imageui_snap_point(paintbox->imageui, x, y, &x, &y);
 			if (tilesource)
 				tilesource_draw_circle(tilesource,
-					rgb, 3, fill, x, y, paintbox->a);
+					rgb, 3, fill, paintbox->x0, paintbox->y0, paintbox->a);
 			break;
 
 		case PAINTBOX_TOOL_SMUDGE:
-			paintbox_update_smudge_draw(paintbox, image_x, image_y);
+			paintbox_update_smudge_draw(paintbox, paintbox->x0, paintbox->y0);
 			break;
 
 		case PAINTBOX_TOOL_FLOOD_UNTIL:
 			if (tilesource)
-				tilesource_draw_flood(tilesource, rgb, 3, FALSE, x, y);
+				tilesource_draw_flood(tilesource,
+					rgb, 3, FALSE, paintbox->x0, paintbox->y0);
 			break;
 
 		case PAINTBOX_TOOL_FLOOD_WHILE:
 			if (tilesource)
-				tilesource_draw_flood(tilesource, rgb, 3, TRUE, x, y);
+				tilesource_draw_flood(tilesource,
+					rgb, 3, TRUE, paintbox->x0, paintbox->y0);
 			break;
 
 		case PAINTBOX_TOOL_TEXT:
-			VipsRect text = {x, y, paintbox->a, paintbox->b};
-            imageui_snap_rect(paintbox->imageui, &text, &text);
 			if (tilesource &&
 				paintbox->mask)
 				tilesource_draw_mask(tilesource,
-					rgb, 3, paintbox->mask, text.left, text.top);
+					rgb, 3, paintbox->mask, paintbox->x0, paintbox->y0);
 			break;
 
 		default:
@@ -636,6 +619,15 @@ paintbox_motion(Paintbox *paintbox, gdouble gtk_x, gdouble gtk_y)
 			double dy = paintbox->y0 - y;
 			paintbox->a = rint(sqrt(dx * dx + dy * dy));
 			gtk_widget_queue_draw(paintbox->imagedisplay);
+			break;
+
+		case PAINTBOX_TOOL_FLOOD_UNTIL:
+		case PAINTBOX_TOOL_FLOOD_WHILE:
+		case PAINTBOX_TOOL_DROPPER:
+			// only note the new position
+			imageui_snap_point(paintbox->imageui, x, y, &x, &y);
+			paintbox->x0 = x;
+			paintbox->y0 = y;
 			break;
 
 		case PAINTBOX_TOOL_TEXT:
