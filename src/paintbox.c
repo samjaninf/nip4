@@ -310,9 +310,9 @@ paintbox_drag_begin(Imageui *imageui,
 	int radius = rint(TSLIDER(paintbox->width)->value / 2);
 
 #ifdef DEBUG_VERBOSE
+#endif /*DEBUG_VERBOSE*/
 	printf("paintbox_drag_begin: start_x = %g, start_y = %g\n",
 		start_x, start_y);
-#endif /*DEBUG_VERBOSE*/
 
 	gboolean handled = FALSE;
 
@@ -843,6 +843,8 @@ paintbox_imagewindow_new_image(Imagewindow *win, Paintbox *paintbox)
 #endif /*DEBUG*/
 
 	paintbox_disconnect(paintbox);
+
+	printf("attaching paintbox\n");
 
 	paintbox->imageui = imagewindow_get_imageui(win);
 	paintbox->drag_begin_sid = g_signal_connect(paintbox->imageui,

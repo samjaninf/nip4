@@ -352,9 +352,9 @@ imageuiregion_drag_begin(Imageui *imageui,
 	Imageuiregion *imageuiregion = IMAGEUIREGION(user_data);
 
 #ifdef DEBUG_VERBOSE
+#endif /*DEBUG_VERBOSE*/
 	printf("imageuiregion_drag_begin: start_x = %g, start_y = %g\n",
 		start_x, start_y);
-#endif /*DEBUG_VERBOSE*/
 
 	gboolean handled = FALSE;
 
@@ -582,10 +582,10 @@ imageuiregion_set_property(GObject *object,
 
 	switch (prop_id) {
 	case PROP_IMAGEUI:
+		printf("attaching imageuiregion\n");
 		Imageui *imageui = IMAGEUI(g_value_get_object(value));
 		GtkWidget *imagedisplay = imageui_get_imagedisplay(imageui);
 
-		g_assert(!imageuiregion->imageui);
 		imageuiregion->imageui = imageui;
 
 		g_signal_connect_object(G_OBJECT(imagedisplay), "snapshot",
@@ -658,7 +658,7 @@ imageuiregion_class_init(ImageuiregionClass *class)
 }
 
 Imageuiregion *
-imageuiregion_new()
+imageuiregion_new(Imageui *imageui)
 {
 	Imageuiregion *imageuiregion;
 
@@ -667,6 +667,7 @@ imageuiregion_new()
 #endif /*DEBUG*/
 
 	imageuiregion = g_object_new(IMAGEUIREGION_TYPE,
+		"imageui", imageui,
 		NULL);
 
 	return imageuiregion;

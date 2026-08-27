@@ -662,6 +662,7 @@ imageinfo_attach_gainmap(VipsImage *image)
 		image = x;
 
 		// attach the gainmap as metadata
+		printf("imageinfo_attach_gainmap: attaching gainmap ...\n");
 		vips_image_set_image(image, "gainmap", gainmap);
 
 		VIPS_UNREF(gainmap);
