@@ -755,7 +755,8 @@ paintbox_update_smudge_draw(Paintbox *paintbox, int x, int y)
 
 	if (tilesource)
 		tilesource_draw_smudge(tilesource, width,
-			paintbox->last_x, paintbox->last_y, x, y);
+			paintbox->last_x, paintbox->last_y, x, y,
+			(TilesourceSaveFn) paintbox_undo_add, paintbox);
 
 	paintbox->last_x = x;
 	paintbox->last_y = y;
@@ -860,13 +861,15 @@ paintbox_drag_end(Paintbox *paintbox,
 				tilesource_draw_rect(tilesource,
 					rgb, 3, fill,
 					paintbox->x0, paintbox->y0,
-					paintbox->x1 - paintbox->x0, paintbox->y1 - paintbox->y0);
+					paintbox->x1 - paintbox->x0, paintbox->y1 - paintbox->y0,
+					(TilesourceSaveFn) paintbox_undo_add, paintbox);
 			break;
 
 		case PAINTBOX_TOOL_CIRCLE:
 			if (tilesource)
 				tilesource_draw_circle(tilesource,
-					rgb, 3, fill, paintbox->x0, paintbox->y0, paintbox->a);
+					rgb, 3, fill, paintbox->x0, paintbox->y0, paintbox->a,
+					(TilesourceSaveFn) paintbox_undo_add, paintbox);
 			break;
 
 		case PAINTBOX_TOOL_SMUDGE:
@@ -876,13 +879,15 @@ paintbox_drag_end(Paintbox *paintbox,
 		case PAINTBOX_TOOL_FLOOD_UNTIL:
 			if (tilesource)
 				tilesource_draw_flood(tilesource,
-					rgb, 3, FALSE, paintbox->x0, paintbox->y0);
+					rgb, 3, FALSE, paintbox->x0, paintbox->y0,
+					(TilesourceSaveFn) paintbox_undo_add, paintbox);
 			break;
 
 		case PAINTBOX_TOOL_FLOOD_WHILE:
 			if (tilesource)
 				tilesource_draw_flood(tilesource,
-					rgb, 3, TRUE, paintbox->x0, paintbox->y0);
+					rgb, 3, TRUE, paintbox->x0, paintbox->y0,
+					(TilesourceSaveFn) paintbox_undo_add, paintbox);
 			break;
 
 		case PAINTBOX_TOOL_TEXT:
@@ -891,7 +896,8 @@ paintbox_drag_end(Paintbox *paintbox,
 				tilesource_draw_mask(tilesource,
 					rgb, 3, paintbox->mask,
 					paintbox->x0,
-					paintbox->y0 - paintbox->topline + paintbox->mask->Yoffset);
+					paintbox->y0 - paintbox->topline + paintbox->mask->Yoffset,
+					(TilesourceSaveFn) paintbox_undo_add, paintbox);
 			break;
 
 		default:

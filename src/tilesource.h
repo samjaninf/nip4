@@ -306,15 +306,20 @@ void tilesource_draw_line(Tilesource *tilesource,
 	TilesourceSaveFn save, void *client);
 void tilesource_draw_rect(Tilesource *tilesource,
 	double *ink, int n, gboolean fill,
-	int left, int top, int width, int height);
+	int left, int top, int width, int height,
+	TilesourceSaveFn save, void *client);
 void tilesource_draw_circle(Tilesource *tilesource,
-	double *ink, int n, gboolean fill, int left, int top, int radius);
+	double *ink, int n, gboolean fill, int left, int top, int radius,
+	TilesourceSaveFn save, void *client);
 void tilesource_draw_smudge(Tilesource *tilesource, int width,
-	int x0, int y0, int x1, int y1);
+	int x0, int y0, int x1, int y1,
+	TilesourceSaveFn save, void *client);
 void tilesource_draw_flood(Tilesource *tilesource,
-	double *ink, int n, gboolean equal, int x, int y);
+	double *ink, int n, gboolean equal, int x, int y,
+	TilesourceSaveFn save, void *client);
 void tilesource_draw_mask(Tilesource *tilesource,
-	double *ink, int n, VipsImage *mask, int x, int y);
+	double *ink, int n, VipsImage *mask, int x, int y,
+	TilesourceSaveFn save, void *client);
 
 VipsImage *tilesource_draw_copy(Tilesource *tilesource, VipsRect *area);
 void tilesource_draw_paste(Tilesource *tilesource,
