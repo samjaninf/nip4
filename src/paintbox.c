@@ -47,6 +47,23 @@ typedef enum _PaintboxState {
 	PAINTBOX_STATE_DRAG,
 } PaintboxState;
 
+/* A fragment of an undo buffer.
+ */
+typedef struct _Undofragment {
+	struct _Undobuffer *undo;		/* Main undo area */
+	VipsImage *saved;				/* Saved pixels */
+	VipsRect position;				/* Where we took it from */
+} Undofragment;
+
+/* Hold a list of the above, a bounding box for this list, and a link back to
+ * the main imageinfo.
+ */
+typedef struct _Undobuffer {
+    Paintbox *paintbox;
+    GSList *frags;					/* List of paint fragments */
+    VipsRect bounds;				/* Bounding box for frags */
+} Undobuffer;
+
 struct _Paintbox {
 	GtkWidget parent_instance;
 
@@ -59,6 +76,12 @@ struct _Paintbox {
 	Imageui *imageui;
 	GtkWidget *imagedisplay;
 	guint snapshot_sid;
+
+	/* Undo/redo buffers.
+     */
+    GSList *undo;					/* List of undo buffers */
+    GSList *redo;					/* List of redo buffers */
+    Undobuffer *current_undo;		/* Current buffer */
 
 	/* Currently selected tool.
 	 */
@@ -91,6 +114,8 @@ struct _Paintbox {
 	/* Widgets.
 	 */
 	GtkWidget *action_bar;
+	GtkWidget *undo_widget;
+	GtkWidget *redo_widget;
 	// tool select toggles
 	GtkWidget *pointer;
 	GtkWidget *brush;
@@ -127,8 +152,43 @@ enum {
 	SIG_LAST
 };
 
-GdkRGBA paintbox_border = { 0.9, 1.0, 0.9, 1 };
-GdkRGBA paintbox_shadow = { 0.2, 0.2, 0.2, 0.5 };
+static const GdkRGBA paintbox_border = { 0.9, 1.0, 0.9, 1 };
+static const GdkRGBA paintbox_shadow = { 0.2, 0.2, 0.2, 0.5 };
+static const int paintbox_max_undo = 10;
+
+/* Free up an undo fragment.
+ */
+static void
+paintbox_undofragment_free(void *data)
+{
+	Undofragment *frag = (Undofragment *) data;
+
+    VIPS_UNREF(frag->saved);
+    VIPS_FREE(frag);
+}
+
+/* Free an undo buffer.
+ */
+static void
+paintbox_undobuffer_free(void *data)
+{
+	Undobuffer *undo = (Undobuffer *) data;
+
+	g_slist_free_full(g_steal_pointer(&undo->frags),
+		paintbox_undofragment_free);
+    VIPS_FREE(undo);
+}
+
+static void
+paintbox_undo_free(Paintbox *paintbox)
+{
+	g_slist_free_full(g_steal_pointer(&paintbox->undo),
+		paintbox_undobuffer_free);
+	g_slist_free_full(g_steal_pointer(&paintbox->redo),
+		paintbox_undobuffer_free);
+
+    VIPS_FREEF(paintbox_undobuffer_free, paintbox->current_undo);
+}
 
 static void
 paintbox_disconnect(Paintbox *paintbox)
@@ -155,8 +215,8 @@ paintbox_dispose(GObject *object)
 	printf("paintbox_dispose:\n");
 #endif /*DEBUG*/
 
+	paintbox_undo_free(paintbox);
 	VIPS_UNREF(paintbox->mask);
-
 	VIPS_FREEF(gtk_widget_unparent, paintbox->action_bar);
 
 	G_OBJECT_CLASS(paintbox_parent_class)->dispose(object);
@@ -169,7 +229,8 @@ paintbox_refresh(Paintbox *paintbox)
 		GTK_TOGGLE_BUTTON(paintbox->tools[paintbox->tool]);
 	gtk_toggle_button_set_active(button, TRUE);
 
-	// FIXME ... update undo/redo button sensitivity
+	gtk_widget_set_sensitive(paintbox->undo_widget, !!paintbox->undo);
+	gtk_widget_set_sensitive(paintbox->redo_widget, !!paintbox->redo);
 }
 
 static gboolean
@@ -399,6 +460,266 @@ paintbox_drag_begin(Paintbox *paintbox,
 	return handled;
 }
 
+static Undofragment *
+paintbox_undofragment_new(Undobuffer *undo)
+{
+    Undofragment *frag = VIPS_NEW(NULL, Undofragment);
+
+    frag->undo = undo;
+
+    return frag;
+}
+
+static Undobuffer *
+paintbox_undobuffer_new(Paintbox *paintbox)
+{
+    Undobuffer *undo = VIPS_NEW(NULL, Undobuffer);
+
+    undo->paintbox = paintbox;
+
+    return undo;
+}
+
+/* Grab into an undo fragment. Add frag to frag list on undo buffer, expand
+ * bounding box.
+ */
+static Undofragment *
+paintbox_undo_grab(Undobuffer *undo, VipsRect *position)
+{
+    Paintbox *paintbox = undo->paintbox;
+	Imageui *imageui = imagewindow_get_imageui(paintbox->win);
+	Tilesource *tilesource = imageui_get_tilesource(imageui);
+    Undofragment *frag = paintbox_undofragment_new(undo);
+
+    if (!(frag->saved = tilesource_draw_copy(tilesource, position))) {
+        paintbox_undofragment_free(frag);
+		error_vips_all();
+        return NULL;
+    }
+
+    frag->position = *position;
+    undo->frags = g_slist_prepend(undo->frags, frag);
+    vips_rect_unionrect(position, &undo->bounds, &undo->bounds);
+
+    return frag;
+}
+
+/* Trim the undo/redo buffers if we have more than x items on it.
+ */
+static void
+paintbox_undo_trim(Paintbox *paintbox)
+{
+    int len = g_slist_length(paintbox->undo);
+    if (len > paintbox_max_undo) {
+        GSList *l = g_slist_reverse(paintbox->undo);
+
+        for (int i = 0; i < len - paintbox_max_undo; i++) {
+            Undobuffer *undo = (Undobuffer *) l->data;
+
+            paintbox_undobuffer_free(undo);
+            l = g_slist_remove(l, undo);
+        }
+
+        paintbox->undo = g_slist_reverse(l);
+    }
+}
+
+/* Mark the start or end of an undo session. Copy current undo information
+ * to the undo buffers and NULL out the current undo pointer.
+ *
+ * Junk all redo information: this new undo action makes all that out of date.
+ */
+void
+paintbox_undo_mark(Paintbox *paintbox)
+{
+    if (paintbox->current_undo) {
+        /* Left over from the last undo save. Copy to undo save list
+         * and get ready for new undo buffer.
+         */
+        paintbox->undo =
+			g_slist_prepend(paintbox->undo, paintbox->current_undo);
+        paintbox->current_undo = NULL;
+    }
+
+    /* Junk all redo information, it must be out of date.
+     */
+    slist_map(paintbox->redo, (SListMapFn) paintbox_undobuffer_free, NULL);
+    VIPS_FREEF(g_slist_free, paintbox->redo);
+
+    paintbox_undo_trim(paintbox);
+
+    paintbox_refresh(paintbox);
+}
+
+/* Add some pixels to the current undo buffer.
+ */
+static gboolean
+paintbox_undo_add(Paintbox *paintbox, VipsRect *position)
+{
+	Undobuffer *undo = paintbox->current_undo;
+
+    if (!undo) {
+        paintbox->current_undo = undo = paintbox_undobuffer_new(paintbox);
+
+        return paintbox_undo_grab(undo, position) != NULL;
+    }
+
+	/* Do we need to expand our saved area to the right?
+     */
+    if (VIPS_RECT_RIGHT(position) > VIPS_RECT_RIGHT(&undo->bounds)) {
+		VipsRect over = {
+			.left = VIPS_RECT_RIGHT(&undo->bounds),
+			.top = undo->bounds.top,
+			.width = VIPS_RECT_RIGHT(position) - VIPS_RECT_RIGHT(&undo->bounds),
+			.height = undo->bounds.height,
+		};
+
+        if (!paintbox_undo_grab(undo, &over))
+            return FALSE;
+    }
+
+    /* Left?
+     */
+    if (undo->bounds.left > position->left) {
+		VipsRect over = {
+			.left = position->left,
+			.top = undo->bounds.top,
+			.width = undo->bounds.left - position->left,
+			.height = undo->bounds.height,
+		};
+
+        if (!paintbox_undo_grab(undo, &over))
+            return FALSE;
+    }
+
+    /* Up?
+     */
+    if (undo->bounds.top > position->top) {
+		VipsRect over = {
+			.left = undo->bounds.left,
+			.top = position->top,
+			.width = undo->bounds.width,
+			.height = undo->bounds.top - position->top,
+		};
+
+        if (!paintbox_undo_grab(undo, &over))
+            return FALSE;
+    }
+
+    /* Down?
+     */
+    if (VIPS_RECT_BOTTOM(position) > VIPS_RECT_BOTTOM(&undo->bounds)) {
+		VipsRect over = {
+			.left = undo->bounds.left,
+			.top = VIPS_RECT_BOTTOM(&undo->bounds),
+			.width = undo->bounds.width,
+			.height = VIPS_RECT_BOTTOM(position) -
+				VIPS_RECT_BOTTOM(&undo->bounds)
+		};
+
+        if (!paintbox_undo_grab(undo, &over))
+            return FALSE;
+    }
+
+    return TRUE;
+}
+
+/* Paste an undo fragment back into the image.
+ */
+static void *
+paintbox_undofragment_paste(Undofragment *frag)
+{
+    Undobuffer *undo = frag->undo;
+	Paintbox *paintbox = undo->paintbox;
+	Imageui *imageui = imagewindow_get_imageui(paintbox->win);
+	Tilesource *tilesource = imageui_get_tilesource(imageui);
+
+	tilesource_draw_paste(tilesource, frag->saved, &frag->position);
+
+    return NULL;
+}
+
+/* Paste a whole undo buffer back into the image.
+ */
+static void
+paintbox_undobuffer_paste(Undobuffer *undo)
+{
+    slist_map(undo->frags,
+        (SListMapFn) paintbox_undofragment_paste, NULL);
+}
+
+/* Undo a paint action.
+ */
+gboolean
+paintbox_undo(Paintbox *paintbox)
+{
+    Undobuffer *undo;
+
+    /* Find the undo action we are to perform.
+     */
+    if (!paintbox->undo)
+        return TRUE;
+    undo = (Undobuffer *) paintbox->undo->data;
+
+    /* We are going to undo the first action on the undo list. We must
+     * save the area under the first undo action to the redo list.
+     */
+    if (!paintbox_undo_add(paintbox, &undo->bounds))
+        return FALSE;
+    paintbox->redo = g_slist_prepend(paintbox->redo, paintbox->current_undo);
+    paintbox->current_undo = NULL;
+
+    /* Paint undo back.
+     */
+    paintbox_undobuffer_paste(undo);
+
+    /* Junk the undo action we have performed.
+     */
+    paintbox->undo = g_slist_remove(paintbox->undo, undo);
+    paintbox_undobuffer_free(undo);
+
+    paintbox_undo_trim(paintbox);
+
+    paintbox_refresh(paintbox);
+
+    return TRUE;
+}
+
+/* Redo a paint action, if possible.
+ */
+gboolean
+paintbox_redo(Paintbox *paintbox)
+{
+    Undobuffer *undo;
+
+    /* Find the redo action we are to perform.
+     */
+    if (!paintbox->redo)
+        return TRUE;
+    undo = (Undobuffer *) paintbox->redo->data;
+
+    /* We are going to redo the first action on the redo list. We must
+     * save the area under the first redo action to the undo list.
+     */
+    if (!paintbox_undo_add(paintbox, &undo->bounds))
+        return FALSE;
+    paintbox->undo = g_slist_prepend(paintbox->undo, paintbox->current_undo);
+    paintbox->current_undo = NULL;
+
+    paintbox_undobuffer_paste(undo);
+
+    /* We can junk the head of the undo list now.
+     */
+    paintbox->redo = g_slist_remove(paintbox->redo, undo);
+    paintbox_undobuffer_free(undo);
+
+    paintbox_undo_trim(paintbox);
+
+    paintbox_refresh(paintbox);
+
+    return TRUE;
+}
+
 static void
 paintbox_update_brush_draw(Paintbox *paintbox, int x, int y)
 {
@@ -417,7 +738,8 @@ paintbox_update_brush_draw(Paintbox *paintbox, int x, int y)
 	if (tilesource &&
 		paintbox->mask)
 		tilesource_draw_line(tilesource, rgb, 3, paintbox->mask,
-			paintbox->last_x, paintbox->last_y, x, y);
+			paintbox->last_x, paintbox->last_y, x, y,
+			(TilesourceSaveFn) paintbox_undo_add, paintbox);
 
 	paintbox->last_x = x;
 	paintbox->last_y = y;
@@ -530,7 +852,7 @@ paintbox_drag_end(Paintbox *paintbox,
 
 		case PAINTBOX_TOOL_LINE:
 			paintbox_make_brush(paintbox);
-			paintbox_update_brush_draw(paintbox, paintbox->x0, paintbox->y0);
+			paintbox_update_brush_draw(paintbox, paintbox->x1, paintbox->y1);
 			break;
 
 		case PAINTBOX_TOOL_RECT:
@@ -579,6 +901,7 @@ paintbox_drag_end(Paintbox *paintbox,
 		handled = TRUE;
 		paintbox_rubber_clear(paintbox);
 		paintbox->state = PAINTBOX_STATE_WAIT;
+		paintbox_undo_mark(paintbox);
 
 #ifdef NIP4
 		paintbox_update_model(paintbox);
@@ -1008,6 +1331,18 @@ paintbox_toggled(GtkToggleButton *button, Paintbox *paintbox)
 }
 
 static void
+paintbox_undo_clicked(GtkToggleButton *button, Paintbox *paintbox)
+{
+	paintbox_undo(paintbox);
+}
+
+static void
+paintbox_redo_clicked(GtkToggleButton *button, Paintbox *paintbox)
+{
+	paintbox_redo(paintbox);
+}
+
+static void
 paintbox_class_init(PaintboxClass *class)
 {
 	GObjectClass *gobject_class = G_OBJECT_CLASS(class);
@@ -1020,6 +1355,8 @@ paintbox_class_init(PaintboxClass *class)
 	BIND_LAYOUT();
 
 	BIND_VARIABLE(Paintbox, action_bar);
+	BIND_VARIABLE(Paintbox, undo_widget);
+	BIND_VARIABLE(Paintbox, redo_widget);
 	BIND_VARIABLE(Paintbox, pointer);
 	BIND_VARIABLE(Paintbox, brush);
 	BIND_VARIABLE(Paintbox, line);
@@ -1037,6 +1374,8 @@ paintbox_class_init(PaintboxClass *class)
 	BIND_VARIABLE(Paintbox, text_string);
 
 	BIND_CALLBACK(paintbox_toggled);
+	BIND_CALLBACK(paintbox_undo_clicked);
+	BIND_CALLBACK(paintbox_redo_clicked);
 
 	gobject_class->dispose = paintbox_dispose;
 	gobject_class->set_property = paintbox_set_property;

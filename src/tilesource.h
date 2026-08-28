@@ -298,9 +298,12 @@ void tilesource_changed(Tilesource *tilesource);
 
 void tilesource_set_synchronous(Tilesource *source, gboolean synchronous);
 
+typedef void (*TilesourceSaveFn)(void *client, VipsRect *dirty);
+
 void tilesource_draw_line(Tilesource *tilesource,
 	double *ink, int n, VipsImage *mask,
-	int x0, int y0, int x1, int y1);
+	int x0, int y0, int x1, int y1,
+	TilesourceSaveFn save, void *client);
 void tilesource_draw_rect(Tilesource *tilesource,
 	double *ink, int n, gboolean fill,
 	int left, int top, int width, int height);
@@ -312,5 +315,9 @@ void tilesource_draw_flood(Tilesource *tilesource,
 	double *ink, int n, gboolean equal, int x, int y);
 void tilesource_draw_mask(Tilesource *tilesource,
 	double *ink, int n, VipsImage *mask, int x, int y);
+
+VipsImage *tilesource_draw_copy(Tilesource *tilesource, VipsRect *area);
+void tilesource_draw_paste(Tilesource *tilesource,
+	VipsImage *paste, VipsRect *position);
 
 #endif /*__TILESOURCE_H*/

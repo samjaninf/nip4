@@ -2162,23 +2162,26 @@ tilesource_draw_line_point(VipsImage *image, VipsPel *pink,
 void
 tilesource_draw_line(Tilesource *tilesource,
 	double *ink, int n, VipsImage *mask,
-	int x0, int y0, int x1, int y1)
+	int x0, int y0, int x1, int y1,
+	TilesourceSaveFn save, void *client)
 {
 	VipsImage *image;
 	if ((image = tilesource_get_base_image(tilesource))) {
+		VipsRect dirty = {
+			.left = x0,
+			.top = y0,
+			.width = x1 - x0,
+			.height = y1 - y0,
+		};
+		vips_rect_normalise(&dirty);
+		vips_rect_marginadjust(&dirty, 1 + mask->Xsize / 2);
+		save(client, &dirty);
+
 		vips_draw_line(image, ink, n, x0, y0, x1, y1,
 			"draw-point", tilesource_draw_line_point,
 			"client", mask,
 			NULL);
 
-		VipsRect dirty = {
-			.left = x0 - mask->Xsize / 2,
-			.top = y0 - mask->Ysize / 2,
-			.width = (x1 - x0) + mask->Xsize,
-			.height = (y1 - y0) + mask->Ysize,
-		};
-		vips_rect_normalise(&dirty);
-		vips_rect_marginadjust(&dirty, 1);
 		tilesource_invalidate_area(tilesource, &dirty);
 	}
 }
@@ -2310,3 +2313,50 @@ tilesource_draw_mask(Tilesource *tilesource,
 		tilesource_invalidate_area(tilesource, &dirty);
 	}
 }
+
+/* Copy a rect from the image into a memory image.
+ *
+ * area is normalised and clipped against the image size.
+ */
+VipsImage *
+tilesource_draw_copy(Tilesource *tilesource, VipsRect *area)
+{
+	VipsImage *image;
+	if ((image = tilesource_get_base_image(tilesource))) {
+		vips_rect_normalise(area);
+		VipsRect range = {0, 0, image->Xsize, image->Ysize};
+		vips_rect_intersectrect(area, &range, area);
+
+		if (!vips_rect_isempty(area)) {
+			VipsImage *crop;
+			if (vips_crop(image, &crop,
+				area->left, area->top, area->width, area->height, NULL))
+				return NULL;
+
+			VipsImage *memory = vips_image_new_memory();
+			if (vips_image_write(crop, memory)) {
+				VIPS_UNREF(memory);
+				VIPS_UNREF(crop);
+				return NULL;
+			}
+			VIPS_UNREF(crop);
+
+			return memory;
+		}
+	}
+
+    return NULL;
+}
+
+/* Paste a rect back into the image.
+ */
+void
+tilesource_draw_paste(Tilesource *tilesource, VipsImage *paste, VipsRect *area)
+{
+	VipsImage *image;
+	if ((image = tilesource_get_base_image(tilesource))) {
+		vips_draw_image(image, paste, area->left, area->top, NULL);
+		tilesource_invalidate_area(tilesource, area);
+	}
+}
+

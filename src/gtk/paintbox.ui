@@ -8,15 +8,17 @@
         <child type="start">
 	  <object class="GtkBox">
             <child>
-              <object class="GtkButton" id="undo">
+              <object class="GtkButton" id="undo_widget">
                 <property name="icon-name">edit-undo-symbolic</property>
 		<property name="tooltip-text">Undo paint</property>
+		<signal name="clicked" handler="paintbox_undo_clicked"/>
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="redo">
+              <object class="GtkButton" id="redo_widget">
                 <property name="icon-name">edit-redo-symbolic</property>
 		<property name="tooltip-text">Redo paint</property>
+		<signal name="clicked" handler="paintbox_redo_clicked"/>
               </object>
             </child>
           </object>
