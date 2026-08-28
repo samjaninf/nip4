@@ -40,7 +40,7 @@
 
 /* Snap if closer than this.
  */
-const int imageuiregion_snap_threshold = 10;
+const int imageuiregion_snap_threshold = 20;
 
 /* Drag state machine.
  */

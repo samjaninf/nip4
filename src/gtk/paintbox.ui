@@ -150,7 +150,7 @@
 
             <child>
               <object class="GtkFontDialogButton" id="font">
-		<property name="font-desc">Sans 24</property>
+		<property name="font-desc">Sans 48</property>
                 <property name="dialog">
                   <object class="GtkFontDialog">
                     <property name="modal">1</property>

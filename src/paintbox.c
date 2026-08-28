@@ -82,6 +82,12 @@ struct _Paintbox {
 	 */
 	VipsImage *mask;
 
+	/* Last measured distance from top of logical rect to baseline and top
+	 * topline (top of eg. "o").
+	 */
+	int baseline;
+	int topline;
+
 	/* Widgets.
 	 */
 	GtkWidget *action_bar;
@@ -196,6 +202,16 @@ paintbox_make_text(Paintbox *paintbox)
 
 	if (text &&
 		strlen(text) > 0) {
+		// render "o" to get the height of a char with no ascenders and no
+		// descenders
+		VipsImage *o;
+		if (vips_text(&o, "o", "font", font, NULL))
+			return FALSE;
+		// therefore distance from top of logical rect to baseline
+		paintbox->baseline = o->Ysize + o->Yoffset;
+		paintbox->topline = o->Yoffset;
+		VIPS_UNREF(o);
+
 		VipsImage *mask;
 		if (vips_text(&mask, text, "font", font, NULL))
 			return FALSE;
@@ -351,14 +367,24 @@ paintbox_drag_begin(Paintbox *paintbox,
 			break;
 
 		case PAINTBOX_TOOL_TEXT:
-			VipsRect text = {x, y, paintbox->a, paintbox->b};
-			imageui_snap_rect(paintbox->imageui, &text, &text);
 			if (paintbox_make_text(paintbox) &&
-				paintbox->mask)
+				paintbox->mask) {
+
+			// the snap box is positioned with no ascenders and no descenders
+			VipsRect text = {
+				.left = x + paintbox->mask->Xoffset,
+				.top = y + paintbox->topline,
+				.width = paintbox->mask->Xsize,
+				.height = paintbox->baseline - paintbox->topline,
+			};
+			imageui_snap_rect(paintbox->imageui, &text, &text);
+
 				paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_BOX,
-					text.left, text.top,
+					text.left - paintbox->mask->Xoffset,
+					text.top - paintbox->mask->Yoffset,
 					0, 0,
 					paintbox->mask->Xsize, paintbox->mask->Ysize);
+			}
 			break;
 
 		default:
@@ -631,10 +657,18 @@ paintbox_motion(Paintbox *paintbox, gdouble gtk_x, gdouble gtk_y)
 			break;
 
 		case PAINTBOX_TOOL_TEXT:
-			VipsRect text = {x, y, paintbox->a, paintbox->b};
+
+			// the snap box is positioned with no ascenders and no descenders
+			VipsRect text = {
+				.left = x + paintbox->mask->Xoffset,
+				.top = y + paintbox->topline,
+				.width = paintbox->mask->Xsize,
+				.height = paintbox->baseline - paintbox->topline,
+			};
 			imageui_snap_rect(paintbox->imageui, &text, &text);
-			paintbox->x0 = text.left;
-			paintbox->y0 = text.top;
+			paintbox->x0 = text.left - paintbox->mask->Xoffset;
+			paintbox->y0 = text.top - paintbox->topline;
+
 			gtk_widget_queue_draw(paintbox->imagedisplay);
 			break;
 
