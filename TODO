@@ -1,4 +1,6 @@
 
+- ^Z/^Y for undo/redo
+
 - smudge seems to make things darker
 
 	does it round down maybe?
@@ -12,10 +14,6 @@
 - better flood icons
 
 - implement dropper
-
-- setting tslider digits to 0 doesn't seem to make it int-valued
-
-	how odd
 
 
 

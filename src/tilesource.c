@@ -2187,6 +2187,30 @@ tilesource_draw_line(Tilesource *tilesource,
 }
 
 void
+tilesource_draw_line1(Tilesource *tilesource,
+	double *ink, int n,
+	int x0, int y0, int x1, int y1,
+	TilesourceSaveFn save, void *client)
+{
+	VipsImage *image;
+	if ((image = tilesource_get_base_image(tilesource))) {
+		VipsRect dirty = {
+			.left = x0,
+			.top = y0,
+			.width = x1 - x0,
+			.height = y1 - y0,
+		};
+		vips_rect_normalise(&dirty);
+		vips_rect_marginadjust(&dirty, 1);
+		save(client, &dirty);
+
+		vips_draw_line(image, ink, n, x0, y0, x1, y1, NULL);
+
+		tilesource_invalidate_area(tilesource, &dirty);
+	}
+}
+
+void
 tilesource_draw_rect(Tilesource *tilesource,
 	double *ink, int n, gboolean fill,
 	int left, int top, int width, int height,

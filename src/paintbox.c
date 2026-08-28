@@ -238,6 +238,8 @@ paintbox_make_brush(Paintbox *paintbox)
 {
 	int size = rint(TSLIDER(paintbox->width)->value);
 
+	VIPS_UNREF(paintbox->mask);
+
 	VipsImage *mask;
 	if (vips_mask_ideal(&mask, size, size, 1.0,
 		"optical", TRUE,
@@ -246,40 +248,35 @@ paintbox_make_brush(Paintbox *paintbox)
 		NULL))
 		return FALSE;
 
-	VIPS_UNREF(paintbox->mask);
 	paintbox->mask = mask;
 
 	return TRUE;
 }
 
 static gboolean
-paintbox_make_text(Paintbox *paintbox)
+paintbox_make_text(Paintbox *paintbox, const char *text)
 {
-	g_autofree char *text =
-		gtk_editable_get_chars(GTK_EDITABLE(paintbox->text_string), 0, -1);
 	PangoFontDescription *desc = gtk_font_dialog_button_get_font_desc(
 		GTK_FONT_DIALOG_BUTTON(paintbox->font));
 	g_autofree char *font = pango_font_description_to_string(desc);
 
-	if (text &&
-		strlen(text) > 0) {
-		// render "o" to get the height of a char with no ascenders and no
-		// descenders
-		VipsImage *o;
-		if (vips_text(&o, "o", "font", font, NULL))
-			return FALSE;
-		// therefore distance from top of logical rect to baseline
-		paintbox->baseline = o->Ysize + o->Yoffset;
-		paintbox->topline = o->Yoffset;
-		VIPS_UNREF(o);
+	VIPS_UNREF(paintbox->mask);
 
-		VipsImage *mask;
-		if (vips_text(&mask, text, "font", font, NULL))
-			return FALSE;
+	// render "o" to get the height of a char with no ascenders and no
+	// descenders
+	VipsImage *o;
+	if (vips_text(&o, "o", "font", font, NULL))
+		return FALSE;
+	// therefore distance from top of logical rect to baseline
+	paintbox->baseline = o->Ysize + o->Yoffset;
+	paintbox->topline = o->Yoffset;
+	VIPS_UNREF(o);
 
-		VIPS_UNREF(paintbox->mask);
-		paintbox->mask = mask;
-	}
+	VipsImage *mask;
+	if (vips_text(&mask, text, "font", font, NULL))
+		return FALSE;
+
+	paintbox->mask = mask;
 
 	return TRUE;
 }
@@ -348,6 +345,12 @@ paintbox_drag_begin(Paintbox *paintbox,
 	gdouble start_x, gdouble start_y, GdkModifierType modifiers)
 {
 	Imageui *imageui = paintbox->imageui;
+
+	/* Don't handle shift- or ctrl-drag.
+	 */
+	if (modifiers & GDK_CONTROL_MASK ||
+		modifiers & GDK_SHIFT_MASK)
+		return FALSE;
 
 	paintbox->start_x = start_x;
 	paintbox->start_y = start_y;
@@ -428,25 +431,36 @@ paintbox_drag_begin(Paintbox *paintbox,
 			break;
 
 		case PAINTBOX_TOOL_TEXT:
-			if (paintbox_make_text(paintbox) &&
-				paintbox->mask) {
+			g_autofree char *text =
+				gtk_editable_get_chars(GTK_EDITABLE(paintbox->text_string),
+					0, -1);
 
-			// the snap box is positioned with no ascenders and no descenders
-			VipsRect text = {
+			if (!text ||
+				strlen(text) == 0) {
+				vips_error("Paintbox", "%s", _("empty string"));
+				imagewindow_error(paintbox->win);
+				return TRUE;
+			}
+
+			// the snap box is positioned with no ascenders and no
+			// descenders
+			paintbox_make_text(paintbox, text);
+
+			VipsRect rect = {
 				.left = x,
 				.top = y,
 				.width = paintbox->mask->Xsize,
 				.height = paintbox->baseline - paintbox->topline,
 			};
-			imageui_snap_rect(paintbox->imageui, &text, &text);
+			imageui_snap_rect(paintbox->imageui, &rect, &rect);
 
-				paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_BOX,
-					text.left,
-					text.top,
-					0, 0,
-					paintbox->mask->Xsize,
-					paintbox->baseline - paintbox->topline);
-			}
+			paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_BOX,
+				rect.left,
+				rect.top,
+				0, 0,
+				paintbox->mask->Xsize,
+				paintbox->baseline - paintbox->topline);
+
 			break;
 
 		default:
@@ -736,10 +750,16 @@ paintbox_update_brush_draw(Paintbox *paintbox, int x, int y)
 	};
 
 	if (tilesource &&
-		paintbox->mask)
-		tilesource_draw_line(tilesource, rgb, 3, paintbox->mask,
-			paintbox->last_x, paintbox->last_y, x, y,
-			(TilesourceSaveFn) paintbox_undo_add, paintbox);
+		paintbox->mask) {
+		if (rint(TSLIDER(paintbox->width)->value < 2))
+			tilesource_draw_line1(tilesource, rgb, 3,
+				paintbox->last_x, paintbox->last_y, x, y,
+				(TilesourceSaveFn) paintbox_undo_add, paintbox);
+		else
+			tilesource_draw_line(tilesource, rgb, 3, paintbox->mask,
+				paintbox->last_x, paintbox->last_y, x, y,
+				(TilesourceSaveFn) paintbox_undo_add, paintbox);
+	}
 
 	paintbox->last_x = x;
 	paintbox->last_y = y;
@@ -989,7 +1009,6 @@ paintbox_motion(Paintbox *paintbox, gdouble gtk_x, gdouble gtk_y)
 			break;
 
 		case PAINTBOX_TOOL_TEXT:
-
 			// the snap box is positioned with no ascenders and no descenders
 			VipsRect text = {
 				.left = x,
@@ -1302,10 +1321,10 @@ paintbox_init(Paintbox *paintbox)
 	paintbox->tools[PAINTBOX_TOOL_DROPPER] = paintbox->dropper;
 
 	Tslider *width = TSLIDER(paintbox->width);
-	width->from = 0;
+	width->from = 1;
 	width->to = 100;
 	width->value = 5;
-	width->digits = 1;
+	width->digits = 0;
 	tslider_changed(width);
 
 	g_signal_connect(paintbox->action_bar, "notify::revealed",

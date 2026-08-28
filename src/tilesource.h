@@ -304,6 +304,10 @@ void tilesource_draw_line(Tilesource *tilesource,
 	double *ink, int n, VipsImage *mask,
 	int x0, int y0, int x1, int y1,
 	TilesourceSaveFn save, void *client);
+void tilesource_draw_line1(Tilesource *tilesource,
+	double *ink, int n,
+	int x0, int y0, int x1, int y1,
+	TilesourceSaveFn save, void *client);
 void tilesource_draw_rect(Tilesource *tilesource,
 	double *ink, int n, gboolean fill,
 	int left, int top, int width, int height,

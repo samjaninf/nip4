@@ -345,6 +345,11 @@ imageuiregion_drag_begin(Imageuiregion *imageuiregion,
 {
 	Imageui *imageui = imageuiregion_get_imageui(imageuiregion);
 
+	/* Don't handle shift-drag.
+	 */
+	if (modifiers & GDK_SHIFT_MASK)
+		return FALSE;
+
 #ifdef DEBUG_VERBOSE
 	printf("imageuiregion_drag_begin: start_x = %g, start_y = %g\n",
 		start_x, start_y);
