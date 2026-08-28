@@ -1,19 +1,4 @@
 
-- text box should show with pointer on baseline
-
-	should snap on baseline too
-
-	we need to expose more fint metrics from vips_text()
-
-		$ vips text x.v og
-		vips_text_get_extents: dpi = 72
-		    ink left = 0, top = 6, width = 14, height = 10
-		    logical left = 0, top = 0, width = 14, height = 17
-
-	we use ink right now and ignore logical
-
-	we should add logical width and height
-
 - implement undo / redo
 
 - smudge seems to make things darker

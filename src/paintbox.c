@@ -372,18 +372,19 @@ paintbox_drag_begin(Paintbox *paintbox,
 
 			// the snap box is positioned with no ascenders and no descenders
 			VipsRect text = {
-				.left = x + paintbox->mask->Xoffset,
-				.top = y + paintbox->topline,
+				.left = x,
+				.top = y,
 				.width = paintbox->mask->Xsize,
 				.height = paintbox->baseline - paintbox->topline,
 			};
 			imageui_snap_rect(paintbox->imageui, &text, &text);
 
 				paintbox_set_rubber(paintbox, PAINTBOX_RUBBER_BOX,
-					text.left - paintbox->mask->Xoffset,
-					text.top - paintbox->mask->Yoffset,
+					text.left,
+					text.top,
 					0, 0,
-					paintbox->mask->Xsize, paintbox->mask->Ysize);
+					paintbox->mask->Xsize,
+					paintbox->baseline - paintbox->topline);
 			}
 			break;
 
@@ -566,7 +567,9 @@ paintbox_drag_end(Paintbox *paintbox,
 			if (tilesource &&
 				paintbox->mask)
 				tilesource_draw_mask(tilesource,
-					rgb, 3, paintbox->mask, paintbox->x0, paintbox->y0);
+					rgb, 3, paintbox->mask,
+					paintbox->x0,
+					paintbox->y0 - paintbox->topline + paintbox->mask->Yoffset);
 			break;
 
 		default:
@@ -660,14 +663,14 @@ paintbox_motion(Paintbox *paintbox, gdouble gtk_x, gdouble gtk_y)
 
 			// the snap box is positioned with no ascenders and no descenders
 			VipsRect text = {
-				.left = x + paintbox->mask->Xoffset,
-				.top = y + paintbox->topline,
+				.left = x,
+				.top = y,
 				.width = paintbox->mask->Xsize,
 				.height = paintbox->baseline - paintbox->topline,
 			};
 			imageui_snap_rect(paintbox->imageui, &text, &text);
-			paintbox->x0 = text.left - paintbox->mask->Xoffset;
-			paintbox->y0 = text.top - paintbox->topline;
+			paintbox->x0 = text.left;
+			paintbox->y0 = text.top;
 
 			gtk_widget_queue_draw(paintbox->imagedisplay);
 			break;
