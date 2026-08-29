@@ -108,6 +108,9 @@
               </object>
             </child>
 
+	    <!-- commented out for now, since we've not implemented
+		 the backend yet
+
             <child>
               <object class="GtkToggleButton" id="dropper">
                 <property name="icon-name">dropper-symbolic</property>
@@ -116,6 +119,8 @@
 		<signal name="toggled" handler="paintbox_toggled"/>
               </object>
             </child>
+
+              -->
 
           </object>
         </child>

@@ -1444,7 +1444,8 @@ paintbox_class_init(PaintboxClass *class)
 	BIND_VARIABLE(Paintbox, flood_while);
 	BIND_VARIABLE(Paintbox, flood_until);
 	BIND_VARIABLE(Paintbox, text);
-	BIND_VARIABLE(Paintbox, dropper);
+	//// commented out for now, since we have not done the backend yet
+	// BIND_VARIABLE(Paintbox, dropper);
 	BIND_VARIABLE(Paintbox, ink);
 	BIND_VARIABLE(Paintbox, fill);
 	BIND_VARIABLE(Paintbox, width);
