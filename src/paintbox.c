@@ -669,6 +669,11 @@ paintbox_undo(Paintbox *paintbox)
 {
     Undobuffer *undo;
 
+	/* Do nothing if we're not active.
+	 */
+	if (paintbox->tool == PAINTBOX_TOOL_POINTER)
+        return TRUE;
+
     /* Find the undo action we are to perform.
      */
     if (!paintbox->undo)
@@ -705,6 +710,11 @@ gboolean
 paintbox_redo(Paintbox *paintbox)
 {
     Undobuffer *undo;
+
+	/* Do nothing if we're not active.
+	 */
+	if (paintbox->tool == PAINTBOX_TOOL_POINTER)
+        return TRUE;
 
     /* Find the redo action we are to perform.
      */

@@ -54,5 +54,7 @@ G_DECLARE_FINAL_TYPE(Paintbox, paintbox, APP, PAINTBOX, GtkWidget)
 	(G_TYPE_CHECK_INSTANCE_CAST((obj), PAINTBOX_TYPE, Paintbox))
 
 Paintbox *paintbox_new(Imagewindow *win);
+gboolean paintbox_undo(Paintbox *paintbox);
+gboolean paintbox_redo(Paintbox *paintbox);
 
 #endif /* __PAINTBOX_H */

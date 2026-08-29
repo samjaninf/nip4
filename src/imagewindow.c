@@ -786,6 +786,24 @@ imagewindow_paste_action(GSimpleAction *action,
 }
 
 static void
+imagewindow_undo_action(GSimpleAction *action,
+	GVariant *parameter, gpointer user_data)
+{
+	Imagewindow *win = IMAGEWINDOW(user_data);
+
+	paintbox_undo(PAINTBOX(win->paintbox));
+}
+
+static void
+imagewindow_redo_action(GSimpleAction *action,
+	GVariant *parameter, gpointer user_data)
+{
+	Imagewindow *win = IMAGEWINDOW(user_data);
+
+	paintbox_redo(PAINTBOX(win->paintbox));
+}
+
+static void
 imagewindow_magin_action(GSimpleAction *action,
 	GVariant *parameter, gpointer user_data)
 {
@@ -1199,6 +1217,8 @@ imagewindow_region_action(GSimpleAction *action,
 static GActionEntry imagewindow_entries[] = {
 	{ "copy", imagewindow_copy_action },
 	{ "paste", imagewindow_paste_action },
+	{ "undo", imagewindow_undo_action },
+	{ "redo", imagewindow_redo_action },
 
 	{ "magin", imagewindow_magin_action },
 	{ "magout", imagewindow_magout_action },

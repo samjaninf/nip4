@@ -216,6 +216,8 @@ app_startup(GApplication *app)
 		{ "win.open", { "<Primary>o", NULL } },
 		{ "win.copy", { "<Primary>c", NULL } },
 		{ "win.paste", { "<Primary>v", NULL } },
+		{ "win.undo", { "<Primary>z", NULL } },
+		{ "win.redo", { "<Primary>y", NULL } },
 		{ "win.tab-new", { "<Primary>t", NULL } },
 		{ "win.tab-close-current", { "<Primary>w", NULL } },
 		{ "win.column-new-current", { "<Primary>n", NULL } },
