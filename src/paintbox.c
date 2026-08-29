@@ -669,6 +669,33 @@ paintbox_undobuffer_paste(Undobuffer *undo)
         (SListMapFn) paintbox_undofragment_paste, NULL);
 }
 
+#ifdef NIP4
+static void
+paintbox_update_model(Paintbox *paintbox)
+{
+	Tilesource *tilesource = imageui_get_tilesource(paintbox->imageui);
+	iImage *iimage = imagewindow_get_iimage(paintbox->win);
+
+	VipsImage *image;
+	if ((image = tilesource_get_base_image(tilesource)) &&
+		iimage->value.ii->image != image) {
+
+		// will be removed on next GC, unless someone takes ownership
+		g_object_ref(image);
+		Imageinfo *new_ii = imageinfo_new(main_imageinfogroup,
+			reduce_context->heap, image, NULL);
+		image_value_set(&iimage->value, new_ii);
+
+		// set modified, edited, etc.
+		classmodel_update_view(CLASSMODEL(iimage));
+	}
+
+	Row *row = HEAPMODEL(iimage)->row;
+	(void) expr_dirty(row->expr, link_serial_new());
+	symbol_recalculate_all();
+}
+#endif /*NIP4*/
+
 /* Undo a paint action.
  */
 gboolean
@@ -707,6 +734,10 @@ paintbox_undo(Paintbox *paintbox)
     paintbox_undo_trim(paintbox);
 
     paintbox_refresh(paintbox);
+
+#ifdef NIP4
+	paintbox_update_model(paintbox);
+#endif /*NIP4*/
 
     return TRUE;
 }
@@ -747,6 +778,10 @@ paintbox_redo(Paintbox *paintbox)
     paintbox_undo_trim(paintbox);
 
     paintbox_refresh(paintbox);
+
+#ifdef NIP4
+	paintbox_update_model(paintbox);
+#endif /*NIP4*/
 
     return TRUE;
 }
@@ -858,33 +893,6 @@ paintbox_drag_update(Paintbox *paintbox,
 
 	return handled;
 }
-
-#ifdef NIP4
-static void
-paintbox_update_model(Paintbox *paintbox)
-{
-	Tilesource *tilesource = imageui_get_tilesource(paintbox->imageui);
-	iImage *iimage = imagewindow_get_iimage(paintbox->win);
-
-	VipsImage *image;
-	if ((image = tilesource_get_base_image(tilesource)) &&
-		iimage->value.ii->image != image) {
-
-		// will be removed on next GC, unless someone takes ownership
-		g_object_ref(image);
-		Imageinfo *new_ii = imageinfo_new(main_imageinfogroup,
-			reduce_context->heap, image, NULL);
-		image_value_set(&iimage->value, new_ii);
-
-		// set modified, edited, etc.
-		classmodel_update_view(CLASSMODEL(iimage));
-	}
-
-	Row *row = HEAPMODEL(iimage)->row;
-	(void) expr_dirty(row->expr, link_serial_new());
-	symbol_recalculate_all();
-}
-#endif /*NIP4*/
 
 static gboolean
 paintbox_drag_end(Paintbox *paintbox,
