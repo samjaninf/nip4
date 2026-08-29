@@ -5,10 +5,6 @@
 
 	yes, adding a rint() fixes it
 
-- can't paint on RGBA images
-
-	nor eg. pages as bands, multipage, animated, etc.
-
 - better flood icons
 
 - implement dropper

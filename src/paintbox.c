@@ -101,6 +101,12 @@ struct _Paintbox {
 	int last_x;
 	int last_y;
 
+	/* The selected ink colour converted to a double* that matches the number
+	 * of bands in the image.
+	 */
+	double *dink;
+	int n_dink;
+
 	/* Mask and for drawing.
 	 */
 	VipsImage *mask;
@@ -218,6 +224,7 @@ paintbox_dispose(GObject *object)
 	paintbox_undo_free(paintbox);
 	VIPS_UNREF(paintbox->mask);
 	VIPS_FREEF(gtk_widget_unparent, paintbox->action_bar);
+	VIPS_FREE(paintbox->dink);
 
 	G_OBJECT_CLASS(paintbox_parent_class)->dispose(object);
 }
@@ -744,29 +751,58 @@ paintbox_redo(Paintbox *paintbox)
     return TRUE;
 }
 
+static int
+paintbox_get_bands(Paintbox *paintbox)
+{
+	Imageui *imageui = imagewindow_get_imageui(paintbox->win);
+	Tilesource *tilesource = imageui_get_tilesource(imageui);
+	VipsImage *image = tilesource_get_base_image(tilesource);
+
+	// default to rgb if no image is loaded
+	return image ? image->Bands : 3;
+}
+
+static void
+paintbox_get_ink(Paintbox *paintbox)
+{
+	VIPS_FREE(paintbox->dink);
+
+	paintbox->n_dink = paintbox_get_bands(paintbox);
+	paintbox->dink = VIPS_ARRAY(NULL, paintbox->n_dink, double);
+
+	const GdkRGBA *rgba =
+		gtk_color_dialog_button_get_rgba(
+			GTK_COLOR_DIALOG_BUTTON(paintbox->ink));
+	double dink[4] = {
+		rgba->red * 255.0,
+		rgba->green * 255.0,
+		rgba->blue * 255.0,
+		rgba->alpha * 255.0,
+	};
+
+	for (int i = 0; i < VIPS_MIN(4, paintbox->n_dink); i++)
+		paintbox->dink[i] = dink[i];
+}
+
 static void
 paintbox_update_brush_draw(Paintbox *paintbox, int x, int y)
 {
 	Imageui *imageui = imagewindow_get_imageui(paintbox->win);
 	Tilesource *tilesource = imageui_get_tilesource(imageui);
 
-	const GdkRGBA *rgba =
-		gtk_color_dialog_button_get_rgba(
-			GTK_COLOR_DIALOG_BUTTON(paintbox->ink));
-	double rgb[3] = {
-		rgba->red * 255.0,
-		rgba->green * 255.0,
-		rgba->blue * 255.0,
-	};
+	paintbox_get_ink(paintbox);
 
 	if (tilesource &&
 		paintbox->mask) {
 		if (rint(TSLIDER(paintbox->width)->value < 2))
-			tilesource_draw_line1(tilesource, rgb, 3,
+			tilesource_draw_line1(tilesource,
+				paintbox->dink, paintbox->n_dink,
 				paintbox->last_x, paintbox->last_y, x, y,
 				(TilesourceSaveFn) paintbox_undo_add, paintbox);
 		else
-			tilesource_draw_line(tilesource, rgb, 3, paintbox->mask,
+			tilesource_draw_line(tilesource,
+				paintbox->dink, paintbox->n_dink,
+				paintbox->mask,
 				paintbox->last_x, paintbox->last_y, x, y,
 				(TilesourceSaveFn) paintbox_undo_add, paintbox);
 	}
@@ -857,13 +893,7 @@ paintbox_drag_end(Paintbox *paintbox,
 	Imageui *imageui = paintbox->imageui;
 	Tilesource *tilesource = imageui_get_tilesource(imageui);
 
-	const GdkRGBA *rgba = gtk_color_dialog_button_get_rgba(
-			GTK_COLOR_DIALOG_BUTTON(paintbox->ink));
-	double rgb[3] = {
-		rgba->red * 255.0,
-		rgba->green * 255.0,
-		rgba->blue * 255.0,
-	};
+	paintbox_get_ink(paintbox);
 
 	gboolean fill =
 		gtk_check_button_get_active(GTK_CHECK_BUTTON(paintbox->fill));
@@ -889,7 +919,8 @@ paintbox_drag_end(Paintbox *paintbox,
 		case PAINTBOX_TOOL_RECT:
 			if (tilesource)
 				tilesource_draw_rect(tilesource,
-					rgb, 3, fill,
+					paintbox->dink, paintbox->n_dink,
+					fill,
 					paintbox->x0, paintbox->y0,
 					paintbox->x1 - paintbox->x0, paintbox->y1 - paintbox->y0,
 					(TilesourceSaveFn) paintbox_undo_add, paintbox);
@@ -898,7 +929,8 @@ paintbox_drag_end(Paintbox *paintbox,
 		case PAINTBOX_TOOL_CIRCLE:
 			if (tilesource)
 				tilesource_draw_circle(tilesource,
-					rgb, 3, fill, paintbox->x0, paintbox->y0, paintbox->a,
+					paintbox->dink, paintbox->n_dink,
+					fill, paintbox->x0, paintbox->y0, paintbox->a,
 					(TilesourceSaveFn) paintbox_undo_add, paintbox);
 			break;
 
@@ -909,14 +941,16 @@ paintbox_drag_end(Paintbox *paintbox,
 		case PAINTBOX_TOOL_FLOOD_UNTIL:
 			if (tilesource)
 				tilesource_draw_flood(tilesource,
-					rgb, 3, FALSE, paintbox->x0, paintbox->y0,
+					paintbox->dink, paintbox->n_dink,
+					FALSE, paintbox->x0, paintbox->y0,
 					(TilesourceSaveFn) paintbox_undo_add, paintbox);
 			break;
 
 		case PAINTBOX_TOOL_FLOOD_WHILE:
 			if (tilesource)
 				tilesource_draw_flood(tilesource,
-					rgb, 3, TRUE, paintbox->x0, paintbox->y0,
+					paintbox->dink, paintbox->n_dink,
+					TRUE, paintbox->x0, paintbox->y0,
 					(TilesourceSaveFn) paintbox_undo_add, paintbox);
 			break;
 
@@ -924,7 +958,8 @@ paintbox_drag_end(Paintbox *paintbox,
 			if (tilesource &&
 				paintbox->mask)
 				tilesource_draw_mask(tilesource,
-					rgb, 3, paintbox->mask,
+					paintbox->dink, paintbox->n_dink,
+					paintbox->mask,
 					paintbox->x0,
 					paintbox->y0 - paintbox->topline + paintbox->mask->Yoffset,
 					(TilesourceSaveFn) paintbox_undo_add, paintbox);
