@@ -22,8 +22,8 @@
  */
 
 /*
-#define DEBUG
 #define DEBUG_FATAL
+#define DEBUG
  */
 
 #include "package.h"
@@ -198,6 +198,8 @@ main_startup(int argc, char **argv)
 
 #ifdef DEBUG
     vips_leak_set(TRUE);
+	// makes used-after-unref errors more obvious
+    vips_cache_set_max(0);
 #endif /*DEBUG*/
 
 #ifdef DEBUG_FATAL
@@ -212,7 +214,7 @@ main_startup(int argc, char **argv)
 
     g_setenv("G_DEBUG", "fatal-warnings", TRUE);
     vips_leak_set(TRUE);
-    printf("DEBUG on in main.c\n");
+    printf("DEBUG_FATAL on in main.c\n");
 #else /*!DEBUG_FATAL*/
 #ifdef G_OS_WIN32
     /* No logging output ... on win32, log output pops up a very annoying
@@ -424,6 +426,11 @@ main_startup(int argc, char **argv)
     vips_cache_set_max(10000);
     vips_cache_set_max_mem(1000 * 1024 * 1024);
     vips_cache_set_max_files(1000);
+
+#ifdef DEBUG
+	// makes used-after-unref errors more obvious
+    vips_cache_set_max(0);
+#endif /*DEBUG*/
 }
 
 void
