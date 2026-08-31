@@ -1,3 +1,9 @@
+- turning on the paintbox stops scale / offset sliders from working
+
+- after fourier, have to turn on log mode by hand
+
+- complex smudge seems to be broken?
+
 - better flood icons
 
 - implement dropper
