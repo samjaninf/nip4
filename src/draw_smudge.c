@@ -8,30 +8,23 @@
 
 #include <vips/vips.h>
 
-#define SMUDGE(TYPE) \
+#define SMUDGE(TYPE, ACC) \
 	for (int y = 0; y < clip.height; y++) { \
 		TYPE *q = (TYPE *) VIPS_IMAGE_ADDR(image, clip.left, clip.top + y); \
-		TYPE *p = q - lskip - bands; \
+		TYPE *p0 = (TYPE *) pixels + y * n_across; \
+		TYPE *p1 = p0 + n_across; \
+		TYPE *p2 = p1 + n_across; \
 \
-		for (int x = 0; x < clip.width; x++) { \
-			for (int b = 0; b < bands; b++) \
-				total[b] = 0.0; \
+		for (int x = 0; x < clip.width * bands; x++) { \
+			ACC total = p0[0] + p0[bands] + p0[2 * bands] + \
+						p1[0] + p1[bands] + p1[2 * bands] + \
+						p2[0] + p2[bands] + p2[2 * bands]; \
 \
-			TYPE *p1 = p; \
-			for (int y1 = 0; y1 < 3; y1++) { \
-				TYPE *p2 = p1; \
-				for (int x1 = 0; x1 < 3; x1++) \
-					for (int b = 0; b < bands; b++) \
-						total[b] += *p2++; \
+			q[x] = ((ACC) 23 * q[x] + total + 16) / 32; \
 \
-				p1 += lskip; \
-			} \
-\
-			for (int b = 0; b < bands; b++) \
-				q[b] = (23 * q[b] + total[b] + 16) / 32; \
-\
-			p += bands; \
-			q += bands; \
+			p0 += 1; \
+			p1 += 1; \
+			p2 += 1; \
 		} \
 	}
 
@@ -40,53 +33,61 @@ draw_smudge(VipsImage *image, VipsRect *area)
 {
 	/* Double bands for complex images.
 	 */
-	int bands = vips_image_get_bands(image) *
-		(vips_band_format_iscomplex(vips_image_get_format(image)) ? 2 : 1);
-	int lskip = bands * vips_image_get_width(image);
+	int bands = image->Bands *
+		(vips_band_format_iscomplex(image->BandFmt) ? 2 : 1);
+	int esize = VIPS_IMAGE_SIZEOF_ELEMENT(image);
 
-	/* Don't do the margins.
-	 */
 	VipsRect clip = {0, 0, image->Xsize, image->Ysize};
-	vips_rect_marginadjust(&clip, -1);
-
 	vips_rect_intersectrect(area, &clip, &clip);
 	if (vips_rect_isempty(&clip))
 		return 0;
 
-	double *total;
-	if (!(total = VIPS_ARRAY(image, bands, double)))
-		return -1;
+	/* Take a copy of the pixels to blur.
+	 */
+	int n_across = bands * clip.width;
+	g_autofree VipsPel *pixels =
+		VIPS_ARRAY(NULL, esize * n_across * clip.height, VipsPel);
+	for (int y = 0; y < clip.height; y++)
+		VIPS_MEMCPY(pixels + esize * n_across * y,
+				VIPS_IMAGE_ADDR(image, clip.left, y + clip.top),
+				esize * n_across);
+
+	/* Don't do the margins.
+	 */
+	vips_rect_marginadjust(&clip, -1);
+	if (vips_rect_isempty(&clip))
+		return 0;
 
 	switch (vips_image_get_format(image)) {
 	case VIPS_FORMAT_UCHAR:
-		SMUDGE(unsigned char);
+		SMUDGE(unsigned char, unsigned short);
 		break;
 	case VIPS_FORMAT_CHAR:
-		SMUDGE(char);
+		SMUDGE(char, short);
 		break;
 	case VIPS_FORMAT_USHORT:
-		SMUDGE(unsigned short);
+		SMUDGE(unsigned short, unsigned int);
 		break;
 	case VIPS_FORMAT_SHORT:
-		SMUDGE(short);
+		SMUDGE(short, int);
 		break;
 	case VIPS_FORMAT_UINT:
-		SMUDGE(unsigned int);
+		SMUDGE(unsigned int, guint64);
 		break;
 	case VIPS_FORMAT_INT:
-		SMUDGE(int);
+		SMUDGE(int, gint64);
 		break;
 	case VIPS_FORMAT_FLOAT:
-		SMUDGE(float);
+		SMUDGE(float, double);
 		break;
 	case VIPS_FORMAT_DOUBLE:
-		SMUDGE(double);
+		SMUDGE(double, double);
 		break;
 	case VIPS_FORMAT_COMPLEX:
-		SMUDGE(float);
+		SMUDGE(float, double);
 		break;
 	case VIPS_FORMAT_DPCOMPLEX:
-		SMUDGE(double);
+		SMUDGE(double, double);
 		break;
 
 	default:
