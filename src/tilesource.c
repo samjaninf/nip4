@@ -2267,8 +2267,14 @@ tilesource_draw_smudge_point(VipsImage *image, VipsPel *pink,
 	int x, int y, void *client)
 {
 	int width = GPOINTER_TO_INT(client);
+	VipsRect area = {
+		.left = x - width / 2,
+		.top = y - width / 2,
+		.width = width,
+		.height = width,
+	};
 
-	vips_draw_smudge(image, x - width / 2, y - width / 2, width, width, NULL);
+	draw_smudge(image, &area);
 }
 
 void
