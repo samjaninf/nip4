@@ -1420,7 +1420,7 @@ paintbox_init(Paintbox *paintbox)
 	Tslider *width = TSLIDER(paintbox->width);
 	width->from = 1;
 	width->to = 100;
-	width->value = 5;
+	width->value = 50;
 	width->digits = 0;
 	tslider_changed(width);
 

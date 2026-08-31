@@ -172,6 +172,7 @@
 	      <object class="GtkEntry" id="text_string">
                 <property name="hexpand">true</property>
 		<property name="tooltip-text">Text to draw</property>
+		<property name="text">Hello, world!</property>
               </object>
             </child>
 
