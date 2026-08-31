@@ -532,25 +532,22 @@ paintbox_undobuffer_new(Paintbox *paintbox)
 /* Grab into an undo fragment. Add frag to frag list on undo buffer, expand
  * bounding box.
  */
-static Undofragment *
+static void
 paintbox_undo_grab(Undobuffer *undo, VipsRect *position)
 {
     Paintbox *paintbox = undo->paintbox;
 	Imageui *imageui = imagewindow_get_imageui(paintbox->win);
 	Tilesource *tilesource = imageui_get_tilesource(imageui);
-    Undofragment *frag = paintbox_undofragment_new(undo);
 
-    if (!(frag->saved = tilesource_draw_copy(tilesource, position))) {
-        paintbox_undofragment_free(frag);
-		imagewindow_error(paintbox->win);
-        return NULL;
-    }
+	VipsImage *saved;
+    if ((saved = tilesource_draw_copy(tilesource, position))) {
+		Undofragment *frag = paintbox_undofragment_new(undo);
 
-    frag->position = *position;
-    undo->frags = g_slist_prepend(undo->frags, frag);
-    vips_rect_unionrect(position, &undo->bounds, &undo->bounds);
-
-    return frag;
+		frag->saved = saved;
+		frag->position = *position;
+		undo->frags = g_slist_prepend(undo->frags, frag);
+		vips_rect_unionrect(position, &undo->bounds, &undo->bounds);
+	}
 }
 
 /* Trim the undo/redo buffers if we have more than x items on it.
@@ -611,7 +608,7 @@ paintbox_undo_add(Paintbox *paintbox, VipsRect *position)
     if (!undo) {
         paintbox->current_undo = undo = paintbox_undobuffer_new(paintbox);
 
-        return paintbox_undo_grab(undo, position) != NULL;
+        paintbox_undo_grab(undo, position);
     }
 
 	/* Do we need to expand our saved area to the right?
@@ -624,8 +621,7 @@ paintbox_undo_add(Paintbox *paintbox, VipsRect *position)
 			.height = undo->bounds.height,
 		};
 
-        if (!paintbox_undo_grab(undo, &over))
-            return FALSE;
+        paintbox_undo_grab(undo, &over);
     }
 
     /* Left?
@@ -638,8 +634,7 @@ paintbox_undo_add(Paintbox *paintbox, VipsRect *position)
 			.height = undo->bounds.height,
 		};
 
-        if (!paintbox_undo_grab(undo, &over))
-            return FALSE;
+        paintbox_undo_grab(undo, &over);
     }
 
     /* Up?
@@ -652,8 +647,7 @@ paintbox_undo_add(Paintbox *paintbox, VipsRect *position)
 			.height = undo->bounds.top - position->top,
 		};
 
-        if (!paintbox_undo_grab(undo, &over))
-            return FALSE;
+        paintbox_undo_grab(undo, &over);
     }
 
     /* Down?
@@ -667,8 +661,7 @@ paintbox_undo_add(Paintbox *paintbox, VipsRect *position)
 				VIPS_RECT_BOTTOM(&undo->bounds)
 		};
 
-        if (!paintbox_undo_grab(undo, &over))
-            return FALSE;
+        paintbox_undo_grab(undo, &over);
     }
 
     return TRUE;

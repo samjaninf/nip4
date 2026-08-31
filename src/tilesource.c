@@ -2312,7 +2312,11 @@ tilesource_draw_flood(Tilesource *tilesource,
 	TilesourceSaveFn save, void *client)
 {
 	VipsImage *image;
-	if ((image = tilesource_get_base_image(tilesource))) {
+	if ((image = tilesource_get_base_image(tilesource)) &&
+		x >= 0 &&
+		y >= 0 &&
+		x < image->Xsize &&
+		y < image->Ysize) {
 		// save the whole image, we don't know how much flood might change
 		VipsRect dirty = {
 			.left = 0,

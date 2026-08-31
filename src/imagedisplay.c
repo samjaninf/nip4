@@ -942,8 +942,8 @@ imagedisplay_gtk_to_image(Imagedisplay *imagedisplay,
 				   y_gtk - imagedisplay->paint_rect.top) /
 		imagedisplay->scale;
 
-	*x_image = VIPS_CLIP(0, *x_image, imagedisplay->image_rect.width - 1);
-	*y_image = VIPS_CLIP(0, *y_image, imagedisplay->image_rect.height - 1);
+	// don't clip against the image! eg. the paintbox needs off-image
+	// coordinates for circle
 }
 
 double

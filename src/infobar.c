@@ -227,9 +227,6 @@ infobar_get_pixel(void *a, void *b)
 	PixelUpdate *update = (PixelUpdate *) a;
 	VipsImage *image = update->image;
 
-	/* Clip (x, y) to the image dimensions. It might be a histogram, for
-	 * example.
-	 */
 	update->result = !vips_getpoint(image,
 		&update->vector, &update->n,
 		VIPS_CLIP(0, update->image_x, image->Xsize - 1),
@@ -265,16 +262,13 @@ infobar_update_pixel(Infobar *infobar,
 		update->infobar = infobar;
 		update->image = selected;
 
+		int factor = tilesource->image_width / selected->Xsize;
+		update->image_x = image_x / factor;
+		update->image_y = image_y / factor;
+
 		// must stay valid until we are done
 		g_object_ref(update->infobar);
 		g_object_ref(update->image);
-
-		/* Currently in level0 image coordinates ... we need to scale for the
-		 * selected image.
-		 */
-		int factor = tilesource->image_width / update->image->Xsize;
-		update->image_x = image_x / factor;
-		update->image_y = image_y / factor;
 
 		if (vips_thread_execute("pixel", infobar_get_pixel, update))
 			// if we can't run a bg task, we must free the update
@@ -298,15 +292,17 @@ infobar_status_update(Infobar *infobar)
 	Tilesource *tilesource = imagewindow_get_tilesource(infobar->win);
 	imagewindow_get_mouse_position(infobar->win, &image_x, &image_y);
 
-	if (tilesource->image) {
-		vips_buf_appendf(&buf, "%d", (int) image_x);
-		gtk_label_set_text(GTK_LABEL(infobar->x), vips_buf_all(&buf));
-		vips_buf_rewind(&buf);
+	image_x = VIPS_CLIP(0, image_x, tilesource->image_width - 1);
+	image_y = VIPS_CLIP(0, image_y, tilesource->image_height - 1);
 
-		vips_buf_appendf(&buf, "%d", (int) image_y);
-		gtk_label_set_text(GTK_LABEL(infobar->y), vips_buf_all(&buf));
-		vips_buf_rewind(&buf);
-	}
+	vips_buf_appendf(&buf, "%d", (int) image_x);
+	gtk_label_set_text(GTK_LABEL(infobar->x), vips_buf_all(&buf));
+	vips_buf_rewind(&buf);
+
+	vips_buf_appendf(&buf, "%d", (int) image_y);
+	gtk_label_set_text(GTK_LABEL(infobar->y), vips_buf_all(&buf));
+
+	vips_buf_rewind(&buf);
 
 	double zoom = imagewindow_get_zoom(infobar->win);
 	vips_buf_appendf(&buf, "Magnification %d%%", (int) rint(zoom * 100));
