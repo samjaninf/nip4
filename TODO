@@ -1,4 +1,12 @@
-- turning on the paintbox stops scale / offset sliders from working
+- leaking on _make_paintable()
+
+	not clear what we're leaking though
+
+- check progress bar on make_paintable
+
+- maybe inplace should be deprecated?
+
+
 
 - after fourier, have to turn on log mode by hand
 

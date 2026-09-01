@@ -597,7 +597,7 @@ imageui_set_position(Imageui *imageui, double x, double y)
 		GTK_SCROLLED_WINDOW(imageui->scrolled_window));
 
 #ifdef DEBUG_VERBOSE
-	printf("imagewindow_set_position: x = %g, y = %g\n", x, y);
+	printf("imageui_set_position: x = %g, y = %g\n", x, y);
 #endif /*DEBUG_VERBOSE*/
 
 	gtk_adjustment_set_value(hadj, x);
@@ -1566,25 +1566,21 @@ imageui_make_paintable(Imageui *imageui)
 			printf("imageui_make_paintable:\n");
 #endif /*DEBUG*/
 
+			Imagewindow *win =
+				IMAGEWINDOW(gtk_widget_get_root(GTK_WIDGET(imageui)));
+			iImage *iimage = imagewindow_get_iimage(win);
+
 			VipsImage *memory;
 			if (!(memory = vips_image_copy_memory(image)))
 				return FALSE;
-
-			Tilesource *new_tilesource;
-			if (!(new_tilesource = tilesource_new_from_image(memory))) {
-				VIPS_UNREF(memory);
-				return FALSE;
-			}
+			Imageinfo *new_ii = imageinfo_new(main_imageinfogroup,
+				reduce_context->heap, memory, NULL);
+			image_value_set(&iimage->value, new_ii);
+			VIPS_UNREF(memory);
 
 #ifdef DEBUG
 			printf("\tnew writeable image is %p\n", memory);
 #endif /*DEBUG*/
-
-			VIPS_UNREF(memory);
-
-			g_object_set(G_OBJECT(imageui), "tilesource", new_tilesource, NULL);
-
-			VIPS_UNREF(new_tilesource);
 
 			imageui->is_paintable = TRUE;
 		}
