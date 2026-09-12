@@ -1609,11 +1609,6 @@ row_recomp_all(Row *top_row)
 		printf("row_recomp_all: after row recomp, top value now ");
 		pgraph(&top_row->expr->root);
 #endif /*DEBUG*/
-
-		/* So we don't stall updates for too long. Don't bother in batch mode.
-		 */
-		if (!main_option_batch)
-			process_events();
 	}
 
 	workspace_error_sanity(top_row->ws);

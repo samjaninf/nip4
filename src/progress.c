@@ -240,8 +240,6 @@ progress_event_signal(ProgressEvent *event)
 {
 	Progress *progress = progress_get();
 
-	process_events();
-
 	/* Throttle update events to 10Hz.
 	 */
 	if (event->signal == SIG_UPDATE) {
@@ -254,6 +252,8 @@ progress_event_signal(ProgressEvent *event)
 
 		progress->last_update_time = time_now;
 	}
+
+	process_events();
 
 	g_idle_add(progress_event_idle, event);
 }

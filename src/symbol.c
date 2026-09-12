@@ -1183,13 +1183,11 @@ symbol_recalculate_leaf_sub(Symbol *sym)
 	reduce_context->heap->filled = FALSE;
 	symbol_running = TRUE;
 	symbol_note_calc_name(sym);
-	progress_begin();
 
 	// false for error, true for success or timeout
 	gboolean result = symbol_recalculate_sub(sym);
 
 	symbol_running = FALSE;
-	progress_end();
 
 	if (!result ||
 		reduce_context->heap->filled) {
@@ -1382,7 +1380,9 @@ symbol_recalculate_check(Symbol *sym)
 {
 	gboolean result;
 
+	progress_begin();
 	result = symbol_recalculate_leaf_sub(sym) == NULL;
+	progress_end();
 
 	return result;
 }
