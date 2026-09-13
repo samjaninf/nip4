@@ -36,7 +36,11 @@ draw_image(VipsImage *from, VipsImage *to, VipsRect *area, int x, int y)
 		vips_check_coding_noneorlabq("draw_image", to) ||
 		vips_check_bands_same("draw_image", from, to) ||
 		vips_check_format_same("draw_image", from, to) ||
-		vips_check_coding_same("draw_image", from, to))
+		vips_check_coding_same("draw_image", from, to) ||
+		vips_check_draw("draw_image", to))
+		return -1;
+
+	if (vips_image_wio_input(from))
 		return -1;
 
 	/* Clip against the source image.

@@ -47,7 +47,11 @@ draw_mask(VipsImage *image, VipsPel *ink, VipsImage *mask, int x, int y)
 	if (vips_check_coding_noneorlabq("draw_mask", image) ||
 		vips_check_mono("draw_mask", mask) ||
 		vips_check_uncoded("draw_mask", mask) ||
-		vips_check_format("draw_mask", mask, VIPS_FORMAT_UCHAR))
+		vips_check_format("draw_mask", mask, VIPS_FORMAT_UCHAR) ||
+		vips_check_draw("draw_mask", mask))
+		return -1;
+
+	if (vips_image_wio_input(mask))
 		return -1;
 
 	/* Find the area we draw on the image.

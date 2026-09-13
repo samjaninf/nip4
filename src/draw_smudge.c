@@ -49,6 +49,10 @@
 int
 draw_smudge(VipsImage *image, VipsRect *area)
 {
+	if (vips_check_uncoded("draw_smudge", image) ||
+		vips_check_draw("draw_smudge", image))
+		return -1;
+
 	VipsRect clip = {0, 0, image->Xsize, image->Ysize};
 	vips_rect_intersectrect(area, &clip, &clip);
 	if (vips_rect_isempty(&clip))
