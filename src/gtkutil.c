@@ -255,34 +255,6 @@ get_state_int(GtkWidget *from, const char *name)
 	return g_variant_get_int32(state);
 }
 
-/* A 'safe' way to run a few events.
- */
-void
-process_events(void)
-{
-	/* Max events we process before signalling a timeout. Without this we
-	 * can get stuck in event loops in some circumstances.
-	 */
-	static const int max_events = 100;
-
-	/* Block too much recursion. 0 is from the top-level, 1 is from a
-	 * callback, we don't want any more than that.
-	 */
-	if (!in_update &&
-		g_main_depth() < 2) {
-		int n;
-
-		in_update = TRUE;
-
-		for (n = 0; n < max_events &&
-			 g_main_context_iteration(NULL, FALSE);
-			 n++)
-			;
-
-		in_update = FALSE;
-	}
-}
-
 static gboolean
 block_scroll_cb(GtkEventControllerScroll *self,
 	gdouble dx, gdouble dy, gpointer user_data)

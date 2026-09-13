@@ -70,7 +70,6 @@ GtkWidget *build_entry(int nchars);
 void set_tooltip(GtkWidget *wid, const char *fmt, ...);
 void copy_adj(GtkAdjustment *to, GtkAdjustment *from);
 
-
 void change_state(GtkWidget *widget, const char *name, GVariant *state);
 void set_state(GtkWidget *to, GSettings *settings, const char *name);
 GVariant *get_state(GtkWidget *widget, const char *name);
@@ -84,8 +83,6 @@ void set_state_enum(GtkWidget *to, const char *name, const char *value);
 gboolean get_state_bool(GtkWidget *from, const char *name);
 double get_state_double(GtkWidget *from, const char *name);
 int get_state_int(GtkWidget *from, const char *name);
-
-void process_events(void);
 
 void block_scroll(GtkWidget *widget);
 

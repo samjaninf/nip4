@@ -150,8 +150,6 @@ progress_emit_begin(Progress *progress)
 static gboolean
 progress_emit_update(Progress *progress)
 {
-	process_events();
-
 	gboolean cancel = FALSE;
 	g_signal_emit(progress, progress_signals[SIG_UPDATE], 0, &cancel);
 
@@ -252,8 +250,6 @@ progress_event_signal(ProgressEvent *event)
 
 		progress->last_update_time = time_now;
 	}
-
-	process_events();
 
 	g_idle_add(progress_event_idle, event);
 }
