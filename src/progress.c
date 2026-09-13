@@ -332,17 +332,6 @@ progress_update_loading(int percent, const char *filename)
 	return progress->cancel;
 }
 
-gboolean
-progress_update_tick(void)
-{
-	Progress *progress = progress_get();
-
-	ProgressEvent *event = progress_event_new(SIG_UPDATE, 0, 0, "");
-	progress_event_signal(event);
-
-	return progress->cancel;
-}
-
 void
 progress_end(void)
 {

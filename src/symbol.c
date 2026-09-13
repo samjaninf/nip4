@@ -1079,6 +1079,8 @@ symbol_recalculate_sub(Symbol *sym)
 
 	g_assert(is_value(sym));
 
+	progress_update_expr(sym->expr);
+
 	if (sym->expr->row) {
 		/* This is the root of a display ... use that recomp
 		 * mechanism.
@@ -1133,12 +1135,6 @@ symbol_get_last_calc(void)
 	return vips_buf_all(&symbol_last_calc_buf);
 }
 
-/* We can get called recursively .. eg. we do an tiffload(), that
- * pops a progress box, that triggers idle, that tries to recalc a
- * leaf again.
- */
-static gboolean symbol_running = FALSE;
-
 /* Recalc a symbol with error checks. This can succeed, stop with a timeout,
  * or fail with an error.
  */
@@ -1177,17 +1173,12 @@ symbol_recalculate_leaf_sub(Symbol *sym)
 		symbol_dirty_clear(sym);
 		return NULL;
 	}
-	if (symbol_running)
-		return NULL;
 
 	reduce_context->heap->filled = FALSE;
-	symbol_running = TRUE;
 	symbol_note_calc_name(sym);
 
 	// false for error, true for success or timeout
 	gboolean result = symbol_recalculate_sub(sym);
-
-	symbol_running = FALSE;
 
 	if (!result ||
 		reduce_context->heap->filled) {
@@ -1282,9 +1273,7 @@ symbol_recalculate_leaf(void)
 	return recalculated;
 }
 
-/* Our idle recomp callback.
- */
-static gint symbol_idle_id = 0;
+static gboolean symbol_running = FALSE;
 
 static gboolean
 symbol_recalculate_idle(void *user_data)
@@ -1293,33 +1282,22 @@ symbol_recalculate_idle(void *user_data)
 	printf("symbol_recalculate_idle:\n");
 #endif /*DEBUG_RECALC*/
 
-	if (symbol_running)
-		/* We've been run from a nested main loop, perhaps from the
-		 * progress bar. Just run again and perhaps next time we'll be
-		 * back in the top-level main loop.
-		 */
-		return TRUE;
-
-	if (mainwindow_auto_recalc)
-		while (symbol_recalculate_leaf())
-			;
-
-	if (!symbol_leaf_next()) {
-#ifdef DEBUG_RECALC
-		printf("symbol_recalculate_idle: bg recalc done\n");
-#endif /*DEBUG_RECALC*/
-
-		symbol_idle_id = 0;
+	if (symbol_recalculate_leaf())
+		// we recalced a symbol, queue another recalc
+		g_idle_add(symbol_recalculate_idle, NULL);
+	else {
 		progress_end();
-
-		return FALSE;
+		symbol_running = FALSE;
 	}
-	else
-		return TRUE;
+
+	return FALSE;
 }
 
-/* Recalculate ... either nudge the idle recomp, or in batch mode, do a recomp
- * right now.
+/* Recalculate.
+ *
+ * - in batch moide, we just recalc all symbols
+ *
+ * - in GUI mode, we queue a set of idle tasks, and each one queues the next
  */
 void
 symbol_recalculate_all_force(gboolean now)
@@ -1333,11 +1311,7 @@ symbol_recalculate_all_force(gboolean now)
 	 */
 	(void) view_scan_all();
 
-	if (symbol_running)
-		/* Do nothing.
-		 */
-		;
-	else if (main_option_batch ||
+	if (main_option_batch ||
 		now) {
 		progress_begin();
 
@@ -1346,13 +1320,14 @@ symbol_recalculate_all_force(gboolean now)
 
 		progress_end();
 	}
-	else if (!symbol_idle_id) {
+	else if (!symbol_running) {
 #ifdef DEBUG_RECALC
 		printf("symbol_recalculate_all_force: starting bg recalc ...\n");
 #endif /*DEBUG_RECALC*/
 
+		symbol_running = TRUE;
 		progress_begin();
-		symbol_idle_id = g_idle_add(symbol_recalculate_idle, NULL);
+		g_idle_add(symbol_recalculate_idle, NULL);
 	}
 }
 
@@ -1373,7 +1348,7 @@ symbol_recalculate_all(void)
 		symbol_recalculate_all_force(FALSE);
 }
 
-/* Recalc a symbol ... with error checks.
+/* Recalc a single symbol with error checks.
  */
 gboolean
 symbol_recalculate_check(Symbol *sym)
