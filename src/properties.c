@@ -237,9 +237,10 @@ properties_set_tilesource(Properties *p, Tilesource *tilesource)
 	/* No need to ref ... the enclosing window holds a ref to us.
 	 */
 	p->tilesource = tilesource;
-	g_signal_connect_object(tilesource,
-		"changed", G_CALLBACK(properties_tilesource_changed),
-		p, 0);
+	if (tilesource)
+		g_signal_connect_object(tilesource,
+			"changed", G_CALLBACK(properties_tilesource_changed),
+			p, 0);
 
 	// first refresh
 	properties_refresh(p);

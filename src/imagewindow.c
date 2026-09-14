@@ -52,6 +52,13 @@ struct _Imagewindow {
 	int current_file;
 	char *dirname;
 
+#ifndef NIP4
+	/* The current save and load directories.
+	 */
+	GFile *save_folder;
+	GFile *load_folder;
+#endif /*!NIP4*/
+
 	/* Widgets.
 	 */
 	GtkWidget *right_click_menu;
@@ -355,7 +362,7 @@ imagewindow_files_set_path(Imagewindow *win, const char *path)
 
 static void
 imagewindow_files_set(Imagewindow *win,
-	const char **files, int n_files, gboolean force)
+	char **files, int n_files, gboolean force)
 {
 	if (n_files == 1) {
 		// on a forced update, make sure we regenerate everything
@@ -521,7 +528,8 @@ imagewindow_imageui_add(Imagewindow *win, Imageui *imageui)
 	tilesource_background_load(tilesource);
 }
 
-/* Change the image we are manipulating. The imageui is in the stack already.
+/* Change the image we are manipulating. The imageui is in the stack already,
+ * or NULL for switch to no-image display.
  */
 static void
 imagewindow_imageui_set_visible(Imagewindow *win, Imageui *imageui)
@@ -625,16 +633,77 @@ imagewindow_imageui_set_visible(Imagewindow *win, Imageui *imageui)
 		imagewindow_changed(win);
 
 	// update the menus
-	imagewindow_tilesource_changed(new_tilesource, win);
+	if (new_tilesource)
+		imagewindow_tilesource_changed(new_tilesource, win);
 
-	TilecacheBackground background;
-	g_object_get(win->imageui,
-		"background", &background,
-		NULL);
-	const char *name = vips_enum_nick(TILECACHE_BACKGROUND_TYPE, background);
-	GVariant *state = g_variant_new_string(name);
-	change_state(GTK_WIDGET(win), "background", state);
+	if (imageui) {
+		TilecacheBackground background;
+
+		g_object_get(win->imageui,
+			"background", &background,
+			NULL);
+		const char *name =
+			vips_enum_nick(TILECACHE_BACKGROUND_TYPE, background);
+		GVariant *state = g_variant_new_string(name);
+		change_state(GTK_WIDGET(win), "background", state);
+	}
 }
+
+#ifndef NIP4
+static void
+imagewindow_open_current_file(Imagewindow *win)
+{
+	imagewindow_error_hide(win);
+
+	if (!win->files)
+		imagewindow_imageui_set_visible(win, NULL);
+	else {
+		char *filename = win->files[win->current_file];
+
+		Imageui *imageui;
+		Active *active;
+
+#ifdef DEBUG
+		printf("imagewindow_open_current_file: %s:\n", filename);
+#endif /*DEBUG*/
+
+		/* An old image selected again?
+		 */
+		if ((active = imagewindow_active_lookup_by_filename(win, filename))) {
+			imagewindow_active_touch(win, active);
+			imageui = active->imageui;
+		}
+		else {
+			/* FIXME ... we only want to revalidate if eg. the timestamp has
+			 * changed, or perhaps on F5?
+			VipsImage *image;
+			if( (image = vips_image_new_from_file( filename,
+					"revalidate", TRUE, NULL )) )
+				VIPS_UNREF( image );
+			else
+				imagewindow_error( win );
+			 */
+
+			g_autoptr(Tilesource) tilesource =
+				tilesource_new_from_file(filename);
+			if (!tilesource) {
+				imagewindow_error(win);
+				return;
+			}
+
+			imageui = imageui_new(tilesource);
+			if (!imageui) {
+				imagewindow_error(win);
+				return;
+			}
+
+			imagewindow_imageui_add(win, imageui);
+		}
+
+		imagewindow_imageui_set_visible(win, imageui);
+	}
+}
+#endif /*!NIP4*/
 
 static void
 imagewindow_dispose(GObject *object)
@@ -661,6 +730,11 @@ imagewindow_dispose(GObject *object)
 	}
 
 	imagewindow_files_free(win);
+
+#ifndef NIP4
+	VIPS_UNREF(win->save_folder);
+	VIPS_UNREF(win->load_folder);
+#endif /*!NIP4*/
 
 	G_OBJECT_CLASS(imagewindow_parent_class)->dispose(object);
 }
@@ -731,6 +805,68 @@ imagewindow_paste_filename(const char *filename, void *user_data)
 
 	return TRUE;
 }
+#else /*!NIP4*/
+static void
+image_new_from_texture_free(VipsImage *image, GBytes *bytes)
+{
+	g_bytes_unref(bytes);
+}
+
+static VipsImage *
+image_new_from_texture(GdkTexture *texture)
+{
+	g_autoptr(GBytes) bytes = gdk_texture_save_to_tiff_bytes(texture);
+
+	if (!bytes) {
+		vips_error("Convert to TIFF", _("unable to convert texture to TIFF"));
+		return NULL;
+	}
+
+	gsize len;
+	gconstpointer data = g_bytes_get_data(bytes, &len);
+
+	VipsImage *image;
+	if (!(image = vips_image_new_from_buffer(data, len, "", NULL)))
+		return NULL;
+
+	g_signal_connect(image, "close",
+		G_CALLBACK(image_new_from_texture_free), bytes);
+	g_bytes_ref(bytes);
+
+	return image;
+}
+
+static void
+imagewindow_set_from_value(Imagewindow *win, const GValue *value)
+{
+	if (G_VALUE_TYPE(value) == GDK_TYPE_FILE_LIST) {
+		GdkFileList *file_list = g_value_get_boxed(value);
+		g_autoptr(GSList) files = gdk_file_list_get_files(file_list);
+
+		imagewindow_open_list_gfiles(win, files);
+	}
+	else if (G_VALUE_TYPE(value) == G_TYPE_FILE) {
+		GFile *file = g_value_get_object(value);
+
+		imagewindow_open_gfiles(win, &file, 1);
+	}
+	else if (G_VALUE_TYPE(value) == G_TYPE_STRING) {
+		// remove leading and trailing whitespace
+		// modifies the string in place, so we must dup
+		g_autofree char *text = g_strstrip(g_strdup(g_value_get_string(value)));
+
+		imagewindow_open_files(win, &text, 1);
+	}
+	else if (G_VALUE_TYPE(value) == GDK_TYPE_TEXTURE) {
+		GdkTexture *texture = g_value_get_object(value);
+
+		g_autoptr(VipsImage) image = image_new_from_texture(texture);
+		if (image)
+			imagewindow_open_image(win, image);
+		else
+			imagewindow_error(win);
+	}
+}
 #endif /*NIP4*/
 
 static void
@@ -752,6 +888,9 @@ imagewindow_paste_action_ready(GObject *source_object,
 	if (value &&
 		!value_to_filename(value, imagewindow_paste_filename, win))
 		imagewindow_error(win);
+#else /*!NIP4*/
+	if (value)
+		imagewindow_set_from_value(win, value);
 #endif /*NIP4*/
 }
 
@@ -860,7 +999,7 @@ imagewindow_reload_action(GSimpleAction *action,
 		const char *path = tilesource_get_path(tilesource);
 
 		if (path)
-			imagewindow_files_set(win, &path, 1, TRUE);
+			imagewindow_files_set(win, (char **) &path, 1, TRUE);
 	}
 }
 
@@ -883,6 +1022,121 @@ imagewindow_saveas_action(GSimpleAction *action,
 
 	if (win->iimage)
 		classmodel_graphic_save(CLASSMODEL(win->iimage), GTK_WINDOW(win));
+}
+#else /*!NIP4*/
+static GFile *
+get_parent(GFile *file)
+{
+	GFile *parent = g_file_get_parent(file);
+
+	return parent ? parent : g_file_new_for_path("/");
+}
+
+static void
+imagewindow_replace_result(GObject *source_object,
+	GAsyncResult *res, gpointer user_data)
+{
+	Imagewindow *win = IMAGEWINDOW(user_data);
+	GtkFileDialog *dialog = GTK_FILE_DIALOG(source_object);
+
+	g_autoptr(GListModel) list =
+		gtk_file_dialog_open_multiple_finish(dialog, res, NULL);
+	if (list) {
+		if (g_list_model_get_item_type(list) == G_TYPE_FILE) {
+			int n_files = g_list_model_get_n_items(list);
+			g_autofree GFile **files = VIPS_ARRAY(NULL, n_files + 1, GFile *);
+			for (int i = 0; i < n_files; i++)
+				files[i] = G_FILE(g_list_model_get_object(list, i));
+
+			// update the default load directory
+			VIPS_UNREF(win->load_folder);
+			if (n_files > 0) {
+				g_autoptr(GFile) file =
+					G_FILE(g_list_model_get_object(list, 0));
+				win->load_folder = get_parent(file);
+			}
+
+			imagewindow_error_hide(win);
+			imagewindow_open_gfiles(win, files, n_files);
+		}
+	}
+}
+
+static void
+imagewindow_replace_action(GSimpleAction *action,
+	GVariant *parameter, gpointer user_data)
+{
+	Imagewindow *win = IMAGEWINDOW(user_data);
+	Tilesource *tilesource = imagewindow_get_tilesource(win);
+
+	GtkFileDialog *dialog;
+
+	dialog = gtk_file_dialog_new();
+	gtk_file_dialog_set_title(dialog, "Replace from file");
+	gtk_file_dialog_set_accept_label(dialog, "Replace");
+	gtk_file_dialog_set_modal(dialog, TRUE);
+
+	if (tilesource) {
+		g_autoptr(GFile) file = tilesource_get_file(tilesource);
+		if (file)
+			gtk_file_dialog_set_initial_file(dialog, file);
+	}
+	else if (win->load_folder)
+		gtk_file_dialog_set_initial_folder(dialog, win->load_folder);
+
+	gtk_file_dialog_open_multiple(dialog, GTK_WINDOW(win), NULL,
+		imagewindow_replace_result, win);
+}
+
+static void
+imagewindow_on_file_save_cb(GObject *source_object,
+	GAsyncResult *res, gpointer user_data)
+{
+	Imagewindow *win = IMAGEWINDOW(user_data);
+	Tilesource *tilesource = imagewindow_get_tilesource(win);
+	GtkFileDialog *dialog = GTK_FILE_DIALOG(source_object);
+
+	g_autoptr(GFile) file = gtk_file_dialog_save_finish(dialog, res, NULL);
+	if (file && tilesource) {
+		// note the save directory for next time
+		VIPS_UNREF(win->save_folder);
+		win->save_folder = get_parent(file);
+
+		g_autofree char *filename = g_file_get_path(file);
+
+		VipsImage *image = tilesource_get_base_image(tilesource);
+		SaveOptions *options =
+			save_options_new(GTK_WINDOW(win), image, filename);
+		if (!options) {
+			imagewindow_error(win);
+			return;
+		}
+
+		gtk_window_present(GTK_WINDOW(options));
+	}
+}
+
+void
+imagewindow_saveas_action(GSimpleAction *action,
+	GVariant *parameter, gpointer user_data)
+{
+	Imagewindow *win = IMAGEWINDOW(user_data);
+	Tilesource *tilesource = imagewindow_get_tilesource(win);
+
+	if (tilesource) {
+		GtkFileDialog *dialog = gtk_file_dialog_new();
+		gtk_file_dialog_set_title(dialog, "Save file");
+		gtk_file_dialog_set_modal(dialog, TRUE);
+
+		g_autoptr(GFile) file = tilesource_get_file(tilesource);
+		if (file)
+			gtk_file_dialog_set_initial_file(dialog, file);
+		else if (win->save_folder)
+			gtk_file_dialog_set_initial_folder(dialog, win->save_folder);
+
+		gtk_file_dialog_save(dialog, GTK_WINDOW(win), NULL,
+			&imagewindow_on_file_save_cb, win);
+	}
 }
 #endif /*NIP4*/
 
@@ -990,6 +1244,8 @@ imagewindow_next_image(GSimpleAction *action,
 #ifdef NIP4
 		iimage_replace(win->iimage, win->files[win->current_file]);
 		symbol_recalculate_all();
+#else /*!NIP4*/
+		imagewindow_open_current_file(win);
 #endif /*NIP4*/
 	}
 }
@@ -1013,6 +1269,8 @@ imagewindow_prev_image(GSimpleAction *action,
 #ifdef NIP4
 		iimage_replace(win->iimage, win->files[win->current_file]);
 		symbol_recalculate_all();
+#else /*!NIP4*/
+		imagewindow_open_current_file(win);
 #endif /*NIP4*/
 	}
 }
@@ -1292,7 +1550,9 @@ imagewindow_dnd_drop(GtkDropTarget *target,
 #ifdef NIP4
 	return value_to_filename(value, imagewindow_paste_filename, win);
 #else /*!NIP4*/
-	return FALSE;
+	imagewindow_set_from_value(win, value);
+
+	return TRUE;
 #endif /*NIP4*/
 }
 
@@ -1333,6 +1593,13 @@ imagewindow_init(Imagewindow *win)
 #endif /*DEBUG*/
 
 	win->settings = g_settings_new(APPLICATION_ID);
+
+#ifndef NIP4
+	g_autofree char *cwd = g_get_current_dir();
+	win->save_folder = g_file_new_for_path(cwd);
+	win->load_folder = g_file_new_for_path(cwd);
+#endif /*!NIP4*/
+
 	win->transition = GTK_STACK_TRANSITION_TYPE_NONE;
 
 	gtk_widget_init_template(GTK_WIDGET(win));
@@ -1578,7 +1845,7 @@ imagewindow_iimage_changed(iImage *iimage, Imagewindow *win)
 			imagewindow_imageui_add(win, imageui);
 		}
 
-		const char *filenames = filename;
+		char *filenames = filename;
 		imagewindow_files_set(win, &filenames, 1, FALSE);
 
 		imagewindow_imageui_set_visible(win, imageui);
@@ -1648,5 +1915,86 @@ imagewindow_set_iimage(Imagewindow *win, iImage *iimage)
 
 	displaybar_set_view_settings(DISPLAYBAR(win->displaybar),
 		&iimage->view_settings);
+}
+#else /*!NIP4*/
+void
+imagewindow_open_files(Imagewindow *win, char **files, int n_files)
+{
+#ifdef DEBUG
+	printf("imagewindow_open_files:\n");
+#endif /*DEBUG*/
+
+	win->transition = GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT;
+	imagewindow_files_set(win, files, n_files, FALSE);
+	imagewindow_open_current_file(win);
+}
+
+void
+imagewindow_open_gfiles(Imagewindow *win, GFile **gfiles, int n_files)
+{
+#ifdef DEBUG
+	printf("imagewindow_open_gfiles:\n");
+#endif /*DEBUG*/
+
+	g_auto(GStrv) files = VIPS_ARRAY(NULL, n_files + 1, char *);
+	for (int i = 0; i < n_files; i++)
+		// can fail for eg. URLs etc.
+		if (!(files[i] = g_file_get_path(gfiles[i])))
+			return;
+
+	imagewindow_open_files(win, files, n_files);
+}
+
+void
+imagewindow_open_list_gfiles(Imagewindow *win, GSList *gfiles)
+{
+#ifdef DEBUG
+	printf("imagewindow_open_list_gfiles:\n");
+#endif /*DEBUG*/
+
+	GSList *p;
+	int i;
+
+	int n_files = g_slist_length(gfiles);
+	g_auto(GStrv) files = VIPS_ARRAY(NULL, n_files + 1, char *);
+	for (i = 0, p = gfiles; i < n_files; i++, p = p->next) {
+		GFile *file = G_FILE(p->data);
+
+		if (!(files[i] = g_file_get_path(file)))
+			return;
+	}
+
+	imagewindow_open_files(win, files, n_files);
+}
+
+void
+imagewindow_open_image(Imagewindow *win, VipsImage *image)
+{
+#ifdef DEBUG
+	printf("imagewindow_open_image:\n");
+#endif /*DEBUG*/
+
+	g_autoptr(Tilesource) tilesource = tilesource_new_from_image(image);
+	if (!tilesource) {
+		imagewindow_error(win);
+		return;
+	}
+
+	Imageui *imageui = imageui_new(tilesource);
+	if (!imageui) {
+		imagewindow_error(win);
+		return;
+	}
+
+	// no longer have a file backed image
+	imagewindow_files_free(win);
+
+	win->transition = GTK_STACK_TRANSITION_TYPE_SLIDE_DOWN;
+	imagewindow_imageui_add(win, imageui);
+	imagewindow_imageui_set_visible(win, imageui);
+
+	gtk_widget_set_sensitive(win->prev, win->n_files > 1);
+	gtk_widget_set_sensitive(win->next, win->n_files > 1);
+	gtk_widget_set_sensitive(win->refresh, win->n_files > 0);
 }
 #endif /*NIP4*/

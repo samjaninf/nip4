@@ -528,20 +528,27 @@ value_to_filename(const GValue *value, ValueToFilenameFn fn, void *user_data)
 
 		for (GSList *p = files; p; p = p->next) {
 			GFile *file = G_FILE(p->data);
+			// NULL for eg. URLs etc
 			g_autofree char *path = g_file_get_path(file);
-			g_autofree char *strip_path = g_strstrip(g_strdup(path));
 
-			if (!fn(strip_path, user_data))
-				return FALSE;
+			if (path) {
+				g_autofree char *strip_path = g_strstrip(g_strdup(path));
+
+				if (!fn(strip_path, user_data))
+					return FALSE;
+			}
 		}
 	}
 	else if (G_VALUE_TYPE(value) == G_TYPE_FILE) {
 		GFile *file = g_value_get_object(value);
 		g_autofree char *path = g_file_get_path(file);
-		g_autofree char *strip_path = g_strstrip(g_strdup(path));
 
-		if (!fn(strip_path, user_data))
-			return FALSE;
+		if (path) {
+			g_autofree char *strip_path = g_strstrip(g_strdup(path));
+
+			if (!fn(strip_path, user_data))
+				return FALSE;
+		}
 	}
 	else if (G_VALUE_TYPE(value) == G_TYPE_STRING) {
 		g_autofree char *strip_path =

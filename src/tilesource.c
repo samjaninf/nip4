@@ -2085,7 +2085,7 @@ tilesource_collect_tile(Tilesource *tilesource, Tile *tile)
 const char *
 tilesource_get_path(Tilesource *tilesource)
 {
-	return tilesource->filename;
+	return tilesource ? tilesource->filename : NULL;
 }
 
 GFile *

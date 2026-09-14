@@ -60,6 +60,11 @@ Imageui *imagewindow_get_imageui(Imagewindow *win);
 #ifdef NIP4
 iImage *imagewindow_get_iimage(Imagewindow *win);
 void imagewindow_set_iimage(Imagewindow *win, iImage *iimage);
+#else /*!NIP4*/
+void imagewindow_open_files(Imagewindow *win, char **files, int n_files);
+void imagewindow_open_gfiles(Imagewindow *win, GFile **gfiles, int n_files);
+void imagewindow_open_list_gfiles(Imagewindow *win, GSList *gfiles);
+void imagewindow_open_image(Imagewindow *win, VipsImage *image);
 #endif /*NIP4*/
 
 #endif /* __IMAGEWINDOW_H */

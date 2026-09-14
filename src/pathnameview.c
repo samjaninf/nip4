@@ -106,13 +106,15 @@ pathnameview_select_result(GObject *source_object,
 	GtkFileDialog *dialog = GTK_FILE_DIALOG(source_object);
 
 	g_autoptr(GFile) file = gtk_file_dialog_open_finish(dialog, res, NULL);
-	if (file) {
-		g_autofree char *path = g_file_get_path(file);
+	if (!file)
+		return;
+	g_autofree char *path = g_file_get_path(file);
+	if (!path)
+		return;
 
-		VIPS_SETSTR(pathname->value, path);
-		classmodel_update_view(CLASSMODEL(pathname));
-		symbol_recalculate_all();
-	}
+	VIPS_SETSTR(pathname->value, path);
+	classmodel_update_view(CLASSMODEL(pathname));
+	symbol_recalculate_all();
 }
 
 static void

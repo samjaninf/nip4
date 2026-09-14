@@ -203,6 +203,7 @@ paintbox_disconnect(Paintbox *paintbox)
 		g_signal_handler_disconnect(paintbox->imagedisplay,
 			paintbox->snapshot_sid);
 
+		paintbox->snapshot_sid = 0;
 		paintbox->imagedisplay = NULL;
 	}
 
@@ -305,7 +306,8 @@ paintbox_set_rubber(Paintbox *paintbox, PaintboxRubber rubber,
 	paintbox->a = a;
 	paintbox->b = b;
 
-	gtk_widget_queue_draw(paintbox->imagedisplay);
+	if (paintbox->imagedisplay)
+		gtk_widget_queue_draw(paintbox->imagedisplay);
 }
 
 static void
@@ -1313,12 +1315,14 @@ paintbox_imagewindow_new_image(Imagewindow *win, Paintbox *paintbox)
 	paintbox_disconnect(paintbox);
 
 	paintbox->imageui = imagewindow_get_imageui(win);
-	imageui_client_add(paintbox->imageui, G_OBJECT(paintbox),
-		100, paintbox_event);
+	if (paintbox->imageui) {
+		imageui_client_add(paintbox->imageui, G_OBJECT(paintbox),
+			100, paintbox_event);
 
-	paintbox->imagedisplay = imageui_get_imagedisplay(paintbox->imageui);
-	paintbox->snapshot_sid = g_signal_connect(paintbox->imagedisplay,
-		"snapshot", G_CALLBACK(paintbox_snapshot), paintbox);
+		paintbox->imagedisplay = imageui_get_imagedisplay(paintbox->imageui);
+		paintbox->snapshot_sid = g_signal_connect(paintbox->imagedisplay,
+			"snapshot", G_CALLBACK(paintbox_snapshot), paintbox);
+	}
 
 	// reset tool to SELECT, since the new imageui might not be paintable
 	paintbox_set_tool(paintbox, PAINTBOX_TOOL_POINTER);

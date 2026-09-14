@@ -211,6 +211,8 @@ void
 mainwindow_open(Mainwindow *main, GFile *file)
 {
 	g_autofree char *filename = g_file_get_path(file);
+	if (!filename)
+		return;
 
 	for (int i = 0; i < VIPS_NUMBER(mainwindow_file_types); i++)
 		if (vips_iscasepostfix(filename, mainwindow_file_types[i].suffix)) {
@@ -934,21 +936,24 @@ mainwindow_set_gfile(Mainwindow *main, GFile *gfile)
 	printf("mainwindow_set_gfile:\n");
 #endif /*DEBUG*/
 
-	if (gfile) {
-		g_autofree char *file = g_file_get_path(gfile);
-		Workspaceroot *root = main_workspaceroot;
+	if (!gfile)
+		return;
+	g_autofree char *file = g_file_get_path(gfile);
+	if (!file)
+		return;
 
-		Workspacegroup *wsg;
+	Workspaceroot *root = main_workspaceroot;
 
-		if (!(wsg = workspacegroup_new_from_file(root, file, file))) {
-			mainwindow_error(main);
-			return;
-		}
+	Workspacegroup *wsg;
 
-		mainwindow_set_wsg(main, wsg);
-
-		symbol_recalculate_all();
+	if (!(wsg = workspacegroup_new_from_file(root, file, file))) {
+		mainwindow_error(main);
+		return;
 	}
+
+	mainwindow_set_wsg(main, wsg);
+
+	symbol_recalculate_all();
 }
 
 static GSettings *
