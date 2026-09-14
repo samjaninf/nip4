@@ -1,7 +1,14 @@
 
-- test_image.ws seems to have a ref leak
+- test_image.ws seems to have a ref leak in column T
 
-	in VipsFillNearest?
+  T6 should be the pots with some black areas
+
+  T5 runs fill_nearest on T6, and then T6 has the wrong thumbnail!
+
+  is fill_nearest modifying the input? perhaps the arg tag is wrong? maybe we
+  need to copy_draw() befopre all read-write operation args?
+
+
 
 - paint on an image that's part of a big pipeline can leave the progress bar
   up
