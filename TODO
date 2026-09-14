@@ -1,6 +1,4 @@
 
-- click X on unselected column just selects the column and does not close it
-
 - test_image.ws seems to have a ref leak
 
 	in VipsFillNearest?

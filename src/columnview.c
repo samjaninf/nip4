@@ -373,7 +373,7 @@ columnview_refresh(vObject *vobject)
 
 	/* Set open/closed.
 	 */
-	gtk_button_set_icon_name(GTK_BUTTON(cview->expand_button),
+	gtk_button_set_icon_name(GTK_BUTTON(cview->expand),
 		col->open ? "pan-down-symbolic" : "pan-end-symbolic");
 	gtk_revealer_set_reveal_child(GTK_REVEALER(cview->revealer), col->open);
 
@@ -639,11 +639,12 @@ columnview_class_init(ColumnviewClass *class)
 
 	BIND_VARIABLE(Columnview, top);
 	BIND_VARIABLE(Columnview, title);
-	BIND_VARIABLE(Columnview, expand_button);
+	BIND_VARIABLE(Columnview, expand);
 	BIND_VARIABLE(Columnview, name);
 	BIND_VARIABLE(Columnview, caption_edit_stack);
 	BIND_VARIABLE(Columnview, caption);
 	BIND_VARIABLE(Columnview, caption_edit);
+	BIND_VARIABLE(Columnview, close);
 	BIND_VARIABLE(Columnview, revealer);
 	BIND_VARIABLE(Columnview, body);
 	BIND_VARIABLE(Columnview, entry);

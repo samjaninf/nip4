@@ -20,7 +20,7 @@
                 <property name="spacing">15</property>
 
                 <child>
-                  <object class="GtkButton" id="expand_button">
+                  <object class="GtkButton" id="expand">
                     <property name="icon-name">pan-down-symbolic</property>
 		    <property name="has-frame">false</property>
 		    <signal name="clicked" handler="columnview_expand_clicked"/>
@@ -66,7 +66,7 @@
                 </child>
 
                 <child>
-                  <object class="GtkButton">
+                  <object class="GtkButton" id="close">
                     <property name="icon-name">window-close-symbolic</property>
 		    <property name="has-frame">false</property>
 		    <signal name="clicked" handler="columnview_close_clicked"/>

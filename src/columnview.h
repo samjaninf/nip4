@@ -55,11 +55,12 @@ struct _Columnview {
 	 */
 	GtkWidget *top;				   /* Enclosing widget for the whole cview */
 	GtkWidget *title;			   /* Columnview titlebar */
-	GtkWidget *expand_button;	   /* Expander button */
+	GtkWidget *expand;			   /* Expander button */
 	GtkWidget *name;			   /* Columnview name label */
 	GtkWidget *caption_edit_stack; /* Caption mode switcher */
 	GtkWidget *caption;			   /* Caption display */
 	GtkWidget *caption_edit;	   /* Caption edit */
+	GtkWidget *close;			   /* X button */
 	GtkWidget *entry;			   /* Text entry at bottom */
 	GtkWidget *revealer;		   /* Animate visibility for body */
 	GtkWidget *body;			   /* The body of the columnview */

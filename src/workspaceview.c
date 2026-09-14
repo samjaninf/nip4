@@ -374,10 +374,16 @@ workspaceview_columnview_title_hit(View *view, void *a, void *b)
 	graphene_point_t *point = (graphene_point_t *) a;
 	Workspaceview *wview = WORKSPACEVIEW(b);
 
-	graphene_rect_t bounds;
+	graphene_rect_t title;
+	graphene_rect_t expand;
+	graphene_rect_t close;
 
-	if (gtk_widget_compute_bounds(cview->title, wview->fixed, &bounds) &&
-		graphene_rect_contains_point(&bounds, point))
+	if (gtk_widget_compute_bounds(cview->title, wview->fixed, &title) &&
+		gtk_widget_compute_bounds(cview->expand, wview->fixed, &expand) &&
+		gtk_widget_compute_bounds(cview->close, wview->fixed, &close) &&
+		graphene_rect_contains_point(&title, point) &&
+		!graphene_rect_contains_point(&expand, point) &&
+		!graphene_rect_contains_point(&close, point))
 		return cview;
 
 	return NULL;
