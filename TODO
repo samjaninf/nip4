@@ -1,39 +1,3 @@
-- crash with test/workspaces/crash.ws
-
-	try building our own glib and getting a better stack trace
-
-(gdb) where
-#0  _g_log_abort (breakpoint=1) at ../glib/gmessages.c:455
-#1  0x00007ffff72e2da5 in g_logv (log_domain=0x7ffff7e4458e "GLib-GObject",
-    log_level=G_LOG_LEVEL_CRITICAL,
-    format=0x7ffff7e45ba0 "invalid uninstantiatable type '%s' in cast to '%s'", args=0x7fffffffcdc0) at ../glib/gmessages.c:1313
-#2  0x00007ffff72e2f00 in g_log (log_domain=0x7ffff7e4458e "GLib-GObject",
-    log_level=G_LOG_LEVEL_CRITICAL,
-    format=0x7ffff7e45ba0 "invalid uninstantiatable type '%s' in cast to '%s'")
-    at ../glib/gmessages.c:1355
-#3  0x00007ffff7e2eab0 in g_type_check_instance_cast (
-    type_instance=0x55555c7ae160, iface_type=93825072923456)
-    at ../gobject/gtype.c:3961
-#4  0x00007ffff660464e in text_input_enter (data=0x55555a4de7d0,
-    text_input=0x55555a565a40, surface=0x55555cab36d0)
-    at ../gtk/gtkimcontextwayland.c:687
-
-  global looks ok, global->current is garbage
-
-	#4  0x00007ffff660464e in text_input_enter (data=0x55555a4de7d0,
-    text_input=0x55555a565a40, surface=0x55555cab36d0)
-    at ../gtk/gtkimcontextwayland.c:687
-687	    enable (GTK_IM_CONTEXT_WAYLAND (global->current), global);
-
-    p *global->current
-	$6 = {parent_instance = {g_type_instance = {g_class = 0x55555cabcb20},
-	    ref_count = 4144348224, qdata = 0x7ffff705d320 <shadow_none_singleton>}}
-
-  add something to trace creation and destruction of global->context
-
-  should global->context be a weakref?
-
-
 
 - click X on unselected column just selects the column and does not close it
 
@@ -63,7 +27,6 @@
 - ruby string interpolation would be useful
 
   it needs to be in the syntax, so:
-
     "hello #{name}!"
 
   needs to parse as:

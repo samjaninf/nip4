@@ -154,7 +154,8 @@ view_viewchild_display(ViewChild *viewchild)
 	Model *child_model = viewchild->child_model;
 	ViewClass *view_class = VIEW_GET_CLASS(view);
 
-	return (child_model->display && view_class->display) ? view_class->display(view, child_model) : child_model->display;
+	return (child_model->display && view_class->display) ?
+		view_class->display(view, child_model) : child_model->display;
 }
 
 /* One of the children of the model we watch has changed ... create or destroy

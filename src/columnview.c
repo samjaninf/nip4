@@ -320,6 +320,17 @@ columnview_animate_to(Columnview *cview, int x, int y)
 	}
 }
 
+static gboolean
+columnview_grab_focus_idle(void *a)
+{
+	GtkWidget *entry = GTK_WIDGET(a);
+
+	gtk_widget_grab_focus(entry);
+	g_object_unref(entry);
+
+	return FALSE;
+}
+
 static void
 columnview_refresh(vObject *vobject)
 {
@@ -374,16 +385,18 @@ columnview_refresh(vObject *vobject)
 	 */
 	gtk_widget_set_visible(cview->entry,
 		col->selected &&
-			col->open &&
-			editable &&
-			!cview->master &&
-			!ws->locked);
+		col->open &&
+		editable &&
+		!cview->master &&
+		!ws->locked);
 
 	/* Set select state.
 	 */
 	if (col->selected && !cview->selected) {
 		cview->selected = TRUE;
-		gtk_widget_grab_focus(cview->entry);
+		// grabbing focus too early will often crash, do it in an idle handler
+		g_object_ref(cview->entry);
+		g_idle_add(columnview_grab_focus_idle, cview->entry);
 	}
 	else if (!col->selected)
 		cview->selected = FALSE;
