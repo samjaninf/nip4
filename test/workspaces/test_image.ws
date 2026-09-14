@@ -1,33 +1,33 @@
 <?xml version="1.0"?>
-<root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.1.0">
-  <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// private definitions for this workspace&#10;" name="test_image" filename="$CWD/test_image.ws" major="9" minor="1">
-    <Column x="10" y="5" open="true" selected="false" sform="false" next="19" name="B" caption="Sample image">
+<root xmlns="http://www.vips.ecs.soton.ac.uk/nip/9.1.6">
+  <Workspace window_x="6" window_y="56" window_width="1022" window_height="605" view="WORKSPACE_MODE_REGULAR" scale="1" offset="0" locked="false" local_defs="// private definitions for this workspace&#10;" name="test_image" filename="$HOME/GIT/nip4/test/workspaces/test_image.ws" major="9" minor="1">
+    <Column x="10" y="5" open="true" selected="true" sform="false" next="20" name="B" caption="Sample image">
       <Subcolumn vislevel="3">
         <Row popup="false" name="B1">
           <Rhs vislevel="2" flags="5">
-            <iImage window_x="0" window_y="30" window_width="512" window_height="729" show_status="true" show_convert="true" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage window_x="0" window_y="30" window_width="512" window_height="729" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_file &quot;$HOME/GIT/nip4/test/workspaces/images/slanted_oval_vase2.jpg&quot;"/>
           </Rhs>
         </Row>
         <Row popup="false" name="B18">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_convert_to_image_item.action B1"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="456" y="5" open="true" selected="false" sform="false" next="12" name="AB" caption="Image / New">
+    <Column x="639" y="5" open="true" selected="false" sform="false" next="12" name="AB" caption="Image / New">
       <Subcolumn vislevel="3">
         <Row popup="false" name="AB1">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -86,7 +86,7 @@
               </Row>
               <Row name="interpretation_option">
                 <Rhs vislevel="1" flags="1">
-                  <Option caption="Interpretation" labelsn="20" labels0="sRGB" labels1="scRGB" labels2="HSV" labels3="XYZ" labels4="Yxy" labels5="Lab" labels6="OKLab" labels7="LCh" labels8="OKLCh" labels9="CMC" labels10="Mono" labels11="LabQ" labels12="LabS" labels13="16-bit RGB" labels14="16-bit mono" labels15="Multiband" labels16="Histogram" labels17="CMYK" labels18="Fourier" labels19="Matrix" value="0"/>
+                  <Option caption="Interpretation" labelsn="20" labels0="sRGB" labels1="scRGB" labels2="HSV" labels3="XYZ" labels4="Yxy" labels5="Lab" labels6="OKLab" labels7="LCh" labels8="OKLCh" labels9="CMC" labels10="b-w" labels11="LabQ" labels12="LabS" labels13="16-bit RGB" labels14="16-bit mono" labels15="Multiband" labels16="Histogram" labels17="CMYK" labels18="Fourier" labels19="Matrix" value="0"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -97,14 +97,14 @@
         </Row>
         <Row popup="false" name="AB2">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Image_new_item.Image_new_item.Image_new_from_image_item.action AB1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="AB3">
           <Rhs vislevel="1" flags="1">
-            <iRegion show_status="false" show_convert="false">
+            <iRegion>
               <iRegiongroup/>
             </iRegion>
             <Subcolumn vislevel="0"/>
@@ -154,14 +154,14 @@
         </Row>
         <Row popup="false" name="AB9">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_convert_to_image_item.action AB8"/>
           </Rhs>
         </Row>
         <Row popup="false" name="AB11">
           <Rhs vislevel="1" flags="1">
-            <iRegion show_status="false" show_convert="false">
+            <iRegion>
               <iRegiongroup/>
             </iRegion>
             <Subcolumn vislevel="0"/>
@@ -170,81 +170,81 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="4721" y="5" open="true" selected="false" sform="false" next="49" name="BB" caption="Image / Format">
+    <Column x="4904" y="5" open="true" selected="false" sform="false" next="49" name="BB" caption="Image / Format">
       <Subcolumn vislevel="3">
         <Row popup="false" name="BB1">
           <Rhs vislevel="0" flags="4">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="BB28">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_number_format_item.U8_item.action BB1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="BB29">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_number_format_item.U16_item.action BB28"/>
           </Rhs>
         </Row>
         <Row popup="false" name="BB30">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_number_format_item.U32_item.action BB29"/>
           </Rhs>
         </Row>
         <Row popup="false" name="BB38">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_number_format_item.S8_item.action BB1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="BB39">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_number_format_item.S16_item.action BB38"/>
           </Rhs>
         </Row>
         <Row popup="false" name="BB40">
           <Rhs vislevel="1" flags="1">
-            <iImage window_x="749" window_y="463" window_width="510" window_height="727" show_status="true" show_convert="true"/>
+            <iImage window_x="749" window_y="463" window_width="510" window_height="727"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_number_format_item.S32_item.action BB39"/>
           </Rhs>
         </Row>
         <Row popup="false" name="BB41">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_number_format_item.Float_item.action BB30"/>
           </Rhs>
         </Row>
         <Row popup="false" name="BB42">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_number_format_item.Double_item.action BB41"/>
           </Rhs>
         </Row>
         <Row popup="false" name="BB43">
           <Rhs vislevel="1" flags="1">
-            <iImage window_x="753" window_y="463" window_width="734" window_height="727" show_status="true" show_convert="true"/>
+            <iImage window_x="753" window_y="463" window_width="734" window_height="727"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_number_format_item.Scmplxitem.action BB42"/>
           </Rhs>
         </Row>
         <Row popup="false" name="BB45">
           <Rhs vislevel="1" flags="1">
-            <iImage window_x="749" window_y="463" window_width="782" window_height="727" show_status="true" show_convert="true"/>
+            <iImage window_x="749" window_y="463" window_width="782" window_height="727"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_number_format_item.Dcmplx_item.action BB43"/>
           </Rhs>
@@ -256,18 +256,18 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="12230" y="5" open="true" selected="false" sform="false" next="11" name="CB" caption="Image / Join">
+    <Column x="12408" y="5" open="true" selected="false" sform="false" next="11" name="CB" caption="Image / Join">
       <Subcolumn vislevel="3">
         <Row popup="false" name="CB1">
           <Rhs vislevel="0" flags="4">
-            <iImage window_x="4" window_y="53" window_width="547" window_height="729" show_status="true" show_convert="false"/>
+            <iImage window_x="4" window_y="53" window_width="547" window_height="729"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="CB2">
           <Rhs vislevel="1" flags="1">
-            <iRegion show_status="false" show_convert="false" left="103" top="67" width="147" height="122">
+            <iRegion left="103" top="67" width="147" height="122">
               <iRegiongroup/>
             </iRegion>
             <Subcolumn vislevel="0"/>
@@ -276,7 +276,7 @@
         </Row>
         <Row popup="false" name="CB3">
           <Rhs vislevel="1" flags="1">
-            <iRegion show_status="false" show_convert="false" left="275" top="248" width="136" height="173">
+            <iRegion left="275" top="248" width="136" height="173">
               <iRegiongroup/>
             </iRegion>
             <Subcolumn vislevel="0"/>
@@ -292,7 +292,7 @@
         </Row>
         <Row popup="false" name="CB4">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="a">
                 <Rhs vislevel="0" flags="4">
@@ -306,7 +306,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -356,7 +356,7 @@
         </Row>
         <Row popup="false" name="CB5">
           <Rhs vislevel="3" flags="7">
-            <iImage window_x="553" window_y="29" window_width="510" window_height="750" show_status="true" show_convert="false"/>
+            <iImage window_x="553" window_y="29" window_width="510" window_height="750"/>
             <Subcolumn vislevel="1">
               <Row name="a">
                 <Rhs vislevel="3" flags="4">
@@ -370,7 +370,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -402,7 +402,7 @@
         </Row>
         <Row popup="false" name="CB6">
           <Rhs vislevel="1" flags="1">
-            <iRegion show_status="false" show_convert="false">
+            <iRegion>
               <iRegiongroup/>
             </iRegion>
             <Subcolumn vislevel="0"/>
@@ -411,7 +411,7 @@
         </Row>
         <Row popup="false" name="CB7">
           <Rhs vislevel="1" flags="1">
-            <iRegion show_status="false" show_convert="false">
+            <iRegion>
               <iRegiongroup/>
             </iRegion>
             <Subcolumn vislevel="0"/>
@@ -425,7 +425,7 @@
         </Row>
         <Row popup="false" name="CB9">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -434,7 +434,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -480,11 +480,11 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="12900" y="5" open="true" selected="true" sform="false" next="9" name="DB" caption="Image / Tile">
+    <Column x="13078" y="5" open="true" selected="false" sform="false" next="9" name="DB" caption="Image / Tile">
       <Subcolumn vislevel="3">
         <Row popup="false" name="DB1">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
@@ -498,7 +498,7 @@
         </Row>
         <Row popup="false" name="DB3">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="3" flags="4">
@@ -507,7 +507,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -553,7 +553,7 @@
         </Row>
         <Row popup="false" name="DB4">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="default_type">
                 <Rhs vislevel="0" flags="4">
@@ -567,7 +567,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -599,7 +599,7 @@
         </Row>
         <Row popup="false" name="DB5">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="default_type">
                 <Rhs vislevel="0" flags="4">
@@ -613,7 +613,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -679,7 +679,7 @@
         </Row>
         <Row popup="false" name="DB7">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="3" flags="4">
@@ -688,7 +688,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -771,7 +771,7 @@
         </Row>
         <Row popup="false" name="DB8">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="3" flags="4">
@@ -780,7 +780,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -815,25 +815,25 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="5672" y="5" open="true" selected="false" sform="false" next="7" name="EB" caption="Image / Levels">
+    <Column x="5855" y="5" open="true" selected="false" sform="false" next="7" name="EB" caption="Image / Levels">
       <Subcolumn vislevel="3">
         <Row popup="false" name="EB1">
           <Rhs vislevel="0" flags="4">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="EB3">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_levels_item.Scale_item.action EB2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="EB2">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -842,7 +842,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -867,7 +867,7 @@
         </Row>
         <Row popup="false" name="EB4">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -876,7 +876,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -906,7 +906,7 @@
         </Row>
         <Row popup="false" name="EB5">
           <Rhs vislevel="3" flags="7">
-            <iImage window_x="749" window_y="29" window_width="510" window_height="727" show_status="true" show_convert="true"/>
+            <iImage window_x="749" window_y="29" window_width="510" window_height="727"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="3" flags="4">
@@ -915,7 +915,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -989,25 +989,25 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="6422" y="5" open="true" selected="false" sform="false" next="28" name="FB" caption="Image / Transform">
+    <Column x="6605" y="5" open="true" selected="false" sform="false" next="28" name="FB" caption="Image / Transform">
       <Subcolumn vislevel="3">
         <Row popup="false" name="FB1">
           <Rhs vislevel="2" flags="5">
-            <iImage window_x="5" window_y="54" window_width="512" window_height="729" show_status="true" show_convert="true" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage window_x="5" window_y="54" window_width="512" window_height="729" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="FB2">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_transform_item.Rotate_item.Fixed_item.Rot90_item.action FB1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="FB3">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -1016,7 +1016,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1050,28 +1050,28 @@
         </Row>
         <Row popup="false" name="FB20">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_transform_item.Rotate_item.Straighten_item.action FB4"/>
           </Rhs>
         </Row>
         <Row popup="false" name="FB21">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_transform_item.Flip_item.Left_right_item.action FB20"/>
           </Rhs>
         </Row>
         <Row popup="false" name="FB22">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_transform_item.Flip_item.Top_bottom_item.action FB21"/>
           </Rhs>
         </Row>
         <Row popup="false" name="FB23">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -1080,7 +1080,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1146,7 +1146,7 @@
         </Row>
         <Row popup="false" name="FB24">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -1155,7 +1155,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1194,14 +1194,14 @@
         </Row>
         <Row popup="false" name="FB25">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_transform_item.Resize_item.Size_within_item.action FB24"/>
           </Rhs>
         </Row>
         <Row popup="false" name="FB27">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="3" flags="4">
@@ -1210,7 +1210,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1314,18 +1314,18 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="8606" y="5" open="true" selected="false" sform="false" next="25" name="A" caption="Image / Band">
+    <Column x="8789" y="5" open="true" selected="false" sform="false" next="25" name="A" caption="Image / Band">
       <Subcolumn vislevel="3">
         <Row popup="false" name="A1">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A3">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -1334,7 +1334,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1393,14 +1393,14 @@
         </Row>
         <Row popup="false" name="A4">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_band_item.Insert_item.action A1 A3"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A5">
           <Rhs vislevel="3" flags="7">
-            <iImage window_x="0" window_y="30" window_width="512" window_height="729" show_status="true" show_convert="true"/>
+            <iImage window_x="0" window_y="30" window_width="512" window_height="729"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="3" flags="4">
@@ -1409,7 +1409,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1468,21 +1468,21 @@
         </Row>
         <Row popup="false" name="A18">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_band_item.Bandwise_item.action A5 A4"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A23">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_band_item.Band_unfold_item.action A1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A24">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="3" flags="4">
@@ -1491,7 +1491,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1526,34 +1526,14 @@
         </Row>
         <Row popup="false" name="A19">
           <Rhs vislevel="3" flags="7">
-            <iImage window_x="384" window_y="52" window_width="750" window_height="727" show_status="true" show_convert="true"/>
-            <Subcolumn vislevel="1">
-              <Row name="x">
-                <Rhs vislevel="3" flags="4">
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="super">
-                <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-              <Row name="orientation">
-                <Rhs vislevel="1" flags="1">
-                  <Option caption="Orientation" labelsn="2" labels0="Horizontal" labels1="Vertical" value="0"/>
-                  <Subcolumn vislevel="0"/>
-                  <iText/>
-                </Rhs>
-              </Row>
-            </Subcolumn>
+            <iImage window_x="384" window_y="52" window_width="750" window_height="727"/>
+            <Subcolumn vislevel="1"/>
             <iText formula="Image_band_item.To_dimension_item.action A18"/>
           </Rhs>
         </Row>
         <Row popup="false" name="A20">
           <Rhs vislevel="1" flags="1">
-            <iRegion show_status="false" show_convert="false" left="648" top="0" width="3" height="688">
+            <iRegion left="648" top="0" width="3" height="688">
               <iRegiongroup/>
             </iRegion>
             <Subcolumn vislevel="0"/>
@@ -1562,18 +1542,18 @@
         </Row>
         <Row popup="false" name="A22">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_band_item.To_bands_item.action A20"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="5040" y="5" open="true" selected="false" sform="false" next="14" name="C" caption="Image / Header">
+    <Column x="5223" y="5" open="true" selected="false" sform="false" next="14" name="C" caption="Image / Header">
       <Subcolumn vislevel="3">
         <Row popup="false" name="C1">
           <Rhs vislevel="0" flags="4">
-            <iImage window_x="749" window_y="29" window_width="547" window_height="727" show_status="true" show_convert="true"/>
+            <iImage window_x="749" window_y="29" window_width="547" window_height="727"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
@@ -1601,14 +1581,14 @@
         </Row>
         <Row popup="false" name="C9">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_header_item.Image_set_meta_item.action C1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="C11">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -1617,7 +1597,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1669,7 +1649,7 @@
               </Row>
               <Row name="ninterpretation">
                 <Rhs vislevel="1" flags="1">
-                  <Option caption="Interpretation" labelsn="20" labels0="sRGB" labels1="scRGB" labels2="HSV" labels3="XYZ" labels4="Yxy" labels5="Lab" labels6="OKLab" labels7="LCh" labels8="OKLCh" labels9="CMC" labels10="Mono" labels11="LabQ" labels12="LabS" labels13="16-bit RGB" labels14="16-bit mono" labels15="Multiband" labels16="Histogram" labels17="CMYK" labels18="Fourier" labels19="Matrix" value="0"/>
+                  <Option caption="Interpretation" labelsn="20" labels0="sRGB" labels1="scRGB" labels2="HSV" labels3="XYZ" labels4="Yxy" labels5="Lab" labels6="OKLab" labels7="LCh" labels8="OKLCh" labels9="CMC" labels10="b-w" labels11="LabQ" labels12="LabS" labels13="16-bit RGB" labels14="16-bit mono" labels15="Multiband" labels16="Histogram" labels17="CMYK" labels18="Fourier" labels19="Matrix" value="0"/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1680,18 +1660,18 @@
         </Row>
         <Row popup="false" name="C13">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_cache_item.action C1"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="9965" y="5" open="true" selected="false" sform="false" next="20" name="D" caption="Image / Select">
+    <Column x="10148" y="5" open="true" selected="false" sform="false" next="20" name="D" caption="Image / Select">
       <Subcolumn vislevel="3">
         <Row popup="false" name="D17">
           <Rhs vislevel="2" flags="5">
-            <iImage window_x="337" window_y="172" window_width="547" window_height="727" show_status="true" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage window_x="337" window_y="172" window_width="547" window_height="727" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
@@ -1707,7 +1687,7 @@
         </Row>
         <Row popup="false" name="D9">
           <Rhs vislevel="3" flags="7">
-            <iImage window_x="131" window_y="236" window_width="510" window_height="727" show_status="true" show_convert="true" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage window_x="131" window_y="236" window_width="510" window_height="727" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -1716,7 +1696,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1777,7 +1757,7 @@
         </Row>
         <Row popup="false" name="D14">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="a">
                 <Rhs vislevel="0" flags="4">
@@ -1801,7 +1781,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1826,7 +1806,7 @@
         </Row>
         <Row popup="false" name="D16">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="pt_list">
                 <Rhs vislevel="0" flags="4">
@@ -1835,7 +1815,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1853,7 +1833,7 @@
         </Row>
         <Row popup="false" name="D18">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -1862,7 +1842,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1880,7 +1860,7 @@
         </Row>
         <Row popup="false" name="D19">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -1889,7 +1869,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -1907,25 +1887,25 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="9042" y="5" open="true" selected="false" sform="false" next="14" name="F" caption="Image / Alpha">
+    <Column x="9225" y="5" open="true" selected="false" sform="false" next="14" name="F" caption="Image / Alpha">
       <Subcolumn vislevel="3">
         <Row popup="false" name="F1">
           <Rhs vislevel="0" flags="4">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="F2">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_alpha_item.Add_item.action F1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="F3">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_alpha_item.Flatten_item.action F2"/>
           </Rhs>
@@ -1937,7 +1917,7 @@
         </Row>
         <Row popup="false" name="F5">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_alpha_item.Extract_item.action F2"/>
           </Rhs>
@@ -1949,7 +1929,7 @@
         </Row>
         <Row popup="false" name="F7">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_alpha_item.Drop_item.action F2"/>
           </Rhs>
@@ -1961,21 +1941,21 @@
         </Row>
         <Row popup="false" name="F9">
           <Rhs vislevel="2" flags="5">
-            <iImage window_x="72" window_y="72" window_width="570" window_height="727" show_status="true" show_convert="false"/>
+            <iImage window_x="72" window_y="72" window_width="570" window_height="727"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_alpha_item.Premultiply_item.action F2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="F11">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_alpha_item.Unpremultiply_item.action F9"/>
           </Rhs>
         </Row>
         <Row popup="false" name="F12">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_alpha_item.Drop_item.action F11"/>
           </Rhs>
@@ -1987,238 +1967,238 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1164" y="5" open="true" selected="false" sform="false" next="7" name="E" caption="Image / New">
+    <Column x="1347" y="5" open="true" selected="false" sform="false" next="7" name="E" caption="Image / New">
       <Subcolumn vislevel="3">
         <Row popup="false" name="E3">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.SDF_item.Circle_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="E4">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.SDF_item.Box_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="E5">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.SDF_item.Rounded_box_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="E6">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.SDF_item.Line_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="E2">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Xy_item.action"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="1720" y="5" open="true" selected="false" sform="false" next="7" name="G" caption="Image / New">
+    <Column x="1903" y="5" open="true" selected="false" sform="false" next="7" name="G" caption="Image / New">
       <Subcolumn vislevel="3">
         <Row popup="false" name="G1">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Noise_item.Gaussian_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="G2">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Noise_item.Fractal_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="G4">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Noise_item.Perlin_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="G5">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Noise_item.Worley_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="G6">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Text_item.action"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2274" y="5" open="true" selected="false" sform="false" next="4" name="H" caption="Image / New">
+    <Column x="2457" y="5" open="true" selected="false" sform="false" next="4" name="H" caption="Image / New">
       <Subcolumn vislevel="3">
         <Row popup="false" name="H1">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.New_ideal_item.High_low_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="H2">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.New_ideal_item.Ring_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="H3">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.New_ideal_item.Band_item.action"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="2898" y="5" open="true" selected="false" sform="false" next="5" name="I" caption="Image / New">
+    <Column x="3081" y="5" open="true" selected="false" sform="false" next="5" name="I" caption="Image / New">
       <Subcolumn vislevel="3">
         <Row popup="false" name="I1">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.New_gaussian_item.High_low_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="I2">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.New_gaussian_item.Ring_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="I4">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.New_gaussian_item.Band_item.action"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="3522" y="5" open="true" selected="false" sform="false" next="4" name="J" caption="Image / New">
+    <Column x="3705" y="5" open="true" selected="false" sform="false" next="4" name="J" caption="Image / New">
       <Subcolumn vislevel="3">
         <Row popup="false" name="J1">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.New_butterworth_item.High_low_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="J2">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.New_butterworth_item.Ring_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="J3">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.New_butterworth_item.Band_item.action"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="4146" y="5" open="true" selected="false" sform="false" next="14" name="K" caption="Image / New">
+    <Column x="4329" y="5" open="true" selected="false" sform="false" next="14" name="K" caption="Image / New">
       <Subcolumn vislevel="3">
         <Row popup="false" name="K1">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Test_images_item.Eye_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="K2">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Test_images_item.Zone_plate.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="K4">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Test_images_item.Frequency_test_chart_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="K5">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Test_images_item.Grey_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="K6">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Test_images_item.Checkerboard_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="K7">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Test_images_item.Grid_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="K8">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Test_images_item.New_CIELAB_slice_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="K9">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Test_images_item.CRT_test_chart_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="K10">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Test_images_item.Greyscale_chart_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="K12">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_new_item.Test_images_item.CMYK_test_chart_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="K13">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -2281,18 +2261,18 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="14174" y="5" open="true" selected="false" sform="false" next="11" name="L" caption="Image / Crop">
+    <Column x="14352" y="5" open="true" selected="false" sform="false" next="11" name="L" caption="Image / Crop">
       <Subcolumn vislevel="3">
         <Row popup="false" name="L1">
           <Rhs vislevel="0" flags="4">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="L3">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_crop_item.action L1"/>
           </Rhs>
@@ -2371,36 +2351,36 @@
         </Row>
         <Row popup="false" name="L9">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="L8.value?0"/>
           </Rhs>
         </Row>
         <Row popup="false" name="L10">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="L8.value?1"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="13618" y="5" open="true" selected="false" sform="false" next="19" name="M" caption="Image / SDF">
+    <Column x="13796" y="5" open="true" selected="false" sform="false" next="19" name="M" caption="Image / SDF">
       <Subcolumn vislevel="3">
         <Row popup="false" name="M10">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_SDF_item.New_item.Circle_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="M11">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="255.00000000000043" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="255.00000000000043" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -2470,11 +2450,11 @@
         </Row>
         <Row popup="false" name="M12">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -2623,35 +2603,35 @@
         </Row>
         <Row popup="false" name="M13">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_SDF_item.New_item.Line_item.action"/>
           </Rhs>
         </Row>
         <Row popup="false" name="M14">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false" scale="255.00000000000043" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="255.00000000000043" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_SDF_item.Union_item.action M12 M13"/>
           </Rhs>
         </Row>
         <Row popup="false" name="M15">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false" scale="255.00000000000043" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="255.00000000000043" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_SDF_item.Intersection_item.action M11 M14"/>
           </Rhs>
         </Row>
         <Row popup="false" name="M16">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false" scale="133.01728699757345" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="133.01728699757345" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_SDF_item.Difference_item.action M12 M15"/>
           </Rhs>
         </Row>
         <Row popup="false" name="M17">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -2660,7 +2640,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -2678,25 +2658,25 @@
         </Row>
         <Row popup="false" name="M18">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_SDF_item.Render_item.action M17"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="14889" y="5" open="true" selected="false" sform="false" next="4" name="N" caption="Image / Trim">
+    <Column x="15086" y="5" open="true" selected="false" sform="false" next="4" name="N" caption="Image / Trim">
       <Subcolumn vislevel="3">
         <Row popup="false" name="N1">
           <Rhs vislevel="0" flags="4">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="N2">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -2705,7 +2685,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -2792,7 +2772,7 @@
         </Row>
         <Row popup="false" name="N3">
           <Rhs vislevel="3" flags="7">
-            <iRegion show_status="false" show_convert="false">
+            <iRegion>
               <iRegiongroup/>
             </iRegion>
             <Subcolumn vislevel="1"/>
@@ -2801,18 +2781,18 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="15435" y="5" open="true" selected="false" sform="false" next="4" name="O" caption="Image / Insert">
+    <Column x="15632" y="5" open="true" selected="false" sform="false" next="4" name="O" caption="Image / Insert">
       <Subcolumn vislevel="3">
         <Row popup="false" name="O1">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="O2">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -2821,7 +2801,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -2887,32 +2867,32 @@
         </Row>
         <Row popup="false" name="O3">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_insert_item.action O1 O2"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="7040" y="5" open="true" selected="false" sform="false" next="7" name="P" caption="Image / Transform">
+    <Column x="7223" y="5" open="true" selected="false" sform="false" next="7" name="P" caption="Image / Transform">
       <Subcolumn vislevel="3">
         <Row popup="false" name="P1">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="P6">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_transform_item.Image_perspective_item.action P1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="P4">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="3" flags="4">
@@ -2921,7 +2901,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -2982,25 +2962,25 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="7557" y="5" open="true" selected="false" sform="false" next="6" name="Q" caption="Image / Transform">
+    <Column x="7740" y="5" open="true" selected="false" sform="false" next="6" name="Q" caption="Image / Transform">
       <Subcolumn vislevel="3">
         <Row popup="false" name="Q1">
           <Rhs vislevel="0" flags="4">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="Q4">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Object_duplicate_item.action Q1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="Q2">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -3009,7 +2989,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -3034,7 +3014,7 @@
         </Row>
         <Row popup="false" name="Q5">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -3048,7 +3028,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -3116,25 +3096,25 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="8043" y="5" open="true" selected="false" sform="false" next="6" name="R" caption="Image / Transform">
+    <Column x="8226" y="5" open="true" selected="false" sform="false" next="6" name="R" caption="Image / Transform">
       <Subcolumn vislevel="3">
         <Row popup="false" name="R1">
           <Rhs vislevel="0" flags="4">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="R2">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="Object_duplicate_item.action R1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="R3">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -3143,7 +3123,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -3204,7 +3184,7 @@
         </Row>
         <Row popup="false" name="R5">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="0" flags="4">
@@ -3218,7 +3198,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -3308,39 +3288,39 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="9474" y="5" open="true" selected="false" sform="false" next="7" name="S" caption="Image / Alpha">
+    <Column x="9657" y="5" open="true" selected="false" sform="false" next="7" name="S" caption="Image / Alpha">
       <Subcolumn vislevel="3">
         <Row popup="false" name="S1">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="S2">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="S1?1 &lt; 128"/>
           </Rhs>
         </Row>
         <Row popup="false" name="S3">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="S1 ++ S2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="S4">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="S1 + Vector [50, 0, 0]"/>
           </Rhs>
         </Row>
         <Row popup="false" name="S6">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="bg">
                 <Rhs vislevel="0" flags="4">
@@ -3354,7 +3334,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -3400,78 +3380,78 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="10696" y="5" open="true" selected="false" sform="false" next="7" name="T" caption="Image / Select">
+    <Column x="10870" y="5" open="true" selected="false" sform="false" next="7" name="T" caption="Image / Select">
       <Subcolumn vislevel="3">
         <Row popup="false" name="T1">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="T2">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="T1?1 &gt; 128"/>
           </Rhs>
         </Row>
         <Row popup="false" name="T4">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_select_item.Segment_item.action T2"/>
           </Rhs>
         </Row>
         <Row popup="false" name="T6">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="if T2 then T1 else 0"/>
           </Rhs>
         </Row>
         <Row popup="false" name="T5">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_select_item.Fill_item.action T6"/>
           </Rhs>
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="11777" y="5" open="true" selected="false" sform="false" next="7" name="U" caption="Image / Draw">
+    <Column x="11955" y="5" open="true" selected="false" sform="false" next="7" name="U" caption="Image / Draw">
       <Subcolumn vislevel="3">
         <Row popup="false" name="U1">
           <Rhs vislevel="1" flags="1">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="U2">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_draw_item.Line_item.action U1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="U3">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_draw_item.Rect_item.action U1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="U4">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1"/>
             <iText formula="Image_draw_item.Circle_item.action U1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="U6">
           <Rhs vislevel="3" flags="7">
-            <iImage show_status="false" show_convert="false" scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
+            <iImage scale="1" offset="0" page="0" falsecolour="false" mode="multipage"/>
             <Subcolumn vislevel="1">
               <Row name="x">
                 <Rhs vislevel="3" flags="4">
@@ -3480,7 +3460,7 @@
               </Row>
               <Row name="super">
                 <Rhs vislevel="0" flags="4">
-                  <iImage show_status="false" show_convert="false"/>
+                  <iImage/>
                   <Subcolumn vislevel="0"/>
                   <iText/>
                 </Rhs>
@@ -3570,32 +3550,32 @@
         </Row>
       </Subcolumn>
     </Column>
-    <Column x="11129" y="5" open="true" selected="false" sform="false" next="11" name="V" caption="Image / Select">
+    <Column x="11303" y="5" open="true" selected="false" sform="false" next="11" name="V" caption="Image / Select">
       <Subcolumn vislevel="3">
         <Row popup="false" name="V1">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="B1"/>
           </Rhs>
         </Row>
         <Row popup="false" name="V2">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="V1?1 &lt; 50"/>
           </Rhs>
         </Row>
         <Row popup="false" name="V3">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="V1?1 &lt; 100"/>
           </Rhs>
         </Row>
         <Row popup="false" name="V4">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="V1?1 &lt; 150"/>
           </Rhs>
@@ -3607,7 +3587,7 @@
         </Row>
         <Row popup="false" name="V7">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false" scale="70.687610868639311" offset="0" page="0" falsecolour="true" mode="multipage"/>
+            <iImage scale="70.687610868639311" offset="0" page="0" falsecolour="true" mode="multipage"/>
             <Subcolumn vislevel="0"/>
             <iText formula="switch V5"/>
           </Rhs>
@@ -3619,7 +3599,7 @@
         </Row>
         <Row popup="false" name="V10">
           <Rhs vislevel="2" flags="5">
-            <iImage show_status="false" show_convert="false"/>
+            <iImage/>
             <Subcolumn vislevel="0"/>
             <iText formula="Image_select_item.Case_item.action V7 V9"/>
           </Rhs>
