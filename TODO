@@ -13,10 +13,6 @@
 
 ## C
 
-- column open/close state is not saved
-
-	see comment in column_save()
-
 - ruby string interpolation would be useful
 
   it needs to be in the syntax, so:
@@ -60,19 +56,6 @@
 	- heap use about halves
 	- maybe 10% faster?
 	- some problems still be to be fixed in complex workspaces
-
-- add #include to snip? probably necessary if we want to use it as a
-  scripting language
-
-    #include "banana/x.def"
-
-  filename found relative to current file
-
-  we need a stack of InputState, parse.y has
-
-	InputState input_state;
-
-  have an array of these, push a new one on #include, pop on EOF
 
 - after Reset on a row, mark dirty and recalc
 
