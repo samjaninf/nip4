@@ -3,6 +3,34 @@ Tasks_capture_item = class
     Menupullright "_Capture"
         "useful stuff for capturing and preprocessing images" {
 
+    Dcraw_import_item = class
+        Menuaction "_DCRAW import" "read a camera RAW file with dcraw" {
+        action = class
+            _result {
+            _vislevel = 3;
+
+            path = Pathname "File to load" "empty";
+            depth = Option (_ "Bitdepth") [_ "8 bit", _ "16 bit"] 0;
+            halfsize = Toggle "Decode at half size" false;
+
+            _result
+                = Image blank, path.value == "empty"
+                = Image image
+            {
+                image = vips_dcrawload [
+                    $bitdepth => [8, 16]?depth,
+                    $half_size => to_bool halfsize
+                  ] path.value;
+
+                blank = image_new [
+                    $format => ["uchar", "ushort"]?depth,
+                    $bands => 3,
+                    $interpretation => "srgb"
+                ] 1 1;
+            }
+        }
+    }
+
     Csv_import_item = class
         Menuaction "_CSV import" "read a file of comma-separated values" {
         action = class

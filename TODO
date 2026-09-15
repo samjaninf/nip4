@@ -1,6 +1,3 @@
-
-- add something to open a dcraw image in 16 bits
-
 ## paintbox
 
 - paint on an image that's part of a big pipeline can leave the progress bar
