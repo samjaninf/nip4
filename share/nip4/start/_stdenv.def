@@ -2955,20 +2955,24 @@ Text rgba message = class {
     font = Fontname "Use font" Workspaces.Preferences.PAINTBOX_FONT;
     align = Align.picker $LOW;
     dpi = Expression "DPI" 500;
-    spacing = Expression "Line spacing" 1;
+    spacing = Expression "Line spacing (points)" 0;
     wrap = Toggle "Wrap lines on character boundaries" false;
     justify = Toggle "Justify" false;
     autodpi = Toggle "Fit text within width and height" false;
 
-    _generate width height = vips_text [
+    _generate width height = vips_text ([
         $font => font.value,
         $width => width,
         $height => height,
         $align => align.value_key,
         $justify => justify.value,
-        $dpi => if autodpi then 0 else to_real dpi,
         $spacing => to_real spacing,
         $rgba => rgba,
         $wrap => wrap.value
-      ] text.value;
+      ] ++ dpi_option) text.value
+    {
+        dpi_option
+            = [], autodpi
+            = [$dpi => to_real dpi];
+    }
 }

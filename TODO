@@ -1,8 +1,6 @@
 
 - add something to open a dcraw image in 16 bits
 
-- text widget should have an rgba toggle
-
 ## paintbox
 
 - paint on an image that's part of a big pipeline can leave the progress bar

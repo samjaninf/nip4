@@ -182,9 +182,10 @@ Image_new_item = class Menupullright "_New" "make new things" {
             _result {
             _vislevel = 3;
 
-            text = Text false "<i>Hello</i>, world!";
+            text = Text rgba.value "<i>Hello</i>, world!";
             nwidth = Expression "Image width (pixels)" 512;
             nheight = Expression "Image height (pixels)" 512;
+            rgba = Toggle "Output RGBA pixels" true;
 
             _result
                 = Image (text._generate nwidth.expr nheight.expr);
