@@ -58,6 +58,19 @@
 
   <releases>
 
+    <release version="9.2.0" date="2026-09-20">
+      <description>
+        <p>
+
+          This release adds the paintbox, and adds two new menu
+          items: Colour > CICP, and Tasks > Capture > DCRAW load. Additionally,
+          Image > New > Text has a new RGBA toggle. There are some more
+          minor improvements, see the CHANGELOG.
+
+        </p>
+      </description>
+    </release>
+
     <release version="9.1.5" date="2026-06-03">
       <description>
         <p>

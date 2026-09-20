@@ -1,5 +1,7 @@
 ## master
 
+## 9.2.0 2026/09/20
+
 - add Colour > CICP menu item
 - all file dialog filters default to "all"
 - add #include to snip
@@ -8,10 +10,9 @@
 - Image > New > Text has an rgba toggle
 - add Tasks > Capture > DCRAW load
 
-## 9.1.5
+## 9.1.5 2026/06/03
 
 - fix managedstring print in snip
-- don't save column open / closed state, loading a closed column can crash
 - fix print of list of strings
 - remove -p option from snip (it's automatic now)
 - fix filename increment
