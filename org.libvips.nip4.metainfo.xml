@@ -62,10 +62,11 @@
       <description>
         <p>
 
-          This release adds the paintbox, and adds two new menu
-          items: Colour > CICP, and Tasks > Capture > DCRAW load. Additionally,
-          Image > New > Text has a new RGBA toggle. There are some more
-          minor improvements, see the CHANGELOG.
+          This release adds the paintbox, plus support for CICP HDR, QOI
+          images, and animated PNG. It also adds two new menu items: Colour
+          > CICP, and Tasks > Capture > DCRAW load. Additionally, Image
+          > New > Text has a new RGBA toggle. There are some more minor
+          improvements, see the CHANGELOG.
 
         </p>
       </description>
