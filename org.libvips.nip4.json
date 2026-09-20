@@ -437,7 +437,7 @@
                 {
                     "type" : "git",
                     "url" : "https://github.com/jcupitt/nip4.git",
-                    "commit" : "0f21b9928eeabb4f22b103f99c9e164cd221af34"
+                    "commit" : "eb49565c8054e1b288823c397ac5a8e441a822c3"
                 }
             ]
         }
