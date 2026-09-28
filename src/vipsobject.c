@@ -151,12 +151,14 @@ vo_gvalue_copy(const GValue *in, GValue *out)
 	if (G_VALUE_TYPE(out) == VIPS_TYPE_IMAGE) {
 		VipsImage *image = VIPS_IMAGE(g_value_get_object(out));
 
-		VipsImage *copy;
-		if (vips_copy(image, &copy, NULL)) {
+		// always make a deep copy of an image so we can't modify our argument
+		VipsImage *copy = vips_image_new_memory();
+		if (vips_image_write(image, copy)) {
+			g_object_unref(copy);
 			error_top(_("Bad argument"));
 			error_vips();
 			return FALSE;
-		}
+        }
 
 		g_value_take_object(out, G_OBJECT(copy));
 	}
